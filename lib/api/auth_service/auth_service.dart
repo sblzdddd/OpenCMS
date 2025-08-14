@@ -1,6 +1,6 @@
 import '../http_service.dart';
 import '../constants.dart';
-import '../secure_storage_service/secure_storage_service.dart';
+import '../secure_storage_service/cookies_storage_service.dart';
 import 'login_result.dart';
 import 'auth_state.dart';
 
@@ -20,7 +20,7 @@ class AuthService {
 
   final HttpService _httpService = HttpService();
   final AuthState _authState = AuthState();
-  final SecureStorageService _secureStorageService = SecureStorageService();
+  final CookiesStorageService _cookiesStorageService = CookiesStorageService();
   
   /// Check if user is currently authenticated
   bool get isAuthenticated => _authState.isAuthenticated;
@@ -95,7 +95,7 @@ class AuthService {
         _authState.setAuthenticated(username: username);
         // Persist cookies for auto-login on app restart
         try {
-          await _secureStorageService.saveCookies(_httpService.currentCookies);
+          await _cookiesStorageService.saveCookies(_httpService.currentCookies);
         } catch (err) {
           print('AuthService: Error saving cookies: $err');
         }
@@ -154,7 +154,7 @@ class AuthService {
   /// Returns true if cookies are valid and user info has been set.
   Future<bool> restoreSessionFromCookies() async {
     try {
-      final savedCookies = await _secureStorageService.loadCookies();
+      final savedCookies = await _cookiesStorageService.loadCookies();
       if (savedCookies.isEmpty) {
         return false;
       }
@@ -178,13 +178,13 @@ class AuthService {
       // Invalidate bad cookies to force login fallback
       _authState.clearAuthentication();
       _httpService.clearCookies();
-      await _secureStorageService.clearCookies();
+      await _cookiesStorageService.clearCookies();
       return false;
     } catch (e) {
       // On error, clear and fallback to login
       _authState.clearAuthentication();
       _httpService.clearCookies();
-      await _secureStorageService.clearCookies();
+      await _cookiesStorageService.clearCookies();
       return false;
     }
   }
@@ -315,7 +315,7 @@ class AuthService {
     
     _authState.clearAuthentication();
     _httpService.clearCookies();
-    await _secureStorageService.clearCookies();
+    await _cookiesStorageService.clearCookies();
     
     print('AuthService: Logout completed');
   }

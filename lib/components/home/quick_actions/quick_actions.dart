@@ -8,7 +8,7 @@ import 'reorderable_wrap.dart';
 
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../api/quick_actions_constants.dart';
-import '../../../api/secure_storage_service/secure_storage_service.dart';
+import '../../../api/secure_storage_service/quick_actions_storage_service.dart';
 
 class QuickActions extends StatefulWidget {
   const QuickActions({super.key});
@@ -21,7 +21,7 @@ class _QuickActionsState extends State<QuickActions> {
   bool _isEditMode = false;
   bool _isLoading = true;
   List<Map<String, dynamic>> actions = [];
-  final SecureStorageService _storageService = SecureStorageService();
+  final QuickActionsStorageService _storageService = QuickActionsStorageService();
 
   @override
   void initState() {
@@ -226,7 +226,7 @@ class _QuickActionsState extends State<QuickActions> {
                 ),
               ),
               _isLoading 
-                  ? Container(
+                  ? SizedBox(
                       height: 110,
                       child: Center(
                         child: CircularProgressIndicator(
@@ -285,10 +285,10 @@ class _QuickActionsState extends State<QuickActions> {
                             runSpacing: 0,
                             alignment: WrapAlignment.spaceBetween,
                             isEditMode: true,
-                            children: displayChildren,
                             onReorder: _onReorder,
                             onRemove: _onRemove,
                             onAdd: _onAddAction,
+                            children: displayChildren,
                           );
                         } else {
                           // Non-edit mode: static items

@@ -6,7 +6,7 @@ import '../components/common/error_dialog.dart';
 /// Controller to manage login flow, captcha handling, and credential persistence
 class LoginController extends ChangeNotifier {
   final AuthService _authService = AuthService();
-  final SecureStorageService _secureStorageService = SecureStorageService();
+  final CredentialsStorageService _secureStorageService = CredentialsStorageService();
 
   bool _isCaptchaVerified = false;
   Object? _captchaData;
