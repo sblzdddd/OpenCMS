@@ -47,8 +47,7 @@ class SavedCredentials {
   }
 }
 
-/// Credentials Storage Service
-///
+
 /// Handles secure storage operations for credentials and related flags.
 class CredentialsStorageService {
   static final CredentialsStorageService _instance = CredentialsStorageService._internal();

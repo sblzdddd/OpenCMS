@@ -50,7 +50,6 @@ class SolveCaptchaService {
         'method': ApiConstants.solveCaptchaTencentMethod,
         'pageurl': ApiConstants.solveCaptchaPageUrl,
         'app_id': ApiConstants.tencentCaptchaAppId,
-        // 'soft_id': '4848',
         'key': apiKey,
       },
     ).timeout(ApiConstants.defaultTimeout);
@@ -64,8 +63,6 @@ class SolveCaptchaService {
   }
 
   Future<SolveCaptchaResult> _pollForResult(String apiKey, String taskId) async {
-    final uri = Uri.parse(ApiConstants.solveCaptchaResEndpoint);
-
     for (int attempt = 0; attempt < ApiConstants.solveCaptchaMaxPollAttempts; attempt++) {
       final response = await http.get(
         Uri.parse('${ApiConstants.solveCaptchaResEndpoint}?id=$taskId&action=get&key=$apiKey')
@@ -90,7 +87,6 @@ class SolveCaptchaService {
         }
       }
 
-      // Special waiting state (typo preserved per provider response)
       if (body == 'CAPCHA_NOT_READY' || body == 'CAPTCHA_NOT_READY') {
         await Future.delayed(ApiConstants.solveCaptchaPollInterval);
         continue;

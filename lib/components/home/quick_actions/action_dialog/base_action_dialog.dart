@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../action_item/quick_action_tile.dart';
 
 /// Base dialog class for action selection dialogs
 abstract class BaseActionDialog extends StatefulWidget {
@@ -135,7 +134,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
             ),
             const SizedBox(height: 12),
 
-            // Actions wrap
+            // Actions list
             Expanded(
               child: filteredActions.isEmpty
                   ? Center(
@@ -170,61 +169,33 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                         ],
                       ),
                     )
-                  : LayoutBuilder(
-                      builder: (context, constraints) {
-                        const double minSpacing = 0.0;
-                        const double itemWidth = 100.0;
-                        const int itemHeight = 110;
-
-                        final double availableWidth = constraints.maxWidth;
-                        final int itemsPerRow =
-                            ((availableWidth + minSpacing) / (itemWidth + minSpacing)).floor();
-
-                        final List<Widget> displayChildren = filteredActions
-                            .map<Widget>((action) => SizedBox(
-                                  width: 100,
-                                  height: 110,
-                                  child: QuickActionTile(
-                                    width: 100,
-                                    height: 110,
-                                    icon: action['icon'],
-                                    title: action['title'],
-                                    onTap: () {
-                                      onActionTap(action);
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                ))
-                            .toList();
-
-                        if (itemsPerRow > 0) {
-                          final int remainder = filteredActions.length % itemsPerRow;
-                          if (remainder != 0) {
-                            final int spacersNeeded = itemsPerRow - remainder;
-                            for (int i = 0; i < spacersNeeded; i++) {
-                              displayChildren.add(
-                                IgnorePointer(
-                                  child: SizedBox(
-                                    key: ValueKey('spacer_dialog_$i'),
-                                    width: itemWidth,
-                                    height: itemHeight.toDouble(),
-                                  ),
-                                ),
-                              );
-                            }
-                          }
-                        }
-
-                        return SingleChildScrollView(
-                          child: SizedBox(
-                            width: constraints.maxWidth,
-                            child: Wrap(
-                              spacing: minSpacing,
-                              runSpacing: 0,
-                              alignment: WrapAlignment.spaceBetween,
-                              children: displayChildren,
+                  : ListView.separated(
+                      itemCount: filteredActions.length,
+                      separatorBuilder: (context, index) => Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+                      ),
+                      itemBuilder: (context, index) {
+                        final action = filteredActions[index];
+                        return ListTile(
+                          leading: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Icon(
+                              action['icon'],
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
+                          title: Text(action['title']),
+                          onTap: () {
+                            onActionTap(action);
+                            Navigator.of(context).pop();
+                          },
                         );
                       },
                     ),

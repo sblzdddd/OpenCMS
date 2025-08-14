@@ -1,5 +1,3 @@
-/// Authentication state management
-/// 
 /// Handles user authentication state, session validation, and user information
 library;
 

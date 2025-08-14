@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../common/snackbar_utils.dart';
+import '../../../common/custom_snackbar/snackbar_utils.dart';
 import 'quick_action_tile.dart';
 
 class ActionItem extends StatelessWidget {

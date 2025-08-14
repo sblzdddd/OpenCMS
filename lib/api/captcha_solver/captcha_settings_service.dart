@@ -1,6 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Captcha verification methods
 enum CaptchaVerificationMethod {
   manual,
   solveCaptcha,

@@ -4,14 +4,10 @@ import '../secure_storage_service/cookies_storage_service.dart';
 import 'login_result.dart';
 import 'auth_state.dart';
 
-/// Authentication Service
-/// 
 /// Handles all authentication-related API calls including:
 /// - User login with captcha verification
 /// - Session management
 /// - Authentication state
-/// 
-/// This is the main service class that coordinates authentication operations.
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();

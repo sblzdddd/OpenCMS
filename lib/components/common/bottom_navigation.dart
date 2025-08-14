@@ -28,7 +28,7 @@ class BottomNavigation extends StatelessWidget {
         selectedIndex: selectedIndex,
         onDestinationSelected: onTapCallback,
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-        indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+        // indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: appNavItems
             .map(

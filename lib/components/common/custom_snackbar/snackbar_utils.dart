@@ -7,11 +7,13 @@ class SnackbarInfo {
   final int id;
   final OverlayEntry overlayEntry;
   CustomSnackbarState? snackbarState;
+  double? measuredHeight;
 
   SnackbarInfo({
     required this.id,
     required this.overlayEntry,
     this.snackbarState,
+    this.measuredHeight,
   });
 }
 
@@ -20,6 +22,8 @@ class SnackbarUtils {
   // Track active snackbars for positioning
   static final List<SnackbarInfo> _activeSnackbars = [];
   static int _nextId = 0;
+  static const double _estimatedHeight = 60.0;
+  static const double _gap = 8.0;
   /// Show a general information snackbar (blue theme)
   static void showInfo(
     BuildContext context,
@@ -144,6 +148,7 @@ class SnackbarUtils {
         icon: icon,
         elevation: elevation,
         getPosition: () => getSnackbarPosition(snackbarId),
+        getTopOffset: () => getSnackbarTopOffset(snackbarId),
         onStateCreated: (state) {
           snackbarInfo.snackbarState = state;
         },
@@ -158,8 +163,24 @@ class SnackbarUtils {
       overlayEntry: overlayEntry,
     );
 
-    _activeSnackbars.add(snackbarInfo);
+    _activeSnackbars.insert(0, snackbarInfo);
     Overlay.of(context).insert(overlayEntry);
+    _updateSnackbarPositions();
+
+    // Measure heights on next frame then update positions
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bool updated = false;
+      for (final info in _activeSnackbars) {
+        final h = info.snackbarState?.height;
+        if (h != null && (info.measuredHeight == null || info.measuredHeight != h)) {
+          info.measuredHeight = h;
+          updated = true;
+        }
+      }
+      if (updated) {
+        _updateSnackbarPositions();
+      }
+    });
 
     if (!persist) {
       Future.delayed(duration, () async {
@@ -202,6 +223,21 @@ class SnackbarUtils {
   static int getSnackbarPosition(int snackbarId) {
     final index = _activeSnackbars.indexWhere((info) => info.id == snackbarId);
     return index >= 0 ? index : 0;
+  }
+
+  /// Get the cumulative top offset based on measured heights of previous snackbars
+  static double getSnackbarTopOffset(int snackbarId) {
+    final index = _activeSnackbars.indexWhere((info) => info.id == snackbarId);
+    if (index <= 0) return 0;
+    double offset = 0;
+    for (int i = 0; i < index; i++) {
+      final info = _activeSnackbars[i];
+      final height = info.measuredHeight ?? _estimatedHeight;
+      offset += height;
+      // Add gap between stacked snackbars
+      offset += _gap;
+    }
+    return offset;
   }
 
   /// Manually dismiss a specific snackbar with animation

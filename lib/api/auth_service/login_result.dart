@@ -1,5 +1,3 @@
-/// Login result data classes and enums
-/// 
 /// Contains all data structures related to login responses and results
 library;
 

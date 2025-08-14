@@ -3,8 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'storage_client.dart';
 
-/// Cookies Storage Service
-///
+
 /// Persists HTTP cookies as JSON for session restoration.
 class CookiesStorageService {
   static final CookiesStorageService _instance = CookiesStorageService._internal();

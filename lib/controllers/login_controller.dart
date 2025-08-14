@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api/api.dart';
-import '../components/common/snackbar_utils.dart';
+import '../components/common/custom_snackbar/snackbar_utils.dart';
 import '../components/common/error_dialog.dart';
 
 /// Controller to manage login flow, captcha handling, and credential persistence
