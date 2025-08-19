@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../services/attendance/attendance_service.dart';
 import '../../../ui/shared/course_detail_dialog.dart';
@@ -187,7 +188,8 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
               IconButton(
                 tooltip: 'Toggle settings',
                 icon: Icon(
-                  _showSettings ? Icons.settings : Icons.settings_outlined,
+                  Symbols.settings_rounded,
+                  fill: _showSettings ? 1 : 0,
                 ),
                 onPressed: () {
                   setState(() {
@@ -362,12 +364,12 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
             ButtonSegment<bool>(
               value: false,
               label: Text('Cards'),
-              icon: Icon(Icons.view_agenda),
+              icon: Icon(Symbols.view_agenda_rounded),
             ),
             ButtonSegment<bool>(
               value: true,
               label: Text('Table'),
-              icon: Icon(Icons.table_chart),
+              icon: Icon(Symbols.table_chart_rounded),
             ),
           ],
           selected: {_isTableView},

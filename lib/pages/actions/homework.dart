@@ -3,7 +3,7 @@ import 'homework/homework_page_main.dart';
 import 'homework/teams_homework_page.dart';
 
 class HomeworkPage extends StatefulWidget {
-  const HomeworkPage({super.key, required this.initialTabIndex});
+  const HomeworkPage({super.key, this.initialTabIndex = 0});
   final int initialTabIndex;
 
   @override

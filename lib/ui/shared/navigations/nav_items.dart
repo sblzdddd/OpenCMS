@@ -25,8 +25,12 @@ const List<AppNavItem> appNavItems = [
     icon: Symbols.book_rounded,
   ),
   AppNavItem(
-    label: 'Feedback',
+    label: 'Assessments',
     icon: Symbols.assignment_rounded,
+  ),
+  AppNavItem(
+    label: 'Settings',
+    icon: Symbols.settings_rounded,
   ),
 ];
 

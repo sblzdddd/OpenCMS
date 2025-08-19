@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'logout_dialog.dart';
 
 class ErrorPlaceholder extends StatelessWidget {
@@ -23,7 +24,7 @@ class ErrorPlaceholder extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                Symbols.error_outline,
                 size: 64,
                 color: Theme.of(context).colorScheme.error,
               ),

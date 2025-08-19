@@ -7,6 +7,8 @@ class ReorderableWrap extends StatefulWidget {
   final void Function(int oldIndex, int newIndex) onReorder;
   final void Function(int index)? onRemove;
   final VoidCallback? onAdd;
+  final VoidCallback? onReorderStart;
+  final VoidCallback? onReorderEnd;
   final double spacing;
   final double runSpacing;
   final WrapAlignment alignment;
@@ -18,6 +20,8 @@ class ReorderableWrap extends StatefulWidget {
     required this.onReorder,
     this.onRemove,
     this.onAdd,
+    this.onReorderStart,
+    this.onReorderEnd,
     this.spacing = 0.0,
     this.runSpacing = 0.0,
     this.alignment = WrapAlignment.start,
@@ -103,14 +107,14 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
         
         // Regular draggable items
         return LongPressDraggable<int>(
+          delay: const Duration(milliseconds: 300),
           data: index,
           feedback: Material(
-            elevation: 8,
-            borderRadius: BorderRadius.circular(12),
-            child: Transform.scale(
-              scale: 1.1,
-              child: Opacity(
-                opacity: 0.8,
+            color: Colors.transparent,
+            child: Opacity(
+              opacity: 0.7,
+              child: Transform.scale(
+                scale: 1.1,
                 child: child,
               ),
             ),
@@ -123,6 +127,8 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
             setState(() {
               _draggedIndex = index;
             });
+            // Call onReorderStart callback when dragging begins
+            widget.onReorderStart?.call();
           },
           onDragEnd: (_) {
             setState(() {
@@ -130,6 +136,8 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
               _hoveredIndex = null;
               _isTrashCanHighlighted = false;
             });
+            // Call onReorderEnd callback when dragging ends
+            widget.onReorderEnd?.call();
           },
           child: DragTarget<int>(
             onWillAcceptWithDetails: (details) {
@@ -166,16 +174,8 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(0),
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                        spreadRadius: 0,
-                        blurRadius: 1,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
                   child: child,
                 );

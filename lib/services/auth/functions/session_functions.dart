@@ -7,9 +7,9 @@ Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo(AuthServiceBase authServ
   try {
     final response = await authService.httpService.get(ApiConstants.accountUserUrl);
     final data = response.data ?? {};
-    if ((data['username'] ?? '').toString().isNotEmpty) {
+    if ((data['en_name'] ?? '').toString().isNotEmpty) {
       authService.authState.updateUserInfo(data);
-      authService.authState.setAuthenticated(username: data['username']);
+      authService.authState.setAuthenticated(username: data['en_name']);
     } else {
       print('AuthService: Failed to fetch user info: No username found');
       throw Exception('No username found');

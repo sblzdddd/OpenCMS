@@ -1,5 +1,6 @@
 /// Constants for timetable periods and their time spans
 library;
+import 'package:intl/intl.dart';
 
 class PeriodConstants {
   static const List<PeriodInfo> periods = [
@@ -37,6 +38,7 @@ class PeriodConstants {
     PeriodInfo(name: 'Period 10', startTime: '15:50', endTime: '16:30'),
     PeriodInfo(name: 'ES', startTime: '16:30', endTime: '17:30'),
   ];
+
 
   static const List<String> monthNames = [
     'January',
@@ -78,6 +80,46 @@ class PeriodConstants {
     final month = monthNames[date.month - 1];
     return '$weekday, $month ${date.day}, ${date.year}';
   }
+
+  static PeriodInfo? getPeriodInfoByTime(DateTime time) {
+    int periodIndex = periods.indexWhere((period) => time.isAfter(DateFormat.Hm().parse(period.startTime)) && time.isBefore(DateFormat.Hm().parse(period.endTime)));
+    if (periodIndex != -1) {
+      return periods[periodIndex];
+    }
+    periodIndex = attendancePeriods.indexWhere((period) => time.isAfter(DateFormat.Hm().parse(period.startTime)) && time.isBefore(DateFormat.Hm().parse(period.endTime)));
+    if (periodIndex != -1) {
+      return attendancePeriods[periodIndex];
+    }
+    return null;
+  }
+
+  static String getGreeting(DateTime dt) {
+    int hour = dt.hour;
+
+    print(hour);
+
+    if (hour >= 5 && hour < 8) {
+      return "Rise and shine 🌅";
+    } else if (hour >= 8 && hour < 12) {
+      return "Good morning ☀️";
+    } else if (hour >= 12 && hour < 14) {
+      return "Good noon 🌞";
+    } else if (hour >= 14 && hour < 17) {
+      return "Good afternoon 🌤️";
+    } else if (hour >= 17 && hour < 19) {
+      return "Good evening 🌇";
+    } else if (hour >= 19 && hour < 21) {
+      return "Good evening 🌆";
+    } else if (hour >= 21 && hour < 23) {
+      return "Good night 🌙";
+    } else if (hour >= 23 || hour < 5) {
+      return "Sweet dreams 😴";
+    } else {
+      return "Hello 👋"; // fallback
+    }
+  }
+
+
 
   /// Get period info by index
   static PeriodInfo? getPeriodInfo(int index) {

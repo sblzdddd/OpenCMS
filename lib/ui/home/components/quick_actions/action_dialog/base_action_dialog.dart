@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import '../action_item/quick_action_tile.dart';
 
 /// Base dialog class for action selection dialogs
 abstract class BaseActionDialog extends StatefulWidget {
@@ -62,8 +63,9 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(32),
       ),
+      insetPadding: const EdgeInsets.all(28),
       child: Container(
         width: min(MediaQuery.of(context).size.width * 0.9, 440),
         height: min(MediaQuery.of(context).size.height * 0.8, 600),
@@ -169,33 +171,35 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                         ],
                       ),
                     )
-                  : ListView.separated(
-                      itemCount: filteredActions.length,
-                      separatorBuilder: (context, index) => Divider(
-                        height: 1,
-                        thickness: 1,
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
-                      ),
-                      itemBuilder: (context, index) {
-                        final action = filteredActions[index];
-                        return ListTile(
-                          leading: Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Icon(
-                              action['icon'],
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
+                  : LayoutBuilder(
+                      builder: (context, constraints) {
+                        const double spacing = 16.0;
+                        const double minTileWidth = 130.0;
+                        final double availableWidth = constraints.maxWidth;
+                        final int columns = (((availableWidth + spacing) /
+                                    (minTileWidth + spacing))
+                                .floor())
+                            .clamp(1, 6);
+                        final double tileWidth =
+                            (availableWidth - (columns - 1) * spacing) / columns;
+
+                        return SingleChildScrollView(
+                          child: Wrap(
+                            spacing: spacing,
+                            runSpacing: spacing,
+                            alignment: WrapAlignment.start,
+                            children: filteredActions.map((action) {
+                              return QuickActionTile(
+                                width: tileWidth,
+                                icon: action['icon'] as IconData,
+                                title: action['title'] as String,
+                                onTap: () {
+                                  onActionTap(action);
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            }).toList(),
                           ),
-                          title: Text(action['title']),
-                          onTap: () {
-                            onActionTap(action);
-                            Navigator.of(context).pop();
-                          },
                         );
                       },
                     ),

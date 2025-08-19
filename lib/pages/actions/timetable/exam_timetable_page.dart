@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 import '../../../services/timetable/exam_timetable_service.dart';
@@ -126,7 +127,7 @@ class _ExamTimetablePageState extends State<ExamTimetablePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.event_busy,
+              Symbols.event_busy_rounded,
               size: 48,
               color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
             ),

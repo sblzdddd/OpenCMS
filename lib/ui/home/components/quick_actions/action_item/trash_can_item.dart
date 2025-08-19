@@ -4,17 +4,19 @@ import 'quick_action_tile.dart';
 
 class TrashCanItem extends StatelessWidget {
   final bool isHighlighted;
+  final double? tileWidth;
 
   const TrashCanItem({
     Key? key,
     this.isHighlighted = false,
+    this.tileWidth,
   }) : super(key: key ?? const ValueKey('trash_can'));
 
   @override
   Widget build(BuildContext context) {
     Widget baseItem = QuickActionTile(
-      width: 100,
-      height: 108,
+      width: tileWidth ?? 120,
+      // height: 108,
       icon: Symbols.delete_rounded,
       title: 'Remove',
       iconColor: Colors.red,
@@ -23,7 +25,6 @@ class TrashCanItem extends StatelessWidget {
         fontSize: 11,
         color: Colors.red,
       ),
-      titleHeight: 20,
       borderColor: Colors.red.withValues(alpha: 0.3),
       borderWidth: 2,
     );

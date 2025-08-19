@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
@@ -114,7 +115,7 @@ class TimetableMobileView extends StatelessWidget {
             return Row(
               children: [
                 Icon(
-                  Icons.calendar_today,
+                  Symbols.calendar_today_rounded,
                   size: 18,
                   color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                 ),

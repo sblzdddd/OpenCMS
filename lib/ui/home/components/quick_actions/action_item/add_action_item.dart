@@ -5,18 +5,20 @@ import 'quick_action_tile.dart';
 class AddActionItem extends StatelessWidget {
   final bool isHighlighted;
   final VoidCallback? onTap;
+  final double? tileWidth;
 
   const AddActionItem({
     Key? key,
     this.isHighlighted = false,
     this.onTap,
+    this.tileWidth,
   }) : super(key: key ?? const ValueKey('add_action'));
 
   @override
   Widget build(BuildContext context) {
     Widget baseItem = QuickActionTile(
-      width: 100,
-      height: 108,
+      width: tileWidth ?? 120,
+      // height: 108,
       icon: Symbols.add_rounded,
       title: 'Add',
       iconColor: Theme.of(context).colorScheme.primary,
@@ -25,7 +27,6 @@ class AddActionItem extends StatelessWidget {
         fontSize: 11,
         color: Theme.of(context).colorScheme.primary,
       ),
-      titleHeight: 20,
       onTap: onTap,
       borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
       borderWidth: 2,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../data/constants/api_constants.dart';
 import '../../services/shared/storage_client.dart';
@@ -117,7 +118,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
         title: const Text('Web CMS'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: const Icon(Symbols.arrow_back_rounded),
             onPressed: _canGoBack
                 ? () async {
                     await _webViewController?.goBack();
@@ -127,7 +128,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
             tooltip: 'Back',
           ),
           IconButton(
-            icon: const Icon(Icons.arrow_forward),
+            icon: const Icon(Symbols.arrow_forward_rounded),
             onPressed: _canGoForward
                 ? () async {
                     await _webViewController?.goForward();
@@ -137,7 +138,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
             tooltip: 'Forward',
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Symbols.refresh_rounded),
             onPressed: () async {
               if (_webViewController != null) {
                 await _webViewController!.reload();

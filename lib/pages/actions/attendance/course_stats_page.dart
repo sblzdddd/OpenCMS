@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../../ui/shared/course_detail_dialog.dart';
@@ -145,14 +146,14 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                     child: _buildStatItem(
                       'Students',
                       stats.studentCount.toString(),
-                      Icons.people,
+                      Symbols.people_rounded,
                     ),
                   ),
                   Expanded(
                     child: _buildStatItem(
                       'Lessons',
                       stats.lessons.toString(),
-                      Icons.school,
+                      Symbols.school_rounded,
                     ),
                   ),
                 ],
@@ -164,7 +165,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                     child: _buildStatItem(
                       'Absent',
                       stats.absent.toString(),
-                      Icons.cancel,
+                      Symbols.cancel_rounded,
                       color: stats.absent > 0 ? Colors.red : null,
                     ),
                   ),
@@ -172,7 +173,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                     child: _buildStatItem(
                       'Late',
                       stats.late.toString(),
-                      Icons.schedule,
+                      Symbols.schedule_rounded,
                       color: stats.late > 0 ? Colors.orange : null,
                     ),
                   ),
@@ -200,7 +201,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        absentRate >= 10 ? Icons.warning : Icons.check_circle,
+                        absentRate >= 10 ? Symbols.warning_rounded : Symbols.check_circle_rounded,
                         size: 16,
                         color: absentRate >= 10 ? Colors.red : Colors.green,
                       ),
@@ -286,7 +287,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.school_outlined, size: 64, color: Colors.grey),
+                  Icon(Symbols.school_rounded, size: 64, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
                     'No course statistics available',

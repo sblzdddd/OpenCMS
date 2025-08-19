@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/constants/period_constants.dart';
 import 'timetable/course_timetable_page.dart';
 import 'timetable/exam_timetable_page.dart';
@@ -71,7 +72,7 @@ class _TimetablePageState extends State<TimetablePage>
                   )
                   .toList(),
               underline: Container(),
-              icon: const Icon(Icons.arrow_drop_down),
+              icon: const Icon(Symbols.arrow_drop_down_rounded),
             ),
           ),
         ],

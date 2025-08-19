@@ -96,7 +96,7 @@ HomeworkItem? _parseHomeworkRows(Element element1, Element element2) {
     final category = categoryDiv?.text.trim() ?? '';
     
     // Extract course code from second row
-    final courseCode = cells2[1].text.trim();
+    final courseCode = cells2[0].text.trim();
     
     // Determine completion status (assume pending since status link exists)
     final isCompleted = statusLink == null; // If no status link, might be completed
@@ -119,7 +119,7 @@ HomeworkItem? _parseHomeworkRows(Element element1, Element element2) {
 
 /// Parse pagination information from the HTML
 Map<String, int> _parsePaginationInfo(Document document) {
-  final paginationDiv = document.querySelector('div.top10');
+  final paginationDiv = document.querySelectorAll('div.top10')[1];
   if (paginationDiv == null) {
     return {'currentPage': 1, 'totalPages': 1, 'totalRecords': 0};
   }
@@ -129,7 +129,7 @@ Map<String, int> _parsePaginationInfo(Document document) {
   // Parse "Current Page：1/11"
   int currentPage = 1;
   int totalPages = 1;
-  final pageMatch = RegExp(r'Current Page：(\d+)/(\d+)').firstMatch(text);
+  final pageMatch = RegExp(r'Current Page：(\d+)\/(\d+)').firstMatch(text);
   if (pageMatch != null) {
     currentPage = int.tryParse(pageMatch.group(1) ?? '1') ?? 1;
     totalPages = int.tryParse(pageMatch.group(2) ?? '1') ?? 1;

@@ -128,11 +128,6 @@ class _QuickActionsState extends State<QuickActions> {
       builder: (context) => MoreActionsDialog(
         currentActionIds: currentActionIds,
         onActionChosen: (action) {
-          // // Placeholder: launch or navigate to the chosen action
-          // // Integrate real navigation when available
-          // ScaffoldMessenger.of(context).showSnackBar(
-          //   SnackBar(content: Text('Launching: '+action['title'])),
-          // );
         },
       ),
     );
@@ -156,10 +151,10 @@ class _QuickActionsState extends State<QuickActions> {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 12),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
@@ -172,14 +167,14 @@ class _QuickActionsState extends State<QuickActions> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 16.0, right: 12.0),
+                padding: const EdgeInsets.only(bottom: 18),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Quick Access',
+                      'Quick Actions',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -236,99 +231,49 @@ class _QuickActionsState extends State<QuickActions> {
                       ),
                     )
                   : LayoutBuilder(
-                      builder: (context, constraints) {
-                        const double minSpacing = 0.0;
-                        const double itemWidth = 100.0;
-                        const int itemHeight = 110;
+                    builder: (context, constraints) {
+                      const double spacing = 16.0;
+                      const double minTileWidth = 110.0;
+                      // Item height is determined by each tile
 
-                        final double availableWidth = constraints.maxWidth;
-                        final int itemsPerRow =
-                            ((availableWidth + minSpacing) / (itemWidth + minSpacing)).floor();
+                      final double availableWidth = constraints.maxWidth;
+                      // Determine number of columns based on available width and minimum tile width
+                      final int columns = (((availableWidth + spacing) /
+                                  (minTileWidth + spacing))
+                              .floor())
+                          .clamp(1, 8);
+                      final double tileWidth =
+                          (availableWidth - (columns - 1) * spacing) / columns;
 
-                        if (_isEditMode) {
-                          // Build draggable action items
-                          final List<Widget> displayChildren = actions
-                              .map<Widget>((action) => ActionItem(
-                                    action: action,
-                                    isEditMode: true,
-                                    onTap: action['id'] == QuickActionsConstants.moreAction['id']
-                                        ? _onShowMoreActions
-                                        : null,
-                                  ))
-                              .toList();
+                      // Build draggable action items
+                      final List<Widget> displayChildren = actions
+                          .map<Widget>((action) => ActionItem(
+                                action: action,
+                                isEditMode: true,
+                                onTap: action['id'] == QuickActionsConstants.moreAction['id']
+                                    ? _onShowMoreActions
+                                    : null,
+                                tileWidth: tileWidth,
+                              ))
+                          .toList();
 
-                          // Add edit utilities
-                          displayChildren.add(const TrashCanItem());
-                          displayChildren.add(AddActionItem(onTap: _onAddAction));
-
-                          // Add spacers to keep last row left-aligned
-                          if (itemsPerRow > 0) {
-                            final int remainder = (actions.length + 2) % itemsPerRow;
-                            if (remainder != 0) {
-                              final int spacersNeeded = itemsPerRow - remainder;
-                              for (int i = 0; i < spacersNeeded; i++) {
-                                displayChildren.add(
-                                  IgnorePointer(
-                                    child: SizedBox(
-                                      key: ValueKey('spacer_qa_$i'),
-                                      width: itemWidth,
-                                      height: itemHeight.toDouble(),
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-
-                          return ReorderableWrap(
-                            spacing: minSpacing,
-                            runSpacing: 0,
-                            alignment: WrapAlignment.spaceBetween,
-                            isEditMode: true,
-                            onReorder: _onReorder,
-                            onRemove: _onRemove,
-                            onAdd: _onAddAction,
-                            children: displayChildren,
-                          );
-                        } else {
-                          // Non-edit mode: static items
-                          final List<Widget> displayChildren = actions
-                              .map<Widget>((action) => ActionItem(
-                                    action: action,
-                                    isEditMode: false,
-                                    onTap: action['id'] == QuickActionsConstants.moreAction['id']
-                                        ? _onShowMoreActions
-                                        : null,
-                                  ))
-                              .toList();
-
-                          if (itemsPerRow > 0) {
-                            final int remainder = actions.length % itemsPerRow;
-                            if (remainder != 0) {
-                              final int spacersNeeded = itemsPerRow - remainder;
-                              for (int i = 0; i < spacersNeeded; i++) {
-                                displayChildren.add(
-                                  IgnorePointer(
-                                    child: SizedBox(
-                                      key: ValueKey('spacer_qa_view_$i'),
-                                      width: itemWidth,
-                                      height: itemHeight.toDouble(),
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                          }
-
-                          return Wrap(
-                            spacing: minSpacing,
-                            runSpacing: 0,
-                            alignment: WrapAlignment.spaceBetween,
-                            children: displayChildren,
-                          );
-                        }
-                      },
-                    ),
+                      if (_isEditMode) {
+                        // Add edit utilities
+                        displayChildren.add(TrashCanItem(tileWidth: tileWidth));
+                        displayChildren.add(AddActionItem(onTap: _onAddAction, tileWidth: tileWidth));
+                      }
+                      return ReorderableWrap(
+                        spacing: spacing,
+                        runSpacing: spacing,
+                        alignment: WrapAlignment.start,
+                        isEditMode: true,
+                        onReorder: _onReorder,
+                        onRemove: _onRemove,
+                        onAdd: _onAddAction,
+                        children: displayChildren,
+                      );
+                    },
+                  ),
             ],
           ),
         ),

@@ -34,12 +34,6 @@ class HomeworkService {
         throw Exception('Missing username. Please login again.');
       }
       
-      // Build form data for POST request
-      final formData = <String, dynamic>{
-        'fy': academicYear.toString(),
-        'ddd': 'Search', // Required submit parameter
-      };
-      
       // Add optional form fields
       courseId ??= "";
       dueDateStart ??= "";
@@ -48,7 +42,7 @@ class HomeworkService {
       // Page parameter is handled in URL path for legacy CMS
       String endpoint = '/$username/homework/$page/?duedate=$dueDateStart&duedate2=$dueDateEnd&courseid=$courseId&fy=$academicYear';
       
-      final response = await _httpService.postLegacy(endpoint, body: formData);
+      final response = await _httpService.getLegacy(endpoint);
 
       if (response.statusCode == 200) {
         final html = response.data;
