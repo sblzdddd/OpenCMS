@@ -47,7 +47,7 @@ class AuthState {
   }
 
   /// Check if session has expired (based on time)
-  bool isSessionExpired({Duration maxAge = const Duration(hours: 24)}) {
+  bool isSessionExpired({Duration maxAge = const Duration(minutes: 10)}) {
     if (_loginTime == null) return true;
     return DateTime.now().difference(_loginTime!).compareTo(maxAge) > 0;
   }

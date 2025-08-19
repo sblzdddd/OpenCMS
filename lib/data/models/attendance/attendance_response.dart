@@ -1,3 +1,5 @@
+import '../../constants/attendance_constants.dart';
+
 class AttendanceResponse {
   final List<RecordOfDay> recordOfDays;
   final double totalAbsentCount;
@@ -70,6 +72,8 @@ class AttendanceEntry {
   }
 
   String get subjectName => courseName == ''? '/': (courseName == 'ES' ? 'Evening Study' : courseName);
+
+  String get kindText => AttendanceConstants.kindText[kind] ?? 'Unknown';
 }
 
 class Student {

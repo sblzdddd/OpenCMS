@@ -43,10 +43,6 @@ class AuthController extends ChangeNotifier {
           await _authService.fetchAndSetCurrentUserInfo();
         } catch (_) {}
 
-        // Print session debug info
-        final debugInfo = _authService.getSessionDebugInfo();
-        print('Session Debug Info: $debugInfo');
-
         // Navigate to home page
         if (context.mounted) {
           Navigator.pushReplacementNamed(context, '/home');
@@ -79,10 +75,5 @@ class AuthController extends ChangeNotifier {
       SnackbarUtils.showError(context, 'Login error: $e');
       return false;
     }
-  }
-
-  /// Utility to expose debug info for tests or logs
-  Map<String, dynamic> getSessionDebugInfo() {
-    return _authService.getSessionDebugInfo();
   }
 }

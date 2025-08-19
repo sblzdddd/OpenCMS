@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 class AppNavigationController {
   static ValueNotifier<int>? _selectedIndexNotifier;
   static BuildContext? _currentContext;
+  static int? _pendingTimetableInnerTabIndex;
+ 
+ 	/// Reset the controller so stale references are cleared (e.g., on logout)
+ 	static void reset() {
+ 		_selectedIndexNotifier = null;
+ 		_currentContext = null;
+ 		_pendingTimetableInnerTabIndex = null;
+ 	}
   
   /// Initialize the navigation controller with the selected index notifier
   static void initialize(ValueNotifier<int> selectedIndexNotifier) {
@@ -21,7 +29,10 @@ class AppNavigationController {
     if (_selectedIndexNotifier != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         // Update the selected index after the current frame to avoid setState during build
-        _selectedIndexNotifier!.value = index;
+        // Guard against using a potentially disposed notifier by ensuring we still hold it
+        final notifier = _selectedIndexNotifier;
+        if (notifier == null) return;
+        notifier.value = index;
 
         // Navigate to home if not already there (all tabs are part of the home page)
         if (_currentContext != null) {
@@ -40,4 +51,16 @@ class AppNavigationController {
   
   /// Check if navigation controller is initialized
   static bool get isInitialized => _selectedIndexNotifier != null;
+
+  /// Set the inner tab for the Timetable page to be applied on next build
+  static void setPendingTimetableInnerTabIndex(int index) {
+    _pendingTimetableInnerTabIndex = index;
+  }
+
+  /// Consume and clear the pending inner tab index for the Timetable page
+  static int? takePendingTimetableInnerTabIndex() {
+    final value = _pendingTimetableInnerTabIndex;
+    _pendingTimetableInnerTabIndex = null;
+    return value;
+  }
 }

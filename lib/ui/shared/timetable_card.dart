@@ -6,23 +6,25 @@ class TimetableCard extends StatelessWidget {
   final String code;
   final String room;
   final String extraInfo;
-  final String timespan;
-  final String periodText;
+  final String? timespan;
+  final String? periodText;
   final Function()? onTap;
   final Color? backgroundColor;
   final Color? textColor;
+  final bool isGridCell;
 
   const TimetableCard({
-    super.key, 
+    super.key,
     required this.subject,
     required this.code,
     required this.room,
     required this.extraInfo,
-    required this.timespan,
-    required this.periodText,
+    this.timespan,
+    this.periodText,
     this.onTap,
     this.backgroundColor,
     this.textColor,
+    this.isGridCell = false,
   });
 
   @override
@@ -36,49 +38,58 @@ class TimetableCard extends StatelessWidget {
     final backdropIconColor = baseTextColor.withValues(alpha: 0.06);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Header row: [Start period name] [stretch space] [time span]
-        Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                timespan,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer,
-                  fontWeight: FontWeight.w500,
+        if (!isGridCell && (timespan != null || periodText != null))
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  timespan ?? '',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              periodText,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.primary,
-                fontSize: 12,
+              const SizedBox(width: 8),
+              Text(
+                periodText ?? '',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontSize: 12,
+                ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 8),
+            ],
+          ),
+        if (!isGridCell && (timespan != null || periodText != null))
+          const SizedBox(height: 8),
         Card(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(bottom: isGridCell ? 0 : 12),
           elevation: 1,
+          shadowColor: Colors.black.withValues(alpha: 0.05),
           color: backgroundColor ?? theme.colorScheme.surfaceContainerLowest,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(isGridCell ? 8 : 16),
+          ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(isGridCell ? 8 : 16),
             child: Stack(
               children: [
                 // Content
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -96,9 +107,11 @@ class TimetableCard extends StatelessWidget {
                                 Text(
                                   subject,
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: isGridCell ? 12 : 18,
                                     fontWeight: FontWeight.w500,
-                                    color: textColor ?? theme.colorScheme.onSurface,
+                                    color:
+                                        textColor ??
+                                        theme.colorScheme.onSurface,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -108,9 +121,11 @@ class TimetableCard extends StatelessWidget {
                                 Text(
                                   code,
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: (textColor ?? theme.colorScheme.onSurface).withValues(
-                                      alpha: 0.7,
-                                    ),
+                                    fontSize: isGridCell ? 10 : 14,
+                                    color:
+                                        (textColor ??
+                                                theme.colorScheme.onSurface)
+                                            .withValues(alpha: 0.7),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -120,41 +135,39 @@ class TimetableCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 16),
                           // Right column: Room and Teacher
-                          Expanded(
-                            flex: 2,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                // Room Id - Large
-                                Text(
-                                  room,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color: textColor ?? (room.isNotEmpty
-                                        ? theme.colorScheme.secondary
-                                        : theme.colorScheme.onSurface.withValues(
-                                            alpha: 0.5,
-                                          )),
-                                  ),
-                                  textAlign: TextAlign.end,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              // Room Id - Large
+                              Text(
+                                room,
+                                style: TextStyle(
+                                  fontSize: isGridCell ? 12 : 18,
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                      textColor ??
+                                      (room.isNotEmpty
+                                          ? theme.colorScheme.secondary
+                                          : theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.5)),
                                 ),
-                                const SizedBox(height: 4),
-                                // Teacher Name
-                                Text(
-                                  extraInfo,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: (textColor ?? theme.colorScheme.onSurface).withValues(
-                                      alpha: 0.7,
-                                    ),
-                                  ),
-                                  textAlign: TextAlign.end,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.end,
+                              ),
+                              const SizedBox(height: 4),
+                              // Teacher Name
+                              Text(
+                                extraInfo,
+                                style: TextStyle(
+                                  fontSize: isGridCell ? 10 : 14,
+                                  color:
+                                      (textColor ?? theme.colorScheme.onSurface)
+                                          .withValues(alpha: 0.7),
                                 ),
-                              ],
-                            ),
+                                textAlign: TextAlign.end,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -171,7 +184,7 @@ class TimetableCard extends StatelessWidget {
                         padding: const EdgeInsets.only(right: 8, bottom: 8),
                         child: Icon(
                           iconData,
-                          size: 96,
+                          size: isGridCell ? 48 : 96,
                           color: backdropIconColor,
                         ),
                       ),

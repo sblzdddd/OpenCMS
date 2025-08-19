@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
+import 'package:cookie_jar/cookie_jar.dart';
 
 import '../../data/constants/api_constants.dart';
-import '../../services/auth/cookies_storage_service.dart';
+import '../../services/shared/storage_client.dart';
 
 class WebCmsPage extends StatefulWidget {
   const WebCmsPage({super.key});
@@ -26,19 +27,20 @@ class _WebCmsPageState extends State<WebCmsPage> {
 
   Future<void> _prepareCookies() async {
     try {
-      final CookiesStorageService storage = CookiesStorageService();
-      final Map<String, String> cookies = await storage.loadCookies();
+      final List<Cookie> cookies = await StorageClient.currentCookies;
       final iaw.CookieManager cookieManager = iaw.CookieManager.instance();
 
       final iaw.WebUri baseUri = iaw.WebUri(ApiConstants.baseUrl);
       // Inject stored cookies for the base domain so they are available to the WebView session
-      for (final MapEntry<String, String> entry in cookies.entries) {
+      for (final Cookie cookie in cookies) {
         await cookieManager.setCookie(
           url: baseUri,
-          name: entry.key,
-          value: entry.value,
-          path: '/',
-          isSecure: true,
+          name: cookie.name,
+          value: cookie.value,
+          path: cookie.path ?? '/',
+          isSecure: cookie.secure,
+          domain: cookie.domain,
+          isHttpOnly: cookie.httpOnly,
         );
       }
     } catch (e) {
@@ -78,8 +80,6 @@ class _WebCmsPageState extends State<WebCmsPage> {
           `));
           (document.head || document.documentElement).appendChild(s);
         }
-        var hdr = document.querySelector('header');
-        if (hdr) { hdr.remove(); }
       } catch (e) {}
     };
     if (document.readyState === 'loading') {

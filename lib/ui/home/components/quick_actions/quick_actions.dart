@@ -128,11 +128,11 @@ class _QuickActionsState extends State<QuickActions> {
       builder: (context) => MoreActionsDialog(
         currentActionIds: currentActionIds,
         onActionChosen: (action) {
-          // Placeholder: launch or navigate to the chosen action
-          // Integrate real navigation when available
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Launching: '+action['title'])),
-          );
+          // // Placeholder: launch or navigate to the chosen action
+          // // Integrate real navigation when available
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(content: Text('Launching: '+action['title'])),
+          // );
         },
       ),
     );

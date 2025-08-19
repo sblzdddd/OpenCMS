@@ -3,7 +3,8 @@ import 'attendance/attendance_page_main.dart';
 import 'attendance/course_stats_page.dart';
 
 class AttendancePage extends StatefulWidget {
-  const AttendancePage({super.key});
+  const AttendancePage({super.key, required this.initialTabIndex});
+  final int initialTabIndex;
 
   @override
   State<AttendancePage> createState() => _AttendancePageState();
@@ -16,7 +17,7 @@ class _AttendancePageState extends State<AttendancePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
   }
 
   @override
@@ -41,9 +42,7 @@ class _AttendancePageState extends State<AttendancePage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          // TODO: implement attendance page
           AttendancePageMain(),
-          // TODO: implement course statistics page
           CourseStatsPage(),
         ],
       ),

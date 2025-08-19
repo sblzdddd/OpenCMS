@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/models/attendance/course_stats_response.dart';
+import 'error_placeholder.dart';
 
 /// Dialog to display course details and attendance statistics
 class CourseDetailDialog extends StatelessWidget {
@@ -75,10 +76,7 @@ class CourseDetailDialog extends StatelessWidget {
           if (snapshot.hasError) {
             return SizedBox(
               width: 300,
-              child: Text(
-                'Failed to load course details.\n\n${snapshot.error}',
-                style: textTheme.bodyMedium,
-              ),
+              child: ErrorPlaceholder(title: 'Failed to load course details', errorMessage: snapshot.error.toString(), onRetry: () => future),
             );
           }
           final stats = snapshot.data!;

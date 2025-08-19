@@ -25,13 +25,10 @@ class CourseTimetableService {
       
       final response = await _httpService.get(
         url,
-        headers: {
-          'referer': ApiConstants.timetableReferer,
-        },
       );
 
-      if (response.isSuccess) {
-        final data = response.jsonBody;
+      if (response.statusCode == 200) {
+        final data = response.data;
         if (data != null) {
           return TimetableResponse.fromJson(data);
         } else {

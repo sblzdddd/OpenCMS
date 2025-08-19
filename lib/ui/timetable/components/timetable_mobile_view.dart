@@ -1,0 +1,149 @@
+import 'package:flutter/material.dart';
+import '../../../data/constants/period_constants.dart';
+import '../../../data/models/timetable/timetable_response.dart';
+import '../../../data/models/timetable/course_merged_event.dart';
+import '../../../ui/shared/timetable_card.dart';
+import 'day_header.dart';
+
+class TimetableMobileView extends StatelessWidget {
+  final ScrollController scrollController;
+  final List<DateTime> dayDates;
+  final int todayIndex;
+  final int selectedDayIndex;
+  final List<GlobalKey> dayKeys;
+  final TimetableResponse? timetableData;
+  final Function(TimetableEvent) onEventTap;
+
+  const TimetableMobileView({
+    super.key,
+    required this.scrollController,
+    required this.dayDates,
+    required this.todayIndex,
+    required this.selectedDayIndex,
+    required this.dayKeys,
+    required this.timetableData,
+    required this.onEventTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      controller: scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (int dayIndex = 0; dayIndex < 5; dayIndex++) ...[
+            DayHeader(
+              key: dayKeys[dayIndex],
+              title: PeriodConstants.weekdayNames[dayIndex],
+              dateText: (dayDates.isNotEmpty && dayIndex < dayDates.length)
+                  ? _formatYmd(dayDates[dayIndex])
+                  : '',
+              isActive: dayIndex == selectedDayIndex,
+              isToday: todayIndex == dayIndex,
+            ),
+            const SizedBox(height: 8),
+            ..._buildDayEvents(dayIndex),
+            const SizedBox(height: 16),
+            if (dayIndex != 4) const Divider(height: 32),
+            if (dayIndex != 4) const SizedBox(height: 8),
+          ],
+          const SizedBox(height: 400),
+        ],
+      ),
+    );
+  }
+
+  String _formatYmd(DateTime date) {
+    final y = date.year.toString();
+    final m = date.month.toString();
+    final d = date.day.toString();
+    return '$y-$m-$d';
+  }
+
+  List<CourseMergedEvent> _getCourseMergedEventsForDay(int dayIndex) {
+    if (timetableData == null || 
+        dayIndex >= timetableData!.weekdays.length) {
+      return [];
+    }
+
+    final weekday = timetableData!.weekdays[dayIndex];
+    final List<CourseMergedEvent> mergedEvents = [];
+    
+    int i = 0;
+    while (i < weekday.periods.length) {
+      final period = weekday.periods[i];
+      
+      if (period.events.isEmpty) {
+        i++;
+        continue;
+      }
+
+      final event = period.events.first;
+      int endPeriod = i;
+      
+      // Find consecutive periods with the same event
+      while (endPeriod + 1 < weekday.periods.length) {
+        final nextPeriod = weekday.periods[endPeriod + 1];
+        if (nextPeriod.events.isEmpty || 
+            nextPeriod.events.first != event) {
+          break;
+        }
+        endPeriod++;
+      }
+
+      mergedEvents.add(CourseMergedEvent(
+        event: event,
+        startPeriod: i,
+        endPeriod: endPeriod,
+      ));
+
+      i = endPeriod + 1;
+    }
+
+    return mergedEvents;
+  }
+
+  List<Widget> _buildDayEvents(int dayIndex) {
+    final mergedEvents = _getCourseMergedEventsForDay(dayIndex);
+    if (mergedEvents.isEmpty) {
+      return [
+        Builder(
+          builder: (context) {
+            return Row(
+              children: [
+                Icon(
+                  Icons.calendar_today,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'No classes scheduled',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            );
+          },
+        )
+      ];
+    }
+    return [
+      for (final mergedEvent in mergedEvents) ...[
+        TimetableCard(
+          subject: mergedEvent.event.subject,
+          code: mergedEvent.event.code,
+          room: mergedEvent.event.room.isNotEmpty ? mergedEvent.event.room : 'TBA',
+          extraInfo: mergedEvent.event.teacher.isNotEmpty ? mergedEvent.event.teacher : '',
+          timespan: mergedEvent.timeSpan,
+          periodText: mergedEvent.periodText,
+          onTap: () {
+            onEventTap(mergedEvent.event);
+          },
+        ),
+        const SizedBox(height: 12),
+      ]
+    ];
+  }
+}

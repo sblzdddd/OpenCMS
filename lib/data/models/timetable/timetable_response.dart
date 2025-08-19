@@ -1,4 +1,5 @@
 /// Data models for timetable API response
+library;
 
 class TimetableResponse {
   final String weekType;

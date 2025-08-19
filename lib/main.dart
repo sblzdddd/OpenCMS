@@ -5,16 +5,22 @@ import 'services/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:window_manager/window_manager.dart';
+import 'package:system_tray/system_tray.dart';
+import 'dart:io';
+import 'services/background/cookies_refresh_service.dart';
+// import 'services/background/background_task_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
+AppWindow? globalAppWindow; // Global variable to store AppWindow instance
+_AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
 
-// Export webViewEnvironment for access from other files
-WebViewEnvironment? getWebViewEnvironment() => webViewEnvironment;
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await initInAppWebview();
-  runApp(const MyApp());
+// Function to handle window close event - hide instead of close
+Future<void> handleWindowClose() async {
+  if (globalAppWindow != null) {
+    await globalAppWindow!.hide();
+  }
 }
 
 Future<void> initInAppWebview() async {
@@ -22,13 +28,98 @@ Future<void> initInAppWebview() async {
     final availableVersion = await WebViewEnvironment.getAvailableVersion();
     assert(availableVersion != null,
         'Failed to find an installed WebView2 Runtime or non-stable Microsoft Edge installation.');
-
     webViewEnvironment = await WebViewEnvironment.create();
   }
 
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
   }
+}
+
+Future<void> initWindowManager() async {
+  // Return early if not Windows environment
+  if (kIsWeb || defaultTargetPlatform != TargetPlatform.windows) {
+    return;
+  }
+  
+  await windowManager.ensureInitialized();
+
+  WindowOptions windowOptions = WindowOptions(
+    size: Size(1000, 720),
+    minimumSize: Size(400, 400),
+    titleBarStyle: TitleBarStyle.normal,
+  );
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
+
+  // Prevent the default close behavior and handle it manually
+  await windowManager.setPreventClose(true);
+}
+
+Future<void> initSystemTray() async {
+  if(!(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+    return;
+  }
+  String path = Platform.isWindows ? 'assets/images/app_icon.ico' : 'assets/images/app_icon.png';
+
+  final AppWindow appWindow = AppWindow();
+  globalAppWindow = appWindow; // Store globally for access from other functions
+  final SystemTray systemTray = SystemTray();
+
+  await systemTray.initSystemTray(
+    title: "OpenCMS",
+    iconPath: path,
+  );
+
+  // create context menu
+  final Menu menu = Menu();
+  await menu.buildFrom([
+    MenuItemLabel(label: 'Show', onClicked: (menuItem) => appWindow.show()),
+    MenuItemLabel(label: 'Exit', onClicked: (menuItem) async {
+      // Allow closing then exit
+      await windowManager.setPreventClose(false);
+      await appWindow.close();
+    }),
+  ]);
+
+  // set context menu
+  await systemTray.setContextMenu(menu);
+
+  // handle system tray event
+  systemTray.registerSystemTrayEventHandler((eventName) {
+    if (eventName == kSystemTrayEventClick) {
+       Platform.isWindows ? appWindow.show() : systemTray.popUpContextMenu();
+    } else if (eventName == kSystemTrayEventRightClick) {
+       Platform.isWindows ? systemTray.popUpContextMenu() : appWindow.show();
+    }
+  });
+}
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initInAppWebview();
+  await initWindowManager();
+  await initSystemTray();
+  // await Workmanager().initialize(_callbackDispatcher, isInDebugMode: true);
+  await CookiesRefreshService().start();
+  
+  // await Workmanager().registerOneOffTask(
+  //   "ping_test", // unique ID
+  //   "ping_test", // task name
+  //   initialDelay: const Duration(seconds: 10),
+  // );
+  // // Periodic task with custom frequency  
+  // Workmanager().registerPeriodicTask(
+  //   "hourly-sync",
+  //   "data_sync",
+  //   frequency: Duration(hours: 1),        // Android: minimum 15 minutes
+  //   initialDelay: Duration(seconds: 10),   // Wait before first execution
+  //   inputData: {'syncType': 'incremental'}
+  // );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -62,7 +153,7 @@ class AuthWrapper extends StatefulWidget {
   State<AuthWrapper> createState() => _AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> {
+class _AuthWrapperState extends State<AuthWrapper> with WindowListener {
   final AuthService _authService = AuthService();
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
@@ -70,18 +161,49 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   void initState() {
     super.initState();
+    windowManager.addListener(this);
+    
+    // Set global reference for access from other parts of the app
+    globalAuthWrapper = this;
+    
     _checkAuthenticationStatus();
+  }
+
+  @override
+  void dispose() {
+    windowManager.removeListener(this);
+    
+    // Clear global reference
+    if (globalAuthWrapper == this) {
+      globalAuthWrapper = null;
+    }
+
+    super.dispose();
+  }
+
+  @override
+  Future<void> onWindowClose() async {
+    // Hide instead of closing
+    await handleWindowClose();
   }
 
   void _checkAuthenticationStatus() async {
     // Add a small delay to show loading state
     await Future.delayed(const Duration(milliseconds: 500));
 
-    // Try restore session from saved cookies by validating against account/user
-    final restored = await _authService.restoreSessionFromCookies();
+    bool isAuthenticated = false;
+    await _authService.refreshCookies();
+
+    try {
+      await _authService.fetchAndSetCurrentUserInfo();
+      await _authService.refreshLegacyCookies();
+      isAuthenticated = true;
+    } catch (e) {
+      isAuthenticated = false;
+    }
 
     setState(() {
-      _isAuthenticated = restored || (_authService.isAuthenticated && _authService.isSessionValid());
+      _isAuthenticated = isAuthenticated;
       _isCheckingAuth = false;
     });
   }

@@ -6,9 +6,12 @@ import '../ui/home/components/notice_card.dart';
 import '../ui/home/components/homework_card.dart';
 import '../ui/shared/navigations/bottom_navigation.dart';
 import '../ui/shared/navigations/app_navigation_rail.dart';
-import '../ui/shared/navigations/app_navigation_controller.dart';
+// deprecated
+// import '../ui/shared/navigations/app_navigation_controller.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'actions/timetable.dart';
+import '../ui/shared/logout_dialog.dart';
+import '../data/constants/period_constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,14 +24,14 @@ class _HomePageState extends State<HomePage> {
   final _authService = AuthService();
   final ScrollController _scrollController = ScrollController();
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
-  
+
   int get _selectedIndex => _selectedIndexNotifier.value;
 
   @override
   void initState() {
     super.initState();
     // Initialize the navigation controller
-    AppNavigationController.initialize(_selectedIndexNotifier);
+    // AppNavigationController.initialize(_selectedIndexNotifier);
     // Listen to changes in selected index
     _selectedIndexNotifier.addListener(() {
       if (mounted) {
@@ -73,6 +76,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    // Clear global navigation controller state BEFORE disposing the notifier to avoid
+    // any pending callbacks using a disposed notifier
+    // AppNavigationController.reset();
     _selectedIndexNotifier.dispose();
     super.dispose();
   }
@@ -81,7 +87,7 @@ class _HomePageState extends State<HomePage> {
     final userInfo = _authService.userInfo;
     final username = userInfo?['en_name'] ?? userInfo?['username'] ?? 'Student';
     final now = DateTime.now();
-    final formattedDate = _formatDate(now);
+    final formattedDate = PeriodConstants.formatDate(now);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -127,7 +133,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 child: IconButton(
-                  onPressed: _showLogoutDialog,
+                  onPressed: () => showLogoutDialog(context),
                   icon: const Icon(
                     Symbols.logout_rounded,
                     color: Color(0xFF718096),
@@ -149,13 +155,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildNoticesAndHomework() {
     return Row(
       children: [
-        const Expanded(
-          child: NoticeCard(),
-        ),
+        const Expanded(child: NoticeCard()),
         const SizedBox(width: 16),
-        const Expanded(
-          child: HomeworkCard(),
-        ),
+        const Expanded(child: HomeworkCard()),
       ],
     );
   }
@@ -195,9 +197,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(width: 24),
             // Right column - Expanding for Quick Actions
-            Expanded(
-              child: const QuickActions(),
-            ),
+            Expanded(child: const QuickActions()),
           ],
         );
       },
@@ -209,7 +209,10 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return _buildScrollableHomeContent();
       case 1:
-        return const TimetablePage();
+        return TimetablePage(
+          initialTabIndex: 0
+              // AppNavigationController.takePendingTimetableInnerTabIndex() ?? 0,
+        );
       case 2:
         return _buildPlaceholderPage('Homework');
       case 3:
@@ -250,56 +253,5 @@ class _HomePageState extends State<HomePage> {
   void _onNavTap(int index) {
     if (_selectedIndex == index) return;
     _selectedIndexNotifier.value = index;
-  }
-
-  String _formatDate(DateTime date) {
-    const months = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-    const weekdays = [
-      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-    ];
-    
-    final weekday = weekdays[date.weekday - 1];
-    final month = months[date.month - 1];
-    
-    return '$weekday, $month ${date.day}, ${date.year}';
-  }
-
-
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('No No No'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                await _authService.logout();
-                if (mounted) {
-                  Navigator.of(context).pushReplacementNamed('/login');
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE53E3E),
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Yes Yes Yes'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

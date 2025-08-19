@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import '../../data/constants/api_constants.dart';
+import '../shared/http_service.dart';
 
 class SolveCaptchaResult {
   final bool isSuccess;
@@ -20,6 +21,8 @@ class SolveCaptchaService {
   static final SolveCaptchaService _instance = SolveCaptchaService._internal();
   factory SolveCaptchaService() => _instance;
   SolveCaptchaService._internal();
+
+  final HttpService _httpService = HttpService();
 
   Future<SolveCaptchaResult> solveWithApiKey(String apiKey) async {
     try {
@@ -41,11 +44,13 @@ class SolveCaptchaService {
   Future<String?> _submitTask(String apiKey) async {
     final uri = Uri.parse(ApiConstants.solveCaptchaInEndpoint);
 
-    final response = await http.post(
-      uri,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+    final response = await _httpService.postNative(
+      uri.toString(),
+      options: Options(
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      ),
       body: {
         'method': ApiConstants.solveCaptchaTencentMethod,
         'pageurl': ApiConstants.solveCaptchaPageUrl,
@@ -54,7 +59,7 @@ class SolveCaptchaService {
       },
     ).timeout(ApiConstants.defaultTimeout);
 
-    final body = response.body.trim();
+    final body = response.data.trim();
     print('submitTask response: $body');
     if (body.startsWith('OK|')) {
       return body.substring(3);
@@ -64,11 +69,16 @@ class SolveCaptchaService {
 
   Future<SolveCaptchaResult> _pollForResult(String apiKey, String taskId) async {
     for (int attempt = 0; attempt < ApiConstants.solveCaptchaMaxPollAttempts; attempt++) {
-      final response = await http.get(
-        Uri.parse('${ApiConstants.solveCaptchaResEndpoint}?id=$taskId&action=get&key=$apiKey')
+      final response = await _httpService.getNative(
+        '${ApiConstants.solveCaptchaResEndpoint}?id=$taskId&action=get&key=$apiKey',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        ),
       ).timeout(ApiConstants.defaultTimeout);
 
-      final body = response.body.trim();
+      final body = response.data.trim();
       print('pollForResult response: $body');
       if (body.startsWith('OK|')) {
         final jsonPart = body.substring(3);

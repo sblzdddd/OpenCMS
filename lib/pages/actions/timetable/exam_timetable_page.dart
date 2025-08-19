@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 import '../../../services/timetable/exam_timetable_service.dart';
+import '../../../ui/shared/error_placeholder.dart';
 import '../../../ui/shared/timetable_card.dart';
 
 class ExamTimetablePage extends StatefulWidget {
@@ -116,31 +117,7 @@ class _ExamTimetablePageState extends State<ExamTimetablePage> {
       return const Center(child: CircularProgressIndicator());
     }
     if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 8),
-            Text('Failed to load exam timetable'),
-            const SizedBox(height: 4),
-            Text(
-              _errorMessage!,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _loadExamTimetable,
-              child: const Text('Retry'),
-            )
-          ],
-        ),
-      );
+      return ErrorPlaceholder(title: 'Failed to load timetable', errorMessage: _errorMessage!, onRetry: _loadExamTimetable);
     }
 
     if (_exams.isEmpty) {
@@ -189,7 +166,7 @@ class _ExamTimetablePageState extends State<ExamTimetablePage> {
                 code: exam.code.isNotEmpty ? exam.code : '',
                 room: exam.room.isNotEmpty ? exam.room : 'TBA',
                 extraInfo: 'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
-                timespan: exam.startTime + ' - ' + exam.endTime,
+                timespan: '${exam.startTime} - ${exam.endTime}',
                 periodText: '',
               ),
             const SizedBox(height: 8),

@@ -5,8 +5,6 @@ export 'functions/login_functions.dart';
 export 'functions/session_functions.dart';
 export 'functions/token_functions.dart';
 export 'functions/legacy_functions.dart';
-
-// Export the base class
 export 'auth_service_base.dart';
 
 import 'auth_service_base.dart';
@@ -27,10 +25,8 @@ class AuthService extends AuthServiceBase {
   factory AuthService() => _instance;
   
   AuthService._internal() {
-    // Set up token refresh callback for HttpService
-    httpService.setTokenRefreshCallback(() => token_funcs.refreshToken(this));
-    // Set up legacy token refresh for old CMS
-    httpService.setLegacyTokenRefreshCallback(() => legacy_funcs.ensureLegacyCookies(this));
+    // Background token refresh is now handled by TokenRefresherService
+    // No need to set up callbacks that create circular dependencies
   }
 
   /// Login with username, password and captcha verification
@@ -53,16 +49,14 @@ class AuthService extends AuthServiceBase {
       captchaData: captchaData,
     );
   }
-  
-  /// Restore session from saved cookies and validate by fetching current user
-  /// Returns true if cookies are valid and user info has been set.
-  Future<bool> restoreSessionFromCookies() async {
-    return await session_funcs.restoreSessionFromCookies(this);
+  /// Fetch current user info and merge into auth state. Returns true on success.
+  Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo() async {
+    return await session_funcs.fetchAndSetCurrentUserInfo(this);
   }
 
-  /// Fetch current user info and merge into auth state. Returns true on success.
-  Future<bool> fetchAndSetCurrentUserInfo() async {
-    return await session_funcs.fetchAndSetCurrentUserInfo(this);
+  /// Fetch current username
+  Future<String> fetchCurrentUsername() async {
+    return await session_funcs.fetchCurrentUsername(this);
   }
   
   /// Logout user and clear session
@@ -72,29 +66,29 @@ class AuthService extends AuthServiceBase {
   
   /// Refresh authentication token using the refresh endpoint
   /// Returns true if refresh was successful, false otherwise
-  Future<bool> refreshToken() async {
-    return await token_funcs.refreshToken(this);
+  Future<bool> refreshCookies() async {
+    return await token_funcs.refreshCookies(this);
   }
 
   /// Check if current session is still valid
-  bool isSessionValid() {
-    return session_funcs.isSessionValid(this);
+  Future<bool> isSessionValid() async {
+    return await session_funcs.isSessionValid(this);
   }
   
   /// Proactively refresh token if session is getting close to expiration
   /// Call this periodically or before important operations
-  Future<bool> refreshTokenIfNeeded() async {
-    return await token_funcs.refreshTokenIfNeeded(this);
+  Future<bool> refreshCookiesIfNeeded() async {
+    return await token_funcs.refreshCookiesIfNeeded(this);
   }
 
   /// Get debug information about current session
-  Map<String, dynamic> getSessionDebugInfo() {
-    return session_funcs.getSessionDebugInfo(this);
+  Future<Map<String, dynamic>> getSessionDebugInfo() async {
+    return await session_funcs.getSessionDebugInfo(this);
   }
 
   /// Acquire legacy (old CMS) cookies by exchanging a legacy token and visiting legacy site.
   /// Returns true on success, false otherwise.
-  Future<bool> ensureLegacyCookies() async {
-    return await legacy_funcs.ensureLegacyCookies(this);
+  Future<bool> refreshLegacyCookies() async {
+    return await legacy_funcs.refreshLegacyCookies(this);
   }
 }

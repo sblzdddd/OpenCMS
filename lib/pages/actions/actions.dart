@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'attendance.dart';
+import 'homework.dart';
 import 'web_cms.dart';
 import '../../data/constants/quick_actions_constants.dart';
 import '../../ui/shared/navigations/app_navigation_controller.dart';
+import 'timetable.dart';
 
 String _actionTitle(String id) {
   return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
@@ -14,6 +16,7 @@ bool handleActionNavigation(BuildContext context, Map<String, dynamic> action) {
   final String id = action['id'] as String;
   final Map<String, int> tabIndex = {
     'timetable': 1,
+    'exam': 1,
     'homeworks': 2,
     'feedback': 3,
   };
@@ -21,6 +24,10 @@ bool handleActionNavigation(BuildContext context, Map<String, dynamic> action) {
   if (index != null && AppNavigationController.isInitialized) {
     // Update the context for navigation
     AppNavigationController.updateContext(context);
+    // If navigating to exam timetable, select the inner tab 2
+    if (id == 'exam') {
+      AppNavigationController.setPendingTimetableInnerTabIndex(1);
+    }
     // Navigate to the tab
     AppNavigationController.goToTab(index);
     return true;
@@ -59,7 +66,13 @@ class CourseTimetablePage extends StatelessWidget {
 class ExamTimetablePage extends StatelessWidget {
   const ExamTimetablePage({super.key});
   @override
-  Widget build(BuildContext context) => const ActionPageScaffold('exam');
+  Widget build(BuildContext context) {
+    // Try to handle via navigation first and switch to inner tab 2
+    if (handleActionNavigation(context, {'id': 'exam'})) {
+      return const SizedBox.shrink(); // This won't be shown
+    }
+    return const ActionPageScaffold('exam');
+  }
 }
 
 class ReportsPage extends StatelessWidget {
@@ -146,10 +159,10 @@ class StudentProfilePage extends StatelessWidget {
   Widget build(BuildContext context) => const ActionPageScaffold('student_profile');
 }
 
-class CoursesDetailsPage extends StatelessWidget {
-  const CoursesDetailsPage({super.key});
+class CourseStatsPage extends StatelessWidget {
+  const CourseStatsPage({super.key});
   @override
-  Widget build(BuildContext context) => const ActionPageScaffold('courses_details');
+  Widget build(BuildContext context) => const ActionPageScaffold('course_stats');
 }
 
 class EcaPage extends StatelessWidget {
@@ -183,11 +196,11 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'webcms':
       return const WebCmsPage();
     case 'timetable':
-      return const CourseTimetablePage();
+      return const TimetablePage(initialTabIndex: 0);
     case 'exam':
-      return const ExamTimetablePage();
+      return const TimetablePage(initialTabIndex: 1);
     case 'attendance':
-      return const AttendancePage();
+      return AttendancePage(initialTabIndex: 0);
     case 'reports':
       return const ReportsPage();
     case 'assessment':
@@ -201,7 +214,7 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'events':
       return const EventsPage();
     case 'homeworks':
-      return const HomeworksPage();
+      return const HomeworkPage(initialTabIndex: 0);
     case 'documents':
       return const DocumentsPage();
     case 'available_classrooms':
@@ -212,8 +225,8 @@ Widget buildActionPage(Map<String, dynamic> action) {
       return const LeaveRequestsPage();
     case 'student_profile':
       return const StudentProfilePage();
-    case 'courses_details':
-      return const CoursesDetailsPage();
+    case 'course_stats':
+      return AttendancePage(initialTabIndex: 1);
     case 'eca':
       return const EcaPage();
     case 'settings':

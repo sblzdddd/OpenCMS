@@ -63,7 +63,7 @@ class TencentCaptchaDialog {
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(12)),
                     child: InAppWebView(
-                      webViewEnvironment: getWebViewEnvironment(),
+                      webViewEnvironment: webViewEnvironment,
                       initialData: InAppWebViewInitialData(
                         data: captchaHtmlContent,
                         baseUrl: WebUri('https://localhost/'),

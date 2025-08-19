@@ -4,7 +4,8 @@ import 'timetable/course_timetable_page.dart';
 import 'timetable/exam_timetable_page.dart';
 
 class TimetablePage extends StatefulWidget {
-  const TimetablePage({super.key});
+  final int initialTabIndex;
+  const TimetablePage({super.key, this.initialTabIndex = 0});
 
   @override
   State<TimetablePage> createState() => _TimetablePageState();
@@ -18,7 +19,11 @@ class _TimetablePageState extends State<TimetablePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
     _selectedYear =
         PeriodConstants.getAcademicYears().first; // Default to current year
   }
@@ -71,6 +76,7 @@ class _TimetablePageState extends State<TimetablePage>
           ),
         ],
 	        bottom: TabBar(
+            
 	          controller: _tabController,
 	          tabs: const [
 	            Tab(text: 'Course Timetable'),

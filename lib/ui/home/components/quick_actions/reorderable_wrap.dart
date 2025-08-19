@@ -102,7 +102,7 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
         }
         
         // Regular draggable items
-        return Draggable<int>(
+        return LongPressDraggable<int>(
           data: index,
           feedback: Material(
             elevation: 8,

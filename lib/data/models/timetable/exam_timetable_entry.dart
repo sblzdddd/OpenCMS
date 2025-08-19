@@ -1,4 +1,5 @@
 /// Data model for an exam timetable entry parsed from legacy CMS HTML
+library;
 
 class ExamTimetableEntry {
   final String date; // yyyy-mm-dd

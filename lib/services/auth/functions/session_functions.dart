@@ -1,74 +1,33 @@
 import '../../../data/constants/api_constants.dart';
+import '../../shared/storage_client.dart';
 import '../auth_service_base.dart';
-import 'legacy_functions.dart';
 
-/// Restore session from saved cookies and validate by fetching current user
-/// Returns true if cookies are valid and user info has been set.
-Future<bool> restoreSessionFromCookies(AuthServiceBase authService) async {
+/// Fetch current user info and merge into auth state. Returns true on success.
+Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo(AuthServiceBase authService) async {
   try {
-    final savedCookies = await authService.cookiesStorageService.loadCookies();
-    if (savedCookies.isEmpty) {
-      return false;
+    final response = await authService.httpService.get(ApiConstants.accountUserUrl);
+    final data = response.data ?? {};
+    if ((data['username'] ?? '').toString().isNotEmpty) {
+      authService.authState.updateUserInfo(data);
+      authService.authState.setAuthenticated(username: data['username']);
+    } else {
+      print('AuthService: Failed to fetch user info: No username found');
+      throw Exception('No username found');
     }
-    authService.httpService.setCookies(savedCookies);
-    final response = await authService.httpService.get(
-      ApiConstants.accountUserUrl,
-      headers: {
-        'referer': ApiConstants.cmsReferer,
-      },
-    );
-    if (response.statusCode == 200) {
-      final data = response.jsonBody ?? {};
-      final username = (data['username'] ?? '').toString();
-      // Update auth state and user info
-      authService.authState.setAuthenticated(
-        username: username,
-        additionalInfo: data,
-      );
-      
-      // Ensure legacy cookies are valid as well
-      try {
-        final ok = await ensureLegacyCookies(authService);
-        print('AuthService: ensureLegacyCookies after restore => $ok');
-        await authService.cookiesStorageService.saveCookies(authService.httpService.currentCookies);
-      } catch (e) {
-        print('AuthService: Failed to initialize legacy cookies after restore: $e');
-      }
-      return true;
-    }
-    // Invalidate bad cookies to force login fallback
-    authService.authState.clearAuthentication();
-    authService.httpService.clearCookies();
-    await authService.cookiesStorageService.clearCookies();
-    return false;
+    return data;
   } catch (e) {
-    // On error, clear and fallback to login
-    authService.authState.clearAuthentication();
-    authService.httpService.clearCookies();
-    await authService.cookiesStorageService.clearCookies();
-    return false;
+    print('AuthService: Failed to fetch user info: $e');
+    rethrow;
   }
 }
 
-/// Fetch current user info and merge into auth state. Returns true on success.
-Future<bool> fetchAndSetCurrentUserInfo(AuthServiceBase authService) async {
-  try {
-    final response = await authService.httpService.get(
-      ApiConstants.accountUserUrl,
-      headers: {
-        'referer': ApiConstants.cmsReferer,
-      },
-    );
-    if (response.statusCode == 200) {
-      final data = response.jsonBody ?? {};
-      if ((data['username'] ?? '').toString().isNotEmpty) {
-        authService.authState.updateUserInfo(data);
-      }
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
+Future<String> fetchCurrentUsername(AuthServiceBase authService) async {
+  final response = await authService.httpService.get(ApiConstants.accountUserUrl);
+  if (response.statusCode == 200) {
+    final data = response.data ?? {};
+    return (data['username'] ?? '').toString();
+  } else {
+    throw Exception('Failed to fetch user info: ${response.statusCode}');
   }
 }
 
@@ -77,25 +36,25 @@ Future<void> performLogout(AuthServiceBase authService) async {
   print('AuthService: Logging out user');
   
   authService.authState.clearAuthentication();
-  authService.httpService.clearCookies();
-  await authService.cookiesStorageService.clearCookies();
+  await StorageClient.clearCookies();
   
   print('AuthService: Logout completed');
 }
 
 /// Check if current session is still valid
-bool isSessionValid(AuthServiceBase authService) {
+Future<bool> isSessionValid(AuthServiceBase authService) async {
+  final currentCookies = await StorageClient.currentCookies;
   return authService.authState.isAuthenticated && 
-         authService.httpService.currentCookies.isNotEmpty &&
+         currentCookies.isNotEmpty &&
          !authService.authState.isSessionExpired();
 }
 
 /// Get debug information about current session
-Map<String, dynamic> getSessionDebugInfo(AuthServiceBase authService) {
+Future<Map<String, dynamic>> getSessionDebugInfo(AuthServiceBase authService) async {
   return {
     'authState': authService.authState.getDebugInfo(),
-    'cookies': authService.httpService.currentCookies,
-    'sessionValid': isSessionValid(authService),
+    'cookies': await StorageClient.currentCookies,
+    'sessionValid': await isSessionValid(authService),
   };
 }
 

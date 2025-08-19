@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../data/constants/period_constants.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../services/attendance/attendance_service.dart';
-import '../../../ui/shared/timetable_card.dart';
-import '../../../data/constants/attendance_constants.dart';
 import '../../../ui/shared/course_detail_dialog.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../services/attendance/course_stats_service.dart';
+import '../../../ui/attendance/views/attendance_cards_view.dart';
+import '../../../ui/attendance/views/attendance_table_view.dart';
+import '../../../ui/shared/error_placeholder.dart';
 
 class AttendancePageMain extends StatefulWidget {
-  const AttendancePageMain({
-    super.key,
-  });
+  const AttendancePageMain({super.key});
 
   @override
   State<AttendancePageMain> createState() => _AttendancePageMainState();
@@ -27,6 +25,10 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
   DateTime? _endDate;
   List<CourseStats>? _cachedCourseStats;
   final Set<int> _cachedCourseStatsYears = {};
+  bool _isTableView = false;
+  bool _showSettings = false;
+  final Set<int> _selectedCourseIds = <int>{};
+  List<RecordOfDay>? _sortedDaysCache;
 
   @override
   void initState() {
@@ -50,6 +52,9 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
       setState(() {
         _data = resp;
         _isLoading = false;
+        // Build and cache sorted days once per load
+        _sortedDaysCache = [...resp.recordOfDays]
+          ..sort((a, b) => b.date.compareTo(a.date));
       });
     } catch (e) {
       if (!mounted) return;
@@ -70,11 +75,7 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(child: _buildContent()),
-      ],
-    );
+    return Column(children: [Expanded(child: _buildContent())]);
   }
 
   Widget _buildContent() {
@@ -82,222 +83,311 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
       return const Center(child: CircularProgressIndicator());
     }
     if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 12),
-            Text('Failed to load attendance'),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage!,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _loadAttendance,
-              child: const Text('Retry'),
-            )
-          ],
-        ),
-      );
+      return ErrorPlaceholder(title: 'Failed to load attendance', errorMessage: _errorMessage!, onRetry: _loadAttendance);
     }
     final data = _data;
     if (data == null || data.recordOfDays.isEmpty) {
       return const Center(child: Text('No attendance records'));
     }
 
-    // Sort days by date descending
-    final days = [...data.recordOfDays]..sort((a, b) => b.date.compareTo(a.date));
+    // Use cached sorted days to avoid re-sorting on every rebuild
+    final List<RecordOfDay> days = _sortedDaysCache ??
+        ([...data.recordOfDays]..sort((a, b) => b.date.compareTo(a.date)));
 
-    return SingleChildScrollView(
+    // Compute filtered days depending on view mode and selected courses
+    List<RecordOfDay> filteredDays;
+    if (_selectedCourseIds.isEmpty) {
+      filteredDays = days;
+    } else if (_isTableView) {
+      // Keep only days that contain at least one absent record for selected courses
+      filteredDays = days
+          .where(
+            (day) => day.attendances.any(
+              (e) => e.kind != 0 && _selectedCourseIds.contains(e.courseId),
+            ),
+          )
+          .map((day) {
+            final mapped = day.attendances.map((e) {
+              if (e.kind == 0) {
+                return e; // keep presents
+              }
+              if (_selectedCourseIds.contains(e.courseId)) {
+                return e; // keep selected-course absences
+              }
+              // Hide other absences by rendering an empty cell
+              return AttendanceEntry(
+                courseId: 0,
+                courseName: '',
+                kind: 0,
+                reason: '',
+                grade: '',
+              );
+            }).toList();
+            return RecordOfDay(
+              date: day.date,
+              attendances: mapped,
+              absentCount: day.absentCount,
+              student: day.student,
+            );
+          })
+          .toList();
+    } else {
+      // Cards view: keep days that have selected-course absences, but zero-out other absence entries
+      filteredDays = days
+          .where(
+            (day) => day.attendances.any(
+              (e) => e.kind != 0 && _selectedCourseIds.contains(e.courseId),
+            ),
+          )
+          .map((day) {
+            final mapped = day.attendances.map((e) {
+              if (e.kind != 0 && !_selectedCourseIds.contains(e.courseId)) {
+                // Convert unmatched absence to present so it won't render as a card
+                return AttendanceEntry(
+                  courseId: e.courseId,
+                  courseName: e.courseName,
+                  kind: 0,
+                  reason: e.reason,
+                  grade: e.grade,
+                );
+              }
+              return e;
+            }).toList();
+            return RecordOfDay(
+              date: day.date,
+              attendances: mapped,
+              absentCount: day.absentCount,
+              student: day.student,
+            );
+          })
+          .toList();
+    }
+
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDatePickers(context),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '${_startDate?.year}-${_endDate?.year} Attendance',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const Spacer(),
+              if (_selectedCourseIds.isNotEmpty)
+                Text(
+                  'Filtered by ${_selectedCourseIds.length} course(s)',
+                  style: Theme.of(context).textTheme.bodySmall,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(width: 8),
+              IconButton(
+                tooltip: 'Toggle settings',
+                icon: Icon(
+                  _showSettings ? Icons.settings : Icons.settings_outlined,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _showSettings = !_showSettings;
+                  });
+                },
+              ),
+              const SizedBox(width: 8),
+            ],
+          ),
           const SizedBox(height: 12),
-          for (final day in days) ...[
-            _buildDaySection(day),
-            const SizedBox(height: 16),
-            const Divider(height: 32),
-            const SizedBox(height: 8),
-          ]
+          if (_showSettings) ...[
+            _buildDatePickers(context),
+            const SizedBox(height: 12),
+            _buildViewToggle(),
+            const SizedBox(height: 12),
+            _buildCourseFilter(days),
+            const SizedBox(height: 12),
+          ],
+          Expanded(
+            child: _isTableView
+                ? AttendanceTableView(
+                    days: filteredDays,
+                    onEventTap: _onEventTap,
+                  )
+                : AttendanceCardsView(
+                    days: days,
+                    onEventTap: _onEventTap,
+                    selectedCourseIds: _selectedCourseIds,
+                  ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildDatePickers(BuildContext context) {
-    final String startLabel = _startDate != null ? _formatDate(_startDate!) : 'Start Date';
-    final String endLabel = _endDate != null ? _formatDate(_endDate!) : 'End Date';
+    final String startLabel = _startDate != null
+        ? _formatDate(_startDate!)
+        : 'Start Date';
+    final String endLabel = _endDate != null
+        ? _formatDate(_endDate!)
+        : 'End Date';
     return Row(
       children: [
-        Expanded(
-          child: OutlinedButton(
-            onPressed: () async {
-              final DateTime today = DateTime.now();
-              final firstDate = DateTime(today.year - 5, 1, 1);
-              final lastDate = DateTime(today.year + 1, 12, 31);
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _startDate ?? today,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                helpText: 'Select start date',
-              );
-              if (picked != null && mounted) {
-                setState(() {
-                  _startDate = picked;
-                });
-                await _loadAttendance();
-              }
-            },
-            child: Text(startLabel),
-          ),
+        Text('Date Range:', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(width: 8),
+        OutlinedButton(
+          onPressed: () async {
+            final DateTime today = DateTime.now();
+            final firstDate = DateTime(today.year - 5, 1, 1);
+            final lastDate = DateTime(today.year + 1, 12, 31);
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _startDate ?? today,
+              firstDate: firstDate,
+              lastDate: lastDate,
+              helpText: 'Select start date',
+            );
+            if (picked != null && mounted) {
+              setState(() {
+                _startDate = picked;
+              });
+              await _loadAttendance();
+            }
+          },
+          child: Text(startLabel),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: OutlinedButton(
-            onPressed: () async {
-              final DateTime today = DateTime.now();
-              final firstDate = DateTime(today.year - 5, 1, 1);
-              final lastDate = DateTime(today.year + 1, 12, 31);
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: _endDate ?? today,
-                firstDate: firstDate,
-                lastDate: lastDate,
-                helpText: 'Select end date',
-              );
-              if (picked != null && mounted) {
-                setState(() {
-                  _endDate = picked;
-                });
-                await _loadAttendance();
-              }
-            },
-            child: Text(endLabel),
-          ),
+        OutlinedButton(
+          onPressed: () async {
+            final DateTime today = DateTime.now();
+            final firstDate = DateTime(today.year - 5, 1, 1);
+            final lastDate = DateTime(today.year + 1, 12, 31);
+            final picked = await showDatePicker(
+              context: context,
+              initialDate: _endDate ?? today,
+              firstDate: firstDate,
+              lastDate: lastDate,
+              helpText: 'Select end date',
+            );
+            if (picked != null && mounted) {
+              setState(() {
+                _endDate = picked;
+              });
+              await _loadAttendance();
+            }
+          },
+          child: Text(endLabel),
         ),
       ],
     );
   }
 
-  Widget _buildDaySection(RecordOfDay day) {
-    final periods = PeriodConstants.attendancePeriods;
-    final atts = day.attendances;
-    final int count = atts.length < periods.length ? atts.length : periods.length;
-
-    final List<Widget> cards = [];
-    int i = 0;
-    while (i < count) {
-      final startEntry = atts[i];
-      if (startEntry.kind == 0) {
-        i++;
-        continue;
-      }
-
-      int endIndex = i;
-      while (endIndex + 1 < count) {
-        final nextEntry = atts[endIndex + 1];
-        if (nextEntry.kind != 0 &&
-            nextEntry.courseId == startEntry.courseId &&
-            nextEntry.kind == startEntry.kind &&
-            nextEntry.reason == startEntry.reason &&
-            nextEntry.grade == startEntry.grade) {
-          endIndex++;
-          continue;
+  Widget _buildCourseFilter(List<RecordOfDay> days) {
+    // Collect unique absent courses from provided days
+    final Map<int, String> courseNames = {};
+    for (final day in days) {
+      for (final e in day.attendances) {
+        if (e.kind != 0 && e.courseId != 0 && e.courseName.isNotEmpty) {
+          courseNames[e.courseId] = e.subjectName;
         }
-        break;
       }
-
-      final startP = periods[i];
-      final endP = periods[endIndex];
-      final String timespan = '${startP.startTime} - ${endP.endTime}';
-      final String periodText = startP.name == endP.name ? startP.name : '${startP.name} - ${endP.name}';
-      final String subject = startEntry.subjectName;
-      final String code = startEntry.reason;
-      final String room = AttendanceConstants.kindText[startEntry.kind] ?? 'Unknown';
-      final String extra = startEntry.grade;
-
-      cards.add(TimetableCard(
-        subject: subject,
-        code: code,
-        room: room,
-        extraInfo: extra,
-        timespan: timespan,
-        periodText: periodText,
-        backgroundColor: AttendanceConstants.kindBackgroundColor[startEntry.kind],
-        textColor: AttendanceConstants.kindTextColor[startEntry.kind],
-        onTap: () {
-          _onEventTap(startEntry, day.date);
-        },
-      ));
-      cards.add(const SizedBox(height: 12));
-
-      i = endIndex + 1;
     }
-
-    if (cards.isEmpty) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.calendar_today,
-                size: 18,
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-              ),
-              const SizedBox(width: 8),
-              Text(_formatDate(day.date), style: Theme.of(context).textTheme.titleMedium),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text('No attendance issues'),
-        ],
-      );
-    }
+    courseNames[0] = "Others";
+    final List<MapEntry<int, String>> courses = courseNames.entries.toList()
+      ..sort((a, b) => a.value.toLowerCase().compareTo(b.value.toLowerCase()));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(
-              Icons.calendar_today,
-              size: 18,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
             Text(
-              _formatDate(day.date),
-              style: Theme.of(context).textTheme.titleMedium,
+              'Course Filter:',
+              style: Theme.of(context).textTheme.titleSmall,
             ),
             const Spacer(),
-            Text('${day.absentCount.toStringAsFixed(1)} day'),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _selectedCourseIds.clear();
+                });
+              },
+              child: const Text('Clear'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _selectedCourseIds
+                    ..clear()
+                    ..addAll(courses.map((e) => e.key));
+                });
+              },
+              child: const Text('Select all'),
+            ),
           ],
         ),
         const SizedBox(height: 8),
-        ...cards,
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final entry in courses)
+              FilterChip(
+                label: Text(entry.value),
+                selected: _selectedCourseIds.contains(entry.key),
+                onSelected: (bool selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedCourseIds.add(entry.key);
+                    } else {
+                      _selectedCourseIds.remove(entry.key);
+                    }
+                  });
+                },
+              ),
+            if (courses.isEmpty) const Text('No absent courses in range'),
+          ],
+        ),
       ],
     );
   }
 
-  
+  Widget _buildViewToggle() {
+    return Row(
+      children: [
+        Text('View Mode:', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(width: 8),
+        SegmentedButton<bool>(
+          segments: const [
+            ButtonSegment<bool>(
+              value: false,
+              label: Text('Cards'),
+              icon: Icon(Icons.view_agenda),
+            ),
+            ButtonSegment<bool>(
+              value: true,
+              label: Text('Table'),
+              icon: Icon(Icons.table_chart),
+            ),
+          ],
+          selected: {_isTableView},
+          onSelectionChanged: (Set<bool> newSelection) {
+            setState(() {
+              _isTableView = newSelection.first;
+            });
+          },
+        ),
+      ],
+    );
+  }
+
   Future<void> _onEventTap(AttendanceEntry entry, DateTime date) async {
     print('onEventTap: $entry, ${date.year}');
     if (entry.courseId == 0 || entry.courseName == '') {
       return;
     }
     final title = entry.courseName;
-    final subtitle = entry.reason;
+    final subtitle = entry.kindText;
 
     await CourseDetailDialog.show(
       context: context,
@@ -312,12 +402,16 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
         _cachedCourseStats ??= <CourseStats>[];
 
         // Determine which years are missing from cache
-        final Set<int> missingYears = neededYears.difference(_cachedCourseStatsYears);
+        final Set<int> missingYears = neededYears.difference(
+          _cachedCourseStatsYears,
+        );
 
         if (missingYears.isNotEmpty) {
           // Fetch all missing years concurrently and merge into cache
           final results = await Future.wait(
-            missingYears.map((y) => _courseStatsService.fetchCourseStats(year: y)),
+            missingYears.map(
+              (y) => _courseStatsService.fetchCourseStats(year: y),
+            ),
           );
           _cachedCourseStats!.addAll(results.expand((e) => e));
           _cachedCourseStatsYears.addAll(missingYears);
@@ -325,11 +419,12 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
 
         final statsForCourse = _cachedCourseStats!.firstWhere(
           (s) => s.id == entry.courseId,
-          orElse: () => throw Exception('Course stats not found for course id ${entry.courseId}.'),
+          orElse: () => throw Exception(
+            'Course stats not found for course id ${entry.courseId}.',
+          ),
         );
         return statsForCourse;
       },
     );
   }
 }
-

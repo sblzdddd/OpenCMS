@@ -14,7 +14,7 @@ class AttendanceConstants {
 
   // Background colors per kind (see design notes)
   static const Map<int, Color> kindBackgroundColor = {
-    // 0: present (ignored typically)
+    0: Color(0xFF4CAF50), // green for present
     1: Colors.black, // late
     2: Color(0xFF795548), // brown
     3: Colors.white, // unknown reason
@@ -26,6 +26,7 @@ class AttendanceConstants {
 
   // Text colors per kind (contrast with backgrounds)
   static const Map<int, Color> kindTextColor = {
+    0: Colors.white, // on green
     1: Colors.white, // on black
     2: Colors.white, // on brown
     3: Colors.black, // on white

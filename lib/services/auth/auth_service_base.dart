@@ -1,5 +1,4 @@
 import '../shared/http_service.dart';
-import 'cookies_storage_service.dart';
 import '../../data/models/auth/auth_state.dart';
 
 /// Base class for AuthService that provides access to internal services
@@ -7,12 +6,10 @@ import '../../data/models/auth/auth_state.dart';
 class AuthServiceBase {
   final HttpService _httpService = HttpService();
   final AuthState _authState = AuthState();
-  final CookiesStorageService _cookiesStorageService = CookiesStorageService();
   
   // Getters to provide controlled access to internal services
   HttpService get httpService => _httpService;
   AuthState get authState => _authState;
-  CookiesStorageService get cookiesStorageService => _cookiesStorageService;
   
   /// Check if user is currently authenticated
   bool get isAuthenticated => _authState.isAuthenticated;

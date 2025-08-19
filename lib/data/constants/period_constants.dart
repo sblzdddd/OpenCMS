@@ -1,4 +1,5 @@
 /// Constants for timetable periods and their time spans
+library;
 
 class PeriodConstants {
   static const List<PeriodInfo> periods = [
@@ -22,7 +23,7 @@ class PeriodConstants {
   ];
 
   static const List<PeriodInfo> attendancePeriods = [
-    PeriodInfo(name: 'Form Time', startTime: '07:50', endTime: '08:00'),
+    PeriodInfo(name: 'MR', startTime: '07:50', endTime: '08:00'),
     PeriodInfo(name: 'Period 1',  startTime: '08:10', endTime: '08:50'),
     PeriodInfo(name: 'Period 2',  startTime: '08:50', endTime: '09:30'),
     PeriodInfo(name: 'Period 3',  startTime: '09:40', endTime: '10:20'),
@@ -34,10 +35,7 @@ class PeriodConstants {
     PeriodInfo(name: 'Period 8',  startTime: '14:20', endTime: '15:00'),
     PeriodInfo(name: 'Period 9',  startTime: '15:10', endTime: '15:50'),
     PeriodInfo(name: 'Period 10', startTime: '15:50', endTime: '16:30'),
-    PeriodInfo(name: 'Period 11', startTime: '16:30', endTime: '17:30'),
-    PeriodInfo(name: 'Period 12', startTime: '17:30', endTime: '18:30'),
-    PeriodInfo(name: 'Period 13', startTime: '19:00', endTime: '20:00'),
-    PeriodInfo(name: 'Period 14', startTime: '20:00', endTime: '21:00'),
+    PeriodInfo(name: 'ES', startTime: '16:30', endTime: '17:30'),
   ];
 
   static const List<String> monthNames = [
@@ -61,6 +59,8 @@ class PeriodConstants {
     'Wednesday',
     'Thursday',
     'Friday',
+    'Saturday',
+    'Sunday',
   ];
 
   static const List<String> weekdayShortNames = [
@@ -69,7 +69,15 @@ class PeriodConstants {
     'Wed',
     'Thu',
     'Fri',
+    'Sat',
+    'Sun',
   ];
+
+  static String formatDate(DateTime date) {
+    final weekday = weekdayNames[date.weekday - 1];
+    final month = monthNames[date.month - 1];
+    return '$weekday, $month ${date.day}, ${date.year}';
+  }
 
   /// Get period info by index
   static PeriodInfo? getPeriodInfo(int index) {

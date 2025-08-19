@@ -29,7 +29,7 @@ class DayTabs extends StatelessWidget {
                 labels[i],
                 style: TextStyle(
                   color: i == todayIndex ? colorScheme.primary : null,
-                  fontWeight: i == todayIndex ? FontWeight.w600 : FontWeight.w500,
+                  fontWeight: i == todayIndex ? FontWeight.w600 : FontWeight.w400,
                 ),
               ),
             ),

@@ -35,21 +35,21 @@ class _MoreActionsDialogState extends BaseActionDialogState<MoreActionsDialog> {
   @override
   void onActionTap(Map<String, dynamic> action) {
     widget.onActionChosen(action);
-    if (mounted) {
-      Navigator.of(context).pop();
-      
-      // Try to handle via navigation first (for timetable, homework, assessment)
-      if (handleActionNavigation(context, action)) {
-        return; // Navigation handled, no need to push new page
-      }
-      
-      // Otherwise, push the action page
+    if (!mounted) return;
+
+    // First try to handle via global tab navigation. If handled, the controller
+    // will pop the dialog and switch tabs safely.
+    if (handleActionNavigation(context, action)) {
+      return;
+    }
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => buildActionPage(action),
         ),
       );
-    }
+    });
   }
 }
 

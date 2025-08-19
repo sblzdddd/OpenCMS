@@ -1,4 +1,3 @@
-import 'dart:convert';
 import '../../data/constants/api_constants.dart';
 import '../../data/models/attendance/attendance_response.dart';
 import '../shared/http_service.dart';
@@ -27,16 +26,13 @@ class AttendanceService {
 
     final response = await _httpService.get(
       url,
-      headers: {
-        'referer': ApiConstants.timetableReferer,
-      },
     );
 
-    if (!response.isSuccess) {
+    if (response.statusCode != 200) {
       throw Exception('Failed to fetch attendance: ${response.statusCode}');
     }
 
-    final Map<String, dynamic> jsonData = jsonDecode(response.body) as Map<String, dynamic>;
+    final Map<String, dynamic> jsonData = response.data as Map<String, dynamic>;
     return AttendanceResponse.fromJson(jsonData);
   }
 

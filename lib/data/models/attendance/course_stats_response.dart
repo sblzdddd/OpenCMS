@@ -1,4 +1,5 @@
 /// Data model for course statistics API response
+library;
 
 class CourseStats {
   final int id;

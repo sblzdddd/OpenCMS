@@ -3,21 +3,18 @@ import 'package:flutter/rendering.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../services/timetable/course_timetable_service.dart';
-import '../../../ui/shared/timetable_card.dart';
-import '../../../data/models/timetable/course_merged_event.dart';
-import 'widgets/day_tabs.dart';
-import 'widgets/day_header.dart';
+import '../../../ui/timetable/components/day_tabs.dart';
+// import '../../../ui/timetable/components/timetable_table_view.dart';
+import '../../../ui/timetable/components/timetable_mobile_view.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../ui/shared/course_detail_dialog.dart';
+import '../../../ui/shared/error_placeholder.dart';
 
 class CourseTimetablePage extends StatefulWidget {
   final AcademicYear selectedYear;
 
-  const CourseTimetablePage({
-    super.key,
-    required this.selectedYear,
-  });
+  const CourseTimetablePage({super.key, required this.selectedYear});
 
   @override
   State<CourseTimetablePage> createState() => _CourseTimetablePageState();
@@ -31,7 +28,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
   late final ScrollController _scrollController;
   final List<GlobalKey> _dayKeys = List.generate(5, (_) => GlobalKey());
   bool _isAnimatingToTab = false;
-  
+
   TimetableResponse? _timetableData;
   bool _isLoading = true;
   String? _errorMessage;
@@ -111,8 +108,13 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     final ctx = _dayKeys[index].currentContext;
     if (ctx == null) return null;
     final RenderObject renderObject = ctx.findRenderObject()!;
-    final RenderAbstractViewport viewport = RenderAbstractViewport.of(renderObject);
-    final RevealedOffset revealed = viewport.getOffsetToReveal(renderObject, 0.0);
+    final RenderAbstractViewport viewport = RenderAbstractViewport.of(
+      renderObject,
+    );
+    final RevealedOffset revealed = viewport.getOffsetToReveal(
+      renderObject,
+      0.0,
+    );
     return revealed.offset;
   }
 
@@ -159,7 +161,8 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     try {
       // Use today's date for the API call
       final today = DateTime.now();
-      final dateString = '${today.year.toString().padLeft(4, '0')}-'
+      final dateString =
+          '${today.year.toString().padLeft(4, '0')}-'
           '${today.month.toString().padLeft(2, '0')}-'
           '${today.day.toString().padLeft(2, '0')}';
 
@@ -204,7 +207,10 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     if (data == null) return;
     final monday = _parseMondayDate(data.monday);
     if (monday == null) return;
-    _dayDates = List.generate(5, (i) => DateTime(monday.year, monday.month, monday.day + i));
+    _dayDates = List.generate(
+      5,
+      (i) => DateTime(monday.year, monday.month, monday.day + i),
+    );
     final today = DateTime.now();
     final todayDateOnly = DateTime(today.year, today.month, today.day);
     for (int i = 0; i < _dayDates.length; i++) {
@@ -217,175 +223,57 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     }
   }
 
-  String _formatYmd(DateTime date) {
-    final y = date.year.toString();
-    final m = date.month.toString();
-    final d = date.day.toString();
-    return '$y-$m-$d';
-  }
-
-  List<CourseMergedEvent> _getCourseMergedEventsForDay(int dayIndex) {
-    if (_timetableData == null || 
-        dayIndex >= _timetableData!.weekdays.length) {
-      return [];
-    }
-
-    final weekday = _timetableData!.weekdays[dayIndex];
-    final List<CourseMergedEvent> mergedEvents = [];
-    
-    int i = 0;
-    while (i < weekday.periods.length) {
-      final period = weekday.periods[i];
-      
-      if (period.events.isEmpty) {
-        i++;
-        continue;
-      }
-
-      final event = period.events.first;
-      int endPeriod = i;
-      
-      // Find consecutive periods with the same event
-      while (endPeriod + 1 < weekday.periods.length) {
-        final nextPeriod = weekday.periods[endPeriod + 1];
-        if (nextPeriod.events.isEmpty || 
-            nextPeriod.events.first != event) {
-          break;
-        }
-        endPeriod++;
-      }
-
-      mergedEvents.add(CourseMergedEvent(
-        event: event,
-        startPeriod: i,
-        endPeriod: endPeriod,
-      ));
-
-      i = endPeriod + 1;
-    }
-
-    return mergedEvents;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DayTabs(
-          controller: _dayTabController,
-          onTap: _onTabTapped,
-          labels: PeriodConstants.weekdayShortNames,
-          todayIndex: _todayIndex,
-        ),
-        Expanded(
-          child: _buildContent(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildContent() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Failed to load timetable',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage!,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadTimetable,
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
+      return ErrorPlaceholder(
+        title: 'Failed to load timetable',
+        errorMessage: _errorMessage!,
+        onRetry: _loadTimetable,
       );
     }
 
-    return SingleChildScrollView(
-      controller: _scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          for (int dayIndex = 0; dayIndex < 5; dayIndex++) ...[
-            DayHeader(
-              key: _dayKeys[dayIndex],
-              title: PeriodConstants.weekdayNames[dayIndex],
-              dateText: (_dayDates.isNotEmpty && dayIndex < _dayDates.length)
-                  ? _formatYmd(_dayDates[dayIndex])
-                  : '',
-              isActive: dayIndex == _selectedDayIndex,
-              isToday: _todayIndex == dayIndex,
-            ),
-            const SizedBox(height: 8),
-            ..._buildDayEvents(dayIndex),
-            const SizedBox(height: 16),
-            if (dayIndex != 4) const Divider(height: 32),
-            if (dayIndex != 4) const SizedBox(height: 8),
-          ],
-          const SizedBox(height: 400),
-        ],
-      ),
-    );
-  }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // const double widescreenBreakpoint = 1200;
+        // final bool isWidescreen = constraints.maxWidth >= widescreenBreakpoint;
 
-  List<Widget> _buildDayEvents(int dayIndex) {
-    final mergedEvents = _getCourseMergedEventsForDay(dayIndex);
-    if (mergedEvents.isEmpty) {
-      return [
-        Row(
+        // if (isWidescreen) {
+        //   return TimetableTableView(
+        //     timetableData: _timetableData,
+        //     dayDates: _dayDates,
+        //     todayIndex: _todayIndex,
+        //     onEventTap: _onEventTap,
+        //   );
+        // } else {
+        return Column(
           children: [
-            Icon(
-              Icons.calendar_today,
-              size: 18,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+            DayTabs(
+              controller: _dayTabController,
+              onTap: _onTabTapped,
+              labels: PeriodConstants.weekdayShortNames.sublist(0, 5),
+              todayIndex: _todayIndex,
             ),
-            const SizedBox(width: 8),
-            Text(
-              'No classes scheduled',
-              style: Theme.of(context).textTheme.bodyMedium,
+            Expanded(
+              child: TimetableMobileView(
+                scrollController: _scrollController,
+                dayDates: _dayDates,
+                todayIndex: _todayIndex,
+                selectedDayIndex: _selectedDayIndex,
+                dayKeys: _dayKeys,
+                timetableData: _timetableData,
+                onEventTap: _onEventTap,
+              ),
             ),
           ],
-        )
-      ];
-    }
-    return [
-      for (final mergedEvent in mergedEvents) ...[
-        TimetableCard(
-          subject: mergedEvent.event.subject,
-          code: mergedEvent.event.code,
-          room: mergedEvent.event.room.isNotEmpty ? mergedEvent.event.room : 'TBA',
-          extraInfo: mergedEvent.event.teacher.isNotEmpty ? mergedEvent.event.teacher : '',
-          timespan: mergedEvent.timeSpan,
-          periodText: mergedEvent.periodText,
-          onTap: () {
-            _onEventTap(mergedEvent.event);
-          },
-        ),
-        const SizedBox(height: 12),
-      ]
-    ];
+        );
+        // }
+      },
+    );
   }
 
   Future<void> _onEventTap(TimetableEvent event) async {
@@ -402,10 +290,14 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
       title: title,
       subtitle: subtitle,
       loader: () async {
-        _cachedCourseStats ??= await _courseStatsService.fetchCourseStats(year: widget.selectedYear.year);
+        _cachedCourseStats ??= await _courseStatsService.fetchCourseStats(
+          year: widget.selectedYear.year,
+        );
         final statsForCourse = _cachedCourseStats!.firstWhere(
           (s) => s.id == event.id,
-          orElse: () => throw Exception('Course stats not found for course id ${event.id}.'),
+          orElse: () => throw Exception(
+            'Course stats not found for course id ${event.id}.',
+          ),
         );
         return statsForCourse;
       },

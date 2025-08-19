@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 import '../../data/constants/api_constants.dart';
 import '../../data/models/attendance/course_stats_response.dart';
 import '../shared/http_service.dart';
@@ -23,14 +23,11 @@ class CourseStatsService {
       
       final response = await _httpService.get(
         url,
-        headers: {
-          'referer': ApiConstants.timetableReferer,
-        },
       );
 
-      if (response.isSuccess) {
+      if (response.statusCode == 200) {
         try {
-          final jsonData = jsonDecode(response.body);
+          final jsonData = response.data;
           if (jsonData is List) {
             final List<CourseStats> stats = [];
             for (final item in jsonData) {
