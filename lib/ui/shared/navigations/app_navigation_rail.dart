@@ -34,7 +34,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
           onDestinationSelected: widget.onTapCallback,
           extended: false,
           labelType: NavigationRailLabelType.selected,
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           destinations: appNavItems
               .map(
                 (item) => NavigationRailDestination(

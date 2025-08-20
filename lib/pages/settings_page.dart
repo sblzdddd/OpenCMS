@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/shared/storage_client.dart';
 import '../ui/shared/logout_dialog.dart';
+import '../ui/shared/clear_data_dialog.dart';
 import '../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +13,7 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   void _clearUserData() {
-    StorageClient.instance.deleteAll();
+    showClearDataDialog(context);
   }
 
   @override
@@ -21,7 +21,6 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -30,6 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             // Theme Toggle Section
             Card(
+              elevation: 0,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -79,6 +79,7 @@ class _SettingsPageState extends State<SettingsPage> {
             
             // Account Section
             Card(
+              elevation: 0,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(

@@ -151,9 +151,9 @@ class _QuickActionsState extends State<QuickActions> {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(left: 18, right: 18, bottom: 18, top: 12),
+          padding: const EdgeInsets.only(left: 14, right: 14, bottom: 14, top: 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
@@ -232,7 +232,7 @@ class _QuickActionsState extends State<QuickActions> {
                     )
                   : LayoutBuilder(
                     builder: (context, constraints) {
-                      const double spacing = 16.0;
+                      const double spacing = 12.0;
                       const double minTileWidth = 110.0;
                       // Item height is determined by each tile
 

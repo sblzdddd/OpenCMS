@@ -112,7 +112,7 @@ class _DashboardGridState extends State<DashboardGrid> {
         child = Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(id),

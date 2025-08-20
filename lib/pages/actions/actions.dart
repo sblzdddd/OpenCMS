@@ -5,6 +5,7 @@ import 'web_cms.dart';
 import '../../data/constants/quick_actions_constants.dart';
 import '../../ui/shared/navigations/app_navigation_controller.dart';
 import 'timetable.dart';
+import '../../pages/settings_page.dart';
 
 String _actionTitle(String id) {
   return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
@@ -169,12 +170,6 @@ class EcaPage extends StatelessWidget {
   const EcaPage({super.key});
   @override
   Widget build(BuildContext context) => const ActionPageScaffold('eca');
-}
-
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('settings');
 }
 
 class UnknownActionPage extends StatelessWidget {

@@ -28,10 +28,6 @@ const List<AppNavItem> appNavItems = [
     label: 'Assessments',
     icon: Symbols.assignment_rounded,
   ),
-  AppNavItem(
-    label: 'Settings',
-    icon: Symbols.settings_rounded,
-  ),
 ];
 
 

@@ -57,14 +57,18 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
         page: _currentPage,
       );
 
+      if (mounted) {
       setState(() {
-        _homeworkResponse = response;
-        _isLoading = false;
-      });
+          _homeworkResponse = response;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
 
       if (mounted) {
         SnackbarUtils.showError(

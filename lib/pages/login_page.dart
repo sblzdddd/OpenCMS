@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Card(
                   margin: const EdgeInsets.all(24),
                   elevation: 20,
-                  color: Colors.white.withAlpha(236),
+                  color: Theme.of(context).colorScheme.surface,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(22),
                   ),

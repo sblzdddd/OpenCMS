@@ -1,5 +1,4 @@
 import '../../../data/constants/api_constants.dart';
-import '../../../data/models/auth/auth_state.dart';
 import '../../../data/models/auth/login_result.dart';
 import '../auth_service_base.dart';
 import 'legacy_functions.dart';

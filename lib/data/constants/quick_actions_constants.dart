@@ -44,10 +44,10 @@ class QuickActionsConstants {
     'reports',
     'homeworks',
     'attendance',
-    'comments',
     'calendar',
     'notice',
     'events',
+    'settings',
   ];
 
   /// Get action by ID

@@ -11,6 +11,8 @@ import 'dart:io';
 import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
+import 'theme.dart';
+import 'util.dart';
 // import 'services/background/background_task_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
@@ -130,14 +132,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    TextTheme textTheme = createTextTheme(context, "Roboto", "EB Garamond");
+    MaterialTheme theme = MaterialTheme(textTheme);
     return ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           return MaterialApp(
             title: 'OpenCMS',
-            theme: _buildLightTheme(),
-            darkTheme: _buildDarkTheme(),
+            theme: theme.light(),
+            darkTheme: theme.dark(),
             themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const AuthWrapper(),
             routes: {
@@ -147,30 +151,6 @@ class MyApp extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-
-  ThemeData _buildLightTheme() {
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color.fromARGB(255, 99, 0, 0),
-        primary: const Color.fromARGB(255, 99, 0, 0),
-        secondary: const Color.fromARGB(255, 51, 153, 153),
-        brightness: Brightness.light,
-      ),
-      useMaterial3: true,
-    );
-  }
-
-  ThemeData _buildDarkTheme() {
-    return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color.fromARGB(255, 99, 0, 0),
-        primary: const Color.fromARGB(255, 99, 0, 0),
-        secondary: const Color.fromARGB(255, 51, 153, 153),
-        brightness: Brightness.dark,
-      ),
-      useMaterial3: true,
     );
   }
 }
@@ -241,7 +221,7 @@ class _AuthWrapperState extends State<AuthWrapper> with WindowListener {
   Widget build(BuildContext context) {
     if (_isCheckingAuth) {
       return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

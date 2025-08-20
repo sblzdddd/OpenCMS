@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/models/attendance/course_stats_response.dart';
 import 'error_placeholder.dart';
 
@@ -45,12 +46,15 @@ class CourseDetailDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(title),
-          const SizedBox(height: 4),
           Text(
-            subtitle,
-            style: textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            title,
+            style: textTheme.titleLarge?.copyWith(
+              fontSize: 24,
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
+          const SizedBox(height: 4),
+          Text(subtitle, style: textTheme.bodySmall),
         ],
       ),
       content: FutureBuilder<CourseStats>(
@@ -76,7 +80,11 @@ class CourseDetailDialog extends StatelessWidget {
           if (snapshot.hasError) {
             return SizedBox(
               width: 300,
-              child: ErrorPlaceholder(title: 'Failed to load course details', errorMessage: snapshot.error.toString(), onRetry: () => future),
+              child: ErrorPlaceholder(
+                title: 'Failed to load course details',
+                errorMessage: snapshot.error.toString(),
+                onRetry: () => future,
+              ),
             );
           }
           final stats = snapshot.data!;
@@ -85,25 +93,66 @@ class CourseDetailDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildRow('Teachers', stats.teachers.isEmpty ? '—' : stats.teachers, textTheme),
-              _buildRow('Students', stats.studentCount.toString(), textTheme),
+              _buildRow(
+                'Teacher',
+                stats.teachers.isEmpty ? '—' : stats.teachers,
+                textTheme,
+                context,
+                icon: Symbols.person_book_rounded,
+              ),
+              _buildRow(
+                'Students',
+                stats.studentCount.toString(),
+                textTheme,
+                context,
+                icon: Symbols.people_rounded,
+              ),
               const SizedBox(height: 8),
-              _buildRow('Lessons', stats.lessons.toString(), textTheme),
-              _buildRow('Absent', stats.absent.toString(), textTheme),
-              _buildRow('Unapproved', stats.unapproved.toString(), textTheme),
-              _buildRow('Late', stats.late.toString(), textTheme),
-              _buildRow('Approved', stats.approved.toString(), textTheme),
-              _buildRow('Sick', stats.sick.toString(), textTheme),
-              _buildRow('School', stats.school.toString(), textTheme),
+              _buildRow(
+                'Lessons',
+                stats.lessons.toString(),
+                textTheme,
+                context,
+                icon: Symbols.school_rounded,
+              ),
+              _buildRow('Absent', stats.absent.toString(), textTheme, context,
+                icon: Symbols.person_remove,
+              ),
+              _buildRow(
+                'Unapproved',
+                stats.unapproved.toString(),
+                textTheme,
+                context,
+                icon: Symbols.cancel_rounded,
+              ),
+              _buildRow('Late', stats.late.toString(), textTheme, context,
+                icon: Symbols.schedule_rounded,
+              ),
+              _buildRow(
+                'Approved',
+                stats.approved.toString(),
+                textTheme,
+                context,
+                icon: Symbols.person_add,
+              ),
+              _buildRow('Sick', stats.sick.toString(), textTheme, context,
+                icon: Symbols.sick_rounded,
+              ),
+              _buildRow('School', stats.school.toString(), textTheme, context,
+                icon: Symbols.school_rounded,
+              ),
               const Divider(height: 16),
               _buildRow(
                 'Absent rate',
                 '${absentRate.toStringAsFixed(1)}%',
                 textTheme,
+                context,
                 valueStyle: textTheme.bodyMedium?.copyWith(
-                  color: absentRate >= 10 ? Colors.red : Colors.green,
+                  color: absentRate >= 10 ? Theme.of(context).colorScheme.onErrorContainer : 
+                  Theme.of(context).colorScheme.primaryContainer,
                   fontWeight: FontWeight.w600,
                 ),
+                icon: Symbols.percent_rounded,
               ),
             ],
           );
@@ -118,14 +167,33 @@ class CourseDetailDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String label, String value, TextTheme textTheme, {TextStyle? valueStyle}) {
+  Widget _buildRow(
+    String label,
+    String value,
+    TextTheme textTheme,
+    BuildContext context, {
+    TextStyle? valueStyle,
+    IconData? icon,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(label, style: textTheme.bodySmall?.copyWith(color: Colors.grey[600])),
+            child: Row(
+              children: [
+                Icon(icon, size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                const SizedBox(width: 4),
+                Text(
+                  label,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(width: 12),
           Text(value, style: valueStyle ?? textTheme.bodyMedium),
@@ -134,5 +202,3 @@ class CourseDetailDialog extends StatelessWidget {
     );
   }
 }
-
-

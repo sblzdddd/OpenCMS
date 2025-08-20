@@ -15,7 +15,7 @@ class BottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -27,7 +27,7 @@ class BottomNavigation extends StatelessWidget {
       child: NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: onTapCallback,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         // indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: appNavItems

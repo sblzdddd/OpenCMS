@@ -54,7 +54,6 @@ class DayHeader extends StatelessWidget {
               title,
               style: textStyle?.copyWith(
                 color: titleColor,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
           ),

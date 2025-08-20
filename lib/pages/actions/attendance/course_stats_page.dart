@@ -125,6 +125,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
               Text(
                 stats.name,
                 style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -133,7 +134,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                 Text(
                   stats.teachers,
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -189,12 +190,12 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: absentRate >= 10 ? Colors.red[50] : Colors.green[50],
+                    color: absentRate >= 10 ? Theme.of(context).colorScheme.errorContainer : Theme.of(context).colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: absentRate >= 10
-                          ? Colors.red[200]!
-                          : Colors.green[200]!,
+                          ? Theme.of(context).colorScheme.errorContainer
+                          : Theme.of(context).colorScheme.tertiaryContainer,
                     ),
                   ),
                   child: Row(
@@ -203,15 +204,15 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
                       Icon(
                         absentRate >= 10 ? Symbols.warning_rounded : Symbols.check_circle_rounded,
                         size: 16,
-                        color: absentRate >= 10 ? Colors.red : Colors.green,
+                        color: absentRate >= 10 ? Theme.of(context).colorScheme.onErrorContainer : Theme.of(context).colorScheme.onTertiaryContainer,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         'Absent rate: ${absentRate.toStringAsFixed(1)}%',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: absentRate >= 10
-                              ? Colors.red[700]
-                              : Colors.green[700],
+                              ? Theme.of(context).colorScheme.onErrorContainer
+                              : Theme.of(context).colorScheme.onTertiaryContainer,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -235,11 +236,11 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
     final theme = Theme.of(context);
     return Row(
       children: [
-        Icon(icon, size: 16, color: color ?? Colors.grey[600]),
+        Icon(icon, size: 16, color: color ?? Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7)),
         const SizedBox(width: 4),
         Text(
           '$label: ',
-          style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+          style: theme.textTheme.bodySmall?.copyWith(color: color ?? Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7)),
         ),
         Text(
           value,

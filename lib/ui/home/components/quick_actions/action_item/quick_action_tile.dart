@@ -40,7 +40,7 @@ class QuickActionTile extends StatelessWidget {
       width: width,
       height: height,
       child: Material(
-        color: Colors.transparent,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: onTap,

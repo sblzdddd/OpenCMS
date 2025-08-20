@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../services/timetable/course_timetable_service.dart';
@@ -161,10 +162,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     try {
       // Use today's date for the API call
       final today = DateTime.now();
-      final dateString =
-          '${today.year.toString().padLeft(4, '0')}-'
-          '${today.month.toString().padLeft(2, '0')}-'
-          '${today.day.toString().padLeft(2, '0')}';
+      final dateString = DateFormat('yyyy-MM-dd').format(today);
 
       final timetable = await _timetableService.fetchCourseTimetable(
         year: widget.selectedYear.year,
@@ -239,17 +237,6 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // const double widescreenBreakpoint = 1200;
-        // final bool isWidescreen = constraints.maxWidth >= widescreenBreakpoint;
-
-        // if (isWidescreen) {
-        //   return TimetableTableView(
-        //     timetableData: _timetableData,
-        //     dayDates: _dayDates,
-        //     todayIndex: _todayIndex,
-        //     onEventTap: _onEventTap,
-        //   );
-        // } else {
         return Column(
           children: [
             DayTabs(
@@ -271,7 +258,6 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
             ),
           ],
         );
-        // }
       },
     );
   }
