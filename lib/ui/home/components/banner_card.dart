@@ -108,7 +108,7 @@ class _BannerCardState extends State<BannerCard> {
                     },
                   ),
                   Text(
-                    _userAuth.authState.userInfo?['username'] ?? 'User',
+                    _userAuth.authState.userInfo?.enName ?? 'User',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -119,10 +119,11 @@ class _BannerCardState extends State<BannerCard> {
               ),
             ),
             Positioned(
-              top: 22,
-              right: 22,
+              top: 24,
+              right: 24,
               child: Icon(
-                Symbols.account_circle_filled_rounded,
+                Symbols.account_circle_rounded,
+                fill: 1,
                 color: Colors.white,
                 size: 32,
               ),

@@ -187,7 +187,7 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
       margin: const EdgeInsets.symmetric(horizontal: 16.0),
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
@@ -414,7 +414,7 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
                         : isOverdue
                         ? Colors.red
                         : Colors.orange,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
                     homework.statusText,
@@ -425,14 +425,25 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
                     ),
                   ),
                 ),
+                
+                if (!homework.isCompleted)
+                OutlinedButton(
+                  onPressed: () => _markAsCompleted(homework.id),
+                  style: OutlinedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    side: const BorderSide(color: Colors.green),
+                    padding: const EdgeInsets.all(2),
+                    overlayColor: Colors.green.withValues(alpha: 0.2),
+                  ),
+                  child: const Icon(Symbols.check_rounded, size: 16, color: Colors.green),
+                ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Text(
               homework.title,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[700],
-                fontSize: 13,
+                fontSize: 14,
               ),
             ),
 
@@ -485,9 +496,10 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              'Due: ${homework.dueDate.day}/${homework.dueDate.month}/${homework.dueDate.year}',
+                              'Due: ${homework.dueDate.year}/${homework.dueDate.month}/${homework.dueDate.day}',
                               style: TextStyle(
                                 color: isOverdue ? Colors.red : Colors.grey[600],
+                                fontSize: 12,
                                 fontWeight: isOverdue ? FontWeight.bold : FontWeight.normal,
                               ),
                               overflow: TextOverflow.ellipsis,
@@ -554,7 +566,7 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              'Assigned: ${homework.assignedDate.day}/${homework.assignedDate.month}/${homework.assignedDate.year}',
+                              'Assigned: ${homework.assignedDate.year}/${homework.assignedDate.month}/${homework.assignedDate.day}',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -567,24 +579,6 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
                     ],
                   ),
                 ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                if (!homework.isCompleted)
-                  ElevatedButton.icon(
-                    onPressed: () => _markAsCompleted(homework.id),
-                    icon: const Icon(Symbols.check_circle_rounded, size: 16),
-                    label: const Text('Complete'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
               ],
             ),
           ],

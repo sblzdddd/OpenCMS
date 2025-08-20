@@ -5,8 +5,12 @@ import '../auth_service_base.dart';
 /// Returns true on success, false otherwise.
 Future<bool> refreshLegacyCookies(AuthServiceBase authService) async {
   try {
-    final info = authService.userInfo ?? {};
-    final username = (info['username'] ?? '').toString();
+    final info = authService.userInfo;
+    if (info == null) {
+      print('AuthService: refreshLegacyCookies skipped - missing user info');
+      return false;
+    }
+    final username = info.username;
     if (username.isEmpty) {
       print('AuthService: refreshLegacyCookies skipped - missing username');
       return false;
@@ -36,6 +40,7 @@ Future<bool> refreshLegacyCookies(AuthServiceBase authService) async {
     if (!ok) {
       print('AuthService: Legacy visit may not have initialized cookies. Status: ${visitResp.statusCode}');
     }
+    print('AuthService: Legacy cookies refreshed');
     return ok;
   } catch (e) {
     print('AuthService: refreshLegacyCookies exception: $e');

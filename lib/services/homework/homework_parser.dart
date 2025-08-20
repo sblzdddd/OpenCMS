@@ -120,9 +120,6 @@ HomeworkItem? _parseHomeworkRows(Element element1, Element element2) {
 /// Parse pagination information from the HTML
 Map<String, int> _parsePaginationInfo(Document document) {
   final paginationDiv = document.querySelectorAll('div.top10')[1];
-  if (paginationDiv == null) {
-    return {'currentPage': 1, 'totalPages': 1, 'totalRecords': 0};
-  }
   
   final text = paginationDiv.text;
   

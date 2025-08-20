@@ -15,7 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final ScrollController _scrollController = ScrollController();
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
 
   int get _selectedIndex => _selectedIndexNotifier.value;
@@ -68,7 +67,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     // Clear global navigation controller state BEFORE disposing the notifier to avoid
     // any pending callbacks using a disposed notifier
     // AppNavigationController.reset();
@@ -98,41 +96,45 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildScrollableHomeContent() {
     return SingleChildScrollView(
-      controller: _scrollController,
-      padding: const EdgeInsets.all(30),
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Use single column layout on smaller screens
           if (constraints.maxWidth < 800) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const DashboardGrid(),
-                const SizedBox(height: 24),
-                const QuickActions(),
-              ],
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const DashboardGrid(),
+                  const SizedBox(height: 24),
+                  const QuickActions(),
+                ],
+              ),
             );
           }
 
           // Use two-column layout on larger screens
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 24),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 400),
-                    child: const DashboardGrid(),
-                  ),
-                  const SizedBox(width: 24),
-                  // Right column - Quick Actions expanded
-                  const Expanded(child: QuickActions()),
-                ],
-              ),
-            ],
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 24),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 400),
+                      child: const DashboardGrid(),
+                    ),
+                    const SizedBox(width: 24),
+                    // Right column - Quick Actions expanded
+                    const Expanded(child: QuickActions()),
+                  ],
+                ),
+              ],
+            ),
           );
         },
       ),

@@ -15,5 +15,5 @@ class AuthServiceBase {
   bool get isAuthenticated => _authState.isAuthenticated;
   
   /// Get current user information
-  Map<String, dynamic>? get userInfo => _authState.userInfo;
+  UserInfo? get userInfo => _authState.userInfo;
 }

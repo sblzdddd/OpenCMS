@@ -1,4 +1,5 @@
 import '../../../data/constants/api_constants.dart';
+import '../../../data/models/auth/auth_state.dart';
 import '../../shared/storage_client.dart';
 import '../auth_service_base.dart';
 
@@ -8,8 +9,8 @@ Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo(AuthServiceBase authServ
     final response = await authService.httpService.get(ApiConstants.accountUserUrl);
     final data = response.data ?? {};
     if ((data['en_name'] ?? '').toString().isNotEmpty) {
-      authService.authState.updateUserInfo(data);
-      authService.authState.setAuthenticated(username: data['en_name']);
+      authService.authState.updateUserInfo(UserInfo.fromJson(data));
+      authService.authState.setAuthenticated(userInfo: UserInfo.fromJson(data));
     } else {
       print('AuthService: Failed to fetch user info: No username found');
       throw Exception('No username found');

@@ -47,17 +47,21 @@ class _DashboardGridState extends State<DashboardGrid> {
   Future<void> _loadLayout() async {
     try {
       final saved = await _storage.loadLayout();
-      setState(() {
-        _widgetOrder = (saved == null || saved.isEmpty)
-            ? List<String>.from(_defaultLayout)
-            : List<String>.from(saved);
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _widgetOrder = (saved == null || saved.isEmpty)
+              ? List<String>.from(_defaultLayout)
+              : List<String>.from(saved);
+          _isLoading = false;
+        });
+      }
     } catch (_) {
-      setState(() {
-        _widgetOrder = List<String>.from(_defaultLayout);
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _widgetOrder = List<String>.from(_defaultLayout);
+          _isLoading = false;
+        });
+      }
     }
   }
 

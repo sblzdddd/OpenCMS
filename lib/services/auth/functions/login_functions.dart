@@ -1,4 +1,5 @@
 import '../../../data/constants/api_constants.dart';
+import '../../../data/models/auth/auth_state.dart';
 import '../../../data/models/auth/login_result.dart';
 import '../auth_service_base.dart';
 import 'legacy_functions.dart';
@@ -38,7 +39,6 @@ Future<LoginResult> performLogin(
     // Process the response
     if(response.statusCode == 200) {
       // Update authentication state on success
-      authService.authState.setAuthenticated(username: username);
       await fetchAndSetCurrentUserInfo(authService);
       await refreshLegacyCookies(authService);
       return LoginResult.success(
