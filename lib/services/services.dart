@@ -5,3 +5,4 @@ export 'shared/shared_services.dart';
 export 'auth/auth_service.dart';
 export 'captcha_solver/captcha_solver.dart';
 export 'timetable/course_timetable_service.dart';
+export 'reports/reports.dart';

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/services/auth/auth_service.dart';
 import 'logout_dialog.dart';
 
 class ErrorPlaceholder extends StatelessWidget {
-  const ErrorPlaceholder({
+  ErrorPlaceholder({
     super.key,
     required this.title,
     required this.errorMessage,
@@ -12,6 +13,12 @@ class ErrorPlaceholder extends StatelessWidget {
   final String title;
   final String errorMessage;
   final VoidCallback onRetry;
+  final AuthService authService = AuthService();
+
+  Future<void> _onRetry() async {
+    await authService.refreshCookies();
+    onRetry();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +55,7 @@ class ErrorPlaceholder extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   ElevatedButton(
-                    onPressed: onRetry,
+                    onPressed: _onRetry,
                     child: const Text('Retry'),
                   ),
                 ],

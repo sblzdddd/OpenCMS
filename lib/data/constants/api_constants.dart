@@ -43,6 +43,11 @@ class ApiConstants {
   // parameters: fy (academic year), courseid (optional), duedate (optional), duedate2 (optional)
   static const String homeworkUrl = '/legacy/students/my/homework/';
   
+  // Reports endpoints
+  // parameters: none for list, exam ID for detail
+  static const String reportsListUrl = '/legacy/students/my/reports/';
+  static String reportsDetailUrl(int examId) => '/legacy/students/my/reports/$examId/';
+  
   // Third-party captcha solver (solvecaptcha) configuration
   static const String solveCaptchaBaseUrl = 'https://api.solvecaptcha.com';
   static const String solveCaptchaInEndpoint = '$solveCaptchaBaseUrl/in.php';

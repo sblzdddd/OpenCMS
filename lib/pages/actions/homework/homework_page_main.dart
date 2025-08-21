@@ -79,23 +79,6 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
     }
   }
 
-  Future<void> _markAsCompleted(String homeworkId) async {
-    try {
-      final success = await _homeworkService.markHomeworkCompleted(homeworkId);
-      if (success && mounted) {
-        SnackbarUtils.showSuccess(context, 'Homework marked as completed!');
-        _fetchHomework(); // Refresh the list
-      }
-    } catch (e) {
-      if (mounted) {
-        SnackbarUtils.showError(
-          context,
-          'Failed to mark homework as completed: ${e.toString()}',
-        );
-      }
-    }
-  }
-
   void _resetFilters() {
     setState(() {
       _selectedCourseId = null;
@@ -428,18 +411,6 @@ class _HomeworkPageMainState extends State<HomeworkPageMain> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                
-                if (!homework.isCompleted)
-                OutlinedButton(
-                  onPressed: () => _markAsCompleted(homework.id),
-                  style: OutlinedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    side: const BorderSide(color: Colors.green),
-                    padding: const EdgeInsets.all(2),
-                    overlayColor: Colors.green.withValues(alpha: 0.2),
-                  ),
-                  child: const Icon(Symbols.check_rounded, size: 16, color: Colors.green),
                 ),
               ],
             ),

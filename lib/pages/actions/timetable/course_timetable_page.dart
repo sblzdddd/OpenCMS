@@ -29,6 +29,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
   late final ScrollController _scrollController;
   final List<GlobalKey> _dayKeys = List.generate(5, (_) => GlobalKey());
   bool _isAnimatingToTab = false;
+  bool _hasScrolledToToday = false;
 
   TimetableResponse? _timetableData;
   bool _isLoading = true;
@@ -46,6 +47,9 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
     _loadTimetable();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToToday();
+    });
   }
 
   @override
@@ -63,6 +67,16 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     if (oldWidget.selectedYear.year != widget.selectedYear.year) {
       _cachedCourseStats = null;
       _loadTimetable();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToToday();
+      });
+    }
+  }
+
+  void _scrollToToday() {
+    if (_todayIndex >= 0 && _todayIndex < _dayKeys.length) {
+      _scrollToDay(_todayIndex, jump: true);
+      _dayTabController.animateTo(_todayIndex);
     }
   }
 
@@ -119,7 +133,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     return revealed.offset;
   }
 
-  Future<void> _onTabTapped(int index) async {
+  Future<void> _scrollToDay(int index, {bool jump = false}) async {
     if (index < 0 || index >= _dayKeys.length) return;
     if (mounted) {
       setState(() {
@@ -127,26 +141,29 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
       });
     }
     _isAnimatingToTab = true;
+    double? headerOffset;
     try {
-      final headerOffset = _getHeaderOffset(index);
-      if (headerOffset != null && _scrollController.hasClients) {
-        await _scrollController.animateTo(
-          headerOffset,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+      headerOffset = _getHeaderOffset(index);
+      if (headerOffset == null || !_scrollController.hasClients) {
+        throw Exception('Header offset is null or scroll controller has no clients');
       } else {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (!mounted) return;
-          final offsetAfter = _getHeaderOffset(index);
-          if (offsetAfter != null && _scrollController.hasClients) {
-            await _scrollController.animateTo(
-              offsetAfter,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
+          headerOffset = _getHeaderOffset(index);
+          if (headerOffset == null || !_scrollController.hasClients) {
+            throw Exception('Header offset is null or scroll controller has no clients');
           }
         });
+      }
+      if(headerOffset == null) throw Exception('Header offset is null');
+      if(jump) {
+        _scrollController.jumpTo(headerOffset!);
+      } else {
+      await _scrollController.animateTo(
+        headerOffset!,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
       }
     } finally {
       _isAnimatingToTab = false;
@@ -174,6 +191,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
         _timetableData = timetable;
         _isLoading = false;
         _computeWeekDates();
+        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToToday());
       });
     } catch (e) {
       if (!mounted) return;
@@ -241,7 +259,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
           children: [
             DayTabs(
               controller: _dayTabController,
-              onTap: _onTabTapped,
+              onTap: _scrollToDay,
               labels: PeriodConstants.weekdayShortNames.sublist(0, 5),
               todayIndex: _todayIndex,
             ),

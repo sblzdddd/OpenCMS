@@ -10,6 +10,7 @@ Future<bool> refreshCookies(AuthServiceBase authService) async {
     
     final response = await authService.httpService.post(
       ApiConstants.tokenRefreshEndpoint,
+      refresh: true,
     );
     
     if (response.statusCode == 200) {

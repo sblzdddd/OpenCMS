@@ -6,6 +6,7 @@ import '../../data/constants/quick_actions_constants.dart';
 import '../../ui/shared/navigations/app_navigation_controller.dart';
 import 'timetable.dart';
 import '../../pages/settings_page.dart';
+import 'reports.dart';
 
 String _actionTitle(String id) {
   return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
@@ -74,12 +75,6 @@ class ExamTimetablePage extends StatelessWidget {
     }
     return const ActionPageScaffold('exam');
   }
-}
-
-class ReportsPage extends StatelessWidget {
-  const ReportsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('reports');
 }
 
 class AssessmentsFeedbackPage extends StatelessWidget {
@@ -197,7 +192,7 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'attendance':
       return AttendancePage(initialTabIndex: 0);
     case 'reports':
-      return const ReportsPage();
+      return const ReportsPage(initialTabIndex: 0);
     case 'assessment':
       return const AssessmentsFeedbackPage();
     case 'comments':

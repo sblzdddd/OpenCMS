@@ -56,29 +56,36 @@ class HttpService {
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String> headers = const {},
+    bool refresh = false,
   }) async {
-    final url = '${ApiConstants.baseApiUrl}$endpoint';
-    return _dio.post(url, data: body, options: Options(
-      headers: {
-        ..._dio.options.headers,
-        ...headers,
-        'Referer': ApiConstants.cmsReferer,
-      },
-    ));
+    Options options = Options();
+    if(refresh) {
+      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
+    }
+    options.headers = {
+      ..._dio.options.headers,
+      ...headers,
+      'Referer': ApiConstants.cmsReferer,
+    };
+    return _dio.post('${ApiConstants.baseApiUrl}$endpoint', data: body, options: options);
   }
   
   /// Make a GET request with automatic token refresh on 401
   Future<Response<dynamic>> get(
     String endpoint, {
     Map<String, String> headers = const {},
+    bool refresh = false,
   }) async {
-    return _dio.get('${ApiConstants.baseApiUrl}$endpoint', options: Options(
-      headers: {
-        ..._dio.options.headers,
-        ...headers,
-        'Referer': ApiConstants.cmsReferer,
-      }
-    ));
+    Options options = Options();
+    if(refresh) {
+      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
+    }
+    options.headers = {
+      ..._dio.options.headers,
+      ...headers,
+      'Referer': ApiConstants.cmsReferer,
+    };
+    return _dio.get('${ApiConstants.baseApiUrl}$endpoint', options: options);
   }
 
   /// Make a POST request with automatic token refresh on 401
@@ -86,29 +93,37 @@ class HttpService {
     String endpoint, {
     Map<String, dynamic>? body,
     Map<String, String> headers = const {},
+    bool refresh = false,
   }) async {
+    Options options = Options();
+    if(refresh) {
+      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
+    }
+    options.headers = {
+      ..._dio.options.headers,
+      ...headers,
+      'Referer': ApiConstants.legacyCMSReferer,
+    };
     final url = '${ApiConstants.legacyCMSBaseUrl}$endpoint';
-    return _dio.post(url, data: body, options: Options(
-      headers: {
-        ..._dio.options.headers,
-        ...headers,
-        'Referer': ApiConstants.legacyCMSReferer,
-      },
-    ));
+    return _dio.post(url, data: body, options: options);
   }
   
   /// Make a GET request with automatic token refresh on 401
   Future<Response<dynamic>> getLegacy(
     String endpoint, {
     Map<String, String> headers = const {},
+    bool refresh = false,
   }) async {
-    return _dio.get('${ApiConstants.legacyCMSBaseUrl}$endpoint', options: Options(
-      headers: {
-        ..._dio.options.headers,
-        ...headers,
-        'Referer': ApiConstants.legacyCMSReferer,
-      }
-    ));
+    Options options = Options();
+    if(refresh) {
+      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
+    }
+    options.headers = {
+      ..._dio.options.headers,
+      ...headers,
+      'Referer': ApiConstants.legacyCMSReferer,
+    };
+    return _dio.get('${ApiConstants.legacyCMSBaseUrl}$endpoint', options: options);
   }
 
   /// Make a POST request with automatic token refresh on 401

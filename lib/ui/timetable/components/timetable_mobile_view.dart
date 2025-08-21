@@ -31,16 +31,10 @@ class TimetableMobileView extends StatefulWidget {
 }
 
 class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsBindingObserver {
-  bool _hasScrolledToToday = false;
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Schedule the scroll after the widget is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToToday();
-    });
   }
 
   @override
@@ -49,36 +43,9 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsB
     super.dispose();
   }
 
-  void _scrollToToday() {
-    if (!_hasScrolledToToday && 
-        widget.todayIndex >= 0 && 
-        widget.todayIndex < widget.dayKeys.length &&
-        widget.dayKeys[widget.todayIndex].currentContext != null) {
-      
-      final RenderBox? renderBox = widget.dayKeys[widget.todayIndex]
-          .currentContext!
-          .findRenderObject() as RenderBox?;
-      
-      if (renderBox != null) {
-        final position = renderBox.localToGlobal(Offset.zero);
-        final offset = position.dy - 160; // Offset by 100px for better visibility
-        
-        widget.scrollController.jumpTo(offset);
-        
-        _hasScrolledToToday = true;
-      }
-    }
-  }
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Try to scroll again if dependencies change (e.g., when data loads)
-    if (!_hasScrolledToToday) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollToToday();
-      });
-    }
   }
 
   @override

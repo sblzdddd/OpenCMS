@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'dynamic_gradient_banner.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../services/auth/auth_service.dart';
 import 'dart:async';
@@ -37,6 +37,11 @@ class _BannerCardState extends State<BannerCard> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     _initializeStreams();
+    if (widget.bannerType == BannerType.dynamicGradient) {
+      // No webview loading for shader-based banner
+      _isLoading = false;
+      _hasError = false;
+    }
   }
   
   void _initializeStreams() {
@@ -85,40 +90,45 @@ class _BannerCardState extends State<BannerCard> with AutomaticKeepAliveClientMi
         borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
-            InAppWebView(
-              initialFile: "assets/static/${_getHtmlFileName()}",
-              initialSettings: InAppWebViewSettings(
-                mediaPlaybackRequiresUserGesture: false,
-                disableHorizontalScroll: true,
-                disableVerticalScroll: true,
-                supportZoom: false,
-                useWideViewPort: false,
-                loadWithOverviewMode: false,
+            if (widget.bannerType == BannerType.dynamicGradient)
+              const Positioned.fill(
+                child: DynamicGradientBanner(),
+              )
+            else
+              InAppWebView(
+                initialFile: "assets/static/${_getHtmlFileName()}",
+                initialSettings: InAppWebViewSettings(
+                  mediaPlaybackRequiresUserGesture: false,
+                  disableHorizontalScroll: true,
+                  disableVerticalScroll: true,
+                  supportZoom: false,
+                  useWideViewPort: false,
+                  loadWithOverviewMode: false,
+                ),
+                onLoadStart: (controller, url) {
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = true;
+                      _hasError = false;
+                    });
+                  }
+                },
+                onLoadStop: (controller, url) {
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                },
+                onReceivedError: (controller, request, error) {
+                  if (mounted) {
+                    setState(() {
+                      _isLoading = false;
+                    });
+                  }
+                  debugPrint('WebView load error: $error');
+                },
               ),
-              onLoadStart: (controller, url) {
-                if (mounted) {
-                  setState(() {
-                    _isLoading = true;
-                    _hasError = false;
-                  });
-                }
-              },
-              onLoadStop: (controller, url) {
-                if (mounted) {
-                  setState(() {
-                    _isLoading = false;
-                  });
-                }
-              },
-              onReceivedError: (controller, request, error) {
-                if (mounted) {
-                  setState(() {
-                    _isLoading = false;
-                  });
-                }
-                debugPrint('WebView load error: $error');
-              },
-            ),
             // Top left and right positioned elements
             Positioned(
               top: 10,

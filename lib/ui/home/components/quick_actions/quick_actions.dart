@@ -155,13 +155,6 @@ class _QuickActionsState extends State<QuickActions> {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

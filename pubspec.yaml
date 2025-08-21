@@ -89,6 +89,9 @@ flutter:
     - assets/images/app_icon.png
     - assets/static/
 
+  shaders:
+    - assets/shaders/dynamic_banner.frag
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
