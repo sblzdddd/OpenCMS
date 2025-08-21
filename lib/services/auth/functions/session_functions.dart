@@ -24,7 +24,7 @@ Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo(AuthServiceBase authServ
 
 Future<String> fetchCurrentUsername(AuthServiceBase authService) async {
   final response = await authService.httpService.get(ApiConstants.accountUserUrl);
-  if (response.statusCode == 200) {
+  if (response.statusCode == 200 || response.statusCode == 304) {
     final data = response.data ?? {};
     return (data['username'] ?? '').toString();
   } else {

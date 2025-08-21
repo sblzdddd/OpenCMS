@@ -6,7 +6,7 @@ import '../../../data/models/timetable/course_merged_event.dart';
 import '../../../ui/shared/timetable_card.dart';
 import 'day_header.dart';
 
-class TimetableMobileView extends StatelessWidget {
+class TimetableMobileView extends StatefulWidget {
   final ScrollController scrollController;
   final List<DateTime> dayDates;
   final int todayIndex;
@@ -27,22 +27,77 @@ class TimetableMobileView extends StatelessWidget {
   });
 
   @override
+  State<TimetableMobileView> createState() => _TimetableMobileViewState();
+}
+
+class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsBindingObserver {
+  bool _hasScrolledToToday = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Schedule the scroll after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToToday();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _scrollToToday() {
+    if (!_hasScrolledToToday && 
+        widget.todayIndex >= 0 && 
+        widget.todayIndex < widget.dayKeys.length &&
+        widget.dayKeys[widget.todayIndex].currentContext != null) {
+      
+      final RenderBox? renderBox = widget.dayKeys[widget.todayIndex]
+          .currentContext!
+          .findRenderObject() as RenderBox?;
+      
+      if (renderBox != null) {
+        final position = renderBox.localToGlobal(Offset.zero);
+        final offset = position.dy - 160; // Offset by 100px for better visibility
+        
+        widget.scrollController.jumpTo(offset);
+        
+        _hasScrolledToToday = true;
+      }
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Try to scroll again if dependencies change (e.g., when data loads)
+    if (!_hasScrolledToToday) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollToToday();
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      controller: scrollController,
+      controller: widget.scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (int dayIndex = 0; dayIndex < 5; dayIndex++) ...[
             DayHeader(
-              key: dayKeys[dayIndex],
+              key: widget.dayKeys[dayIndex],
               title: PeriodConstants.weekdayNames[dayIndex],
-              dateText: (dayDates.isNotEmpty && dayIndex < dayDates.length)
-                  ? _formatYmd(dayDates[dayIndex])
+              dateText: (widget.dayDates.isNotEmpty && dayIndex < widget.dayDates.length)
+                  ? _formatYmd(widget.dayDates[dayIndex])
                   : '',
-              isActive: dayIndex == selectedDayIndex,
-              isToday: todayIndex == dayIndex,
+              isActive: dayIndex == widget.selectedDayIndex,
+              isToday: dayIndex == widget.todayIndex,
             ),
             const SizedBox(height: 8),
             ..._buildDayEvents(dayIndex),
@@ -64,12 +119,12 @@ class TimetableMobileView extends StatelessWidget {
   }
 
   List<CourseMergedEvent> _getCourseMergedEventsForDay(int dayIndex) {
-    if (timetableData == null || 
-        dayIndex >= timetableData!.weekdays.length) {
+    if (widget.timetableData == null || 
+        dayIndex >= widget.timetableData!.weekdays.length) {
       return [];
     }
 
-    final weekday = timetableData!.weekdays[dayIndex];
+    final weekday = widget.timetableData!.weekdays[dayIndex];
     final List<CourseMergedEvent> mergedEvents = [];
     
     int i = 0;
@@ -140,7 +195,7 @@ class TimetableMobileView extends StatelessWidget {
           timespan: mergedEvent.timeSpan,
           periodText: mergedEvent.periodText,
           onTap: () {
-            onEventTap(mergedEvent.event);
+            widget.onEventTap(mergedEvent.event);
           },
         ),
         const SizedBox(height: 12),

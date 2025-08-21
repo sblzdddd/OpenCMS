@@ -44,15 +44,11 @@ class HomeworkService {
       
       final response = await _httpService.getLegacy(endpoint);
 
-      if (response.statusCode == 200) {
-        final html = response.data;
-        if (html != null && html is String) {
-          return parseHomeworkHtml(html);
-        } else {
-          throw Exception('Invalid response format: expected HTML string');
-        }
+      final html = response.data;
+      if (html != null && html is String) {
+        return parseHomeworkHtml(html);
       } else {
-        throw Exception('Failed to fetch homework: ${response.statusCode}');
+        throw Exception('Invalid response format: expected HTML string');
       }
     } catch (e) {
       print('HomeworkService: Error fetching homework: $e');

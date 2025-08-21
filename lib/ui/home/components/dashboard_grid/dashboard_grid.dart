@@ -106,7 +106,11 @@ class _DashboardGridState extends State<DashboardGrid> {
         child = const LatestAssessment();
         break;
       case 'banner':
-        child = const BannerCard();
+        child = RepaintBoundary(
+          child: BannerCard(
+            key: const ValueKey('banner_card'),
+          ),
+        );
         break;
       default:
         child = Container(

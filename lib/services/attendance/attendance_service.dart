@@ -28,10 +28,6 @@ class AttendanceService {
       url,
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to fetch attendance: ${response.statusCode}');
-    }
-
     final Map<String, dynamic> jsonData = response.data as Map<String, dynamic>;
     return AttendanceResponse.fromJson(jsonData);
   }

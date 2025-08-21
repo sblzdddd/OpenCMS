@@ -143,8 +143,8 @@ class CustomSnackbarState extends State<CustomSnackbar>
                   child: Material(
                     elevation: widget.elevation,
                     borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
-                    shadowColor: Colors.black.withValues(alpha: 0.15),
+                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
+                    shadowColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
                     child: Container(
                       key: _contentKey,
                       constraints: BoxConstraints(
@@ -170,7 +170,7 @@ class CustomSnackbarState extends State<CustomSnackbar>
                                   Text(
                                     widget.title,
                                     style: TextStyle(
-                                      color: Colors.grey[800],
+                                      color: Theme.of(context).colorScheme.onSurface,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -180,7 +180,7 @@ class CustomSnackbarState extends State<CustomSnackbar>
                                     Text(
                                       widget.message!,
                                       style: TextStyle(
-                                        color: Colors.grey[600],
+                                        color: Theme.of(context).colorScheme.onSurface,
                                         fontSize: 12,
                                       ),
                                     ),

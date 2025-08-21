@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// A generic quick action tile used by various quick action components.
-class QuickActionTile extends StatelessWidget {
+class QuickActionTile extends StatefulWidget {
   final double width;
   final double height;
   final IconData icon;
@@ -30,27 +30,37 @@ class QuickActionTile extends StatelessWidget {
   });
 
   @override
+  State<QuickActionTile> createState() => _QuickActionTileState();
+}
+
+class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    final Color resolvedIconBg = iconBackgroundColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
-    final Color resolvedIconColor = iconColor ?? Theme.of(context).colorScheme.primary;
-    final Color resolvedBorderColor = borderColor ?? Theme.of(context).colorScheme.outline.withValues(alpha: 0.2);
-    final TextStyle resolvedTitleStyle = titleStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12, fontWeight: FontWeight.w500);
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
+    final Color resolvedIconBg = widget.iconBackgroundColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
+    final Color resolvedIconColor = widget.iconColor ?? Theme.of(context).colorScheme.primary;
+    final Color resolvedBorderColor = widget.borderColor ?? Theme.of(context).colorScheme.outline.withValues(alpha: 0.2);
+    final TextStyle resolvedTitleStyle = widget.titleStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12, fontWeight: FontWeight.w500);
 
     return SizedBox(
-      width: width,
-      height: height,
+      width: widget.width,
+      height: widget.height,
       child: Material(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           borderRadius: BorderRadius.circular(20),
           child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              border: borderWidth > 0
-                  ? Border.all(color: resolvedBorderColor, width: borderWidth, style: BorderStyle.solid)
+              border: widget.borderWidth > 0
+                  ? Border.all(color: resolvedBorderColor, width: widget.borderWidth, style: BorderStyle.solid)
                   : null,
             ),
             child: Column(
@@ -68,7 +78,7 @@ class QuickActionTile extends StatelessWidget {
                     children: [
                       Center(
                         child: Icon(
-                          icon,
+                          widget.icon,
                           color: resolvedIconColor,
                           size: 28,
                         ),
@@ -80,7 +90,7 @@ class QuickActionTile extends StatelessWidget {
                 SizedBox(
                   height: 20,
                   child: Text(
-                    title,
+                    widget.title,
                     style: resolvedTitleStyle,
                     textAlign: TextAlign.center,
                     maxLines: 1,

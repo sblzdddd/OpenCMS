@@ -149,7 +149,7 @@ class CourseDetailDialog extends StatelessWidget {
                 context,
                 valueStyle: textTheme.bodyMedium?.copyWith(
                   color: absentRate >= 10 ? Theme.of(context).colorScheme.onErrorContainer : 
-                  Theme.of(context).colorScheme.primaryContainer,
+                  Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,
                 ),
                 icon: Symbols.percent_rounded,

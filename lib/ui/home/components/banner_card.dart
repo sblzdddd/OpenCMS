@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../services/auth/auth_service.dart';
+import 'dart:async';
 
 enum BannerType { dynamicGradient, vantaTopology }
 
@@ -17,25 +18,62 @@ class BannerCard extends StatefulWidget {
   State<BannerCard> createState() => _BannerCardState();
 }
 
-class _BannerCardState extends State<BannerCard> {
+class _BannerCardState extends State<BannerCard> with AutomaticKeepAliveClientMixin {
   bool _isLoading = true;
   bool _hasError = false;
-  late InAppWebViewController _controller;
   final _userAuth = AuthService();
-  Stream<String> _timeStream() async* {
-    while (true) {
-      await Future.delayed(const Duration(seconds: 1));
-      yield '${DateFormat("MMMM dd, HH:mm:ss").format(DateTime.now())} ${PeriodConstants.getPeriodInfoByTime(DateTime.now())?.name ?? ''}';
-    }
+  
+  // Cache the streams to prevent recreation
+  late final Stream<String> _timeStream;
+  late final Stream<String> _greetingStream;
+  Timer? _greetingTimer;
+  Timer? _timeTimer;
+  StreamController<String>? _greetingController;
+  StreamController<String>? _timeController;
+  @override
+  bool get wantKeepAlive => true; // Keep the widget alive during drag operations
+  
+  @override
+  void initState() {
+    super.initState();
+    _initializeStreams();
   }
-  Stream<String> _greetingStream() async* {
-    while (true) {
-      yield PeriodConstants.getGreeting(DateTime.now());
-      await Future.delayed(const Duration(minutes: 1));
-    }
+  
+  void _initializeStreams() {
+    _timeController = StreamController<String>();
+    _timeController!.add('${DateFormat("MMMM dd, HH:mm:ss").format(DateTime.now())} ${PeriodConstants.getPeriodInfoByTime(DateTime.now())?.name ?? ''}');
+    _timeTimer = Timer.periodic(
+      const Duration(seconds: 1),
+      (_) => _timeController!.add('${DateFormat("MMMM dd, HH:mm:ss").format(DateTime.now())} ${PeriodConstants.getPeriodInfoByTime(DateTime.now())?.name ?? ''}')
+    );
+    
+    // Create a stream that starts with current value and then updates every minute
+    _greetingController = StreamController<String>();
+    _greetingController!.add(PeriodConstants.getGreeting(DateTime.now()));
+    
+    _greetingTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) {
+        _greetingController?.add(PeriodConstants.getGreeting(DateTime.now()));
+      }
+    });
+    
+    _greetingStream = _greetingController!.stream;
+    _timeStream = _timeController!.stream;
   }
+  
+  @override
+  void dispose() {
+    _timeTimer?.cancel();
+    _timeController?.close();
+    _greetingTimer?.cancel();
+    _greetingController?.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
     return Container(
       padding: const EdgeInsets.all(0),
       height: 200, // Set a fixed height for the banner
@@ -48,21 +86,9 @@ class _BannerCardState extends State<BannerCard> {
         child: Stack(
           children: [
             InAppWebView(
-              initialData: InAppWebViewInitialData(data: ""), // start empty
-              onWebViewCreated: (controller) async {
-                _controller = controller;
-                final html = await rootBundle.loadString(
-                  "assets/static/${_getHtmlFileName()}",
-                );
-                await _controller.loadData(
-                  data: html,
-                  baseUrl: WebUri("about:blank"),
-                );
-              },
+              initialFile: "assets/static/${_getHtmlFileName()}",
               initialSettings: InAppWebViewSettings(
-                useShouldOverrideUrlLoading: true,
                 mediaPlaybackRequiresUserGesture: false,
-                transparentBackground: true,
                 disableHorizontalScroll: true,
                 disableVerticalScroll: true,
                 supportZoom: false,
@@ -70,20 +96,26 @@ class _BannerCardState extends State<BannerCard> {
                 loadWithOverviewMode: false,
               ),
               onLoadStart: (controller, url) {
-                setState(() {
-                  _isLoading = true;
-                  _hasError = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _isLoading = true;
+                    _hasError = false;
+                  });
+                }
               },
               onLoadStop: (controller, url) {
-                setState(() {
-                  _isLoading = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
               },
               onReceivedError: (controller, request, error) {
-                setState(() {
-                  _isLoading = false;
-                });
+                if (mounted) {
+                  setState(() {
+                    _isLoading = false;
+                  });
+                }
                 debugPrint('WebView load error: $error');
               },
             ),
@@ -95,7 +127,7 @@ class _BannerCardState extends State<BannerCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   StreamBuilder<String>(
-                    stream: _greetingStream(),
+                    stream: _greetingStream,
                     builder: (context, snapshot) {
                       return Text(snapshot.data ?? 'Loading...', style: const TextStyle(fontSize: 16, color: Colors.white));
                     },
@@ -133,7 +165,7 @@ class _BannerCardState extends State<BannerCard> {
                   ),
                   const SizedBox(width: 4),
                   StreamBuilder<String>(
-                    stream: _timeStream(),
+                    stream: _timeStream,
                     builder: (context, snapshot) {
                       return Text(snapshot.data ?? 'Loading...', style: const TextStyle(fontSize: 12, color: Colors.white));
                     },

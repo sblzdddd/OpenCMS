@@ -157,7 +157,7 @@ class _QuickActionsState extends State<QuickActions> {
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -167,15 +167,15 @@ class _QuickActionsState extends State<QuickActions> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 18),
+                padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Quick Actions',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     Row(
@@ -188,7 +188,7 @@ class _QuickActionsState extends State<QuickActions> {
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            fixedSize: const Size(32, 32),
+                            fixedSize: const Size(30, 30),
                           ),
                           tooltip: 'Reset to default',
                         ) : const SizedBox.shrink(),
@@ -245,9 +245,10 @@ class _QuickActionsState extends State<QuickActions> {
                       final double tileWidth =
                           (availableWidth - (columns - 1) * spacing) / columns;
 
-                      // Build draggable action items
+                      // Build draggable action items with stable keys
                       final List<Widget> displayChildren = actions
                           .map<Widget>((action) => ActionItem(
+                                key: ValueKey('action_${action['id']}'),
                                 action: action,
                                 isEditMode: true,
                                 onTap: action['id'] == QuickActionsConstants.moreAction['id']
@@ -258,9 +259,16 @@ class _QuickActionsState extends State<QuickActions> {
                           .toList();
 
                       if (_isEditMode) {
-                        // Add edit utilities
-                        displayChildren.add(TrashCanItem(tileWidth: tileWidth));
-                        displayChildren.add(AddActionItem(onTap: _onAddAction, tileWidth: tileWidth));
+                        // Add edit utilities with stable keys
+                        displayChildren.add(TrashCanItem(
+                          key: const ValueKey('trash_can'),
+                          tileWidth: tileWidth,
+                        ));
+                        displayChildren.add(AddActionItem(
+                          key: const ValueKey('add_action'),
+                          onTap: _onAddAction,
+                          tileWidth: tileWidth,
+                        ));
                       }
                       return ReorderableWrap(
                         spacing: spacing,

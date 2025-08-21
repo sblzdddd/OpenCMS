@@ -27,15 +27,11 @@ class CourseTimetableService {
         url,
       );
 
-      if (response.statusCode == 200) {
-        final data = response.data;
-        if (data != null) {
-          return TimetableResponse.fromJson(data);
-        } else {
-          throw Exception('Invalid response format: null data');
-        }
+      final data = response.data;
+      if (data != null) {
+        return TimetableResponse.fromJson(data);
       } else {
-        throw Exception('Failed to fetch timetable: ${response.statusCode}');
+        throw Exception('Invalid response format: null data');
       }
     } catch (e) {
       print('CourseTimetableService: Error fetching timetable: $e');

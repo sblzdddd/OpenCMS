@@ -15,6 +15,7 @@ import 'theme.dart';
 import 'util.dart';
 // import 'services/background/background_task_manager.dart';
 
+final InAppLocalhostServer localhostServer = InAppLocalhostServer(documentRoot: 'assets');
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
 _AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
@@ -123,6 +124,7 @@ void main() async {
   //   initialDelay: Duration(seconds: 10),   // Wait before first execution
   //   inputData: {'syncType': 'incremental'}
   // );
+  await localhostServer.start();
   runApp(const MyApp());
 }
 

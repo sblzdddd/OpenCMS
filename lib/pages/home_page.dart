@@ -101,12 +101,12 @@ class _HomePageState extends State<HomePage> {
           // Use single column layout on smaller screens
           if (constraints.maxWidth < 800) {
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const DashboardGrid(),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
                   const QuickActions(),
                 ],
               ),

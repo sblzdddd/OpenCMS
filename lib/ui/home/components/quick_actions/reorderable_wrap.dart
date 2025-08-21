@@ -33,9 +33,7 @@ class ReorderableWrap extends StatefulWidget {
 }
 
 class _ReorderableWrapState extends State<ReorderableWrap> {
-  int? _draggedIndex;
-  int? _hoveredIndex;
-  bool _isTrashCanHighlighted = false;
+  // Local state removed to minimize parent rebuilds during drag.
 
   @override
   Widget build(BuildContext context) {
@@ -67,40 +65,20 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
                 // Remove the dragged item
                 widget.onRemove!(draggedIndex);
               }
-              setState(() {
-                _draggedIndex = null;
-                _hoveredIndex = null;
-                _isTrashCanHighlighted = false;
-              });
-            },
-            onMove: (details) {
-              if (isTrashCan && !_isTrashCanHighlighted) {
-                setState(() {
-                  _isTrashCanHighlighted = true;
-                  _hoveredIndex = null;
-                });
-              }
-            },
-            onLeave: (_) {
-              if (isTrashCan) {
-                setState(() {
-                  _isTrashCanHighlighted = false;
-                });
-              }
             },
             builder: (context, candidateData, rejectedData) {
-              if (isTrashCan && _isTrashCanHighlighted) {
-                // Return highlighted trash can
+              if (isTrashCan && candidateData.isNotEmpty) {
+                // Return highlighted trash can when a candidate is hovering
                 return TrashCanItem(isHighlighted: true);
               }
               if (isAddAction) {
                 // Add action item with tap handling
                 return GestureDetector(
                   onTap: widget.onAdd,
-                  child: child,
+                  child: RepaintBoundary(child: child),
                 );
               }
-              return child;
+              return RepaintBoundary(child: child);
             },
           );
         }
@@ -109,33 +87,26 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
         return LongPressDraggable<int>(
           delay: const Duration(milliseconds: 300),
           data: index,
+          ignoringFeedbackSemantics: true,
           feedback: Material(
             color: Colors.transparent,
             child: Opacity(
               opacity: 0.7,
               child: Transform.scale(
                 scale: 1.1,
-                child: child,
+                child: RepaintBoundary(child: child),
               ),
             ),
           ),
           childWhenDragging: Opacity(
             opacity: 0.3,
-            child: child,
+            child: RepaintBoundary(child: child),
           ),
           onDragStarted: () {
-            setState(() {
-              _draggedIndex = index;
-            });
             // Call onReorderStart callback when dragging begins
             widget.onReorderStart?.call();
           },
           onDragEnd: (_) {
-            setState(() {
-              _draggedIndex = null;
-              _hoveredIndex = null;
-              _isTrashCanHighlighted = false;
-            });
             // Call onReorderEnd callback when dragging ends
             widget.onReorderEnd?.call();
           },
@@ -149,27 +120,9 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
               final draggedIndex = details.data;
               // Reorder items
               widget.onReorder(draggedIndex, index);
-              setState(() {
-                _draggedIndex = null;
-                _hoveredIndex = null;
-                _isTrashCanHighlighted = false;
-              });
-            },
-            onMove: (details) {
-              if (_hoveredIndex != index) {
-                setState(() {
-                  _hoveredIndex = index;
-                  _isTrashCanHighlighted = false;
-                });
-              }
-            },
-            onLeave: (_) {
-              setState(() {
-                _hoveredIndex = null;
-              });
             },
             builder: (context, candidateData, rejectedData) {
-              if (_hoveredIndex == index && _draggedIndex != index) {
+              if (candidateData.isNotEmpty) {
                 // Highlight regular items when reordering without changing size
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
@@ -177,10 +130,10 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
                     borderRadius: BorderRadius.circular(0),
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   ),
-                  child: child,
+                  child: RepaintBoundary(child: child),
                 );
               }
-              return child;
+              return RepaintBoundary(child: child);
             },
           ),
         );

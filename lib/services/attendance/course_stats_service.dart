@@ -25,23 +25,19 @@ class CourseStatsService {
         url,
       );
 
-      if (response.statusCode == 200) {
-        try {
-          final jsonData = response.data;
-          if (jsonData is List) {
-            final List<CourseStats> stats = [];
-            for (final item in jsonData) {
-              stats.add(CourseStats.fromJson(item as Map<String, dynamic>));
-            }
-            return stats;
-          } else {
-            throw Exception('Invalid response format: expected List');
+      try {
+        final jsonData = response.data;
+        if (jsonData is List) {
+          final List<CourseStats> stats = [];
+          for (final item in jsonData) {
+            stats.add(CourseStats.fromJson(item as Map<String, dynamic>));
           }
-        } catch (e) {
-          throw Exception('Failed to parse JSON response: $e');
+          return stats;
+        } else {
+          throw Exception('Invalid response format: expected List');
         }
-      } else {
-        throw Exception('Failed to fetch course stats: ${response.statusCode}');
+      } catch (e) {
+        throw Exception('Failed to parse JSON response: $e');
       }
     } catch (e) {
       print('CourseTimetableService: Error fetching course stats: $e');

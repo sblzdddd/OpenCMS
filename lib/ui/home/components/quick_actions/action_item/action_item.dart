@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'quick_action_tile.dart';
 import '../../../../../pages/actions/actions.dart';
 
-class ActionItem extends StatelessWidget {
+class ActionItem extends StatefulWidget {
   final Map<String, dynamic> action;
   final bool isEditMode;
   final VoidCallback? onTap;
@@ -17,8 +17,18 @@ class ActionItem extends StatelessWidget {
   });
 
   @override
+  State<ActionItem> createState() => _ActionItemState();
+}
+
+class _ActionItemState extends State<ActionItem> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
-    if (isEditMode) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
+    if (widget.isEditMode) {
       return _buildDraggableActionItem(context);
     } else {
       return _buildStaticActionItem(context);
@@ -27,13 +37,13 @@ class ActionItem extends StatelessWidget {
 
   Widget _buildDraggableActionItem(BuildContext context) {
     return KeyedSubtree(
-      key: ValueKey(action['id']),
+      key: ValueKey(widget.action['id']),
       child: QuickActionTile(
-        width: tileWidth ?? 120,
+        width: widget.tileWidth ?? 120,
         // height: 114,
-        icon: action['icon'] as IconData,
-        title: action['title'] as String,
-        onTap: onTap ?? () => _handleActionTap(context),
+        icon: widget.action['icon'] as IconData,
+        title: widget.action['title'] as String,
+        onTap: widget.onTap ?? () => _handleActionTap(context),
         showDragIndicator: true,
       ),
     );
@@ -41,24 +51,24 @@ class ActionItem extends StatelessWidget {
 
   Widget _buildStaticActionItem(BuildContext context) {
     return QuickActionTile(
-      width: tileWidth ?? 120,
+      width: widget.tileWidth ?? 120,
       // height: 114,
-      icon: action['icon'] as IconData,
-      title: action['title'] as String,
-      onTap: onTap ?? () => _handleActionTap(context),
+      icon: widget.action['icon'] as IconData,
+      title: widget.action['title'] as String,
+      onTap: widget.onTap ?? () => _handleActionTap(context),
     );
   }
 
   void _handleActionTap(BuildContext context) {
     // Try to handle via navigation first (for timetable, homework, assessment)
-    if (handleActionNavigation(context, action)) {
+    if (handleActionNavigation(context, widget.action)) {
       return; // Navigation handled, no need to push new page
     }
     
     // Otherwise, push the action page
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => buildActionPage(action),
+        builder: (_) => buildActionPage(widget.action),
       ),
     );
   }

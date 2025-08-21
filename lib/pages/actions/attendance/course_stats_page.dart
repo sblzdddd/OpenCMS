@@ -112,6 +112,7 @@ class _CourseStatsPageState extends State<CourseStatsPage> {
     final theme = Theme.of(context);
 
     return Card(
+      elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
         onTap: () => _showCourseDetail(stats),

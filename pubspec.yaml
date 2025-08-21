@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^2.5.3
   provider: ^6.1.2
   google_fonts: ^6.3.0
+  dio_cache_interceptor: ^3.5.1
 
 dev_dependencies:
   flutter_test:
