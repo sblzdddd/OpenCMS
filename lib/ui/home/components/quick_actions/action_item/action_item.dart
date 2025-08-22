@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quick_action_tile.dart';
-import '../../../../../pages/actions/actions.dart';
+import '../../../../../pages/actions.dart';
 
 class ActionItem extends StatefulWidget {
   final Map<String, dynamic> action;

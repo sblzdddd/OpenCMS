@@ -1,51 +1,25 @@
 import 'package:flutter/material.dart';
-import 'homework/homework_page_main.dart';
-import 'homework/teams_homework_page.dart';
+import '../../ui/homework/homework_page_main.dart';
+import '../../ui/homework/teams_homework_page.dart';
+import '../../ui/shared/views/tabbed_page_base.dart';
 
-class HomeworkPage extends StatefulWidget {
+class HomeworkPage extends StatelessWidget {
   const HomeworkPage({super.key, this.initialTabIndex = 0});
   final int initialTabIndex;
 
   @override
-  State<HomeworkPage> createState() => _HomeworkPageState();
-}
-
-class _HomeworkPageState extends State<HomeworkPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this, initialIndex: widget.initialTabIndex);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Homework'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Homework'),
-            Tab(text: 'Teams Assignments'),
-          ],
-        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          HomeworkPageMain(),
-          TeamsHomeworkPage(),
-        ],
-      ),
+    return TabbedPageBase(
+      title: 'Homework',
+      initialTabIndex: initialTabIndex,
+      tabs: const [
+        Tab(text: 'Homework'),
+        Tab(text: 'Teams Assignments'),
+      ],
+      tabViews: const [
+        HomeworkPageMain(),
+        TeamsHomeworkPage(),
+      ],
     );
   }
 }

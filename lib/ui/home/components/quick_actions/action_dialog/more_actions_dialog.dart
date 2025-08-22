@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../data/constants/quick_actions_constants.dart';
-import '../../../../../pages/actions/actions.dart';
+import '../../../../../pages/actions.dart';
 import 'base_action_dialog.dart';
 
 /// Dialog for choosing hidden actions to launch (not to add to quick access)

@@ -2,26 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../services/attendance/attendance_service.dart';
-import '../../../ui/shared/course_detail_dialog.dart';
+import '../../shared/dialog/course_detail_dialog.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../services/attendance/course_stats_service.dart';
-import '../../../ui/attendance/views/attendance_cards_view.dart';
-import '../../../ui/attendance/views/attendance_table_view.dart';
-import '../../../ui/shared/error_placeholder.dart';
+import 'attendance_cards_view.dart';
+import 'attendance_table_view.dart';
+import '../../shared/views/refreshable_view.dart';
 
-class AttendancePageMain extends StatefulWidget {
-  const AttendancePageMain({super.key});
+class AttendancePageView extends StatefulWidget {
+  const AttendancePageView({super.key});
 
   @override
-  State<AttendancePageMain> createState() => _AttendancePageMainState();
+  State<AttendancePageView> createState() => _AttendancePageViewState();
 }
 
-class _AttendancePageMainState extends State<AttendancePageMain> {
+class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
   final AttendanceService _attendanceService = AttendanceService();
   final CourseStatsService _courseStatsService = CourseStatsService();
   AttendanceResponse? _data;
-  bool _isLoading = true;
-  String? _errorMessage;
   DateTime? _startDate;
   DateTime? _endDate;
   List<CourseStats>? _cachedCourseStats;
@@ -36,56 +34,30 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
     super.initState();
     _endDate = DateTime.now();
     _startDate = DateTime(_endDate!.year - 1, _endDate!.month, _endDate!.day);
-    _loadAttendance();
   }
 
-  Future<void> _loadAttendance() async {
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  @override
+  Future<void> fetchData({bool refresh = false}) async {
     try {
       final resp = await _attendanceService.fetchAttendance(
         startDate: _startDate,
         endDate: _endDate,
+        refresh: refresh,
       );
       if (!mounted) return;
-      setState(() {
-        _data = resp;
-        _isLoading = false;
-        // Build and cache sorted days once per load
-        _sortedDaysCache = [...resp.recordOfDays]
-          ..sort((a, b) => b.date.compareTo(a.date));
-      });
+      
+      // Update data without setState - RefreshableView handles the state
+      _data = resp;
+      // Build and cache sorted days once per load
+      _sortedDaysCache = [...resp.recordOfDays]
+        ..sort((a, b) => b.date.compareTo(a.date));
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
+      rethrow;
     }
   }
-
-  String _formatDate(DateTime d) {
-    final mm = d.month.toString().padLeft(2, '0');
-    final dd = d.day.toString().padLeft(2, '0');
-    return '${d.year}-$mm-$dd';
-  }
-
-  // Kind text mapping is provided by AttendanceConstants.kindText
 
   @override
-  Widget build(BuildContext context) {
-    return Column(children: [Expanded(child: _buildContent())]);
-  }
-
-  Widget _buildContent() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    if (_errorMessage != null) {
-      return ErrorPlaceholder(title: 'Failed to load attendance', errorMessage: _errorMessage!, onRetry: _loadAttendance);
-    }
+  Widget buildContent(BuildContext context) {
     final data = _data;
     if (data == null || data.recordOfDays.isEmpty) {
       return const Center(child: Text('No attendance records'));
@@ -226,6 +198,20 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
     );
   }
 
+  @override
+  bool get isEmpty => _data?.recordOfDays.isEmpty ?? true;
+
+  @override
+  String get errorTitle => 'Failed to load attendance';
+
+  String _formatDate(DateTime d) {
+    final mm = d.month.toString().padLeft(2, '0');
+    final dd = d.day.toString().padLeft(2, '0');
+    return '${d.year}-$mm-$dd';
+  }
+
+  // Kind text mapping is provided by AttendanceConstants.kindText
+
   Widget _buildDatePickers(BuildContext context) {
     final String startLabel = _startDate != null
         ? _formatDate(_startDate!)
@@ -253,7 +239,7 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
               setState(() {
                 _startDate = picked;
               });
-              await _loadAttendance();
+              await loadData();
             }
           },
           child: Text(startLabel),
@@ -275,7 +261,7 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
               setState(() {
                 _endDate = picked;
               });
-              await _loadAttendance();
+              await loadData();
             }
           },
           child: Text(endLabel),
@@ -430,3 +416,4 @@ class _AttendancePageMainState extends State<AttendancePageMain> {
     );
   }
 }
+

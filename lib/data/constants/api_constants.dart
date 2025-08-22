@@ -40,7 +40,7 @@ class ApiConstants {
   static const String attendanceUrl = '/legacy/students/my/attendance/';
   
   // Homework endpoint  
-  // parameters: fy (academic year), courseid (optional), duedate (optional), duedate2 (optional)
+  // parameters: year (academic year)
   static const String homeworkUrl = '/legacy/students/my/homework/';
   
   // Reports endpoints

@@ -94,6 +94,7 @@ class HttpService {
     Map<String, dynamic>? body,
     Map<String, String> headers = const {},
     bool refresh = false,
+    bool followRedirects = true,
   }) async {
     Options options = Options();
     if(refresh) {
@@ -104,6 +105,7 @@ class HttpService {
       ...headers,
       'Referer': ApiConstants.legacyCMSReferer,
     };
+    options.followRedirects = followRedirects;
     final url = '${ApiConstants.legacyCMSBaseUrl}$endpoint';
     return _dio.post(url, data: body, options: options);
   }
@@ -113,6 +115,7 @@ class HttpService {
     String endpoint, {
     Map<String, String> headers = const {},
     bool refresh = false,
+    bool followRedirects = true,
   }) async {
     Options options = Options();
     if(refresh) {
@@ -123,6 +126,7 @@ class HttpService {
       ...headers,
       'Referer': ApiConstants.legacyCMSReferer,
     };
+    options.followRedirects = followRedirects;
     return _dio.get('${ApiConstants.legacyCMSBaseUrl}$endpoint', options: options);
   }
 

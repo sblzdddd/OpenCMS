@@ -34,6 +34,8 @@ Future<bool> refreshLegacyCookies(AuthServiceBase authService) async {
     // First hit without following redirects to capture initial Set-Cookie on 302
     final visitResp = await authService.httpService.getLegacy(
       legacyUrl,
+      refresh: true,
+      followRedirects: false,
     );
 
     // Success if we no longer see the loading placeholder

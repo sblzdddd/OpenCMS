@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class GpaPage extends StatelessWidget {
-  const GpaPage({super.key});
+class MyGpaView extends StatelessWidget {
+  const MyGpaView({super.key});
 
   @override
   Widget build(BuildContext context) {

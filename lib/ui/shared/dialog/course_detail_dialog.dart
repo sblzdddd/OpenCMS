@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../data/models/attendance/course_stats_response.dart';
-import 'error_placeholder.dart';
+import '../../../data/models/attendance/course_stats_response.dart';
+import '../error/error_placeholder.dart';
 
 /// Dialog to display course details and attendance statistics
 class CourseDetailDialog extends StatelessWidget {

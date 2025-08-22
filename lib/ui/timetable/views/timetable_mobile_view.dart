@@ -3,8 +3,8 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
-import '../../../ui/shared/timetable_card.dart';
-import 'day_header.dart';
+import '../../shared/timetable_card.dart';
+import '../components/day_header.dart';
 
 class TimetableMobileView extends StatefulWidget {
   final ScrollController scrollController;

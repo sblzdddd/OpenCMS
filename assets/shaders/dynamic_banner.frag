@@ -41,7 +41,7 @@ float filmGrainNoise(in vec2 uv) {
 }
 
 void main() {
-    vec2 uv = gl_FragCoord.xy / uResolution.xy;
+    vec2 uv = FlutterFragCoord().xy / uResolution.xy;
     float aspectRatio = uResolution.x / uResolution.y;
     vec2 tuv = uv - .5;
 
@@ -56,15 +56,10 @@ void main() {
     float speed = uTime * 2.;
     tuv.x += sin(tuv.y*frequency+speed)/amplitude;
     tuv.y += sin(tuv.x*frequency*1.5+speed)/(amplitude*.5);
-    
-    vec3 color1 = uColor1;
-    vec3 color2 = uColor2;
-    vec3 color3 = uColor3;
-    vec3 color4 = uColor4;
 
     // Blend the gradient colors and apply transformations
-    vec3 layer1 = mix(color3, color2, smoothstep(-.3, .2, (tuv*Rot(radians(-5.))).x));
-    vec3 layer2 = mix(color4, color1, smoothstep(-.3, .2, (tuv*Rot(radians(-5.))).x));
+    vec3 layer1 = mix(uColor3, uColor2, smoothstep(-.3, .2, (tuv*Rot(radians(-5.))).x));
+    vec3 layer2 = mix(uColor4, uColor1, smoothstep(-.3, .2, (tuv*Rot(radians(-5.))).x));
     
     vec3 color = mix(layer1, layer2, smoothstep(.5, -.3, tuv.y));
 

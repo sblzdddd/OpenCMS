@@ -1,50 +1,51 @@
 import 'package:flutter/material.dart';
 import '../../../services/reports/reports_service.dart';
 import '../../../data/models/reports/reports.dart';
-import '../../../ui/shared/error_placeholder.dart';
+import '../../shared/views/refreshable_page.dart';
+import '../mark_components_view.dart';
 
-class ReportDetailPage extends StatefulWidget {
+class ReportDetailView extends StatefulWidget {
   final Exam exam;
 
-  const ReportDetailPage({super.key, required this.exam});
+  const ReportDetailView({super.key, required this.exam});
 
   @override
-  State<ReportDetailPage> createState() => _ReportDetailPageState();
+  State<ReportDetailView> createState() => _ReportDetailViewState();
 }
 
-class _ReportDetailPageState extends State<ReportDetailPage> {
+class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
   final ReportsService _reportsService = ReportsService();
   ReportDetail? _reportDetail;
-  bool _isLoading = true;
-  String? _error;
 
   @override
-  void initState() {
-    super.initState();
-    _loadReportDetail();
+  String get appBarTitle => 'Report Detail';
+
+  @override
+  Future<void> fetchData({bool refresh = false}) async {
+    final detail = await _reportsService.fetchReportDetail(widget.exam.id, refresh: refresh);
+    setState(() {
+      _reportDetail = detail;
+    });
   }
 
-  Future<void> _loadReportDetail() async {
-    try {
-      setState(() {
-        _isLoading = true;
-        _error = null;
-      });
-
-      final detail = await _reportsService.fetchReportDetail(widget.exam.id);
-      setState(() {
-        _reportDetail = detail;
-        _isLoading = false;
-      });
-    } catch (e) {
-      print(e);
-      if(!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
+  @override
+  Widget buildPageContent(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(),
+        _buildCourseMarks(),
+        _buildPSatScores(),
+        MarkComponentsView(markComponents: _reportDetail?.markComponent ?? []),
+      ],
+    );
   }
+
+  @override
+  bool get isEmpty => _reportDetail == null;
+
+  @override
+  String get errorTitle => 'Error loading report details';
 
   Widget _buildHeader() {
     return Container(
@@ -103,6 +104,7 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 16),
         const Text(
           'Course Marks',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -134,17 +136,19 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
                           ),
                         ),
                         Text(
-                          '${course.grade} (${course.mark})',
+                          course.mark.isEmpty ? '${course.grade}' : '${course.grade} (${course.mark})',
                           style: TextStyle(
                             fontSize: 20,
-                            color: _getMarkColor(course.mark),
+                            color: course.mark.isEmpty ? _getGradeColor(course.grade) : _getMarkColor(course.mark),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Text('Avg: ${course.average}'),
+                    if (course.mark.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text('Avg: ${course.average}'),
+                    ],
                     if (course.teacherName.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text('Teacher(s): ${course.teacherName}'),
@@ -189,15 +193,15 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            'PSAT Scores',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
+        const SizedBox(height: 16),
+        Text(
+          'PSAT Scores',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        const SizedBox(height: 16),
         Card(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          elevation: 0,
+          color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -239,87 +243,21 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     return Column(
       children: [
         Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500),
+        ),
+        Text(
           score,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.blue,
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-        ),
-        Text(
-          '/ $max',
-          style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
         ),
       ],
     );
   }
 
-  Widget _buildMarkComponents() {
-    if (_reportDetail?.markComponent.isEmpty ?? true) {
-      return const SizedBox.shrink();
-    }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.all(16),
-          child: Text(
-            'Mark Components',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _reportDetail!.markComponent.length,
-          itemBuilder: (context, index) {
-            final component = _reportDetail!.markComponent[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      component.component,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text('Board: ${component.board}'),
-                        const SizedBox(width: 16),
-                        Text('Syllabus: ${component.syllabus}'),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Text('Adjusted: ${component.adjustedMark}'),
-                        const SizedBox(width: 16),
-                        Text('Final: ${component.finalMark}'),
-                        const SizedBox(width: 16),
-                        Text('Grade: ${component.grade}'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
 
   Color _getMarkColor(String mark) {
     final markNum = double.tryParse(mark);
@@ -340,41 +278,11 @@ class _ReportDetailPageState extends State<ReportDetailPage> {
     return Colors.red;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Report Detail'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadReportDetail,
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-          ? ErrorPlaceholder(
-              title: 'Error loading report details',
-              errorMessage: _error!,
-              onRetry: _loadReportDetail,
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildCourseMarks(),
-                  const SizedBox(height: 24),
-                  _buildPSatScores(),
-                  const SizedBox(height: 24),
-                  _buildMarkComponents(),
-                ],
-              ),
-            ),
-    );
+  Color _getGradeColor(String grade) {
+    if (grade == 'A') return Colors.green;
+    if (grade == 'B') return Colors.blue;
+    if (grade == 'C') return Colors.orange;
+    if (grade == 'D') return Colors.yellow.shade700;
+    return Colors.red;
   }
 }

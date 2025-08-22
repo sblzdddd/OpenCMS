@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'attendance.dart';
-import 'homework.dart';
-import 'web_cms.dart';
-import '../../data/constants/quick_actions_constants.dart';
-import '../../ui/shared/navigations/app_navigation_controller.dart';
-import 'timetable.dart';
-import '../../pages/settings_page.dart';
-import 'reports.dart';
+import 'actions/attendance.dart';
+import 'actions/homework.dart';
+import 'actions/web_cms.dart';
+import '../data/constants/quick_actions_constants.dart';
+import '../ui/shared/navigations/app_navigation_controller.dart';
+import 'actions/timetable.dart';
+import 'settings_page.dart';
+import 'actions/reports.dart';
 
 String _actionTitle(String id) {
   return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
@@ -53,8 +53,8 @@ class ActionPageScaffold extends StatelessWidget {
   }
 }
 
-class CourseTimetablePage extends StatelessWidget {
-  const CourseTimetablePage({super.key});
+class CourseTimetableView extends StatelessWidget {
+  const CourseTimetableView({super.key});
   @override
   Widget build(BuildContext context) {
     // Try to handle via navigation first
@@ -65,8 +65,8 @@ class CourseTimetablePage extends StatelessWidget {
   }
 }
 
-class ExamTimetablePage extends StatelessWidget {
-  const ExamTimetablePage({super.key});
+class ExamTimetableView extends StatelessWidget {
+  const ExamTimetableView({super.key});
   @override
   Widget build(BuildContext context) {
     // Try to handle via navigation first and switch to inner tab 2
@@ -155,8 +155,8 @@ class StudentProfilePage extends StatelessWidget {
   Widget build(BuildContext context) => const ActionPageScaffold('student_profile');
 }
 
-class CourseStatsPage extends StatelessWidget {
-  const CourseStatsPage({super.key});
+class CourseStatsView extends StatelessWidget {
+  const CourseStatsView({super.key});
   @override
   Widget build(BuildContext context) => const ActionPageScaffold('course_stats');
 }

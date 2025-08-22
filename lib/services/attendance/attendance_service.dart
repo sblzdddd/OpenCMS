@@ -14,6 +14,7 @@ class AttendanceService {
   Future<AttendanceResponse> fetchAttendance({
     DateTime? startDate,
     DateTime? endDate,
+    bool refresh=false,
   }) async {
     final DateTime today = DateTime.now();
     final DateTime start = startDate ?? DateTime(today.year - 1, today.month, today.day);
@@ -26,6 +27,7 @@ class AttendanceService {
 
     final response = await _httpService.get(
       url,
+      refresh: refresh,
     );
 
     final Map<String, dynamic> jsonData = response.data as Map<String, dynamic>;

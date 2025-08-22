@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../services/attendance/course_stats_service.dart';
-import '../../../ui/shared/course_detail_dialog.dart';
-import '../../../ui/shared/error_placeholder.dart';
+import '../../shared/dialog/course_detail_dialog.dart';
+import '../../shared/error/error_placeholder.dart';
 
-class CourseStatsPage extends StatefulWidget {
-  const CourseStatsPage({super.key});
+class CourseStatsView extends StatefulWidget {
+  const CourseStatsView({super.key});
 
   @override
-  State<CourseStatsPage> createState() => _CourseStatsPageState();
+  State<CourseStatsView> createState() => _CourseStatsViewState();
 }
 
-class _CourseStatsPageState extends State<CourseStatsPage> {
+class _CourseStatsViewState extends State<CourseStatsView> {
   final CourseStatsService _courseStatsService = CourseStatsService();
 
   List<CourseStats>? _courseStats;

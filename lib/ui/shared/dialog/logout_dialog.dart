@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../services/auth/auth_service.dart';
-import 'navigations/app_navigation_controller.dart';
+import '../../../services/auth/auth_service.dart';
+import '../navigations/app_navigation_controller.dart';
 
 void showLogoutDialog(BuildContext context) {
   showDialog(

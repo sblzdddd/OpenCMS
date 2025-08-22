@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/constants/period_constants.dart';
-import 'timetable/course_timetable_page.dart';
-import 'timetable/exam_timetable_page.dart';
+import '../../ui/shared/academic_year_dropdown.dart';
+import '../../ui/timetable/views/course_timetable_view.dart';
+import '../../ui/timetable/views/exam_timetable_view.dart';
+import '../../ui/shared/views/tabbed_page_base.dart';
 
 class TimetablePage extends StatefulWidget {
   final int initialTabIndex;
@@ -12,27 +13,14 @@ class TimetablePage extends StatefulWidget {
   State<TimetablePage> createState() => _TimetablePageState();
 }
 
-class _TimetablePageState extends State<TimetablePage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _TimetablePageState extends State<TimetablePage> {
   late AcademicYear _selectedYear;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: widget.initialTabIndex,
-    );
     _selectedYear =
         PeriodConstants.getAcademicYears().first; // Default to current year
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   void _onYearChanged(AcademicYear? newYear) {
@@ -45,53 +33,29 @@ class _TimetablePageState extends State<TimetablePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Timetable'),
-	        actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 8.0,
-            ),
-            child: DropdownButton<AcademicYear>(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 4.0,
-              ),
-              elevation: 1,
-              borderRadius: BorderRadius.circular(12),
-              value: _selectedYear,
-              onChanged: _onYearChanged,
-              items: PeriodConstants.getAcademicYears()
-                  .map(
-                    (year) => DropdownMenuItem(
-                      value: year,
-                      child: Text(year.displayName),
-                    ),
-                  )
-                  .toList(),
-              underline: Container(),
-              icon: const Icon(Symbols.arrow_drop_down_rounded),
-            ),
+    return TabbedPageBase(
+      title: 'Timetable',
+      initialTabIndex: widget.initialTabIndex,
+      actions: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 8.0,
           ),
-        ],
-	        bottom: TabBar(
-            
-	          controller: _tabController,
-	          tabs: const [
-	            Tab(text: 'Course Timetable'),
-	            Tab(text: 'Exam Timetable'),
-	          ],
-	        ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          CourseTimetablePage(selectedYear: _selectedYear),
-          ExamTimetablePage(selectedYear: _selectedYear),
-        ],
-      ),
+          child: AcademicYearDropdown(
+            selectedYear: _selectedYear,
+            onChanged: _onYearChanged,
+          ),
+        ),
+      ],
+      tabs: const [
+        Tab(text: 'Course Timetable'),
+        Tab(text: 'Exam Timetable'),
+      ],
+      tabViews: [
+        CourseTimetableView(selectedYear: _selectedYear),
+        ExamTimetableView(selectedYear: _selectedYear),
+      ],
     );
   }
 }

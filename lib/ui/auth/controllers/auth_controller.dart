@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/services.dart';
 import '../../shared/custom_snackbar/snackbar_utils.dart';
-import '../../shared/error_dialog.dart';
+import '../../shared/error/error_dialog.dart';
 
 class AuthController extends ChangeNotifier {
   final AuthService _authService = AuthService();

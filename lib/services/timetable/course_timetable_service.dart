@@ -17,6 +17,7 @@ class CourseTimetableService {
   Future<TimetableResponse> fetchCourseTimetable({
     required int year,
     required String date,
+    bool refresh=false,
   }) async {
     try {
       print('CourseTimetableService: Fetching timetable for year $year, date $date');
@@ -25,6 +26,7 @@ class CourseTimetableService {
       
       final response = await _httpService.get(
         url,
+        refresh: refresh,
       );
 
       final data = response.data;

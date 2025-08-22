@@ -16,11 +16,11 @@ class ReportsService {
   /// Fetch all reports grouped by grade level
   /// 
   /// Returns a list of grade groups, each containing exams for that grade
-  Future<ReportsListResponse> fetchReportsList() async {
+  Future<ReportsListResponse> fetchReportsList({bool refresh=false}) async {
     try {
       print('ReportsService: Fetching reports list');
       
-      final response = await _httpService.get(ApiConstants.reportsListUrl);
+      final response = await _httpService.get(ApiConstants.reportsListUrl, refresh: refresh);
 
       if (response.statusCode == 200 || response.statusCode == 304) {
         final jsonData = response.data;
@@ -42,11 +42,11 @@ class ReportsService {
   /// 
   /// [examId] - ID of the exam to fetch details for
   /// Returns detailed report data based on the exam type
-  Future<ReportDetail> fetchReportDetail(int examId) async {
+  Future<ReportDetail> fetchReportDetail(int examId, {bool refresh = false}) async {
     try {
       print('ReportsService: Fetching report detail for exam $examId');
       
-      final response = await _httpService.get(ApiConstants.reportsDetailUrl(examId));
+      final response = await _httpService.get(ApiConstants.reportsDetailUrl(examId), refresh: refresh);
 
       if (response.statusCode == 200 || response.statusCode == 304) {
         final jsonData = response.data;

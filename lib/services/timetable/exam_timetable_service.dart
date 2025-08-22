@@ -15,18 +15,24 @@ class ExamTimetableService {
   Future<List<ExamTimetableEntry>> fetchExamTimetable({
     required int year,
     required int month,
+    bool refresh=false,
   }) async {
     final username = await _authService.fetchCurrentUsername();
     if (username.isEmpty) {
       throw Exception('Missing username. Please login again.');
     }
+    await _authService.refreshLegacyCookies();
+    print('fetchExamTimetable: $username');
 
     // Note the double ampersand (as per provided endpoint)
     final endpoint = '/$username/view/examtimetable/?y=$year&&m=$month';
 
     final response = await _httpService.getLegacy(
       endpoint,
+      refresh: refresh,
     );
+
+    print('response: ${response.data}');
 
     if (response.statusCode != 200 && response.statusCode != 304) {
       throw Exception('Failed to fetch exam timetable: ${response.statusCode}');

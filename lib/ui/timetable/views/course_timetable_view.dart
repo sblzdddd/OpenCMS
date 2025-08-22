@@ -4,24 +4,23 @@ import 'package:intl/intl.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../services/timetable/course_timetable_service.dart';
-import '../../../ui/timetable/components/day_tabs.dart';
-// import '../../../ui/timetable/components/timetable_table_view.dart';
-import '../../../ui/timetable/components/timetable_mobile_view.dart';
+import '../components/day_tabs.dart';
+import 'timetable_mobile_view.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
-import '../../../ui/shared/course_detail_dialog.dart';
-import '../../../ui/shared/error_placeholder.dart';
+import '../../shared/dialog/course_detail_dialog.dart';
+import '../../shared/views/refreshable_view.dart';
 
-class CourseTimetablePage extends StatefulWidget {
+class CourseTimetableView extends StatefulWidget {
   final AcademicYear selectedYear;
 
-  const CourseTimetablePage({super.key, required this.selectedYear});
+  const CourseTimetableView({super.key, required this.selectedYear});
 
   @override
-  State<CourseTimetablePage> createState() => _CourseTimetablePageState();
+  State<CourseTimetableView> createState() => _CourseTimetableViewState();
 }
 
-class _CourseTimetablePageState extends State<CourseTimetablePage>
+class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
     with SingleTickerProviderStateMixin {
   late TabController _dayTabController;
   final CourseTimetableService _timetableService = CourseTimetableService();
@@ -29,11 +28,8 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
   late final ScrollController _scrollController;
   final List<GlobalKey> _dayKeys = List.generate(5, (_) => GlobalKey());
   bool _isAnimatingToTab = false;
-  bool _hasScrolledToToday = false;
 
   TimetableResponse? _timetableData;
-  bool _isLoading = true;
-  String? _errorMessage;
   int _selectedDayIndex = 0;
   List<DateTime> _dayDates = const [];
   int _todayIndex = -1;
@@ -46,7 +42,6 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     _dayTabController.addListener(_onDayTabChanged);
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
-    _loadTimetable();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToToday();
     });
@@ -62,21 +57,42 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
   }
 
   @override
-  void didUpdateWidget(CourseTimetablePage oldWidget) {
+  void didUpdateWidget(CourseTimetableView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedYear.year != widget.selectedYear.year) {
       _cachedCourseStats = null;
-      _loadTimetable();
+      loadData();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToToday();
       });
     }
   }
 
+  bool _areDayKeysReady() {
+    return _dayKeys.every((key) => key.currentContext != null);
+  }
+
   void _scrollToToday() {
+    if (!mounted) {
+      print('Warning: _scrollToToday called but widget is not mounted');
+      return;
+    }
     if (_todayIndex >= 0 && _todayIndex < _dayKeys.length) {
-      _scrollToDay(_todayIndex, jump: true);
-      _dayTabController.animateTo(_todayIndex);
+      // Ensure the widget tree is built before attempting to scroll
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _areDayKeysReady()) {
+          _scrollToDay(_todayIndex, jump: true);
+          _dayTabController.animateTo(_todayIndex);
+        } else if (mounted) {
+          // Retry after a short delay if keys aren't ready
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted && _areDayKeysReady()) {
+              _scrollToDay(_todayIndex, jump: true);
+              _dayTabController.animateTo(_todayIndex);
+            }
+          });
+        }
+      });
     }
   }
 
@@ -94,43 +110,56 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
     if (_isAnimatingToTab) return;
     if (!_scrollController.hasClients) return;
 
-    const double triggerOffset = 32.0;
-    final double currentOffset = _scrollController.offset;
-    int newIndex = 0;
+    try {
+      const double triggerOffset = 32.0;
+      final double currentOffset = _scrollController.offset;
+      int newIndex = 0;
 
-    for (int i = 0; i < _dayKeys.length; i++) {
-      final headerOffset = _getHeaderOffset(i);
-      if (headerOffset == null) continue;
-      if (headerOffset - currentOffset <= triggerOffset) {
-        newIndex = i;
-      } else {
-        break;
+      for (int i = 0; i < _dayKeys.length; i++) {
+        final headerOffset = _getHeaderOffset(i);
+        if (headerOffset == null) continue;
+        if (headerOffset - currentOffset <= triggerOffset) {
+          newIndex = i;
+        } else {
+          break;
+        }
       }
-    }
 
-    if (newIndex != _selectedDayIndex) {
-      setState(() {
-        _selectedDayIndex = newIndex;
-      });
-      if (_dayTabController.index != newIndex) {
-        _dayTabController.animateTo(newIndex);
+      if (newIndex != _selectedDayIndex) {
+        setState(() {
+          _selectedDayIndex = newIndex;
+        });
+        if (_dayTabController.index != newIndex) {
+          _dayTabController.animateTo(newIndex);
+        }
       }
+    } catch (e) {
+      print('Error in scroll listener: $e');
     }
   }
 
   double? _getHeaderOffset(int index) {
     if (index < 0 || index >= _dayKeys.length) return null;
+    
     final ctx = _dayKeys[index].currentContext;
     if (ctx == null) return null;
-    final RenderObject renderObject = ctx.findRenderObject()!;
-    final RenderAbstractViewport viewport = RenderAbstractViewport.of(
-      renderObject,
-    );
-    final RevealedOffset revealed = viewport.getOffsetToReveal(
-      renderObject,
-      0.0,
-    );
-    return revealed.offset;
+    
+    try {
+      final RenderObject? renderObject = ctx.findRenderObject();
+      if (renderObject == null) return null;
+      
+      final RenderAbstractViewport? viewport = RenderAbstractViewport.of(renderObject);
+      if (viewport == null) return null;
+      
+      final RevealedOffset revealed = viewport.getOffsetToReveal(
+        renderObject,
+        0.0,
+      );
+      return revealed.offset;
+    } catch (e) {
+      print('Error getting header offset for index $index: $e');
+      return null;
+    }
   }
 
   Future<void> _scrollToDay(int index, {bool jump = false}) async {
@@ -140,67 +169,77 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
         _selectedDayIndex = index;
       });
     }
+    
+    // Wait for the next frame to ensure the widget tree is built
+    await Future.delayed(Duration.zero);
+    
+    // Check if day keys are ready
+    if (!_areDayKeysReady()) {
+      print('Day keys are not ready yet, skipping scroll');
+      return;
+    }
+    
     _isAnimatingToTab = true;
-    double? headerOffset;
     try {
-      headerOffset = _getHeaderOffset(index);
-      if (headerOffset == null || !_scrollController.hasClients) {
-        throw Exception('Header offset is null or scroll controller has no clients');
-      } else {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (!mounted) return;
-          headerOffset = _getHeaderOffset(index);
-          if (headerOffset == null || !_scrollController.hasClients) {
-            throw Exception('Header offset is null or scroll controller has no clients');
-          }
-        });
+      // Check if scroll controller has clients
+      if (!_scrollController.hasClients) {
+        print('Scroll controller has no clients, skipping scroll');
+        return;
       }
-      if(headerOffset == null) throw Exception('Header offset is null');
-      if(jump) {
-        _scrollController.jumpTo(headerOffset!);
+      
+      // Get header offset
+      final headerOffset = _getHeaderOffset(index);
+      if (headerOffset == null) {
+        print('Header offset is null for index $index, skipping scroll');
+        return;
+      }
+      
+      // Perform the scroll
+      if (jump) {
+        _scrollController.jumpTo(headerOffset);
       } else {
-      await _scrollController.animateTo(
-        headerOffset!,
+        await _scrollController.animateTo(
+          headerOffset,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       }
+    } catch (e) {
+      print('Error scrolling to day $index: $e');
     } finally {
       _isAnimatingToTab = false;
     }
   }
 
-  Future<void> _loadTimetable() async {
+  @override
+  Future<void> fetchData({bool refresh = false}) async {
+    // Use today's date for the API call
+    final today = DateTime.now();
+    final dateString = DateFormat('yyyy-MM-dd').format(today);
+
+    final timetable = await _timetableService.fetchCourseTimetable(
+      year: widget.selectedYear.year,
+      date: dateString,
+      refresh: refresh,
+    );
+
+    if (!mounted) return;
     setState(() {
-      _isLoading = true;
-      _errorMessage = null;
+      _timetableData = timetable;
+      _computeWeekDates();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _scrollToToday();
+        }
+      });
     });
-
-    try {
-      // Use today's date for the API call
-      final today = DateTime.now();
-      final dateString = DateFormat('yyyy-MM-dd').format(today);
-
-      final timetable = await _timetableService.fetchCourseTimetable(
-        year: widget.selectedYear.year,
-        date: dateString,
-      );
-
-      if (!mounted) return;
-      setState(() {
-        _timetableData = timetable;
-        _isLoading = false;
-        _computeWeekDates();
-        WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToToday());
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
-    }
   }
+
+  @override
+  bool get isEmpty => _timetableData == null || _timetableData!.weekdays.isEmpty;
+
+  @override
+  String get errorTitle => 'Failed to load timetable';
 
   DateTime? _parseMondayDate(String mondayStr) {
     try {
@@ -240,19 +279,7 @@ class _CourseTimetablePageState extends State<CourseTimetablePage>
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_errorMessage != null) {
-      return ErrorPlaceholder(
-        title: 'Failed to load timetable',
-        errorMessage: _errorMessage!,
-        onRetry: _loadTimetable,
-      );
-    }
-
+  Widget buildContent(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
