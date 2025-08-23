@@ -55,14 +55,14 @@ class MarkComponentsView extends StatelessWidget {
           
           return Card(
             margin: const EdgeInsets.only(bottom: 16),
-            elevation: 2,
+            elevation: 0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Syllabus Header
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                     borderRadius: const BorderRadius.only(
@@ -74,7 +74,7 @@ class MarkComponentsView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${firstComponent.syllabus}',
+                        firstComponent.syllabus,
                         style: TextStyle(
                           fontSize: 18,
                           color: Theme.of(context).colorScheme.primary,
@@ -84,10 +84,59 @@ class MarkComponentsView extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         '${firstComponent.board} - ${firstComponent.syllabusCode}',
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
                         ),
                       ),
+                      const SizedBox(height: 8),
+                      Row(
+                       children: [
+                         // Component
+                         Expanded(
+                           flex: 2,
+                           child: Text(
+                             'Component',
+                             style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                             ),
+                           ),
+                         ),
+                         // Paper Mark
+                         Expanded(
+                           flex: 1,
+                           child: Text(
+                             'Adjusted',
+                             textAlign: TextAlign.center,
+                             style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                             ),
+                           ),
+                         ),
+                         // Weighted Mark
+                         Expanded(
+                           flex: 1,
+                           child: Text(
+                             'Final',
+                             textAlign: TextAlign.center,
+                             style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                             ),
+                           ),
+                         ),
+                         // Grade
+                         Expanded(
+                           flex: 1,
+                           child: Text(
+                             'Grade',
+                             textAlign: TextAlign.center,
+                             style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                             ),
+                           ),
+                         ),
+                       ],
+                     ),
                     ],
                   ),
                 ),
@@ -140,7 +189,7 @@ class MarkComponentsView extends StatelessWidget {
                        ],
                      ),
                    );
-                 }).toList(),
+                 }),
                 // Syllabus Total
                 Container(
                   width: double.infinity,
@@ -203,7 +252,7 @@ class MarkComponentsView extends StatelessWidget {
               ],
             ),
           );
-        }).toList(),
+        }),
         const SizedBox(height: 24),
       ],
     );

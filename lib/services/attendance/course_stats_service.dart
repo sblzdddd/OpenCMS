@@ -15,15 +15,14 @@ class CourseStatsService {
   /// [year] - Academic year (e.g., 2025 for 2025-2026)
   Future<List<CourseStats>> fetchCourseStats({
     required int year,
+    bool refresh = false,
   }) async {
     try {
       print('CourseTimetableService: Fetching course stats for year $year');
       
       final url = '${ApiConstants.courseStatsUrl}?year=$year';
       
-      final response = await _httpService.get(
-        url,
-      );
+      final response = await _httpService.get(url, refresh: refresh);
 
       try {
         final jsonData = response.data;

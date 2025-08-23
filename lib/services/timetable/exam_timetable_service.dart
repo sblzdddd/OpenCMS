@@ -21,7 +21,7 @@ class ExamTimetableService {
     if (username.isEmpty) {
       throw Exception('Missing username. Please login again.');
     }
-    await _authService.refreshLegacyCookies();
+    // await _authService.refreshLegacyCookies();
     print('fetchExamTimetable: $username');
 
     // Note the double ampersand (as per provided endpoint)

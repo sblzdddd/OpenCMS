@@ -66,6 +66,10 @@ class AcademicYearDropdown extends StatelessWidget {
       value: selectedYear,
       onChanged: enabled ? onChanged : null,
       isExpanded: isExpanded,
+      style: TextStyle(
+        fontSize: 16,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
       items: PeriodConstants.getAcademicYears()
           .map(
             (year) => DropdownMenuItem(
@@ -86,7 +90,10 @@ class AcademicYearDropdown extends StatelessWidget {
         children: [
           Text(
             label!,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 8),
           dropdown,

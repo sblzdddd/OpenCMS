@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../components/banner_card.dart';
-import '../../components/homework_card.dart';
+import '../homework_widget.dart';
 import '../../components/latest_assessment_card.dart';
 import '../../components/notice_card.dart';
 import '../quick_actions/reorderable_wrap.dart';
@@ -163,6 +163,7 @@ class _DashboardGridState extends State<DashboardGrid> {
           runSpacing: spacing,
           alignment: WrapAlignment.start,
           isEditMode: true,
+          wrapId: 'dashboard_grid', // Unique identifier for this wrap
           onReorderStart: () {
             setState(() {
               _isReordering = true;

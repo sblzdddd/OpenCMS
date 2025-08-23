@@ -24,6 +24,8 @@ _AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
 Future<void> handleWindowClose() async {
   if (globalAppWindow != null) {
     await globalAppWindow!.hide();
+  } else {
+    print('globalAppWindow is null');
   }
 }
 

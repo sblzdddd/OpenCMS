@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/services/auth/auth_service.dart';
-import '../dialog/logout_dialog.dart';
+import '../dialog/confirm_dialog.dart';
 
 class ErrorPlaceholder extends StatelessWidget {
   ErrorPlaceholder({

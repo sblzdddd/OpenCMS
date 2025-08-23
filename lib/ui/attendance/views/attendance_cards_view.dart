@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../shared/timetable_card.dart';
@@ -123,17 +122,9 @@ class AttendanceCardsView extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                Symbols.calendar_today_rounded,
-                size: 18,
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-              ),
-              const SizedBox(width: 8),
-              Text(_formatDate(day.date), style: Theme.of(context).textTheme.titleMedium),
-            ],
-          ),
+          Text(_formatDate(day.date), style: TextStyle(
+            fontSize: 16,
+          )),
           const SizedBox(height: 8),
           Text('No attendance issues'),
         ],
@@ -145,16 +136,10 @@ class AttendanceCardsView extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              Symbols.calendar_today_rounded,
-              size: 18,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              _formatDate(day.date),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(_formatDate(day.date), style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            )),
             const Spacer(),
             Text('${day.absentCount.toStringAsFixed(1)} day'),
           ],

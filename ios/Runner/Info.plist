@@ -4,6 +4,10 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app needs access to your calendar to add events (e.g. exams, homeworks, etc.) to your schedule.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app needs access to your contacts to add events (e.g. exams, homeworks, etc.) to your schedule.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Opencms</string>
 	<key>CFBundleExecutable</key>

@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:add_2_calendar/add_2_calendar.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 import '../../../services/timetable/exam_timetable_service.dart';
@@ -74,15 +76,20 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
               ),
             ),
             for (final exam in items)
-              TimetableCard(
-                subject: exam.subject.isNotEmpty
-                    ? exam.subject
-                    : (exam.code.isNotEmpty ? exam.code : 'Exam'),
-                code: exam.code.isNotEmpty ? exam.code : '',
-                room: exam.room.isNotEmpty ? exam.room : 'TBA',
-                extraInfo: 'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
-                timespan: '${exam.startTime} - ${exam.endTime}',
-                periodText: '',
+              Builder(
+                builder: (cardContext) => TimetableCard(
+                  subject: exam.subject.isNotEmpty
+                      ? exam.subject
+                      : (exam.code.isNotEmpty ? exam.code : 'Exam'),
+                  code: exam.code.isNotEmpty ? exam.code : '',
+                  room: exam.room.isNotEmpty ? exam.room : 'TBA',
+                  extraInfo: 'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+                  timespan: '${exam.startTime} - ${exam.endTime}',
+                  periodText: '',
+                  onTap: () {
+                    _showExamOptionsMenu(cardContext, exam);
+                  },
+                ),
               ),
             const SizedBox(height: 8),
             if (index != sortedDates.length - 1) const Divider(height: 20),
@@ -130,6 +137,90 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       _selectedMonth = newMonth;
     });
     loadData(refresh: true);
+  }
+
+  void _showExamOptionsMenu(BuildContext context, ExamTimetableEntry exam) {
+    if(!(Platform.isAndroid || Platform.isIOS)) {
+      // TODO: Add schedule support for desktop platforms
+      return;
+    }
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    final cardBox = context.findRenderObject() as RenderBox;
+    final cardTopLeft = cardBox.localToGlobal(Offset.zero, ancestor: overlay);
+    final cardBottomLeft = cardBox.localToGlobal(
+      Offset(0, cardBox.size.height),
+      ancestor: overlay,
+    );
+    const verticalOffset = -8.0;
+    final left = cardTopLeft.dx;
+    final top = cardBottomLeft.dy + verticalOffset;
+    final position = RelativeRect.fromLTRB(
+      left,
+      top,
+      overlay.size.width - left,
+      overlay.size.height - top,
+    );
+
+    showMenu(
+      context: context,
+      position: position,
+      items: [
+        PopupMenuItem(
+          value: 'add_to_calendar',
+          child: Row(
+            children: [
+              Icon(Icons.calendar_today, size: 20),
+              const SizedBox(width: 8),
+              Text('Add schedule in system calendar'),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'add_to_calendar') {
+        _addExamToCalendar(exam);
+      }
+    });
+  }
+
+  void _addExamToCalendar(ExamTimetableEntry exam) {
+    // Parse the date and time from the exam entry
+    final dateParts = exam.date.split('-');
+    final timeParts = exam.startTime.split(':');
+    final endTimeParts = exam.endTime.split(':');
+    
+    if (dateParts.length == 3 && timeParts.length == 2 && endTimeParts.length == 2) {
+      final year = int.parse(dateParts[0]);
+      final month = int.parse(dateParts[1]);
+      final day = int.parse(dateParts[2]);
+      final startHour = int.parse(timeParts[0]);
+      final startMinute = int.parse(timeParts[1]);
+      final endHour = int.parse(endTimeParts[0]);
+      final endMinute = int.parse(endTimeParts[1]);
+      
+      final startDate = DateTime(year, month, day, startHour, startMinute);
+      final endDate = DateTime(year, month, day, endHour, endMinute);
+
+
+      
+      final Event event = Event(
+        title: exam.subject.isNotEmpty ? '${exam.subject} (${exam.code})' : (exam.code.isNotEmpty ? exam.code : 'Exam'),
+        description: '${exam.code.isNotEmpty ? 'Code: ${exam.code}\n' : ''}Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+        location: exam.room.isNotEmpty ? exam.room : 'TBA',
+        startDate: startDate,
+        endDate: endDate,
+        iosParams: IOSParams(
+          reminder: Duration(hours: 1),
+        ),
+        androidParams: AndroidParams(
+          emailInvites: [],
+        ),
+      );
+      print(event.toJson());
+      Add2Calendar.addEvent2Cal(event);
+    } else {
+      print('Invalid exam date: ${exam.date}');
+    }
   }
 
   @override

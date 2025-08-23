@@ -6,10 +6,13 @@ import '../../../data/models/timetable/timetable_response.dart';
 import '../../../services/timetable/course_timetable_service.dart';
 import '../components/day_tabs.dart';
 import 'timetable_mobile_view.dart';
+import 'timetable_calendar_view.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../shared/dialog/course_detail_dialog.dart';
 import '../../shared/views/refreshable_view.dart';
+
+enum _TimetableViewMode { mobile, calendar }
 
 class CourseTimetableView extends StatefulWidget {
   final AcademicYear selectedYear;
@@ -33,7 +36,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
   int _selectedDayIndex = 0;
   List<DateTime> _dayDates = const [];
   int _todayIndex = -1;
-  List<CourseStats>? _cachedCourseStats;
+  _TimetableViewMode _viewMode = _TimetableViewMode.mobile;
 
   @override
   void initState() {
@@ -60,7 +63,6 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
   void didUpdateWidget(CourseTimetableView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedYear.year != widget.selectedYear.year) {
-      _cachedCourseStats = null;
       loadData();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToToday();
@@ -148,7 +150,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       final RenderObject? renderObject = ctx.findRenderObject();
       if (renderObject == null) return null;
       
-      final RenderAbstractViewport? viewport = RenderAbstractViewport.of(renderObject);
+      final RenderAbstractViewport viewport = RenderAbstractViewport.of(renderObject);
       if (viewport == null) return null;
       
       final RevealedOffset revealed = viewport.getOffsetToReveal(
@@ -284,26 +286,57 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       builder: (context, constraints) {
         return Column(
           children: [
-            DayTabs(
-              controller: _dayTabController,
-              onTap: _scrollToDay,
-              labels: PeriodConstants.weekdayShortNames.sublist(0, 5),
-              todayIndex: _todayIndex,
-            ),
-            Expanded(
-              child: TimetableMobileView(
-                scrollController: _scrollController,
-                dayDates: _dayDates,
+            if (_viewMode == _TimetableViewMode.mobile)
+              DayTabs(
+                controller: _dayTabController,
+                onTap: _scrollToDay,
+                labels: PeriodConstants.weekdayShortNames.sublist(0, 5),
                 todayIndex: _todayIndex,
-                selectedDayIndex: _selectedDayIndex,
-                dayKeys: _dayKeys,
-                timetableData: _timetableData,
-                onEventTap: _onEventTap,
               ),
+            Expanded(
+              child: _viewMode == _TimetableViewMode.mobile
+                  ? TimetableMobileView(
+                      scrollController: _scrollController,
+                      dayDates: _dayDates,
+                      todayIndex: _todayIndex,
+                      selectedDayIndex: _selectedDayIndex,
+                      dayKeys: _dayKeys,
+                      timetableData: _timetableData,
+                      onEventTap: _onEventTap,
+                    )
+                  : TimetableCalendarView(
+                      dayDates: _dayDates,
+                      timetableData: _timetableData,
+                      onEventTap: _onEventTap,
+                    ),
             ),
           ],
         );
       },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: super.build(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _viewMode = _viewMode == _TimetableViewMode.mobile
+                ? _TimetableViewMode.calendar
+                : _TimetableViewMode.mobile;
+          });
+        },
+        child: Icon(
+          _viewMode == _TimetableViewMode.mobile
+              ? Icons.calendar_month_rounded
+              : Icons.view_agenda_rounded,
+        ),
+        tooltip: _viewMode == _TimetableViewMode.mobile
+            ? 'Switch to Calendar View'
+            : 'Switch to List View',
+      ),
     );
   }
 
@@ -321,10 +354,10 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       title: title,
       subtitle: subtitle,
       loader: () async {
-        _cachedCourseStats ??= await _courseStatsService.fetchCourseStats(
+        final results = await _courseStatsService.fetchCourseStats(
           year: widget.selectedYear.year,
         );
-        final statsForCourse = _cachedCourseStats!.firstWhere(
+        final statsForCourse = results.firstWhere(
           (s) => s.id == event.id,
           orElse: () => throw Exception(
             'Course stats not found for course id ${event.id}.',

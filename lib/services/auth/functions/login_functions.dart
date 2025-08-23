@@ -29,7 +29,11 @@ Future<LoginResult> performLogin(
     print('AuthService: Starting login process for user: $username');
     
     // Prepare and send login request
-    final response = await authService.httpService.post(ApiConstants.loginEndpoint, body: loginPayload);
+    final response = await authService.httpService.post(
+      ApiConstants.loginEndpoint,
+      body: loginPayload,
+      refresh: true,
+    );
     
     // Build debug info (mask sensitive fields)
     final sanitizedPayload = Map<String, dynamic>.from(loginPayload);

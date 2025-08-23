@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../error/error_placeholder.dart';
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
@@ -102,7 +103,16 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
     return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: () => loadData(refresh: true),
-      child: _buildPageContent(),
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.trackpad,
+          },
+        ),
+        child: _buildPageContent(),
+      ),
     );
   }
 

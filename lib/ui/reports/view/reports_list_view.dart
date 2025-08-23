@@ -64,19 +64,23 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
+                    exam.month,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
                     exam.examType,
                     style: const TextStyle(fontSize: 12),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${exam.year}-${exam.semester} • ${exam.month}',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
             ),
           ],
         ),

@@ -22,8 +22,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
   AttendanceResponse? _data;
   DateTime? _startDate;
   DateTime? _endDate;
-  List<CourseStats>? _cachedCourseStats;
-  final Set<int> _cachedCourseStatsYears = {};
   bool _isTableView = false;
   bool _showSettings = false;
   final Set<int> _selectedCourseIds = <int>{};
@@ -375,37 +373,24 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
       return;
     }
     final title = entry.courseName;
-    final subtitle = entry.kindText;
 
     await CourseDetailDialog.show(
       context: context,
       title: title,
-      subtitle: subtitle,
+      subtitle: entry.grade,
       loader: () async {
         // Try to find stats across two academic years: [date.year - 1, date.year]
         final int currentYear = date.year;
         final Set<int> neededYears = {currentYear - 1, currentYear};
 
-        // Initialize cache container if needed
-        _cachedCourseStats ??= <CourseStats>[];
+        final results = <CourseStats>[];
 
-        // Determine which years are missing from cache
-        final Set<int> missingYears = neededYears.difference(
-          _cachedCourseStatsYears,
-        );
-
-        if (missingYears.isNotEmpty) {
-          // Fetch all missing years concurrently and merge into cache
-          final results = await Future.wait(
-            missingYears.map(
-              (y) => _courseStatsService.fetchCourseStats(year: y),
-            ),
-          );
-          _cachedCourseStats!.addAll(results.expand((e) => e));
-          _cachedCourseStatsYears.addAll(missingYears);
+        for (final year in neededYears) {
+          final res = await _courseStatsService.fetchCourseStats(year: year);
+          results.addAll(res);
         }
 
-        final statsForCourse = _cachedCourseStats!.firstWhere(
+        final statsForCourse = results.firstWhere(
           (s) => s.id == entry.courseId,
           orElse: () => throw Exception(
             'Course stats not found for course id ${entry.courseId}.',

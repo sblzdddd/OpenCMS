@@ -61,19 +61,13 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
         children: [
           Text(widget.exam.name, style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 8),
+          Text(
+            '${widget.exam.year}-${widget.exam.year+1} • ${widget.exam.month}',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 8),
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.secondaryContainer.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Text(widget.exam.grade),
-              ),
-              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -85,11 +79,6 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
                 child: Text(widget.exam.examType),
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${widget.exam.year}-${widget.exam.semester} • ${widget.exam.month}',
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
           ),
         ],
       ),
@@ -118,6 +107,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
             final course = _reportDetail!.courseMark[index];
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+              elevation: 0,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -136,7 +126,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
                           ),
                         ),
                         Text(
-                          course.mark.isEmpty ? '${course.grade}' : '${course.grade} (${course.mark})',
+                          course.mark.isEmpty ? course.grade : '${course.grade} (${course.mark})',
                           style: TextStyle(
                             fontSize: 20,
                             color: course.mark.isEmpty ? _getGradeColor(course.grade) : _getMarkColor(course.mark),

@@ -55,9 +55,10 @@ class _TabbedPageBaseState extends State<TabbedPageBase>
           controller: _tabController,
           tabs: widget.tabs,
           labelStyle: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
+          splashFactory: NoSplash.splashFactory,
         ),
       ),
       body: TabBarView(

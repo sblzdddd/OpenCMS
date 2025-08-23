@@ -49,6 +49,8 @@ dependencies:
   provider: ^6.1.2
   google_fonts: ^6.3.0
   dio_cache_interceptor: ^3.5.1
+  add_2_calendar: ^3.0.1
+  syncfusion_flutter_calendar: ^30.2.6
 
 dev_dependencies:
   flutter_test:

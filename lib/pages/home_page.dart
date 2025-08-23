@@ -78,19 +78,11 @@ class _HomePageState extends State<HomePage> {
     switch (_selectedIndex) {
       case 0:
         return _buildScrollableHomeContent();
-      case 1:
-        return TimetablePage(
-          initialTabIndex: 0,
-          // AppNavigationController.takePendingTimetableInnerTabIndex() ?? 0,
-        );
-      case 2:
-        return const HomeworkPage();
-      case 3:
-        return _buildPlaceholderPage('Assessments');
-      case 4:
-        return const SettingsPage();
-      default:
-        return _buildScrollableHomeContent();
+      case 1: return TimetablePage(initialTabIndex: 0,);
+      case 2: return const HomeworkPage();
+      case 3: return _buildPlaceholderPage('Assessments');
+      case 4: return const SettingsPage();
+      default: return _buildScrollableHomeContent();
     }
   }
 
@@ -99,7 +91,7 @@ class _HomePageState extends State<HomePage> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           // Use single column layout on smaller screens
-          if (constraints.maxWidth < 800) {
+          if (constraints.maxWidth < 850) {
             return Padding(
               padding: const EdgeInsets.all(18),
               child: Column(
@@ -124,13 +116,10 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 400),
-                      child: const DashboardGrid(),
-                    ),
+                    const Expanded(child: DashboardGrid(), flex: 3),
                     const SizedBox(width: 24),
                     // Right column - Quick Actions expanded
-                    const Expanded(child: QuickActions()),
+                    const Expanded(child: QuickActions(), flex: 4),
                   ],
                 ),
               ],

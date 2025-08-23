@@ -25,11 +25,9 @@ class CredentialsStorageService {
   }) async {
     try {
       if (remember) {
-        await Future.wait([
-          _storage.write(key: _usernameKey, value: username),
-          _storage.write(key: _passwordKey, value: password),
-          _storage.write(key: _rememberCredentialsKey, value: 'true'),
-        ]);
+          await _storage.write(key: _usernameKey, value: username);
+          await _storage.write(key: _passwordKey, value: password);
+          await _storage.write(key: _rememberCredentialsKey, value: 'true');
         print('CredentialsStorageService: Credentials saved successfully');
       } else {
         await clearCredentials();
@@ -44,16 +42,14 @@ class CredentialsStorageService {
   /// Load saved credentials
   Future<SavedCredentials> loadCredentials() async {
     try {
-      final results = await Future.wait([
-        _storage.read(key: _usernameKey),
-        _storage.read(key: _passwordKey),
-        _storage.read(key: _rememberCredentialsKey),
-      ]);
+      final username = await _storage.read(key: _usernameKey);
+      final password = await _storage.read(key: _passwordKey);
+      final rememberStr = await _storage.read(key: _rememberCredentialsKey);
+      final remember = rememberStr == 'true';
 
-      final String? username = results[0];
-      final String? password = results[1];
-      final String? rememberStr = results[2];
-      final bool remember = rememberStr == 'true';
+      print('CredentialsStorageService: Username: $username');
+      print('CredentialsStorageService: Password: $password');
+      print('CredentialsStorageService: Remember: $remember');
 
       if (remember && username != null && password != null) {
         print('CredentialsStorageService: Credentials loaded successfully');
@@ -75,11 +71,9 @@ class CredentialsStorageService {
   /// Clear all saved credentials
   Future<bool> clearCredentials() async {
     try {
-      await Future.wait([
-        _storage.delete(key: _usernameKey),
-        _storage.delete(key: _passwordKey),
-        _storage.delete(key: _rememberCredentialsKey),
-      ]);
+      await _storage.delete(key: _usernameKey);
+      await _storage.delete(key: _passwordKey);
+      await _storage.delete(key: _rememberCredentialsKey);
       print('CredentialsStorageService: Credentials cleared successfully');
       return true;
     } catch (e) {

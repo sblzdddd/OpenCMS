@@ -49,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                   elevation: 20,
                   color: Theme.of(context).colorScheme.surface,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(22),
+                    borderRadius: BorderRadius.circular(32),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),

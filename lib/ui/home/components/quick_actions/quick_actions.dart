@@ -268,6 +268,7 @@ class _QuickActionsState extends State<QuickActions> {
                         runSpacing: spacing,
                         alignment: WrapAlignment.start,
                         isEditMode: true,
+                        wrapId: 'quick_actions', // Unique identifier for this wrap
                         onReorder: _onReorder,
                         onRemove: _onRemove,
                         onAdd: _onAddAction,

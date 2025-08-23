@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../ui/homework/homework_page_main.dart';
+import '../../ui/homework/homework_page_view.dart';
 import '../../ui/homework/teams_homework_page.dart';
 import '../../ui/shared/views/tabbed_page_base.dart';
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../ui/shared/dialog/logout_dialog.dart';
-import '../ui/shared/dialog/clear_data_dialog.dart';
+import '../ui/shared/dialog/confirm_dialog.dart';
 import '../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
 
