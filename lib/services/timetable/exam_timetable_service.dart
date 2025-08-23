@@ -32,8 +32,6 @@ class ExamTimetableService {
       refresh: refresh,
     );
 
-    print('response: ${response.data}');
-
     if (response.statusCode != 200 && response.statusCode != 304) {
       throw Exception('Failed to fetch exam timetable: ${response.statusCode}');
     }

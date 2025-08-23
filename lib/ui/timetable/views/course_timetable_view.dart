@@ -8,7 +8,6 @@ import '../components/day_tabs.dart';
 import 'timetable_mobile_view.dart';
 import 'timetable_calendar_view.dart';
 import '../../../services/attendance/course_stats_service.dart';
-import '../../../data/models/attendance/course_stats_response.dart';
 import '../../shared/dialog/course_detail_dialog.dart';
 import '../../shared/views/refreshable_view.dart';
 
@@ -151,7 +150,6 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       if (renderObject == null) return null;
       
       final RenderAbstractViewport viewport = RenderAbstractViewport.of(renderObject);
-      if (viewport == null) return null;
       
       final RevealedOffset revealed = viewport.getOffsetToReveal(
         renderObject,
@@ -328,14 +326,14 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
                 : _TimetableViewMode.mobile;
           });
         },
+        tooltip: _viewMode == _TimetableViewMode.mobile
+            ? 'Switch to Calendar View'
+            : 'Switch to List View',
         child: Icon(
           _viewMode == _TimetableViewMode.mobile
               ? Icons.calendar_month_rounded
               : Icons.view_agenda_rounded,
         ),
-        tooltip: _viewMode == _TimetableViewMode.mobile
-            ? 'Switch to Calendar View'
-            : 'Switch to List View',
       ),
     );
   }

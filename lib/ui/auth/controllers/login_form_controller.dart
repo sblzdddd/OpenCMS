@@ -103,13 +103,20 @@ class LoginFormController extends ChangeNotifier {
 
     // Check if captcha is verified
     if (!_captchaManager.isCaptchaVerified || _captchaManager.captchaData == null) {
+      if(!context.mounted) {
+        print('LoginFormController: Context is not mounted');
+        return;
+      }
       SnackbarUtils.showWarning(
         context,
         'Please complete captcha verification first',
       );
       return;
     }
-
+    if(!context.mounted) {
+      print('LoginFormController: Context is not mounted');
+      return;
+    }
     // Perform authentication
     final success = await _authController.performAuthentication(
       context,

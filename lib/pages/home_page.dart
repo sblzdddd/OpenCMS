@@ -116,10 +116,9 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(child: DashboardGrid(), flex: 3),
+                    const Expanded(flex: 3, child: DashboardGrid()),
                     const SizedBox(width: 24),
-                    // Right column - Quick Actions expanded
-                    const Expanded(child: QuickActions(), flex: 4),
+                    const Expanded(flex: 4, child: QuickActions()),
                   ],
                 ),
               ],

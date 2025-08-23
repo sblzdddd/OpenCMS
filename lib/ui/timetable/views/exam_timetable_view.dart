@@ -5,8 +5,9 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 import '../../../services/timetable/exam_timetable_service.dart';
-import '../../shared/timetable_card.dart';
 import '../../shared/views/refreshable_view.dart';
+import 'exam_timetable_list_view.dart';
+import 'exam_timetable_calendar_view.dart';
 
 class ExamTimetableView extends StatefulWidget {
   final AcademicYear selectedYear;
@@ -21,12 +22,23 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   final ExamTimetableService _examService = ExamTimetableService();
 
   int _selectedMonth = DateTime.now().month; // 1-12
+  int _selectedYear = DateTime.now().year; // Add selected year
   List<ExamTimetableEntry> _exams = const [];
+  bool _isCalendarView = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedYear = widget.selectedYear.year;
+  }
 
   @override
   void didUpdateWidget(covariant ExamTimetableView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectedYear.year != widget.selectedYear.year) {
+      setState(() {
+        _selectedYear = widget.selectedYear.year;
+      });
       loadData(refresh: true);
     }
   }
@@ -48,55 +60,19 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
 
   @override
   Widget buildContent(BuildContext context) {
-    // Group by date
-    final Map<String, List<ExamTimetableEntry>> byDate = {};
-    for (final e in _exams) {
-      byDate.putIfAbsent(e.date, () => []).add(e);
+    if (_isCalendarView) {
+      return ExamTimetableCalendarView(
+        exams: _exams,
+        onExamTap: (exam) => _showExamOptionsMenu(context, exam),
+        selectedMonth: _selectedMonth,
+        selectedYear: _selectedYear,
+      );
+    } else {
+      return ExamTimetableListView(
+        exams: _exams,
+        onExamTap: (exam) => _showExamOptionsMenu(context, exam),
+      );
     }
-    final sortedDates = byDate.keys.toList()..sort();
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      itemCount: sortedDates.length,
-      itemBuilder: (context, index) {
-        final date = sortedDates[index];
-        final items = byDate[date]!
-          ..sort((a, b) => a.startTime.compareTo(b.startTime));
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: Text(
-                date,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            for (final exam in items)
-              Builder(
-                builder: (cardContext) => TimetableCard(
-                  subject: exam.subject.isNotEmpty
-                      ? exam.subject
-                      : (exam.code.isNotEmpty ? exam.code : 'Exam'),
-                  code: exam.code.isNotEmpty ? exam.code : '',
-                  room: exam.room.isNotEmpty ? exam.room : 'TBA',
-                  extraInfo: 'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
-                  timespan: '${exam.startTime} - ${exam.endTime}',
-                  periodText: '',
-                  onTap: () {
-                    _showExamOptionsMenu(cardContext, exam);
-                  },
-                ),
-              ),
-            const SizedBox(height: 8),
-            if (index != sortedDates.length - 1) const Divider(height: 20),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -139,6 +115,20 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
     loadData(refresh: true);
   }
 
+  void _onYearChanged(int? newYear) {
+    if (newYear == null) return;
+    setState(() {
+      _selectedYear = newYear;
+    });
+    loadData(refresh: true);
+  }
+
+  void _toggleView() {
+    setState(() {
+      _isCalendarView = !_isCalendarView;
+    });
+  }
+  
   void _showExamOptionsMenu(BuildContext context, ExamTimetableEntry exam) {
     if(!(Platform.isAndroid || Platform.isIOS)) {
       // TODO: Add schedule support for desktop platforms
@@ -201,8 +191,6 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       final startDate = DateTime(year, month, day, startHour, startMinute);
       final endDate = DateTime(year, month, day, endHour, endMinute);
 
-
-      
       final Event event = Event(
         title: exam.subject.isNotEmpty ? '${exam.subject} (${exam.code})' : (exam.code.isNotEmpty ? exam.code : 'Exam'),
         description: '${exam.code.isNotEmpty ? 'Code: ${exam.code}\n' : ''}Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
@@ -226,48 +214,62 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   @override
   Widget build(BuildContext context) {
     final months = List<int>.generate(12, (i) => i + 1);
-    return Column(
-      children: [
-        // Top bar with month dropdown aligned right
-        Padding(
-          padding: const EdgeInsets.only(
-            top: 4,
-            right: 12,
-            left: 12,
-            bottom: 4,
-          ),
-          child: Row(
-            children: [
-              Text('Month: ', style: Theme.of(context).textTheme.bodyLarge),
-              const Spacer(),
-              DropdownButton<int>(
-                value: _selectedMonth,
-                onChanged: _onMonthChanged,
-                borderRadius: BorderRadius.circular(12),
-                padding: const EdgeInsets.only(
-                  left: 12,
-                  right: 6,
-                  top: 0,
-                  bottom: 0,
-                ),
-                underline: Container(),
-                items: months
-                    .map(
-                      (m) => DropdownMenuItem(
-                        value: m,
-                        child: Text(
-                          '${PeriodConstants.monthNames[m - 1]} ($m)',
+    
+    return Scaffold(
+      body: Column(
+        children: [
+          // Top bar with month and year dropdowns aligned right
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 4,
+              right: 12,
+              left: 12,
+              bottom: 4,
+            ),
+            child: Row(
+              children: [
+                Text('Month: ', style: Theme.of(context).textTheme.bodyLarge),
+                const SizedBox(width: 8),
+                DropdownButton<int>(
+                  value: _selectedMonth,
+                  onChanged: _onMonthChanged,
+                  borderRadius: BorderRadius.circular(12),
+                  padding: const EdgeInsets.only(
+                    left: 12,
+                    right: 6,
+                    top: 0,
+                    bottom: 0,
+                  ),
+                  underline: Container(),
+                  items: months
+                      .map(
+                        (m) => DropdownMenuItem(
+                          value: m,
+                          child: Text(
+                            '${PeriodConstants.monthNames[m - 1]} ($m)',
+                          ),
                         ),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
+                      )
+                      .toList(),
+                ),
+                const SizedBox(width: 16),
+              ],
+            ),
           ),
-        ),
-        const Divider(height: 1),
-        Expanded(child: super.build(context)),
-      ],
+          const Divider(height: 1),
+          Expanded(child: super.build(context)),
+        ],
+      ),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: _toggleView,
+            heroTag: 'toggle_view',
+            child: Icon(_isCalendarView ? Icons.list : Icons.calendar_month),
+          ),
+        ],
+      ),
     );
   }
 }

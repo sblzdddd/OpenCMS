@@ -63,7 +63,10 @@ void showClearDataDialog(BuildContext context) {
       if (defaultTargetPlatform == TargetPlatform.windows) {
         await windowManager.setPreventClose(true);
       }
-      
+      if(!context.mounted) {
+        print('ClearDataDialog: Context is not mounted');
+        return;
+      }
       Navigator.of(
         context,
       ).pushNamedAndRemoveUntil('/login', (route) => false);

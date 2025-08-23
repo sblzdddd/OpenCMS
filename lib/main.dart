@@ -17,7 +17,7 @@ import 'util.dart';
 
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
-_AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
+AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
 
 
 // Function to handle window close event - hide instead of close
@@ -161,10 +161,10 @@ class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
   @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
+  State<AuthWrapper> createState() => AuthWrapperState();
 }
 
-class _AuthWrapperState extends State<AuthWrapper> with WindowListener {
+class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   final AuthService _authService = AuthService();
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;

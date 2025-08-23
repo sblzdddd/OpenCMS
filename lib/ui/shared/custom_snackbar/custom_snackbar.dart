@@ -135,7 +135,7 @@ class CustomSnackbarState extends State<CustomSnackbar>
         builder: (context, _) {
           return AnimatedBuilder(
             animation: _fadeController,
-            builder: (context, __) {
+            builder: (context, _) {
               return Transform.translate(
                 offset: Offset(0, _slideAnimation.value * 100),
                 child: Opacity(

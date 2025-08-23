@@ -41,7 +41,7 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
   @override
   void initState() {
     super.initState();
-    _uniqueId = widget.wrapId ?? 'wrap_${DateTime.now().millisecondsSinceEpoch}_${hashCode}';
+    _uniqueId = widget.wrapId ?? 'wrap_${DateTime.now().millisecondsSinceEpoch}_$hashCode';
   }
 
   @override

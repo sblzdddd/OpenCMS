@@ -25,6 +25,10 @@ class TencentCaptchaDialog {
     // Simulate loading
     await Future.delayed(const Duration(milliseconds: 200));
     onLoaded({'status': 'loaded', 'bizState': config.bizState});
+    if(!context.mounted) {
+      print('Tencent Captcha: Context is not mounted');
+      return;
+    }
     
     // Show popup webview
     await _showCaptchaWebView(

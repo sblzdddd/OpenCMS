@@ -187,7 +187,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
               onUpdateVisitedHistory: (controller, url, isReload) async {
                 await _updateNavState();
               },
-              onLoadError: (controller, url, code, message) async {
+              onReceivedError: (controller, request, error) async {
                 await _updateNavState();
               },
             ),
