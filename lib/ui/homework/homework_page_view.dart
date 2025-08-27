@@ -129,7 +129,7 @@ class _HomeworkPageMainState extends RefreshableView<HomeworkPageMain> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             FilterChip(
-              label: const Text('Show completed'),
+              label: const Text('completed'),
               selected: _showCompleted,
               onSelected: (val) {
                 setState(() {

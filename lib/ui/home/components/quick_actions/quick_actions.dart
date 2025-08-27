@@ -144,36 +144,43 @@ class _QuickActionsState extends State<QuickActions> {
     await _saveQuickActionsPreferences();
   }
 
+  /// Exit edit mode
+  void _exitEditMode() {
+    setState(() {
+      _isEditMode = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Stack(
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.only(left: 14, right: 14, bottom: 14, top: 12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Quick Actions',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(left: 14, right: 14, bottom: 14, top: 12),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainer,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _isEditMode ? IconButton(
+                        Text(
+                          'Actions',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                        if (_isEditMode) IconButton(
                           onPressed: _isLoading ? null : _onResetActions,
                           icon: const Icon(Symbols.restart_alt_rounded),
                           iconSize: 20,
@@ -184,101 +191,96 @@ class _QuickActionsState extends State<QuickActions> {
                             fixedSize: const Size(30, 30),
                           ),
                           tooltip: 'Reset to default',
-                        ) : const SizedBox.shrink(),
-                        const SizedBox(width: 4),
-                        IconButton(
-                          onPressed: _isLoading ? null : () {
-                            setState(() {
-                              _isEditMode = !_isEditMode;
-                            });
-                          },
-                          icon: Icon(_isEditMode ? Symbols.done_rounded : Symbols.edit_rounded),
-                          iconSize: 20,
-                          style: IconButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            fixedSize: const Size(32, 32),
-                            backgroundColor: _isEditMode 
-                                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-                                : null,
-                            foregroundColor: _isEditMode 
-                                ? Theme.of(context).colorScheme.primary
-                                : null,
-                          ),
-                          tooltip: _isEditMode ? 'Done' : 'Edit',
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              _isLoading 
-                  ? SizedBox(
-                      height: 110,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    )
-                  : LayoutBuilder(
-                    builder: (context, constraints) {
-                      const double spacing = 12.0;
-                      const double minTileWidth = 110.0;
-                      // Item height is determined by each tile
-
-                      final double availableWidth = constraints.maxWidth;
-                      // Determine number of columns based on available width and minimum tile width
-                      final int columns = (((availableWidth + spacing) /
-                                  (minTileWidth + spacing))
-                              .floor())
-                          .clamp(1, 8);
-                      final double tileWidth =
-                          (availableWidth - (columns - 1) * spacing) / columns;
-
-                      // Build draggable action items with stable keys
-                      final List<Widget> displayChildren = actions
-                          .map<Widget>((action) => ActionItem(
-                                key: ValueKey('action_${action['id']}'),
-                                action: action,
-                                isEditMode: true,
-                                onTap: action['id'] == QuickActionsConstants.moreAction['id']
-                                    ? _onShowMoreActions
-                                    : null,
-                                tileWidth: tileWidth,
-                              ))
-                          .toList();
-
-                      if (_isEditMode) {
-                        // Add edit utilities with stable keys
-                        displayChildren.add(TrashCanItem(
-                          key: const ValueKey('trash_can'),
-                          tileWidth: tileWidth,
-                        ));
-                        displayChildren.add(AddActionItem(
-                          key: const ValueKey('add_action'),
-                          onTap: _onAddAction,
-                          tileWidth: tileWidth,
-                        ));
-                      }
-                      return ReorderableWrap(
-                        spacing: spacing,
-                        runSpacing: spacing,
-                        alignment: WrapAlignment.start,
-                        isEditMode: true,
-                        wrapId: 'quick_actions', // Unique identifier for this wrap
-                        onReorder: _onReorder,
-                        onRemove: _onRemove,
-                        onAdd: _onAddAction,
-                        children: displayChildren,
-                      );
-                    },
                   ),
-            ],
-          ),
+                  _isLoading 
+                      ? SizedBox(
+                          height: 110,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        )
+                      : LayoutBuilder(
+                        builder: (context, constraints) {
+                          const double spacing = 12.0;
+                          const double minTileWidth = 110.0;
+                          // Item height is determined by each tile
+
+                          final double availableWidth = constraints.maxWidth;
+                          // Determine number of columns based on available width and minimum tile width
+                          final int columns = (((availableWidth + spacing) /
+                                      (minTileWidth + spacing))
+                                  .floor())
+                              .clamp(1, 8);
+                          final double tileWidth =
+                              (availableWidth - (columns - 1) * spacing) / columns;
+
+                          // Build draggable action items with stable keys
+                          final List<Widget> displayChildren = actions
+                              .map<Widget>((action) => ActionItem(
+                                    key: ValueKey('action_${action['id']}'),
+                                    action: action,
+                                    isEditMode: _isEditMode,
+                                    onTap: action['id'] == QuickActionsConstants.moreAction['id']
+                                        ? _onShowMoreActions
+                                        : null,
+                                    tileWidth: tileWidth,
+                                  ))
+                              .toList();
+
+                          if (_isEditMode) {
+                            // Add edit utilities with stable keys
+                            displayChildren.add(TrashCanItem(
+                              key: const ValueKey('trash_can'),
+                              tileWidth: tileWidth,
+                            ));
+                            displayChildren.add(AddActionItem(
+                              key: const ValueKey('add_action'),
+                              onTap: _onAddAction,
+                              tileWidth: tileWidth,
+                            ));
+                          }
+                          return ReorderableWrap(
+                            spacing: spacing,
+                            runSpacing: spacing,
+                            alignment: WrapAlignment.start,
+                            isEditMode: _isEditMode,
+                            wrapId: 'quick_actions', // Unique identifier for this wrap
+                            onReorderStart: () {
+                              setState(() {
+                                _isEditMode = true;
+                              });
+                            },
+                            onReorder: _onReorder,
+                            onRemove: _onRemove,
+                            onAdd: _onAddAction,
+                            children: displayChildren,
+                          );
+                        },
+                      ),
+                ],
+              ),
+            ),
+          ],
         ),
+        // FAB to exit edit mode
+        if (_isEditMode)
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: FloatingActionButton(
+              onPressed: _exitEditMode,
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+              child: const Icon(Symbols.check_rounded),
+              tooltip: 'Done',
+            ),
+          ),
       ],
     );
   }

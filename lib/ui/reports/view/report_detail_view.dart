@@ -135,7 +135,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
                         ),
                       ],
                     ),
-                    if (course.mark.isNotEmpty) ...[
+                    if (course.average.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text('Avg: ${course.average}'),
                     ],

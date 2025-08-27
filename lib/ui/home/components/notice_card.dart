@@ -27,7 +27,7 @@ class NoticeCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Notices',
+                  'Notices & Events',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleSmall?.copyWith(

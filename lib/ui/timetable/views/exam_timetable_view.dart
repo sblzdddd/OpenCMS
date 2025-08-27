@@ -115,14 +115,6 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
     loadData(refresh: true);
   }
 
-  void _onYearChanged(int? newYear) {
-    if (newYear == null) return;
-    setState(() {
-      _selectedYear = newYear;
-    });
-    loadData(refresh: true);
-  }
-
   void _toggleView() {
     setState(() {
       _isCalendarView = !_isCalendarView;

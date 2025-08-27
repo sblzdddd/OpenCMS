@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
+import '../../../data/models/timetable/course_merged_event.dart';
 
 class TimetableCalendarView extends StatefulWidget {
   final List<DateTime> dayDates;
@@ -55,11 +56,10 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       dataSource: _CourseDataSource(courses),
       showCurrentTimeIndicator: true,
       timeSlotViewSettings: const TimeSlotViewSettings(
-        startHour: 7.5, // 07:30
-        endHour: 18.5, // 18:30
+        startHour: 8, // 07:30
+        endHour: 18, // 18:30
         nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
         timeIntervalHeight: 86,
-        timeRulerSize: 100,
         minimumAppointmentDuration: Duration(minutes: 30),
       ),
       specialRegions: _getTimeRegions(),
@@ -124,48 +124,48 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
   List<TimeRegion> _getTimeRegions() {
     final List<TimeRegion> regions = <TimeRegion>[];
     regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 30),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 8, 40),
+        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 8, 0),
+        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 8, 10),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
         textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
         color: Colors.grey.withValues(alpha: 0.2),
         text: 'MR'));
     regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 10, 00),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 10, 10),
+        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 9, 30),
+        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 9, 40),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
         textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
         color: Colors.grey.withValues(alpha: 0.2),
         text: 'Break'));
     regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 11, 30),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 11, 50),
+        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 11, 0),
+        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 11, 20),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
         textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
         color: Colors.grey.withValues(alpha: 0.2),
         text: 'Break'));
     regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 13, 10),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 13, 40),
+        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 12, 40),
+        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 10),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
         textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
         color: Colors.grey.withValues(alpha: 0.2),
         text: 'Lunch'));
     regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 13, 40),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 14, 10),
+        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 10),
+        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 40),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
         textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
         color: Colors.grey.withValues(alpha: 0.2),
         text: 'Pastoral'));
     regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 15, 30),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 15, 40),
+        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 15, 0),
+        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 15, 10),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
         textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
@@ -185,43 +185,29 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       final DateTime? date = _resolveDateForDayIndex(dayIndex);
       if (date == null) continue;
 
-      int i = 0;
-      while (i < weekDay.periods.length) {
-        final period = weekDay.periods[i];
-        if (period.events.isEmpty) {
-          i++;
-          continue;
-        }
-        final TimetableEvent event = period.events.first;
-        int endPeriod = i;
-        while (endPeriod + 1 < weekDay.periods.length) {
-          final next = weekDay.periods[endPeriod + 1];
-          if (next.events.isEmpty || next.events.first != event) break;
-          endPeriod++;
-        }
-
-        final startInfo = PeriodConstants.getPeriodInfo(i);
-        final endInfo = PeriodConstants.getPeriodInfo(endPeriod);
+      final mergedEvents = CourseMergedEvent.mergeEventsForDay(weekDay);
+      
+      for (final mergedEvent in mergedEvents) {
+        final startInfo = PeriodConstants.getPeriodInfo(mergedEvent.startPeriod);
+        final endInfo = PeriodConstants.getPeriodInfo(mergedEvent.endPeriod);
         if (startInfo != null && endInfo != null) {
           final DateTime start = _combine(date, startInfo.startTime);
           final DateTime end = _combine(date, endInfo.endTime);
-          final Color color = _colorForEvent(event, dayIndex);
+          final Color color = _colorForEvent(mergedEvent.event, dayIndex);
           courses.add(
             Course(
-              subject: event.subject,
-              location: event.room.isNotEmpty ? event.room : event.newRoom,
+              subject: mergedEvent.event.subject,
+              location: mergedEvent.event.room.isNotEmpty ? mergedEvent.event.room : mergedEvent.event.newRoom,
               from: start,
               to: end,
               color: color,
               isAllDay: false,
-              sourceEvent: event,
-              note: event.teacher,
-              code: event.code,
+              sourceEvent: mergedEvent.event,
+              note: mergedEvent.event.teacher,
+              code: mergedEvent.event.code,
             ),
           );
         }
-
-        i = endPeriod + 1;
       }
     }
 
@@ -248,7 +234,7 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
     final timeSegments = hhmm.split(':');
     int hh = int.parse(timeSegments[0]);
     int mm = int.parse(timeSegments[1]);
-    return DateTime(date.year, date.month, date.day, hh, mm+30);
+    return DateTime(date.year, date.month, date.day, hh, mm);
   }
 
   Color _colorForEvent(TimetableEvent event, int dayIndex) {

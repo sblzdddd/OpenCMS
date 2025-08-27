@@ -51,6 +51,7 @@ dependencies:
   dio_cache_interceptor: ^3.5.1
   add_2_calendar: ^3.0.1
   syncfusion_flutter_calendar: ^30.2.6
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -87,8 +88,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/default-login-bg.jpg
-    - assets/images/app_icon.ico
-    - assets/images/app_icon.png
+    - assets/images/Naidesu.png
     - assets/static/
 
   shaders:

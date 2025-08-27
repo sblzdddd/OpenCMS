@@ -331,21 +331,24 @@ class _HomeworkCardState extends State<HomeworkCard> {
         // actions
         Row(
           children: [
-            Expanded(
-              child: OutlinedButton(
-                onPressed: () {
-                  _addToCalendar();
-                },
-                child: Row(
-                  children: [
-                    Icon(Symbols.calendar_today_rounded, size: 16),
-                    const SizedBox(width: 4),
-                    Text('Add to Calendar'),
-                  ],
+            if(Platform.isAndroid || Platform.isIOS) ...[
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () {
+                    _addToCalendar();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Symbols.calendar_today_rounded, size: 16),
+                      const SizedBox(width: 4),
+                      Text('Schedule'),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
+            ],
             Expanded(
               child: OutlinedButton(
                 onPressed: _isLoading ? null : _markAsDone,
@@ -356,11 +359,12 @@ class _HomeworkCardState extends State<HomeworkCard> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             _isCompleted
-                                ? Symbols.check_circle_rounded
-                                : Symbols.radio_button_unchecked_rounded,
+                                ? Symbols.cancel_rounded
+                                : Symbols.check_circle_rounded,
                             size: 16,
                             color: _isCompleted
                                 ? Theme.of(context).colorScheme.primary
@@ -368,7 +372,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            _isCompleted ? 'Mark as Undone' : 'Mark as Done',
+                            _isCompleted ? 'Undone' : 'Done',
                           ),
                         ],
                       ),

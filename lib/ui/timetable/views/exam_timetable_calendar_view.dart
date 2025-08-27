@@ -129,7 +129,7 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
               if (course.location.isNotEmpty && course.location != 'TBA') ...[
                 const Spacer(),
                 Text(
-                  course.location,
+                  '${course.location} • ${course.seat}',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 11,
@@ -171,7 +171,7 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
             color: color,
             isAllDay: false,
             sourceExam: exam,
-            note: 'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+            seat: exam.seat.isNotEmpty ? exam.seat : 'TBA',
             code: exam.code,
           ),
         );
@@ -242,8 +242,8 @@ class ExamCourse {
   final Color color;
   final bool isAllDay;
   final ExamTimetableEntry sourceExam;
-  final String note;
   final String code;
+  final String seat;
 
   ExamCourse({
     required this.subject,
@@ -253,8 +253,8 @@ class ExamCourse {
     required this.color,
     required this.isAllDay,
     required this.sourceExam,
-    required this.note,
     required this.code,
+    required this.seat,
   });
 }
 
@@ -280,7 +280,4 @@ class _ExamDataSource extends CalendarDataSource {
 
   @override
   bool isAllDay(int index) => appointments![index].isAllDay as bool;
-
-  @override
-  String? getNotes(int index) => appointments![index].note as String;
 }

@@ -92,40 +92,7 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsB
     }
 
     final weekday = widget.timetableData!.weekdays[dayIndex];
-    final List<CourseMergedEvent> mergedEvents = [];
-    
-    int i = 0;
-    while (i < weekday.periods.length) {
-      final period = weekday.periods[i];
-      
-      if (period.events.isEmpty) {
-        i++;
-        continue;
-      }
-
-      final event = period.events.first;
-      int endPeriod = i;
-      
-      // Find consecutive periods with the same event
-      while (endPeriod + 1 < weekday.periods.length) {
-        final nextPeriod = weekday.periods[endPeriod + 1];
-        if (nextPeriod.events.isEmpty || 
-            nextPeriod.events.first != event) {
-          break;
-        }
-        endPeriod++;
-      }
-
-      mergedEvents.add(CourseMergedEvent(
-        event: event,
-        startPeriod: i,
-        endPeriod: endPeriod,
-      ));
-
-      i = endPeriod + 1;
-    }
-
-    return mergedEvents;
+    return CourseMergedEvent.mergeEventsForDay(weekday);
   }
 
   List<Widget> _buildDayEvents(int dayIndex) {

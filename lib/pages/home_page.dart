@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import '../ui/home/components/quick_actions/quick_actions.dart';
 import '../ui/home/components/dashboard_grid/dashboard_grid.dart';
 import '../ui/shared/navigations/bottom_navigation.dart';
 import '../ui/shared/navigations/app_navigation_rail.dart';
 import 'actions/timetable.dart';
 import 'actions/homework.dart';
-import 'settings_page.dart';
+import 'actions/assessment.dart';
+import 'settings/settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +18,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  final DashboardGridController _dashboardController = DashboardGridController();
 
   int get _selectedIndex => _selectedIndexNotifier.value;
 
@@ -78,68 +83,88 @@ class _HomePageState extends State<HomePage> {
     switch (_selectedIndex) {
       case 0:
         return _buildScrollableHomeContent();
-      case 1: return TimetablePage(initialTabIndex: 0,);
-      case 2: return const HomeworkPage();
-      case 3: return _buildPlaceholderPage('Assessments');
-      case 4: return const SettingsPage();
-      default: return _buildScrollableHomeContent();
+      case 1:
+        return TimetablePage(initialTabIndex: 0);
+      case 2:
+        return const HomeworkPage();
+      case 3:
+        return const AssessmentPage();
+      case 4:
+        return const SettingsPage();
+      default:
+        return _buildScrollableHomeContent();
     }
   }
 
   Widget _buildScrollableHomeContent() {
-    return SingleChildScrollView(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          // Use single column layout on smaller screens
-          if (constraints.maxWidth < 850) {
-            return Padding(
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const DashboardGrid(),
-                  const SizedBox(height: 16),
-                  const QuickActions(),
-                ],
-              ),
-            );
-          }
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refreshHomePage,
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.trackpad,
+          },
+        ),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Use single column layout on smaller screens
+              if (constraints.maxWidth < 850) {
+                return Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DashboardGrid(controller: _dashboardController),
+                      const SizedBox(height: 16),
+                      const QuickActions(),
+                    ],
+                  ),
+                );
+              }
 
-          // Use two-column layout on larger screens
-          return Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Dashboard", style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 24),
-                Row(
+              // Use two-column layout on larger screens
+              return Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Expanded(flex: 3, child: DashboardGrid()),
-                    const SizedBox(width: 24),
-                    const Expanded(flex: 4, child: QuickActions()),
+                    Text(
+                      "Dashboard",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: DashboardGrid(controller: _dashboardController),
+                        ),
+                        const SizedBox(width: 24),
+                        Expanded(flex: 4, child: const QuickActions()),
+                      ],
+                    ),
                   ],
                 ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildPlaceholderPage(String title) {
-    return Center(
-      child: Text(
-        '$title coming soon!',
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF718096),
-        ),
-      ),
-    );
+  /// Refresh all data on the home page
+  Future<void> _refreshHomePage() async {
+    // Trigger dashboard grid refresh via controller to avoid callback recursion
+    _dashboardController.refresh();
+    // Optional: small delay to keep the indicator visible
+    await Future.delayed(const Duration(milliseconds: 400));
   }
 
   void _onNavTap(int index) {

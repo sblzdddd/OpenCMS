@@ -48,6 +48,10 @@ class ApiConstants {
   static const String reportsListUrl = '/legacy/students/my/reports/';
   static String reportsDetailUrl(int examId) => '/legacy/students/my/reports/$examId/';
   
+  // Assessments endpoint
+  // parameters: year (academic year)
+  static const String assessmentsUrl = '/legacy/students/my/assessments/';
+  
   // Third-party captcha solver (solvecaptcha) configuration
   static const String solveCaptchaBaseUrl = 'https://api.solvecaptcha.com';
   static const String solveCaptchaInEndpoint = '$solveCaptchaBaseUrl/in.php';

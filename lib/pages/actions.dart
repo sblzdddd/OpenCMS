@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'actions/attendance.dart';
+import 'actions/assessment.dart';
 import 'actions/homework.dart';
 import 'actions/web_cms.dart';
 import '../data/constants/quick_actions_constants.dart';
 import '../ui/shared/navigations/app_navigation_controller.dart';
 import 'actions/timetable.dart';
-import 'settings_page.dart';
+import 'settings/settings_page.dart';
 import 'actions/reports.dart';
 
 String _actionTitle(String id) {
@@ -74,18 +75,6 @@ class ExamTimetableView extends StatelessWidget {
       return const SizedBox.shrink(); // This won't be shown
     }
     return const ActionPageScaffold('exam');
-  }
-}
-
-class AssessmentsFeedbackPage extends StatelessWidget {
-  const AssessmentsFeedbackPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    // Try to handle via navigation first
-    if (handleActionNavigation(context, {'id': 'feedback'})) {
-      return const SizedBox.shrink(); // This won't be shown
-    }
-    return const ActionPageScaffold('assessment');
   }
 }
 
@@ -194,7 +183,7 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'reports':
       return const ReportsPage(initialTabIndex: 0);
     case 'assessment':
-      return const AssessmentsFeedbackPage();
+      return const AssessmentPage();
     case 'comments':
       return const TeacherCommentsPage();
     case 'calendar':
