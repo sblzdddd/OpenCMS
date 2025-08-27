@@ -11,7 +11,6 @@ import 'dart:io';
 import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
-import 'theme.dart';
 import 'util.dart';
 // import 'services/background/background_task_manager.dart';
 
@@ -135,15 +134,35 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = createTextTheme(context, "Roboto", "EB Garamond");
-    MaterialTheme theme = MaterialTheme(textTheme);
+    const seedColor = Color(0xffb33b15);
+    ColorScheme lightColorScheme = ColorScheme.fromSeed(
+                seedColor: seedColor,
+                brightness: Brightness.light,
+              );
+    ColorScheme darkColorScheme = ColorScheme.fromSeed(
+                seedColor: seedColor,
+                brightness: Brightness.dark,
+              );
     return ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           return MaterialApp(
             title: 'OpenCMS',
-            theme: theme.light(),
-            darkTheme: theme.dark(),
+            theme: ThemeData(
+              colorScheme: lightColorScheme,
+              textTheme: textTheme.apply(
+                bodyColor: lightColorScheme.onSurface,
+                displayColor: lightColorScheme.onSurface,
+              ),
+            ),
+            darkTheme: ThemeData(
+              colorScheme: darkColorScheme,
+              textTheme: textTheme.apply(
+                bodyColor: darkColorScheme.onSurface,
+                displayColor: darkColorScheme.onSurface,
+              ),
+            ),
             themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const AuthWrapper(),
             routes: {

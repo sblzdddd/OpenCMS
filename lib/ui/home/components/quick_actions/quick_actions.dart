@@ -169,7 +169,7 @@ class _QuickActionsState extends State<QuickActions> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
+                    padding: const EdgeInsets.only(bottom: 10, left: 3, right: 3),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
