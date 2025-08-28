@@ -67,16 +67,20 @@ class _DashboardGridState extends State<DashboardGrid> {
       if (mounted) {
         setState(() {
           if (saved == null || saved.isEmpty) {
+            // Only use default layout if no saved layout exists
             _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
           } else {
-            _widgetOrder = WidgetSizeManager.convertSavedLayout(saved);
+            // Use the saved layout directly since it now includes sizes
+            _widgetOrder = List<MapEntry<String, Size>>.from(saved);
           }
           _isLoading = false;
         });
       }
-    } catch (_) {
+    } catch (e) {
+      print('DashboardGrid: Error loading layout: $e');
       if (mounted) {
         setState(() {
+          // On error, try to load the saved layout again, but if that fails, use default
           _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
           _isLoading = false;
         });
@@ -94,13 +98,13 @@ class _DashboardGridState extends State<DashboardGrid> {
     }
     // Trigger refresh callback if provided (kept for backward compatibility)
     widget.onRefresh?.call();
-    // Also refresh the layout in case it changed
-    await _loadLayout();
+    // Don't reload the layout on refresh - this was causing the reset issue
+    // await _loadLayout();
   }
 
   Future<void> _saveLayout() async {
-    final List<String> widgetIds = _widgetOrder.map((e) => e.key).toList();
-    await _storage.saveLayout(widgetIds);
+    // Save the complete layout with sizes
+    await _storage.saveLayout(_widgetOrder);
   }
 
   void _onReorder(int oldIndex, int newIndex) {

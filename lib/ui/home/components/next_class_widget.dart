@@ -57,11 +57,11 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
   }
 
   void _startTimer() {
-    // Update every minute to refresh class status
+    // Update every minute to refresh class status and UI
     _updateTimer = Timer.periodic(const Duration(minutes: 1), (_) {
       if (mounted) {
         setState(() {
-          _updateClassStatus();
+          // Force rebuild to update progress bar and time calculations
         });
       }
     });
@@ -262,6 +262,9 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
   }
 
   Widget _buildUnifiedContent() {
+    // Update class status before building to ensure latest data
+    _updateClassStatus();
+    
     if (_isLoading) {
       return const Row(
         children: [
@@ -271,7 +274,7 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           SizedBox(width: 12),
-          Text('Loading timetable...'),
+          Text('Loading timetable...', style: TextStyle(fontSize: 8)),
         ],
       );
     }

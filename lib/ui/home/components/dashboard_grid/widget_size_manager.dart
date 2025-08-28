@@ -43,13 +43,6 @@ class WidgetSizeManager {
     return spans;
   }
 
-  /// Convert saved layout to new format with sizes
-  static List<MapEntry<String, Size>> convertSavedLayout(List<String> savedIds) {
-    return savedIds.map((id) {
-      return MapEntry(id, defaultSpans[id] ?? const Size(2, 1));
-    }).toList();
-  }
-
   /// Get widget icon
   static IconData getWidgetIcon(String widgetId) {
     switch (widgetId) {

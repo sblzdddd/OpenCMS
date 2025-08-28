@@ -90,6 +90,7 @@ flutter:
     - assets/images/default-login-bg.jpg
     - assets/images/Naidesu.png
     - assets/static/
+    - assets/icon/
 
   shaders:
     - assets/shaders/dynamic_banner.frag

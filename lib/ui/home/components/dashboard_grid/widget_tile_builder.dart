@@ -79,7 +79,7 @@ class WidgetTileBuilder {
       case 'homework':
         return HomeworkCard(onRefresh: onRefresh, refreshTick: refreshTick);
       case 'assessments':
-        return const LatestAssessmentWidget();
+        return LatestAssessmentWidget(onRefresh: onRefresh, refreshTick: refreshTick);
       case 'banner':
         return RepaintBoundary(
           child: BannerWidget(

@@ -67,7 +67,7 @@ Future<void> initSystemTray() async {
   if(!(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
     return;
   }
-  String path = Platform.isWindows ? 'assets/images/app_icon.ico' : 'assets/images/app_icon.png';
+  String path = 'assets/icon/app_icon.ico';
 
   final AppWindow appWindow = AppWindow();
   globalAppWindow = appWindow; // Store globally for access from other functions

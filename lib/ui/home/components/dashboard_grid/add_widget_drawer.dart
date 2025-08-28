@@ -70,18 +70,7 @@ class AddWidgetDrawer extends StatelessWidget {
 
   /// Build an add widget option with size selection
   Widget _buildAddWidgetOption(BuildContext context, String widgetId) {
-    // if(widgetId == 'banner') {
-    //   return Container(
-    //     height: 200,
-    //     child: Stack(
-    //       children: [
-    //         const Positioned.fill(
-    //           child: DynamicGradientBanner(),
-    //         ),
-    //       ],
-    //     ),
-    //   );
-    // }
+    final isBanner = widgetId == 'banner';
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Container(
@@ -92,13 +81,13 @@ class AddWidgetDrawer extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
-            if(widgetId == 'banner') ...[
+            if(isBanner) ...[
               const Positioned.fill(
                 child: DynamicGradientBanner(),
               ),
               Positioned.fill(
                 child: Container(
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color: Colors.black.withValues(alpha: 0.1),
                 ),
               ),
             ],
@@ -111,7 +100,7 @@ class AddWidgetDrawer extends StatelessWidget {
                   children: [
                     Icon(
                       WidgetSizeManager.getWidgetIcon(widgetId),
-                      color: Theme.of(context).colorScheme.primary,
+                      color: isBanner ? Colors.white : Theme.of(context).colorScheme.primary,
                       size: 24,
                     ),
                     const SizedBox(width: 12),
@@ -119,6 +108,7 @@ class AddWidgetDrawer extends StatelessWidget {
                       child: Text(
                         WidgetSizeManager.getWidgetTitle(widgetId),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: isBanner ? Colors.white : Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
