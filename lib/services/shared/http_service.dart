@@ -91,7 +91,7 @@ class HttpService {
   /// Make a POST request with automatic token refresh on 401
   Future<Response<dynamic>> postLegacy(
     String endpoint, {
-    Map<String, dynamic>? body,
+    String? body,
     Map<String, String> headers = const {},
     bool refresh = false,
     bool followRedirects = true,
@@ -107,6 +107,7 @@ class HttpService {
     };
     options.followRedirects = followRedirects;
     final url = '${ApiConstants.legacyCMSBaseUrl}$endpoint';
+    print(url);
     return _dio.post(url, data: body, options: options);
   }
   

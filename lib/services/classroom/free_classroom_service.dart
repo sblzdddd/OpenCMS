@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../data/constants/api_constants.dart';
 import '../../data/models/classroom/free_classroom_response.dart';
 import '../../data/models/classroom/all_periods_classroom_response.dart';
@@ -32,17 +33,21 @@ class FreeClassroomService {
       final endpoint = '/$username${ApiConstants.freeClassroomsUrl}';
       
       // Prepare form data
-      final body = {
-        'b': date,
-        'w': period,
-        'classrooms': ApiConstants.classroomsList,
-      };
+      final body = 'b=$date&w=$period&c=${ApiConstants.classroomsList}';
+      print(endpoint);
+      print(body);
 
       final response = await _httpService.postLegacy(
         endpoint,
         body: body,
         refresh: refresh,
       );
+
+      print('FreeClassroomService.fetchFreeClassrooms:');
+      print('  Endpoint: $endpoint');
+      print('  Body: $body');
+      print('  Status Code: ${response.statusCode}');
+      print('  Response Data: ${response.data}');
 
       // Accept both 200 and 304 status codes (304 means cached response)
       if (response.statusCode != 200 && response.statusCode != 304) {
@@ -60,7 +65,8 @@ class FreeClassroomService {
       return FreeClassroomResponse.fromJson(jsonData);
     } catch (e) {
       print('FreeClassroomService: Error fetching free classrooms: $e');
-      rethrow;
+      print((e as DioException).response?.data);
+      return FreeClassroomResponse.empty();
     }
   }
 
@@ -80,18 +86,18 @@ class FreeClassroomService {
     required String date,
     bool refresh = false,
   }) async* {
-    final allPeriodsResponse = AllPeriodsClassroomResponse.empty(date);
-    yield allPeriodsResponse;
+    AllPeriodsClassroomResponse currentResponse = AllPeriodsClassroomResponse.empty(date);
+    yield currentResponse;
 
     // Start loading all periods
     final futures = <int, Future<FreeClassroomResponse>>{};
     
     for (int period = 1; period <= 10; period++) {
       // Mark period as loading
-      final loadingResponse = allPeriodsResponse.copyWith(
-        loadingStates: Map.from(allPeriodsResponse.loadingStates)..[period] = true,
+      currentResponse = currentResponse.copyWith(
+        loadingStates: Map.from(currentResponse.loadingStates)..[period] = true,
       );
-      yield loadingResponse;
+      yield currentResponse;
 
       // Start the fetch for this period
       futures[period] = fetchFreeClassrooms(
@@ -108,18 +114,21 @@ class FreeClassroomService {
       
       try {
         final response = await future;
-        final updatedResponse = allPeriodsResponse.copyWith(
-          periodData: Map.from(allPeriodsResponse.periodData)..[period] = response,
-          loadingStates: Map.from(allPeriodsResponse.loadingStates)..[period] = false,
-          errorStates: Map.from(allPeriodsResponse.errorStates)..[period] = null,
+        print('FreeClassroomService: Period $period completed successfully');
+        print('  Classrooms: ${response.freeClassrooms}');
+        currentResponse = currentResponse.copyWith(
+          periodData: Map.from(currentResponse.periodData)..[period] = response,
+          loadingStates: Map.from(currentResponse.loadingStates)..[period] = false,
+          errorStates: Map.from(currentResponse.errorStates)..[period] = null,
         );
-        yield updatedResponse;
+        yield currentResponse;
       } catch (e) {
-        final errorResponse = allPeriodsResponse.copyWith(
-          loadingStates: Map.from(allPeriodsResponse.loadingStates)..[period] = false,
-          errorStates: Map.from(allPeriodsResponse.errorStates)..[period] = e.toString(),
+        print('FreeClassroomService: Period $period failed with error: $e');
+        currentResponse = currentResponse.copyWith(
+          loadingStates: Map.from(currentResponse.loadingStates)..[period] = false,
+          errorStates: Map.from(currentResponse.errorStates)..[period] = e.toString(),
         );
-        yield errorResponse;
+        yield currentResponse;
       }
     }
   }

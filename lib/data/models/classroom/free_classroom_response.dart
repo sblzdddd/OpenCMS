@@ -12,10 +12,23 @@ class FreeClassroomResponse {
     required this.period,
   });
 
+  factory FreeClassroomResponse.empty() {
+    return FreeClassroomResponse(
+      freeClassrooms: [],
+      date: '',
+      period: '',
+    );
+  }
+
   factory FreeClassroomResponse.fromJson(Map<String, dynamic> json) {
     // Parse the rooms string to extract individual classroom names
     final String roomsString = json['rooms'] ?? '';
     final List<String> classrooms = _parseRoomsString(roomsString);
+    
+    print('FreeClassroomResponse.fromJson:');
+    print('  Raw JSON: $json');
+    print('  Rooms string: "$roomsString"');
+    print('  Parsed classrooms: $classrooms');
     
     return FreeClassroomResponse(
       freeClassrooms: classrooms,
@@ -29,18 +42,9 @@ class FreeClassroomResponse {
   static List<String> _parseRoomsString(String roomsString) {
     if (roomsString.isEmpty) return [];
     
-    final List<String> classrooms = [];
+    final List<String> classrooms = roomsString.trim().split(' ').where((part) => part.isNotEmpty).toList();
     
-    // Split by spaces and filter out empty strings
-    final parts = roomsString.trim().split(' ').where((part) => part.isNotEmpty).toList();
-    
-    for (final part in parts) {
-      // Remove parentheses if present and add to list
-      final classroom = part.replaceAll(RegExp(r'[()]'), '');
-      if (classroom.isNotEmpty && !classrooms.contains(classroom)) {
-        classrooms.add(classroom);
-      }
-    }
+    print(classrooms);
     
     return classrooms;
   }

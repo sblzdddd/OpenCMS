@@ -21,7 +21,7 @@ class QuickActionsConstants {
     {'title': 'Reports', 'icon': Symbols.assignment_rounded, 'id': 'reports'},
     {'title': 'Assessments', 'icon': Symbols.assessment_rounded, 'id': 'assessment'},
     {'title': 'Comments', 'icon': Symbols.comment_rounded, 'id': 'comments'},
-    {'title': 'School Calendar', 'icon': Symbols.calendar_month_rounded, 'id': 'calendar'},
+    {'title': 'Calendar', 'icon': Symbols.calendar_month_rounded, 'id': 'calendar'},
     {'title': 'Notices/Events', 'icon': Symbols.notifications_rounded, 'id': 'notice'},
     {'title': 'Homeworks', 'icon': Symbols.edit_note_rounded, 'id': 'homeworks'},
     {'title': 'Documents', 'icon': Symbols.description_rounded, 'id': 'documents'},

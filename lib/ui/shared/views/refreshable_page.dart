@@ -22,7 +22,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   double? get appBarElevation => null;
 
   /// Override this to provide custom body padding
-  EdgeInsets get bodyPadding => const EdgeInsets.all(16);
+  EdgeInsets get bodyPadding => const EdgeInsets.all(8);
 
   /// Override this to provide custom body background color
   Color? get bodyBackgroundColor => null;

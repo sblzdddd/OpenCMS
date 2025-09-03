@@ -6,11 +6,11 @@ library;
 
 class ApiConstants {
   // Base API configuration
-  static const String baseUrl = 'https://c''ms.a''le''vel'+'.co'+'m.cn';
+  static const String baseUrl = 'https://c''ms.a''le''vel''.co'+'m.cn';
   static const String baseApiUrl = '$baseUrl/api';
   
   // Legacy CMS base (old domain)
-  static const String legacyBaseUrl = 'https://w''ww.''ale''vel'+'.co'+'m.cn';
+  static const String legacyBaseUrl = 'https://w''ww.''ale''vel''.co'+'m.cn';
   static const String legacyCMSBaseUrl = '$legacyBaseUrl/user';
   
   // Authentication endpoint

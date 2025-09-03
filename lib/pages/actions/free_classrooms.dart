@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
+import '../../data/constants/period_constants.dart';
 import '../../data/models/classroom/all_periods_classroom_response.dart';
 import '../../services/classroom/free_classroom_service.dart';
 import '../../ui/shared/views/refreshable_page.dart';
@@ -16,7 +17,6 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   final FreeClassroomService _freeClassroomService = FreeClassroomService();
   
   DateTime _selectedDate = DateTime.now();
-  int _selectedPeriod = 1;
   AllPeriodsClassroomResponse? _allPeriodsData;
   StreamSubscription<AllPeriodsClassroomResponse>? _dataSubscription;
 
@@ -25,10 +25,13 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
 
   @override
   List<Widget>? get appBarActions => [
-    IconButton(
-      icon: const Icon(Icons.refresh),
-      onPressed: () => loadData(refresh: true),
-      tooltip: 'Refresh',
+    OutlinedButton.icon(
+      onPressed: () => _selectDate(context),
+      icon: const Icon(Icons.calendar_today, size: 18),
+      label: Text(
+        DateFormat('MMM dd, yyyy').format(_selectedDate),
+        style: const TextStyle(fontSize: 14),
+      ),
     ),
   ];
 
@@ -79,266 +82,145 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     }
   }
 
-  void _onPeriodChanged(int? newPeriod) {
-    if (newPeriod != null && newPeriod != _selectedPeriod) {
-      setState(() {
-        _selectedPeriod = newPeriod;
-      });
-    }
+  Widget _buildClassroomBadge(String classroom) {
+    return Container(
+      margin: const EdgeInsets.only(right: 2, bottom: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.meeting_room,
+            size: 14,
+            color: Colors.green.withValues(alpha: 0.7),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            classroom,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.green.withValues(alpha: 0.7),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget _buildDateSelector() {
+  Widget _buildPeriodCard(int period) {
+    final isInitialLoading = _allPeriodsData == null;
+    final isLoading = _allPeriodsData?.isLoading(period) ?? false;
+    final hasError = _allPeriodsData?.hasError(period) ?? false;
+    final errorMessage = _allPeriodsData?.getError(period);
+    final classrooms = _allPeriodsData?.getClassroomsForPeriod(period) ?? [];
+    final hasData = _allPeriodsData?.hasData(period) ?? false;
+    final periodTime = PeriodConstants.periods.firstWhere((p) => p.name == 'Period $period').startTime;
+    final periodEndTime = PeriodConstants.periods.firstWhere((p) => p.name == 'Period $period').endTime;
+    
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.all(4),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Select Date & Period',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => _selectDate(context),
-                    icon: const Icon(Icons.calendar_today, size: 18),
-                    label: Text(
-                      DateFormat('MMM dd, yyyy').format(_selectedDate),
-                      style: const TextStyle(fontSize: 14),
+                  child: Text(
+                    '$periodTime - $periodEndTime',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: DropdownButtonFormField<int>(
-                    value: _selectedPeriod,
-                    onChanged: _onPeriodChanged,
-                    decoration: const InputDecoration(
-                      labelText: 'Period',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    ),
-                    items: FreeClassroomService.getAllPeriods()
-                        .map((period) => DropdownMenuItem(
-                              value: period,
-                              child: Text(
-                                'Period $period',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                            ))
-                        .toList(),
+                if (hasError)
+                  IconButton(
+                    icon: const Icon(Icons.refresh, size: 20),
+                    onPressed: () => loadData(refresh: true),
+                    tooltip: 'Retry',
                   ),
-                ),
               ],
             ),
+            const SizedBox(height: 8),
+            if (isInitialLoading || isLoading)
+              const Center(
+                child: Column(
+                  children: [
+                    CircularProgressIndicator(strokeWidth: 2),
+                    SizedBox(height: 8),
+                    Text(
+                      'Loading classrooms...',
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              )
+            else if (hasError)
+              Text(
+                'Error: ${errorMessage ?? 'Unknown error'}',
+                style: TextStyle(
+                  color: Colors.red.shade600,
+                  fontSize: 14,
+                ),
+              )
+            else if (hasData)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${classrooms.length} free classroom${classrooms.length != 1 ? 's' : ''}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  if (classrooms.isNotEmpty)
+                    Wrap(
+                      children: classrooms.map((classroom) => _buildClassroomBadge(classroom)).toList(),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.meeting_room_outlined,
+                            size: 16,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'All classrooms occupied',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildClassroomCard(String classroom) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            Icons.meeting_room,
-            color: Theme.of(context).colorScheme.primary,
-            size: 20,
-          ),
-        ),
-        title: Text(
-          classroom,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Text(
-          'Available',
-          style: TextStyle(
-            color: Colors.green.shade600,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        trailing: Icon(
-          Icons.check_circle,
-          color: Colors.green.shade600,
-          size: 20,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPeriodStatusCard(int period) {
-    if (_allPeriodsData == null) {
-      return const SizedBox.shrink();
-    }
-
-    final isLoading = _allPeriodsData!.isLoading(period);
-    final hasError = _allPeriodsData!.hasError(period);
-    final errorMessage = _allPeriodsData!.getError(period);
-
-    if (isLoading) {
-      return Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: ListTile(
-          leading: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
-          title: Text(
-            'Period $period',
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-            ),
-          ),
-          subtitle: const Text(
-            'Loading classrooms...',
-            style: TextStyle(fontSize: 14),
-          ),
-        ),
-      );
-    }
-
-    if (hasError) {
-      return Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: ListTile(
-          leading: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.red.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.error_outline,
-              color: Colors.red.shade600,
-              size: 20,
-            ),
-          ),
-          title: Text(
-            'Period $period',
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
-            ),
-          ),
-          subtitle: Text(
-            'Error: ${errorMessage ?? 'Unknown error'}',
-            style: TextStyle(
-              color: Colors.red.shade600,
-              fontSize: 14,
-            ),
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => loadData(refresh: true),
-            tooltip: 'Retry',
-          ),
-        ),
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildClassroomsList() {
-    if (_allPeriodsData == null) {
-      return const SizedBox.shrink();
-    }
-
-    final classrooms = _allPeriodsData!.getClassroomsForPeriod(_selectedPeriod);
-    final isLoading = _allPeriodsData!.isLoading(_selectedPeriod);
-    final hasError = _allPeriodsData!.hasError(_selectedPeriod);
-    final hasData = _allPeriodsData!.hasData(_selectedPeriod);
-
+  Widget _buildAllPeriodsList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Show loading/error status for selected period
-        if (isLoading || hasError) _buildPeriodStatusCard(_selectedPeriod),
-        
-        // Show classrooms if data is available
-        if (hasData && classrooms.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              'Available Classrooms for Period $_selectedPeriod (${classrooms.length})',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          ...classrooms.map((classroom) => _buildClassroomCard(classroom)),
-        ],
-        
-        // Show empty state if no classrooms available
-        if (hasData && classrooms.isEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              'No free classrooms for Period $_selectedPeriod',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-              ),
-            ),
-          ),
-          Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: ListTile(
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.meeting_room_outlined,
-                  color: Colors.grey.shade600,
-                  size: 20,
-                ),
-              ),
-              title: const Text(
-                'All classrooms are occupied',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
-              ),
-              subtitle: const Text(
-                'Try selecting a different period',
-                style: TextStyle(fontSize: 14),
-              ),
-            ),
-          ),
-        ],
+        ...FreeClassroomService.getAllPeriods().map((period) => _buildPeriodCard(period)),
       ],
     );
   }
@@ -348,17 +230,61 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildDateSelector(),
-        const SizedBox(height: 8),
         Expanded(
-          child: _buildClassroomsList(),
+          child: _buildAllPeriodsList(),
         ),
       ],
     );
   }
 
   @override
-  bool get isEmpty => _allPeriodsData == null || !_allPeriodsData!.hasData(_selectedPeriod);
+  Widget buildContent(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: bodyPadding,
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAllPeriodsList(),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  bool get isEmpty {
+    if (_allPeriodsData == null) return true;
+    
+    // Don't show empty state if we're still loading any period
+    if (_allPeriodsData!.isAnyLoading) return false;
+    
+    // Don't show empty state if there are any errors
+    for (int period = 1; period <= 10; period++) {
+      if (_allPeriodsData!.hasError(period)) return false;
+    }
+    
+    // Show empty state only if all periods have data but no classrooms
+    bool allPeriodsHaveData = true;
+    bool allPeriodsEmpty = true;
+    
+    for (int period = 1; period <= 10; period++) {
+      if (!_allPeriodsData!.hasData(period)) {
+        allPeriodsHaveData = false;
+        break;
+      }
+      if (_allPeriodsData!.getClassroomsForPeriod(period).isNotEmpty) {
+        allPeriodsEmpty = false;
+      }
+    }
+    
+    return allPeriodsHaveData && allPeriodsEmpty;
+  }
 
   @override
   String get errorTitle => 'Error loading free classrooms';
@@ -384,7 +310,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
               ),
               SizedBox(height: 8),
               Text(
-                'Try selecting a different date or period',
+                'All classrooms are occupied for this date',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
