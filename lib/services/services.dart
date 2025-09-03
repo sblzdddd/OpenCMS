@@ -8,3 +8,4 @@ export 'timetable/course_timetable_service.dart';
 export 'assessment/assessment_service.dart';
 export 'reports/reports.dart';
 export 'homework/completed_homework_service.dart';
+export 'notification/notification_service.dart';

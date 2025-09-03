@@ -39,7 +39,7 @@ class _ActionItemState extends State<ActionItem> with AutomaticKeepAliveClientMi
     return KeyedSubtree(
       key: ValueKey(widget.action['id']),
       child: QuickActionTile(
-        width: widget.tileWidth ?? 120,
+        width: widget.tileWidth ?? 100,
         // height: 114,
         icon: widget.action['icon'] as IconData,
         title: widget.action['title'] as String,
@@ -51,7 +51,7 @@ class _ActionItemState extends State<ActionItem> with AutomaticKeepAliveClientMi
 
   Widget _buildStaticActionItem(BuildContext context) {
     return QuickActionTile(
-      width: widget.tileWidth ?? 120,
+      width: widget.tileWidth ?? 100,
       // height: 114,
       icon: widget.action['icon'] as IconData,
       title: widget.action['title'] as String,

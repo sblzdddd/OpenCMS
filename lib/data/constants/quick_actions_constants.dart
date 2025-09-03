@@ -22,8 +22,7 @@ class QuickActionsConstants {
     {'title': 'Assessments', 'icon': Symbols.assessment_rounded, 'id': 'assessment'},
     {'title': 'Comments', 'icon': Symbols.comment_rounded, 'id': 'comments'},
     {'title': 'School Calendar', 'icon': Symbols.calendar_month_rounded, 'id': 'calendar'},
-    {'title': 'Notices', 'icon': Symbols.notifications_rounded, 'id': 'notice'},
-    {'title': 'Events', 'icon': Symbols.event_rounded, 'id': 'events'},
+    {'title': 'Notices/Events', 'icon': Symbols.notifications_rounded, 'id': 'notice'},
     {'title': 'Homeworks', 'icon': Symbols.edit_note_rounded, 'id': 'homeworks'},
     {'title': 'Documents', 'icon': Symbols.description_rounded, 'id': 'documents'},
     {'title': 'Free Classrooms', 'icon': Symbols.door_open_rounded, 'id': 'available_classrooms'},
@@ -46,7 +45,6 @@ class QuickActionsConstants {
     'attendance',
     'calendar',
     'notice',
-    'events',
     'settings',
   ];
 

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../services/theme/theme_services.dart';
-import 'package:provider/provider.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -36,70 +34,6 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 16),
-                Consumer<ThemeNotifier>(
-                  builder: (context, themeNotifier, child) {
-                    return Column(
-                      children: [
-                        // Dark Mode Toggle
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  themeNotifier.isDarkMode 
-                                    ? Icons.dark_mode 
-                                    : Icons.light_mode,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Use Dark Mode',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            Switch(
-                              value: themeNotifier.isDarkMode,
-                              onChanged: (value) {
-                                themeNotifier.toggleTheme();
-                              },
-                              activeColor: Theme.of(context).colorScheme.primary,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        // 24H Time Format Toggle
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Use 24H Time Format',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            Switch(
-                              value: false, // TODO: Implement 24H time format toggle
-                              onChanged: (value) {
-                                // TODO: Implement 24H time format toggle
-                              },
-                              activeColor: Theme.of(context).colorScheme.primary,
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                ),
               ],
             ),
           ),

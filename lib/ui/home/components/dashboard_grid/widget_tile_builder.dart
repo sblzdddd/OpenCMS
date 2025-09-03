@@ -3,7 +3,7 @@ import '../banner_widget.dart';
 import '../homework_widget.dart';
 import '../latest_assessment_widget.dart';
 import '../next_class_widget.dart';
-import '../../components/notice_card.dart';
+import '../notices_widget.dart';
 import 'widget_size_manager.dart';
 
 /// Builder for dashboard widget tiles
@@ -22,10 +22,10 @@ class WidgetTileBuilder {
     final double spanX = span.width;
     final double spanY = span.height;
     final double width = baseTileWidth * spanX + spacing * (spanX - 1);
-    final double unitHeight = 100;
+    final double unitHeight = 110;
     final double height = unitHeight * spanY + spacing * (spanY - 1);
 
-    Widget child = _buildWidgetContent(id, onRefresh, refreshTick);
+    Widget child = _buildWidgetContent(id, onRefresh, refreshTick, span);
     
     // Make widgets non-clickable when in edit mode
     if (isEditModeParam == true) {
@@ -72,10 +72,10 @@ class WidgetTileBuilder {
   }
 
   /// Build the widget content based on widget ID
-  static Widget _buildWidgetContent(String id, VoidCallback? onRefresh, int refreshTick) {
+  static Widget _buildWidgetContent(String id, VoidCallback? onRefresh, int refreshTick, Size span) {
     switch (id) {
       case 'notices':
-        return const NoticeCard();
+        return NoticeCard(onRefresh: onRefresh, refreshTick: refreshTick, widgetSize: span);
       case 'homework':
         return HomeworkCard(onRefresh: onRefresh, refreshTick: refreshTick);
       case 'assessments':
@@ -107,26 +107,43 @@ class WidgetTileBuilder {
     Size currentSize,
     Function(Size) onSizeChange,
   ) {
-    final newSize = WidgetSizeManager.getOppositeSize(currentSize);
+    final alternativeSizes = WidgetSizeManager.getAlternativeSizes(widgetId, currentSize);
+    
+    if (alternativeSizes.isEmpty) {
+      // No alternative sizes available
+      return;
+    }
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Change ${WidgetSizeManager.getWidgetTitle(widgetId)} Size'),
-        content: Text('Choose the size for this widget:'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Current size: ${WidgetSizeManager.getSizeLabel(currentSize)}'),
+            const SizedBox(height: 16),
+            const Text('Choose a new size:'),
+            const SizedBox(height: 8),
+            ...alternativeSizes.map((size) => ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+              title: Text(WidgetSizeManager.getSizeLabel(size)),
+              subtitle: Text(WidgetSizeManager.getSizeDescription(size)),
+              leading: Icon(WidgetSizeManager.getSizeIcon(size)),
+              onTap: () {
+                onSizeChange(size);
+                Navigator.of(context).pop();
+              },
+            )),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
             child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              onSizeChange(newSize);
-              Navigator.of(context).pop();
-            },
-            child: Text(WidgetSizeManager.getOppositeSizeLabel(currentSize)),
           ),
         ],
       ),

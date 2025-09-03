@@ -174,7 +174,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                   : LayoutBuilder(
                       builder: (context, constraints) {
                         const double spacing = 16.0;
-                        const double minTileWidth = 130.0;
+                        const double minTileWidth = 100.0;
                         final double availableWidth = constraints.maxWidth;
                         final int columns = (((availableWidth + spacing) /
                                     (minTileWidth + spacing))

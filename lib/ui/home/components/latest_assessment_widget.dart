@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/assessment/assessment_response.dart';
 import '../../../services/assessment/assessment_service.dart';
-import '../../../pages/actions.dart';
 import 'dart:async';
+import 'base_dashboard_widget.dart';
 
 /// Widget that displays the latest assessment information
 /// Shows the most recent assessment with score and subject
@@ -19,23 +19,21 @@ class LatestAssessmentWidget extends StatefulWidget {
   State<LatestAssessmentWidget> createState() => _LatestAssessmentWidgetState();
 }
 
-class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> with AutomaticKeepAliveClientMixin {
+class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> 
+    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+  
   @override
   bool get wantKeepAlive => true;
   
   AssessmentResponse? _assessmentData;
-  bool _isLoading = true;
-  bool _hasError = false;
-  Timer? _updateTimer;
-  
   final AssessmentService _assessmentService = AssessmentService();
 
   @override
   void initState() {
     super.initState();
     print('LatestAssessmentWidget: initState called, refreshTick: ${widget.refreshTick}');
-    _fetchAssessments();
-    _startTimer();
+    initializeWidget();
+    startTimer();
   }
 
   @override
@@ -49,23 +47,23 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> with Au
 
   @override
   void dispose() {
-    _updateTimer?.cancel();
+    disposeMixin();
     super.dispose();
   }
 
-  void _startTimer() {
-    // Update every hour to refresh assessment data
-    _updateTimer = Timer.periodic(const Duration(hours: 1), (_) {
-      if (mounted) {
-        setState(() {
-          // Refresh to update assessment data
-        });
-      }
-    });
+  @override
+  Future<void> initializeWidget() async {
+    await _fetchAssessments();
   }
 
-  /// Refresh the widget data
-  Future<void> refresh() async {
+  @override
+  void startTimer() {
+    // Update every hour to refresh assessment data
+    setCustomTimer(const Duration(hours: 1));
+  }
+
+  @override
+  Future<void> refreshData() async {
     print('LatestAssessmentWidget: Refreshing assessments');
     await _fetchAssessments(refresh: true);
     // Call the parent refresh callback if provided
@@ -74,10 +72,8 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> with Au
 
   Future<void> _fetchAssessments({bool refresh = false}) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
+      setLoading(true);
+      setError(false);
 
       final assessments = await _assessmentService.fetchAssessments(
         year: PeriodConstants.getAcademicYears().first.year,
@@ -87,15 +83,13 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> with Au
       if (mounted) {
         setState(() {
           _assessmentData = assessments;
-          _isLoading = false;
         });
+        setLoading(false);
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-        });
+        setLoading(false);
+        setError(true);
       }
       print('LatestAssessmentWidget: Error fetching assessments: $e');
     }
@@ -138,11 +132,10 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> with Au
     return 'No score';
   }
 
-  String _getSubjectName(Assessment assessment) {
-    // Find the subject name for this assessment
+  String _getSubjectCode(Assessment assessment) {
     for (final subject in _assessmentData!.subjects) {
       if (subject.assessments.contains(assessment)) {
-        return subject.subject;
+        return subject.name;
       }
     }
     return 'Unknown Subject';
@@ -151,156 +144,48 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> with Au
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
-    return InkWell(
-      borderRadius: BorderRadius.circular(24),
-      onTap: () {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => buildActionPage({
-                'id': 'assessments',
-                'title': 'Assessments',
-              }),
-            ),
-          );
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Container(
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: _buildContent(),
-        ),
-      ),
-    );
+    return buildCommonLayout();
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
-      return const Row(
-        children: [
-          SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          SizedBox(width: 12),
-          Text('Loading assessments...',
-            style: TextStyle(
-              fontSize: 8,
-            ),
-          ),
-        ],
-      );
-    }
-    
-    if (_hasError) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Symbols.error_outline_rounded,
-            fill: 1.0,
-            color: Theme.of(context).colorScheme.error,
-            size: 18,
-          ),
-          Text(
-            'Failed to load assessments',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Swipe down to refresh',
-            style: TextStyle(
-              fontSize: 12,
-            ),
-          ),
-        ],
-      );
-    }
+  @override
+  IconData getWidgetIcon() => Symbols.assessment_rounded;
 
+  @override
+  String getWidgetTitle() => 'Assessment';
+
+  @override
+  String getWidgetSubtitle() {
     final latestAssessment = _getLatestAssessment();
-    
-    if (latestAssessment == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Symbols.assessment_rounded,
-            color: Theme.of(context).colorScheme.primary,
-            size: 18,
-            fill: 1,
-          ),
-          Text(
-            'Latest Assessment',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'No recent assessments',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 12, 
-              color: Theme.of(context).colorScheme.onSurface
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Symbols.assessment_rounded,
-              color: Theme.of(context).colorScheme.primary,
-              size: 18,
-              fill: 1,
-            ),
-            const Spacer(),
-            Text(
-              _getScoreText(latestAssessment),
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          _getSubjectName(latestAssessment),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        const Spacer(),
-        Text(
-          latestAssessment.title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 8,
-          ),
-        ),
-      ],
-    );
+    if (latestAssessment == null) return '';
+    return latestAssessment.title;
   }
+
+  @override
+  String? getBottomRightText() {
+    final latestAssessment = _getLatestAssessment();
+    if (latestAssessment == null) return null;
+    return _getScoreText(latestAssessment);
+  }
+
+  @override
+  String? getBottomText() {
+    final latestAssessment = _getLatestAssessment();
+    if (latestAssessment == null) return null;
+    return _getSubjectCode(latestAssessment);
+  }
+
+  @override
+  String getLoadingText() => 'Loading assessments...';
+
+  @override
+  String getErrorText() => 'Failed to load assessments';
+
+  @override
+  String getNoDataText() => 'No recent assessments';
+
+  @override
+  bool hasWidgetData() => _getLatestAssessment() != null;
+
+  @override
+  String getActionId() => 'assessment';
 }

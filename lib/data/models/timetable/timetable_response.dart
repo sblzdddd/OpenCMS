@@ -1,6 +1,10 @@
 /// Data models for timetable API response
 library;
 
+import 'package:intl/intl.dart';
+import '../../constants/period_constants.dart';
+import 'course_merged_event.dart';
+
 class TimetableResponse {
   final String weekType;
   final int weekNum;
@@ -35,6 +39,86 @@ class TimetableResponse {
           ?.map((item) => WeekDay.fromJson(item))
           .toList() ?? [],
     );
+  }
+
+  /// Get current and next class for today
+  Map<String, CourseMergedEvent?> getCurrentAndNextClass() {
+    if (weekdays.isEmpty) return {'current': null, 'next': null};
+
+    final now = DateTime.now();
+    final today = now.weekday - 1; // Convert to 0-based index (Monday = 0)
+    
+    // Only show for weekdays (Monday = 1 to Friday = 5)
+    if (today < 0 || today >= 5) {
+      return {'current': null, 'next': null};
+    }
+
+    final weekday = weekdays[today];
+    final mergedEvents = CourseMergedEvent.mergeEventsForDay(weekday);
+    
+    CourseMergedEvent? currentClass;
+    CourseMergedEvent? nextClass;
+    
+    for (final event in mergedEvents) {
+      final startTime = _parseTime(PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '');
+      final endTime = _parseTime(PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '');
+      
+      if (startTime == null || endTime == null) continue;
+      
+      final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+      if (currentTime == null) continue;
+      
+      if (_isTimeInRange(currentTime, startTime, endTime)) {
+        // Currently in this class
+        currentClass = event;
+        break;
+      } else if (_isTimeBefore(currentTime, startTime)) {
+        // This is the next class
+        nextClass = event;
+        break;
+      }
+    }
+    
+    // If no current class and no next class found, look for next class in remaining events
+    if (currentClass == null && nextClass == null) {
+      for (final event in mergedEvents) {
+        final startTime = _parseTime(PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '');
+        final endTime = _parseTime(PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '');
+        
+        if (startTime != null && endTime != null) {
+          final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+          if (currentTime != null && _isTimeBefore(currentTime, startTime)) {
+            // Only show as next class if it hasn't started yet (future class)
+            nextClass = event;
+            break;
+          }
+        }
+      }
+    }
+
+    return {'current': currentClass, 'next': nextClass};
+  }
+
+  /// Time utility methods
+  static DateTime? _parseTime(String timeString) {
+    try {
+      return DateFormat('HH:mm').parse(timeString);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static bool _isTimeInRange(DateTime time, DateTime start, DateTime end) {
+    final timeMinutes = time.hour * 60 + time.minute;
+    final startMinutes = start.hour * 60 + start.minute;
+    final endMinutes = end.hour * 60 + end.minute;
+    return timeMinutes >= startMinutes && timeMinutes < endMinutes;
+  }
+
+  static bool _isTimeBefore(DateTime time, DateTime other) {
+    final timeMinutes = time.hour * 60 + time.minute;
+    final otherMinutes = other.hour * 60 + other.minute;
+    return timeMinutes < otherMinutes;
   }
 }
 

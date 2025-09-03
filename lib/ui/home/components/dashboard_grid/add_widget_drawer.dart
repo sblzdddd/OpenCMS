@@ -118,35 +118,75 @@ class AddWidgetDrawer extends StatelessWidget {
                       _buildSizeOption(
                         context,
                         widgetId,
-                        const Size(4, 1.9),
-                        'Add (4x1.9)',
+                        const Size(4, 1.6),
+                        'Add (4x1.6)',
                       ),
                     ]
                   ],
                 ),
                 if(widgetId != 'banner') ...[
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildSizeOption(
-                          context,
-                          widgetId,
-                          const Size(2, 1),
-                          'Compact (2×1)',
+                  if(widgetId == 'notices') ...[
+                    // Three size options for notices: 2x1, 4x1, 4x1.6
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildSizeOption(
+                                context,
+                                widgetId,
+                                const Size(2, 1),
+                                'Compact (2×1)',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildSizeOption(
+                                context,
+                                widgetId,
+                                const Size(4, 1),
+                                'Wide (4×1)',
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildSizeOption(
-                          context,
-                          widgetId,
-                          const Size(4, 1),
-                          'Wide (4×1)',
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: _buildSizeOption(
+                            context,
+                            widgetId,
+                            const Size(4, 1.6),
+                            'Extra Wide (4×1.6)',
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ] else ...[
+                    // Two size options for other widgets: 2x1, 4x1
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildSizeOption(
+                            context,
+                            widgetId,
+                            const Size(2, 1),
+                            'Compact (2×1)',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildSizeOption(
+                            context,
+                            widgetId,
+                            const Size(4, 1),
+                            'Wide (4×1)',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ]
               ],
               ),

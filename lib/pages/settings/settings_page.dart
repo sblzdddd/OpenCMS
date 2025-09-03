@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../ui/shared/dialog/confirm_dialog.dart';
+import 'theme_settings_page.dart';
 import '../../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
-import 'theme_settings_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -16,32 +16,27 @@ class _SettingsPageState extends State<SettingsPage> {
     showClearDataDialog(context);
   }
 
-  Widget _buildSettingsItem(String title, IconData icon, Widget page) {
+  Widget _buildSettingsItem(String title, IconData icon, Widget? page, {Function? onTap}) {
     // Theme Settings Section
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => page,
-          ),
-        );
+        if (onTap != null) {
+          onTap();
+        }
+        if (page != null) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+        }
       },
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Icon(
-                  icon,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                Icon(icon, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+                Text(title, style: Theme.of(context).textTheme.bodyLarge),
               ],
             ),
             Icon(
@@ -58,10 +53,13 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildSettingsTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(
-        color: Theme.of(context).colorScheme.primary,
-      ),),
+      padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
     );
   }
 
@@ -78,142 +76,136 @@ class _SettingsPageState extends State<SettingsPage> {
         elevation: 0,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSettingsTitle('Settings'),
+            _buildSettingsTitle('Theme'),
+            Consumer<ThemeNotifier>(
+              builder: (context, themeNotifier, child) {
+                return Column(
+                  children: [
+                    // Dark Mode Toggle
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6.0,
+                        horizontal: 8.0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                themeNotifier.isDarkMode
+                                    ? Icons.dark_mode
+                                    : Icons.light_mode,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Dark Mode',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                          Switch(
+                            value: themeNotifier.isDarkMode,
+                            onChanged: (value) {
+                              themeNotifier.toggleTheme();
+                            },
+                            activeColor: Theme.of(context).colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Divider(height: 2),
+                    
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 6.0,
+                        horizontal: 8.0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                'Use 24H Time Format',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                          Switch(
+                            value:
+                                false, // TODO: Implement 24H time format toggle
+                            onChanged: (value) {
+                              // TODO: Implement 24H time format toggle
+                            },
+                            activeColor: Theme.of(context).colorScheme.primary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            const Divider(height: 2),
             _buildSettingsItem(
-              'Theme Settings', 
+              'Theme Settings',
               Icons.palette,
               const ThemeSettingsPage(),
             ),
-            const Divider(),
+            const Divider(height: 2),
+            _buildSettingsTitle('Notifications'),
             _buildSettingsItem(
               'Notification Settings',
               Icons.notifications,
               const ThemeSettingsPage(),
             ),
-            const Divider(),
+            const Divider(height: 2),
 
-            // Account Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Account',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () => showLogoutDialog(context),
-                      icon: const Icon(Icons.logout),
-                      label: const Text('Log Out'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.error,
-                        foregroundColor: Theme.of(context).colorScheme.onError,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _clearUserData,
-                      icon: const Icon(Icons.delete_forever),
-                      label: const Text('Clear User Data'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.secondary,
-                        foregroundColor: Theme.of(
-                          context,
-                        ).colorScheme.onSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            _buildSettingsTitle('Account'),
+            _buildSettingsItem(
+              'Change Password',
+              Icons.password,
+              const ThemeSettingsPage(),
             ),
-            const Divider(),
-
-            // About This App Section
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'About This App',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  InkWell(
-                    onTap: () {
-                      // TODO: Navigate to app info
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.info,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              "App's Info",
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  InkWell(
-                    onTap: () {
-                      // TODO: Navigate to privacy policy
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.privacy_tip,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              'Privacy Policy',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
-                          ],
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withOpacity(0.6),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            const Divider(height: 2),
+            _buildSettingsItem(
+              'Logout',
+              Icons.logout,
+              null,
+              onTap: () => showLogoutDialog(context),
             ),
+            const Divider(height: 2),
+            _buildSettingsItem(
+              'Clear User Data',
+              Icons.delete_forever,
+              null,
+              onTap: () => _clearUserData(),
+            ),
+            const Divider(height: 2),
+            _buildSettingsTitle("About This App"),
+            _buildSettingsItem(
+              'App Info',
+              Icons.info,
+              null,
+            ),
+            const Divider(height: 2),
+            _buildSettingsItem(
+              'Privacy Policy',
+              Icons.privacy_tip,
+              null,
+            ),
+            const Divider(height: 2),
           ],
         ),
       ),

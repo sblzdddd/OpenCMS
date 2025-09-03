@@ -75,7 +75,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
     final event = Event(
       title: '${widget.homework.courseName} Homework',
       description: widget.homework.title,
-      location: "SC"+"IE",
+      location: "SC""IE",
       startDate: startDate,
       endDate: endDate,
     );

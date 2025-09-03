@@ -33,7 +33,6 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
     super.initState();
     _loadProgram();
     _ticker = createTicker((elapsed) {
-      // Target ~30fps updates
       _time = elapsed.inMilliseconds / 1000.0;
       if (mounted) setState(() {});
     });

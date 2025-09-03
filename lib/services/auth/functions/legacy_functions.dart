@@ -18,7 +18,7 @@ Future<bool> refreshLegacyCookies(AuthServiceBase authService) async {
 
     // Exchange for legacy token
     final tokenResp = await authService.httpService.get(
-      ApiConstants.legacyTokenUrlForHref(),
+      ApiConstants.legacyTokenUrlForHref,
       refresh: true,
     );
     final data = tokenResp.data ?? {};

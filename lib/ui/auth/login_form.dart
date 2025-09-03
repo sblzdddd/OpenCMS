@@ -113,7 +113,7 @@ class _LoginFormState extends State<LoginForm> {
                     textAlign: TextAlign.center,
                   ),
                   Text(
-                    'Login with your'+' SC'+'IE'+' Account',
+                    'Login with your'' SC''IE'' Account',
                     style: TextStyle(
                       fontSize: 16,
                       color: Theme.of(context).colorScheme.onSurface,

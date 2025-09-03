@@ -1,6 +1,7 @@
 import '../shared/http_service.dart';
 import '../../data/constants/api_constants.dart';
 import '../../data/models/timetable/timetable_response.dart';
+import '../../data/models/timetable/course_merged_event.dart';
 
 /// Service for fetching course timetable and course statistics
 class CourseTimetableService {
@@ -37,6 +38,48 @@ class CourseTimetableService {
       }
     } catch (e) {
       print('CourseTimetableService: Error fetching timetable: $e');
+      rethrow;
+    }
+  }
+
+  /// Get current and next class information for today
+  Future<Map<String, CourseMergedEvent?>> getCurrentAndNextClass({
+    required int year,
+    bool refresh = false,
+  }) async {
+    try {
+      final today = DateTime.now();
+      final dateString = '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
+      
+      final timetable = await fetchCourseTimetable(
+        year: year,
+        date: dateString,
+        refresh: refresh,
+      );
+
+      return timetable.getCurrentAndNextClass();
+    } catch (e) {
+      print('CourseTimetableService: Error getting current and next class: $e');
+      rethrow;
+    }
+  }
+
+  /// Get current and next class information for a specific date
+  Future<Map<String, CourseMergedEvent?>> getCurrentAndNextClassForDate({
+    required int year,
+    required String date,
+    bool refresh = false,
+  }) async {
+    try {
+      final timetable = await fetchCourseTimetable(
+        year: year,
+        date: date,
+        refresh: refresh,
+      );
+
+      return timetable.getCurrentAndNextClass();
+    } catch (e) {
+      print('CourseTimetableService: Error getting current and next class for date: $e');
       rethrow;
     }
   }

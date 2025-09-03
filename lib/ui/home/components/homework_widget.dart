@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/homework/homework_response.dart';
 import '../../../services/homework/homework_service.dart';
-import '../../../pages/actions.dart';
 import 'dart:async';
+import 'base_dashboard_widget.dart';
 
 /// Widget that displays homework information
 /// Shows recent homework items with due dates and status
@@ -19,22 +19,20 @@ class HomeworkCard extends StatefulWidget {
   State<HomeworkCard> createState() => _HomeworkCardState();
 }
 
-class _HomeworkCardState extends State<HomeworkCard> with AutomaticKeepAliveClientMixin {
+class _HomeworkCardState extends State<HomeworkCard> 
+    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+  
   @override
   bool get wantKeepAlive => true;
   
   HomeworkResponse? _homeworkData;
-  bool _isLoading = true;
-  bool _hasError = false;
-  Timer? _updateTimer;
-  
   final HomeworkService _homeworkService = HomeworkService();
 
   @override
   void initState() {
     super.initState();
-    _fetchHomework();
-    _startTimer();
+    initializeWidget();
+    startTimer();
   }
 
   @override
@@ -48,24 +46,23 @@ class _HomeworkCardState extends State<HomeworkCard> with AutomaticKeepAliveClie
 
   @override
   void dispose() {
-    _updateTimer?.cancel();
+    disposeMixin();
     super.dispose();
   }
 
-  void _startTimer() {
-    // Update every hour to refresh homework status
-    _updateTimer = Timer.periodic(const Duration(hours: 1), (_) {
-      if (mounted) {
-        setState(() {
-          // Refresh to update overdue status
-        });
-      }
-    });
+  @override
+  Future<void> initializeWidget() async {
+    await _fetchHomework();
   }
 
-  /// Refresh the widget data
-  Future<void> refresh() async {
-    print('HomeworkCard: Refreshing homework');
+  @override
+  void startTimer() {
+    // Update every hour to refresh homework status
+    setCustomTimer(const Duration(hours: 1));
+  }
+
+  @override
+  Future<void> refreshData() async {
     await _fetchHomework(refresh: true);
     // Call the parent refresh callback if provided
     widget.onRefresh?.call();
@@ -73,10 +70,8 @@ class _HomeworkCardState extends State<HomeworkCard> with AutomaticKeepAliveClie
 
   Future<void> _fetchHomework({bool refresh = false}) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
+      setLoading(true);
+      setError(false);
 
       final homework = await _homeworkService.fetchHomework(
         academicYear: PeriodConstants.getAcademicYears().first.year,
@@ -86,15 +81,13 @@ class _HomeworkCardState extends State<HomeworkCard> with AutomaticKeepAliveClie
       if (mounted) {
         setState(() {
           _homeworkData = homework;
-          _isLoading = false;
         });
+        setLoading(false);
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-        });
+        setLoading(false);
+        setError(true);
       }
       print('HomeworkCard: Error fetching homework: $e');
     }
@@ -126,183 +119,57 @@ class _HomeworkCardState extends State<HomeworkCard> with AutomaticKeepAliveClie
     } else if (difference == 1) {
       return 'Due tomorrow';
     } else if (difference <= 7) {
-      return 'Due in $difference days';
+      return '$difference days';
     } else {
       return DateFormat('MMM dd').format(dueDate);
-    }
-  }
-
-  Color _getDueDateColor(DateTime dueDate) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final dueDay = DateTime(dueDate.year, dueDate.month, dueDate.day);
-    
-    final difference = dueDay.difference(today).inDays;
-    
-    if (difference < 0) {
-      return Colors.red;
-    } else if (difference == 0) {
-      return Colors.orange;
-    } else if (difference <= 2) {
-      return Colors.orange;
-    } else {
-      return Theme.of(context).colorScheme.onSurface;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
-    return InkWell(
-      borderRadius: BorderRadius.circular(24),
-      onTap: () {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => buildActionPage({
-                'id': 'homeworks',
-                'title': 'Homeworks',
-              }),
-            ),
-          );
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-        child: Container(
-          padding: const EdgeInsets.all(13),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: _buildContent(),
-        ),
-      ),
-    );
+    return buildCommonLayout();
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
-      return const Row(
-        children: [
-          SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          SizedBox(width: 12),
-          Text('Loading homework...',
-            style: TextStyle(
-              fontSize: 8,
-            ),
-          ),
-        ],
-      );
-    }
-    
-    if (_hasError) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Symbols.error_outline_rounded,
-            fill: 1.0,
-            color: Theme.of(context).colorScheme.error,
-            size: 18,
-          ),
-          Text(
-            'Failed to load homework',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Swipe down to refresh',
-            style: TextStyle(
-              fontSize: 12,
-            ),
-          ),
-        ],
-      );
-    }
+  @override
+  String getWidgetTitle() => 'Homework';
 
+  @override
+  String getWidgetSubtitle() {
     final recentHomework = _getRecentHomework();
-    
-    if (recentHomework == null) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Symbols.book_rounded,
-            color: Theme.of(context).colorScheme.primary,
-            size: 18,
-            fill: 1,
-          ),
-          Text(
-            'Homeworks',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'No recent homework',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 12, 
-              color: Theme.of(context).colorScheme.onSurface
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Symbols.book_rounded,
-              color: Theme.of(context).colorScheme.primary,
-              size: 18,
-              fill: 1,
-            ),
-            const Spacer(),
-            Text(
-              _getDueDateText(recentHomework.dueDate),
-              style: TextStyle(
-                fontSize: 10,
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 2),
-        Text(
-          recentHomework.courseName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        const Spacer(),
-        Text(
-          recentHomework.title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 8,
-          ),
-        ),
-      ],
-    );
+    if (recentHomework == null) return '';
+    return recentHomework.title;
   }
+
+  @override
+  String? getBottomRightText() {
+    final recentHomework = _getRecentHomework();
+    if (recentHomework == null) return null;
+    return _getDueDateText(recentHomework.dueDate);
+  }
+
+  @override
+  String? getBottomText() {
+    final recentHomework = _getRecentHomework();
+    if (recentHomework == null) return null;
+    return recentHomework.courseName;
+  }
+
+  @override
+  String getLoadingText() => 'Loading homework...';
+
+  @override
+  String getErrorText() => 'Failed to load homework';
+
+  @override
+  String getNoDataText() => 'No recent homework';
+
+  @override
+  bool hasWidgetData() => _getRecentHomework() != null;
+
+  @override
+  String getActionId() => 'homeworks';
+
+  @override
+  IconData getWidgetIcon() => Symbols.edit_note_rounded;
 }

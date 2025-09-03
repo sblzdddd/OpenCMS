@@ -4,7 +4,7 @@ import '../../data/models/assessment/assessment_response.dart';
 import '../../services/assessment/assessment_service.dart';
 import '../../ui/shared/academic_year_dropdown.dart';
 import '../../ui/shared/views/refreshable_view.dart';
-import 'subject_assessments_view.dart';
+import '../../ui/assessments/subject_assessments_view.dart';
 
 class AssessmentPage extends StatefulWidget {
   final int initialTabIndex;

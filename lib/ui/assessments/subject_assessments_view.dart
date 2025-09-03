@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../data/constants/period_constants.dart';
 import '../../data/models/assessment/assessment_response.dart';
-import '../../ui/shared/views/refreshable_page.dart';
+import '../../services/assessment/assessment_service.dart';
+import '../shared/views/refreshable_page.dart';
+import 'assessment_chart_widget.dart';
 
 class SubjectAssessmentsView extends StatefulWidget {
   final SubjectAssessment subject;
@@ -18,13 +20,34 @@ class SubjectAssessmentsView extends StatefulWidget {
 }
 
 class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsView> {
+  late SubjectAssessment _currentSubject;
+  
   @override
-  String get appBarTitle => widget.subject.subject;
+  void initState() {
+    super.initState();
+    _currentSubject = widget.subject;
+  }
+  
+  @override
+  String get appBarTitle => _currentSubject.subject;
 
   @override
   Future<void> fetchData({bool refresh = false}) async {
-    // Data is already available from the parent widget
-    // No need to fetch additional data
+    if (refresh) {
+      final assessments = await AssessmentService().getAssessmentsBySubject(
+        year: widget.academicYear.year,
+        subjectName: _currentSubject.subject,
+        refresh: true,
+      );
+      // Create a new SubjectAssessment instance with updated assessments
+      _currentSubject = SubjectAssessment(
+        id: _currentSubject.id,
+        name: _currentSubject.name,
+        subject: _currentSubject.subject,
+        assessments: assessments,
+      );
+      setState(() {});
+    }
   }
 
   @override
@@ -34,13 +57,14 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
       children: [
         _buildHeader(),
         _buildPerformanceSummary(),
+        _buildChartSection(),
         _buildAssessmentsList(),
       ],
     );
   }
 
   @override
-  bool get isEmpty => widget.subject.assessments.isEmpty;
+  bool get isEmpty => _currentSubject.assessments.isEmpty;
 
   @override
   String get errorTitle => 'Error loading assessments';
@@ -56,7 +80,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.subject.subject,
+            _currentSubject.subject,
             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -77,7 +101,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
-                  '${widget.subject.assessments.length} Assessment${widget.subject.assessments.length != 1 ? 's' : ''}',
+                  '${_currentSubject.assessments.length} Assessment${_currentSubject.assessments.length != 1 ? 's' : ''}',
                   style: const TextStyle(fontSize: 12),
                 ),
               ),
@@ -89,7 +113,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
   }
 
   Widget _buildPerformanceSummary() {
-    final validAssessments = widget.subject.assessments.where((a) => a.percentageScore != null).toList();
+    final validAssessments = _currentSubject.assessments.where((a) => a.percentageScore != null).toList();
     
     if (validAssessments.isEmpty) {
       return const SizedBox.shrink();
@@ -158,6 +182,18 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
     );
   }
 
+  Widget _buildChartSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AssessmentChartWidget(
+          assessments: _currentSubject.assessments,
+          subjectName: _currentSubject.subject,
+        ),
+      ],
+    );
+  }
+
   Widget _buildAssessmentsList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,9 +207,9 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: widget.subject.assessments.length,
+          itemCount: _currentSubject.assessments.length,
           itemBuilder: (context, index) {
-            final assessment = widget.subject.assessments[index];
+            final assessment = _currentSubject.assessments[index];
             return _buildAssessmentItem(assessment);
           },
         ),
@@ -205,17 +241,6 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  // if (hasValidScore) ...[
-                  //   const SizedBox(height: 4),
-                  //   Text(
-                  //     '${assessment.percentageScore!.toStringAsFixed(1)}%',
-                  //     style: TextStyle(
-                  //       fontSize: 16,
-                  //       color: scoreColor,
-                  //       fontWeight: FontWeight.w500,
-                  //     ),
-                  //   ),
-                  // ],
                   const SizedBox(height: 8),
                   Row(
                     children: [

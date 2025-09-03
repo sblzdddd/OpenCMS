@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/pages/actions/notices.dart';
 import 'actions/attendance.dart';
 import 'actions/assessment.dart';
 import 'actions/homework.dart';
 import 'actions/web_cms.dart';
+import 'actions/free_classrooms.dart';
 import '../data/constants/quick_actions_constants.dart';
 import '../ui/shared/navigations/app_navigation_controller.dart';
 import 'actions/timetable.dart';
@@ -90,12 +92,6 @@ class SchoolCalendarPage extends StatelessWidget {
   Widget build(BuildContext context) => const ActionPageScaffold('calendar');
 }
 
-class NoticesPage extends StatelessWidget {
-  const NoticesPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('notice');
-}
-
 class EventsPage extends StatelessWidget {
   const EventsPage({super.key});
   @override
@@ -123,7 +119,7 @@ class DocumentsPage extends StatelessWidget {
 class AvailableClassroomsPage extends StatelessWidget {
   const AvailableClassroomsPage({super.key});
   @override
-  Widget build(BuildContext context) => const ActionPageScaffold('available_classrooms');
+  Widget build(BuildContext context) => const FreeClassroomsPage();
 }
 
 class MaintenancePage extends StatelessWidget {
@@ -171,6 +167,7 @@ class UnknownActionPage extends StatelessWidget {
 
 Widget buildActionPage(Map<String, dynamic> action) {
   final String id = action['id'] as String;
+  print('buildActionPage: $id');
   switch (id) {
     case 'webcms':
       return const WebCmsPage();
@@ -189,15 +186,17 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'calendar':
       return const SchoolCalendarPage();
     case 'notice':
-      return const NoticesPage();
+      return const NoticesPage(initialTabIndex: 0);
+    case 'bulletin':
+      return const NoticesPage(initialTabIndex: 1);
     case 'events':
-      return const EventsPage();
+      return const NoticesPage(initialTabIndex: 2);
     case 'homeworks':
       return const HomeworkPage(initialTabIndex: 0);
     case 'documents':
       return const DocumentsPage();
     case 'available_classrooms':
-      return const AvailableClassroomsPage();
+      return const FreeClassroomsPage();
     case 'maintenance':
       return const MaintenancePage();
     case 'leave_requests':

@@ -207,8 +207,8 @@ class _QuickActionsState extends State<QuickActions> {
                         )
                       : LayoutBuilder(
                         builder: (context, constraints) {
-                          const double spacing = 12.0;
-                          const double minTileWidth = 110.0;
+                          const double spacing = 8.0;
+                          const double minTileWidth = 100.0;
                           // Item height is determined by each tile
 
                           final double availableWidth = constraints.maxWidth;
@@ -277,8 +277,8 @@ class _QuickActionsState extends State<QuickActions> {
               onPressed: _exitEditMode,
               backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              child: const Icon(Symbols.check_rounded),
               tooltip: 'Done',
+              child: const Icon(Symbols.check_rounded),
             ),
           ),
       ],

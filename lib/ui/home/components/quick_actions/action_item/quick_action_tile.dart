@@ -16,8 +16,8 @@ class QuickActionTile extends StatefulWidget {
 
   const QuickActionTile({
     super.key,
-    this.width = 120,
-    this.height = 112,
+    this.width = 100,
+    this.height = 100,
     required this.icon,
     this.iconColor,
     this.iconBackgroundColor,
@@ -44,7 +44,7 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
     final Color resolvedIconBg = widget.iconBackgroundColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
     final Color resolvedIconColor = widget.iconColor ?? Theme.of(context).colorScheme.primary;
     final Color resolvedBorderColor = widget.borderColor ?? Theme.of(context).colorScheme.outline.withValues(alpha: 0.2);
-    final TextStyle resolvedTitleStyle = widget.titleStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12, fontWeight: FontWeight.w500);
+    final TextStyle resolvedTitleStyle = widget.titleStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, fontWeight: FontWeight.w500);
 
     return SizedBox(
       width: widget.width,
@@ -68,11 +68,11 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 54,
-                  height: 54,
+                  width: 50,
+                  height: 50,
                   decoration: BoxDecoration(
                     color: resolvedIconBg,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Stack(
                     children: [
@@ -80,7 +80,7 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
                         child: Icon(
                           widget.icon,
                           color: resolvedIconColor,
-                          size: 28,
+                          size: 27,
                         ),
                       ),
                     ],

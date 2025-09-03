@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
 import '../../../services/timetable/course_timetable_service.dart';
 import 'dart:async';
-import '../../../pages/actions.dart';
+import 'base_dashboard_widget.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// Widget that displays either the next class or current class information
 /// Shows next class if not in class, or current class with progress bar if in class
@@ -20,15 +20,13 @@ class NextClassWidget extends StatefulWidget {
   State<NextClassWidget> createState() => _NextClassWidgetState();
 }
 
-class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAliveClientMixin {
+class _NextClassWidgetState extends State<NextClassWidget> 
+    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+  
   @override
   bool get wantKeepAlive => true;
   
   TimetableResponse? _timetableData;
-  bool _isLoading = true;
-  bool _hasError = false;
-  Timer? _updateTimer;
-  
   CourseMergedEvent? _currentClass;
   CourseMergedEvent? _nextClass;
   
@@ -37,8 +35,8 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
   @override
   void initState() {
     super.initState();
-    _fetchTimetable();
-    _startTimer();
+    initializeWidget();
+    startTimer();
   }
 
   @override
@@ -52,23 +50,23 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
 
   @override
   void dispose() {
-    _updateTimer?.cancel();
+    disposeMixin();
     super.dispose();
   }
 
-  void _startTimer() {
-    // Update every minute to refresh class status and UI
-    _updateTimer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) {
-        setState(() {
-          // Force rebuild to update progress bar and time calculations
-        });
-      }
-    });
+  @override
+  Future<void> initializeWidget() async {
+    await _fetchTimetable();
   }
 
-  /// Refresh the widget data
-  Future<void> refresh() async {
+  @override
+  void startTimer() {
+    // Update every minute to refresh class status and UI
+    setCustomTimer(const Duration(minutes: 1));
+  }
+
+  @override
+  Future<void> refreshData() async {
     await _fetchTimetable(refresh: true);
     // Call the parent refresh callback if provided
     widget.onRefresh?.call();
@@ -76,10 +74,8 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
 
   Future<void> _fetchTimetable({bool refresh = false}) async {
     try {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
+      setLoading(true);
+      setError(false);
 
       final today = DateTime.now();
       final dateString = DateFormat('yyyy-MM-dd').format(today);
@@ -93,91 +89,27 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
       if (mounted) {
         setState(() {
           _timetableData = timetable;
-          _isLoading = false;
           _updateClassStatus();
         });
+        setLoading(false);
       }
     } catch (e) {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-        });
+        setLoading(false);
+        setError(true);
       }
       print('NextClassWidget: Error fetching timetable: $e');
     }
   }
 
   void _updateClassStatus() {
-    if (_timetableData == null || _timetableData!.weekdays.isEmpty) return;
-
-    final now = DateTime.now();
-    final today = now.weekday - 1; // Convert to 0-based index (Monday = 0)
+    if (_timetableData == null) return;
     
-    // Only show for weekdays (Monday = 1 to Friday = 5)
-    if (today < 0 || today >= 5) {
-      _currentClass = null;
-      _nextClass = null;
-      return;
-    }
-
-    final weekday = _timetableData!.weekdays[today];
-    final mergedEvents = CourseMergedEvent.mergeEventsForDay(weekday);
-    
-    _currentClass = null;
-    _nextClass = null;
-    
-    for (final event in mergedEvents) {
-      final startTime = _parseTime(PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '');
-      final endTime = _parseTime(PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '');
-      
-      if (startTime == null || endTime == null) continue;
-      
-      final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
-      if (currentTime == null) continue;
-      
-      if (_isTimeInRange(currentTime, startTime, endTime)) {
-        // Currently in this class
-        _currentClass = event;
-        break;
-      } else if (_isTimeBefore(currentTime, startTime)) {
-        // This is the next class
-        _nextClass = event;
-        break;
-      }
-    }
-    
-    // If no current class and no next class found, look for next class in remaining events
-    if (_currentClass == null && _nextClass == null) {
-      for (final event in mergedEvents) {
-        final startTime = _parseTime(PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '');
-        final endTime = _parseTime(PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '');
-        
-        if (startTime != null && endTime != null) {
-          final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
-          if (currentTime != null && _isTimeBefore(currentTime, startTime)) {
-            // Only show as next class if it hasn't started yet (future class)
-            _nextClass = event;
-            break;
-          }
-        }
-      }
-    }
+    final classInfo = _timetableData!.getCurrentAndNextClass();
+    _currentClass = classInfo['current'];
+    _nextClass = classInfo['next'];
   }
-
-  bool _isTimeInRange(DateTime time, DateTime start, DateTime end) {
-    final timeMinutes = time.hour * 60 + time.minute;
-    final startMinutes = start.hour * 60 + start.minute;
-    final endMinutes = end.hour * 60 + end.minute;
-    return timeMinutes >= startMinutes && timeMinutes < endMinutes;
-  }
-
-  bool _isTimeBefore(DateTime time, DateTime other) {
-    final timeMinutes = time.hour * 60 + time.minute;
-    final otherMinutes = other.hour * 60 + other.minute;
-    return timeMinutes < otherMinutes;
-  }
-
+  
   DateTime? _parseTime(String timeString) {
     try {
       return DateFormat('HH:mm').parse(timeString);
@@ -230,162 +162,104 @@ class _NextClassWidgetState extends State<NextClassWidget> with AutomaticKeepAli
     }
   }
 
+  String _getTitleText() {
+    final bool hasCurrentClass = _currentClass != null;
+    final event = hasCurrentClass ? _currentClass! : _nextClass;
+    
+    if (event == null) return 'Next Class';
+    
+    return '${event.event.subject}-${event.event.code}';
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     
-    return InkWell(
-      borderRadius: BorderRadius.circular(24),
-      onTap: () {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => buildActionPage({
-                'id': 'timetable',
-                'title': 'Timetable',
-              }),
-            ),
-          );
-        });
-      },
-      child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-      child: Container(
-        padding: const EdgeInsets.all(13),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: _buildUnifiedContent(),
-      ),
-    ));
-  }
-
-  Widget _buildUnifiedContent() {
     // Update class status before building to ensure latest data
     _updateClassStatus();
     
-    if (_isLoading) {
-      return const Row(
-        children: [
-          SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-          SizedBox(width: 12),
-          Text('Loading timetable...', style: TextStyle(fontSize: 8)),
-        ],
-      );
-    }
+    // Use the base layout
+    return buildCommonLayout();
+  }
+
+  @override
+  Widget? getExtraContent(BuildContext context) {
+    final bool hasCurrentClass = _currentClass != null;
+    if (!hasCurrentClass) return null;
     
-    if (_hasError) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Symbols.error_outline_rounded,
-            fill: 1.0,
-            color: Theme.of(context).colorScheme.error,
-            size: 18,
-          ),
-          Text(
-            'Failed to load timetable',
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-          const Spacer(),
-          Text(
-            'Swipe down to refresh',
-            style: TextStyle(
-              fontSize: 12,
-            ),
-          ),
-        ],
-      );
-    }
+    return LinearProgressIndicator(
+      value: _getClassProgress(),
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      valueColor: AlwaysStoppedAnimation<Color>(
+        Theme.of(context).colorScheme.primary,
+      ),
+      borderRadius: BorderRadius.circular(4),
+    );
+  }
+
+  @override
+  String getWidgetTitle() => _getTitleText();
+
+  @override
+  String getRightSideText() {
+    final bool hasCurrentClass = _currentClass != null;
+    final event = hasCurrentClass ? _currentClass! : _nextClass;
     
-    // Determine the state and extract common data
+    if (event == null) return '';
+    
+    return event.timeSpan;
+  }
+  
+  @override
+  String getWidgetSubtitle() {
+    final bool hasCurrentClass = _currentClass != null;
+    final event = hasCurrentClass ? _currentClass! : _nextClass;
+    
+    if (event == null) return '';
+    
+    return '${event.periodText} (${event.periodCount} periods)\n';
+  }
+
+  @override
+  String getBottomText() {
+    final bool hasCurrentClass = _currentClass != null;
+    final event = hasCurrentClass ? _currentClass! : _nextClass;
+    
+    return event != null && hasWidgetData() ? event.event.teacher : 'Enjoy your free time!';
+  }
+
+  @override
+  String? getBottomRightText() {
     final bool hasCurrentClass = _currentClass != null;
     final bool hasNextClass = _nextClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
     
-    // Title text
-    final titleText = hasCurrentClass 
-        ? '${event!.event.subject}-${event.event.code}'
-        : hasNextClass 
-            ? '${event!.event.subject}-${event.event.code}'
-            : 'No more classes today';
+    if (event == null) return null;
     
-    // Subtitle text
-    final subtitleText = hasCurrentClass 
-        ? event!.timeSpan
-        : hasNextClass 
-            ? '${event!.timeSpan} (${event.periodText})'
-            : 'Enjoy your free time';
-    
-    // Right side text (room/time info)
-    final rightText = hasCurrentClass 
-        ? event!.event.room
+    return hasCurrentClass 
+        ? event.event.room
         : hasNextClass 
             ? _getTimeUntilNextClass().isNotEmpty 
-                ? '${_getTimeUntilNextClass()}, ${event!.event.room}'
-                : event!.event.room
+                ? '${_getTimeUntilNextClass()}, ${event.event.room}'
+                : event.event.room
             : null;
-    
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        Row(
-          children: [
-            Icon(
-              Symbols.schedule_rounded,
-              color: Theme.of(context).colorScheme.primary,
-              size: 18,
-              fill: 1,
-            ),
-            const Spacer(),
-            if (rightText != null)
-              Text(
-                rightText,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-          ],
-        ),
-        if (hasNextClass) const SizedBox(width: 8),
-        Text(
-          titleText,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-          ),
-        ),
-        if(!hasCurrentClass) const Spacer(),
-        if(hasCurrentClass) const SizedBox(height: 4),
-        Text(
-          subtitleText,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            fontSize: 10,
-          ),
-        ),
-        if (hasCurrentClass) const Spacer(),
-        if (hasCurrentClass) LinearProgressIndicator(
-            value: _getClassProgress(),
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Theme.of(context).colorScheme.primary,
-            ),
-            borderRadius: BorderRadius.circular(4),
-          ),
-      ],
-    );
   }
+
+  @override
+  String getLoadingText() => 'Loading timetable...';
+
+  @override
+  String getErrorText() => 'Failed to load timetable';
+
+  @override
+  String getNoDataText() => 'No more classes today';
+
+  @override
+  bool hasWidgetData() => _currentClass != null || _nextClass != null;
+
+  @override
+  String getActionId() => 'timetable';
+
+  @override
+  IconData getWidgetIcon() => Symbols.calendar_view_day_rounded;
 }

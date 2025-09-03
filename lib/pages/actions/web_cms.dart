@@ -7,7 +7,10 @@ import '../../data/constants/api_constants.dart';
 import '../../services/shared/storage_client.dart';
 
 class WebCmsPage extends StatefulWidget {
-  const WebCmsPage({super.key});
+  final String? initialUrl;
+  final String? windowTitle;
+  final bool disableControls;
+  const WebCmsPage({super.key, this.initialUrl, this.windowTitle, this.disableControls = false});
 
   @override
   State<WebCmsPage> createState() => _WebCmsPageState();
@@ -31,11 +34,26 @@ class _WebCmsPageState extends State<WebCmsPage> {
       final List<Cookie> cookies = await StorageClient.currentCookies;
       final iaw.CookieManager cookieManager = iaw.CookieManager.instance();
 
+      // Inject cookies for both new CMS and legacy CMS domains
       final iaw.WebUri baseUri = iaw.WebUri(ApiConstants.baseUrl);
-      // Inject stored cookies for the base domain so they are available to the WebView session
+      final iaw.WebUri legacyBaseUri = iaw.WebUri(ApiConstants.legacyCMSBaseUrl);
+      
+      // Inject stored cookies for both domains so they are available to the WebView session
       for (final Cookie cookie in cookies) {
+        // Inject for new CMS domain
         await cookieManager.setCookie(
           url: baseUri,
+          name: cookie.name,
+          value: cookie.value,
+          path: cookie.path ?? '/',
+          isSecure: cookie.secure,
+          domain: cookie.domain,
+          isHttpOnly: cookie.httpOnly,
+        );
+        
+        // Inject for legacy CMS domain (needed for notification/daily bulletin URLs)
+        await cookieManager.setCookie(
+          url: legacyBaseUri,
           name: cookie.name,
           value: cookie.value,
           path: cookie.path ?? '/',
@@ -56,9 +74,10 @@ class _WebCmsPageState extends State<WebCmsPage> {
 
   void _loadCmsIfReady() {
     if (_cookiesPrepared && _webViewController != null) {
+      print('Loading CMS with URL: ${widget.initialUrl}');
       _webViewController!.loadUrl(
         urlRequest: iaw.URLRequest(
-          url: iaw.WebUri(ApiConstants.cmsReferer),
+          url: iaw.WebUri(widget.initialUrl ?? ApiConstants.cmsReferer),
         ),
       );
     }
@@ -93,6 +112,19 @@ class _WebCmsPageState extends State<WebCmsPage> {
 ''';
     try {
       await _webViewController!.evaluateJavascript(source: js);
+      if(widget.windowTitle != null) {
+        await _webViewController!.evaluateJavascript(source: '''
+          var s = document.createElement('style');
+          s.id = 'ocms-css-inject';
+          s.type = 'text/css';
+          s.appendChild(document.createTextNode(`
+            .leftbar, #leaders1, .btop.a12, .main1>.main1.noprint {display:none!important;}
+            .main1, .rightbar1, .ctbody1, .meair_lef {width:100%!important;margin: 0!important;}
+            
+          `));
+          (document.head || document.documentElement).appendChild(s);
+        ''');
+      }
     } catch (e) {
       debugPrint('WebCmsPage: CSS inject failed: $e');
     }
@@ -115,8 +147,8 @@ class _WebCmsPageState extends State<WebCmsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Web CMS'),
-        actions: [
+        title: Text(widget.windowTitle ?? 'Web CMS'),
+        actions: widget.disableControls ? [] : [
           IconButton(
             icon: const Icon(Symbols.arrow_back_rounded),
             onPressed: _canGoBack
