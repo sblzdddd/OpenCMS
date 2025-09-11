@@ -9,8 +9,6 @@ class QuickActionTile extends StatefulWidget {
   final Color? iconBackgroundColor;
   final String title;
   final TextStyle? titleStyle;
-  final Color? borderColor;
-  final double borderWidth;
   final VoidCallback? onTap;
   final bool showDragIndicator;
 
@@ -23,8 +21,6 @@ class QuickActionTile extends StatefulWidget {
     this.iconBackgroundColor,
     required this.title,
     this.titleStyle,
-    this.borderColor,
-    this.borderWidth = 1,
     this.onTap,
     this.showDragIndicator = false,
   });
@@ -43,7 +39,6 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
     
     final Color resolvedIconBg = widget.iconBackgroundColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
     final Color resolvedIconColor = widget.iconColor ?? Theme.of(context).colorScheme.primary;
-    final Color resolvedBorderColor = widget.borderColor ?? Theme.of(context).colorScheme.outline.withValues(alpha: 0.2);
     final TextStyle resolvedTitleStyle = widget.titleStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, fontWeight: FontWeight.w500);
 
     return SizedBox(
@@ -56,12 +51,9 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
           onTap: widget.onTap,
           borderRadius: BorderRadius.circular(20),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              border: widget.borderWidth > 0
-                  ? Border.all(color: resolvedBorderColor, width: widget.borderWidth, style: BorderStyle.solid)
-                  : null,
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -87,15 +79,12 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
                   ),
                 ),
                 const SizedBox(height: 8),
-                SizedBox(
-                  height: 20,
-                  child: Text(
-                    widget.title,
-                    style: resolvedTitleStyle,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Text(
+                  widget.title,
+                  style: resolvedTitleStyle,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),

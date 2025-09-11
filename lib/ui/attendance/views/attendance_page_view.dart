@@ -174,8 +174,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
           if (_showSettings) ...[
             _buildDatePickers(context),
             const SizedBox(height: 12),
-            _buildViewToggle(),
-            const SizedBox(height: 12),
             _buildCourseFilter(days),
             const SizedBox(height: 12),
           ],
@@ -198,6 +196,24 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
 
   @override
   bool get isEmpty => _data?.recordOfDays.isEmpty ?? true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: super.build(context),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _isTableView = !_isTableView;
+          });
+        },
+        tooltip: _isTableView ? 'Switch to Cards View' : 'Switch to Table View',
+        child: Icon(
+          _isTableView ? Icons.view_agenda_rounded : Icons.table_chart_rounded,
+        ),
+      ),
+    );
+  }
 
   @override
   String get errorTitle => 'Failed to load attendance';
@@ -338,34 +354,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
     );
   }
 
-  Widget _buildViewToggle() {
-    return Row(
-      children: [
-        Text('View Mode:', style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(width: 8),
-        SegmentedButton<bool>(
-          segments: const [
-            ButtonSegment<bool>(
-              value: false,
-              label: Text('Cards'),
-              icon: Icon(Symbols.view_agenda_rounded),
-            ),
-            ButtonSegment<bool>(
-              value: true,
-              label: Text('Table'),
-              icon: Icon(Symbols.table_chart_rounded),
-            ),
-          ],
-          selected: {_isTableView},
-          onSelectionChanged: (Set<bool> newSelection) {
-            setState(() {
-              _isTableView = newSelection.first;
-            });
-          },
-        ),
-      ],
-    );
-  }
 
   Future<void> _onEventTap(AttendanceEntry entry, DateTime date) async {
     print('onEventTap: $entry, ${date.year}');

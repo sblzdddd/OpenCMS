@@ -72,6 +72,13 @@ class AttendanceEntry {
   }
 
   String get subjectName => courseName == ''? '/': (courseName == 'ES' ? 'Evening Study' : courseName);
+  
+  String getSubjectNameWithIndex(int index) {
+    if (index == 0) {
+      return 'MR';
+    }
+    return courseName == ''? '/': (courseName == 'ES' ? 'Evening Study' : courseName);
+  }
 
   String get kindText => AttendanceConstants.kindText[kind] ?? 'Unknown';
 }

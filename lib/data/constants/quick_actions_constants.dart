@@ -28,7 +28,7 @@ class QuickActionsConstants {
     {'title': 'Free Classrooms', 'icon': Symbols.door_open_rounded, 'id': 'available_classrooms'},
     {'title': 'Maintenance', 'icon': Symbols.build_rounded, 'id': 'maintenance'},
     {'title': 'Leave Requests', 'icon': Symbols.move_item_rounded, 'id': 'leave_requests'},
-    {'title': 'Student Profile', 'icon': Symbols.person_rounded, 'id': 'student_profile'},
+    {'title': 'Profile', 'icon': Symbols.person_rounded, 'id': 'student_profile'},
     {'title': 'Course Stats', 'icon': Symbols.school_rounded, 'id': 'course_stats'},
     {'title': 'ECA', 'icon': Symbols.padel_rounded, 'id': 'eca'},
     {'title': 'Settings', 'icon': Symbols.settings_rounded, 'id': 'settings'},

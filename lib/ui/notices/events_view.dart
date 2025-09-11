@@ -74,6 +74,15 @@ class _EventsViewState extends RefreshableView<EventsView> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              event.dateTime,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12, 
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -93,21 +102,6 @@ class _EventsViewState extends RefreshableView<EventsView> {
                         ? Colors.blue
                         : Colors.green,
                       fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    event.dateTime,
-                    style: TextStyle(
-                      fontSize: 12, 
-                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),

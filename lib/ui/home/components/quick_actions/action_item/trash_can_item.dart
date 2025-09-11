@@ -25,8 +25,6 @@ class TrashCanItem extends StatelessWidget {
         fontSize: 11,
         color: Colors.red,
       ),
-      borderColor: Colors.red.withValues(alpha: 0.3),
-      borderWidth: 2,
     );
 
     if (isHighlighted) {

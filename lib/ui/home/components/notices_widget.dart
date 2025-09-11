@@ -282,13 +282,16 @@ class _NoticeCardState extends State<NoticeCard>
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
-        onTap: () {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => buildActionPage({'id': actionId}),
-              ),
-            );
+        onTap: () async {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            final page = await buildActionPage({'id': actionId});
+            if (mounted) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => page,
+                ),
+              );
+            }
           });
         },
         child: Padding(

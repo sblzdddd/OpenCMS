@@ -5,7 +5,7 @@ import 'dynamic_gradient_banner.dart';
 import '../../../data/constants/period_constants.dart';
 import '../../../services/auth/auth_service.dart';
 import 'dart:async';
-
+import '../../../ui/profile/pages/profile_page.dart';
 class BannerWidget extends StatefulWidget {
   const BannerWidget({super.key});
 
@@ -73,7 +73,11 @@ class _BannerWidgetState extends State<BannerWidget> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
     
-    return Container(
+    return InkWell(
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
+      },
+      child: Container(
       padding: const EdgeInsets.all(0),
       height: 200, // Set a fixed height for the banner
       decoration: BoxDecoration(
@@ -170,6 +174,7 @@ class _BannerWidgetState extends State<BannerWidget> with AutomaticKeepAliveClie
               ),
           ],
         ),
+      ),
       ),
     );
   }

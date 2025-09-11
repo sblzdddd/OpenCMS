@@ -113,7 +113,7 @@ class SubjectIconConstants {
 
   /// Returns an icon for the given subject.
   /// Priority: subject name/aliases (substring match, case-insensitive) -> code (substring match, case-insensitive) -> default.
-  static IconData getIconForSubject({required String subjectName, required String code}) {
+  static IconData getIconForSubject({required String subjectName, required String code, IconData? placeholder = Symbols.school_rounded}) {
     final name = subjectName.toLowerCase();
     for (final entry in _aliasToIcon.entries) {
       if (name == entry.key) {
@@ -142,7 +142,7 @@ class SubjectIconConstants {
       }
     }
 
-    return _defaultIcon;
+    return placeholder ?? _defaultIcon;
   }
 }
 

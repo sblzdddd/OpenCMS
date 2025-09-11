@@ -18,7 +18,6 @@ class AddActionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget baseItem = QuickActionTile(
       width: tileWidth ?? 120,
-      // height: 108,
       icon: Symbols.add_rounded,
       title: 'Add',
       iconColor: Theme.of(context).colorScheme.primary,
@@ -28,8 +27,6 @@ class AddActionItem extends StatelessWidget {
         color: Theme.of(context).colorScheme.primary,
       ),
       onTap: onTap,
-      borderColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-      borderWidth: 2,
     );
 
     if (isHighlighted) {

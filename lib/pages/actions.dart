@@ -10,6 +10,11 @@ import '../ui/shared/navigations/app_navigation_controller.dart';
 import 'actions/timetable.dart';
 import 'settings/settings_page.dart';
 import 'actions/reports.dart';
+import '../ui/referral/views/referral_comments_view.dart';
+import '../ui/calendar/calendar_ui.dart';
+import '../ui/profile/pages/profile_page.dart';
+import '../services/auth/auth_service.dart';
+import '../data/constants/api_constants.dart';
 
 String _actionTitle(String id) {
   return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
@@ -56,102 +61,6 @@ class ActionPageScaffold extends StatelessWidget {
   }
 }
 
-class CourseTimetableView extends StatelessWidget {
-  const CourseTimetableView({super.key});
-  @override
-  Widget build(BuildContext context) {
-    // Try to handle via navigation first
-    if (handleActionNavigation(context, {'id': 'timetable'})) {
-      return const SizedBox.shrink(); // This won't be shown
-    }
-    return const ActionPageScaffold('timetable');
-  }
-}
-
-class ExamTimetableView extends StatelessWidget {
-  const ExamTimetableView({super.key});
-  @override
-  Widget build(BuildContext context) {
-    // Try to handle via navigation first and switch to inner tab 2
-    if (handleActionNavigation(context, {'id': 'exam'})) {
-      return const SizedBox.shrink(); // This won't be shown
-    }
-    return const ActionPageScaffold('exam');
-  }
-}
-
-class TeacherCommentsPage extends StatelessWidget {
-  const TeacherCommentsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('comments');
-}
-
-class SchoolCalendarPage extends StatelessWidget {
-  const SchoolCalendarPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('calendar');
-}
-
-class EventsPage extends StatelessWidget {
-  const EventsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('events');
-}
-
-class HomeworksPage extends StatelessWidget {
-  const HomeworksPage({super.key});
-  @override
-  Widget build(BuildContext context) {
-    // Try to handle via navigation first
-    if (handleActionNavigation(context, {'id': 'homeworks'})) {
-      return const SizedBox.shrink(); // This won't be shown
-    }
-    return const ActionPageScaffold('homeworks');
-  }
-}
-
-class DocumentsPage extends StatelessWidget {
-  const DocumentsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('documents');
-}
-
-class AvailableClassroomsPage extends StatelessWidget {
-  const AvailableClassroomsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const FreeClassroomsPage();
-}
-
-class MaintenancePage extends StatelessWidget {
-  const MaintenancePage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('maintenance');
-}
-
-class LeaveRequestsPage extends StatelessWidget {
-  const LeaveRequestsPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('leave_requests');
-}
-
-class StudentProfilePage extends StatelessWidget {
-  const StudentProfilePage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('student_profile');
-}
-
-class CourseStatsView extends StatelessWidget {
-  const CourseStatsView({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('course_stats');
-}
-
-class EcaPage extends StatelessWidget {
-  const EcaPage({super.key});
-  @override
-  Widget build(BuildContext context) => const ActionPageScaffold('eca');
-}
-
 class UnknownActionPage extends StatelessWidget {
   final String id;
   final String title;
@@ -165,7 +74,22 @@ class UnknownActionPage extends StatelessWidget {
   }
 }
 
-Widget buildActionPage(Map<String, dynamic> action) {
+Future<Widget> openMaintenancePage() async {
+  final username = await AuthService().fetchCurrentUsername();
+  return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/repairment/list/', windowTitle: 'Maintenance');
+}
+
+Future<Widget> buildEcaPage() async {
+  final username = await AuthService().fetchCurrentUsername();
+  return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/ecaclass/index/', windowTitle: 'ECA');
+}
+
+Future<Widget> buildLeaveRequestsPage() async {
+  final username = await AuthService().fetchCurrentUsername();
+  return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/studentleave/list/ps/', windowTitle: 'Leave Requests');
+}
+
+Future<Widget> buildActionPage(Map<String, dynamic> action) async {
   final String id = action['id'] as String;
   print('buildActionPage: $id');
   switch (id) {
@@ -176,15 +100,15 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'exam':
       return const TimetablePage(initialTabIndex: 1);
     case 'attendance':
-      return AttendancePage(initialTabIndex: 0);
+      return const AttendancePage(initialTabIndex: 0);
     case 'reports':
       return const ReportsPage(initialTabIndex: 0);
     case 'assessment':
       return const AssessmentPage();
     case 'comments':
-      return const TeacherCommentsPage();
+      return const ReferralCommentsView();
     case 'calendar':
-      return const SchoolCalendarPage();
+      return const CalendarPage();
     case 'notice':
       return const NoticesPage(initialTabIndex: 0);
     case 'bulletin':
@@ -192,21 +116,21 @@ Widget buildActionPage(Map<String, dynamic> action) {
     case 'events':
       return const NoticesPage(initialTabIndex: 2);
     case 'homeworks':
-      return const HomeworkPage(initialTabIndex: 0);
+      return const HomeworkPage();
     case 'documents':
-      return const DocumentsPage();
+      return const WebCmsPage(initialUrl: '${ApiConstants.legacyBaseUrl}/file/list/student/', windowTitle: 'Documents');
     case 'available_classrooms':
       return const FreeClassroomsPage();
     case 'maintenance':
-      return const MaintenancePage();
+      return openMaintenancePage();
     case 'leave_requests':
-      return const LeaveRequestsPage();
+      return buildLeaveRequestsPage();
     case 'student_profile':
-      return const StudentProfilePage();
+      return const ProfilePage();
     case 'course_stats':
       return AttendancePage(initialTabIndex: 1);
     case 'eca':
-      return const EcaPage();
+      return buildEcaPage();
     case 'settings':
       return const SettingsPage();
     default:

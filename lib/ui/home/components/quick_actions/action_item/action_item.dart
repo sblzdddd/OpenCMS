@@ -66,10 +66,15 @@ class _ActionItemState extends State<ActionItem> with AutomaticKeepAliveClientMi
     }
     
     // Otherwise, push the action page
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => buildActionPage(widget.action),
-      ),
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final page = await buildActionPage(widget.action);
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => page,
+          ),
+        );
+      }
+    });
   }
 }

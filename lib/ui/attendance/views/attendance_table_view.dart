@@ -123,7 +123,7 @@ class AttendanceTableView extends StatelessWidget {
             SizedBox(
               width: columnWidth,
               height: 80,
-              child: entry != null ? _buildAttendanceCell(context, entry, day.date) : const SizedBox.shrink(),
+              child: entry != null ? _buildAttendanceCell(context, entry, day.date, index) : const SizedBox.shrink(),
             ),
           );
         }),
@@ -131,9 +131,10 @@ class AttendanceTableView extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceCell(BuildContext context, AttendanceEntry entry, DateTime date) {
-    final backgroundColor = entry.subjectName == "/" ? Colors.transparent : AttendanceConstants.kindBackgroundColor[entry.kind] ?? Colors.transparent;
-    final textColor = entry.subjectName == "/" ? Theme.of(context).colorScheme.onSurface : AttendanceConstants.kindTextColor[entry.kind] ?? Theme.of(context).colorScheme.onSurface;
+  Widget _buildAttendanceCell(BuildContext context, AttendanceEntry entry, DateTime date, int index) {
+    final subjectName = entry.getSubjectNameWithIndex(index);
+    final backgroundColor = subjectName == "/" ? Colors.transparent : AttendanceConstants.kindBackgroundColor[entry.kind] ?? Colors.transparent;
+    final textColor = subjectName == "/" ? Theme.of(context).colorScheme.onSurface : AttendanceConstants.kindTextColor[entry.kind] ?? Theme.of(context).colorScheme.onSurface;
     
     return GestureDetector(
       onTap: () => onEventTap(entry, date),
@@ -154,7 +155,7 @@ class AttendanceTableView extends StatelessWidget {
               flex: 3,
               child: Center(
                 child: Text(
-                  entry.subjectName == "/" ? "" : entry.subjectName,
+                  subjectName == "/" ? "" : subjectName,
                   style: TextStyle(
                     color: textColor,
                     fontSize: 9,

@@ -160,7 +160,7 @@ class _QuickActionsState extends State<QuickActions> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(left: 14, right: 14, bottom: 14, top: 12),
+              padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(24),
@@ -169,14 +169,14 @@ class _QuickActionsState extends State<QuickActions> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 10, left: 3, right: 3),
+                    padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Actions',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontSize: 16,
+                          'Categories',
+                          style: TextStyle(
+                            fontSize: 12,
                             color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
@@ -207,7 +207,7 @@ class _QuickActionsState extends State<QuickActions> {
                         )
                       : LayoutBuilder(
                         builder: (context, constraints) {
-                          const double spacing = 8.0;
+                          const double spacing = 10.0;
                           const double minTileWidth = 100.0;
                           // Item height is determined by each tile
 

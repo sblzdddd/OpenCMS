@@ -134,19 +134,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = createTextTheme(context, "Roboto", "EB Garamond");
-    const seedColor = Color(0xffb33b15);
-    ColorScheme lightColorScheme = ColorScheme.fromSeed(
-                seedColor: seedColor,
-                brightness: Brightness.light,
-              );
-    ColorScheme darkColorScheme = ColorScheme.fromSeed(
-                seedColor: seedColor,
-                brightness: Brightness.dark,
-              );
     return ChangeNotifierProvider(
       create: (_) => ThemeNotifier(),
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
+          Color seedColor = themeNotifier.currentColor;
+          ColorScheme lightColorScheme = ColorScheme.fromSeed(
+            seedColor: seedColor,
+            brightness: Brightness.light,
+          );
+          ColorScheme darkColorScheme = ColorScheme.fromSeed(
+            seedColor: seedColor,
+            brightness: Brightness.dark,
+          );
           return MaterialApp(
             title: 'OpenCMS',
             theme: ThemeData(

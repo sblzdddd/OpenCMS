@@ -101,7 +101,7 @@ class AttendanceCardsView extends StatelessWidget {
       final String periodText = startP.name == endP.name ? startP.name : '${startP.name} - ${endP.name}';
 
       cards.add(TimetableCard(
-        subject: startEntry.subjectName,
+        subject: startEntry.getSubjectNameWithIndex(i),
         code: startEntry.reason,
         room: startEntry.kindText,
         extraInfo: startEntry.grade,

@@ -16,7 +16,12 @@ class _SettingsPageState extends State<SettingsPage> {
     showClearDataDialog(context);
   }
 
-  Widget _buildSettingsItem(String title, IconData icon, Widget? page, {Function? onTap}) {
+  Widget _buildSettingsItem(
+    String title,
+    IconData icon,
+    Widget? page, {
+    Function? onTap,
+  }) {
     // Theme Settings Section
     return InkWell(
       onTap: () {
@@ -75,138 +80,136 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSettingsTitle('Theme'),
-            Consumer<ThemeNotifier>(
-              builder: (context, themeNotifier, child) {
-                return Column(
-                  children: [
-                    // Dark Mode Toggle
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 6.0,
-                        horizontal: 8.0,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSettingsTitle('Theme'),
+              Consumer<ThemeNotifier>(
+                builder: (context, themeNotifier, child) {
+                  return Column(
+                    children: [
+                      // Dark Mode Toggle
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6.0,
+                          horizontal: 8.0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  themeNotifier.isDarkMode
+                                      ? Icons.dark_mode
+                                      : Icons.light_mode,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Dark Mode',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                            Switch(
+                              value: themeNotifier.isDarkMode,
+                              onChanged: (value) {
+                                themeNotifier.toggleTheme();
+                              },
+                              activeColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                            ),
+                          ],
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                themeNotifier.isDarkMode
-                                    ? Icons.dark_mode
-                                    : Icons.light_mode,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Dark Mode',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Switch(
-                            value: themeNotifier.isDarkMode,
-                            onChanged: (value) {
-                              themeNotifier.toggleTheme();
-                            },
-                            activeColor: Theme.of(context).colorScheme.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Divider(height: 2),
-                    
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 6.0,
-                        horizontal: 8.0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(width: 12),
-                              Text(
-                                'Use 24H Time Format',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Switch(
-                            value:
-                                false, // TODO: Implement 24H time format toggle
-                            onChanged: (value) {
-                              // TODO: Implement 24H time format toggle
-                            },
-                            activeColor: Theme.of(context).colorScheme.primary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-            const Divider(height: 2),
-            _buildSettingsItem(
-              'Theme Settings',
-              Icons.palette,
-              const ThemeSettingsPage(),
-            ),
-            const Divider(height: 2),
-            _buildSettingsTitle('Notifications'),
-            _buildSettingsItem(
-              'Notification Settings',
-              Icons.notifications,
-              const ThemeSettingsPage(),
-            ),
-            const Divider(height: 2),
+                      const Divider(height: 2),
 
-            _buildSettingsTitle('Account'),
-            _buildSettingsItem(
-              'Change Password',
-              Icons.password,
-              const ThemeSettingsPage(),
-            ),
-            const Divider(height: 2),
-            _buildSettingsItem(
-              'Logout',
-              Icons.logout,
-              null,
-              onTap: () => showLogoutDialog(context),
-            ),
-            const Divider(height: 2),
-            _buildSettingsItem(
-              'Clear User Data',
-              Icons.delete_forever,
-              null,
-              onTap: () => _clearUserData(),
-            ),
-            const Divider(height: 2),
-            _buildSettingsTitle("About This App"),
-            _buildSettingsItem(
-              'App Info',
-              Icons.info,
-              null,
-            ),
-            const Divider(height: 2),
-            _buildSettingsItem(
-              'Privacy Policy',
-              Icons.privacy_tip,
-              null,
-            ),
-            const Divider(height: 2),
-          ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6.0,
+                          horizontal: 8.0,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Use 24H Time Format',
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              ],
+                            ),
+                            Switch(
+                              value:
+                                  false, // TODO: Implement 24H time format toggle
+                              onChanged: (value) {
+                                // TODO: Implement 24H time format toggle
+                              },
+                              activeColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const Divider(height: 2),
+              _buildSettingsItem(
+                'Theme Settings',
+                Icons.palette,
+                const ThemeSettingsPage(),
+              ),
+              const Divider(height: 2),
+              _buildSettingsTitle('Notifications'),
+              _buildSettingsItem(
+                'Notification Settings',
+                Icons.notifications,
+                const ThemeSettingsPage(),
+              ),
+              const Divider(height: 2),
+
+              _buildSettingsTitle('Account'),
+              _buildSettingsItem(
+                'Change Password',
+                Icons.password,
+                const ThemeSettingsPage(),
+              ),
+              const Divider(height: 2),
+              _buildSettingsItem(
+                'Logout',
+                Icons.logout,
+                null,
+                onTap: () => showLogoutDialog(context),
+              ),
+              const Divider(height: 2),
+              _buildSettingsItem(
+                'Clear User Data',
+                Icons.delete_forever,
+                null,
+                onTap: () => _clearUserData(),
+              ),
+              const Divider(height: 2),
+              _buildSettingsTitle("About This App"),
+              _buildSettingsItem('App Info', Icons.info, null),
+              const Divider(height: 2),
+              _buildSettingsItem('Privacy Policy', Icons.privacy_tip, null),
+              const Divider(height: 2),
+            ],
+          ),
         ),
       ),
     );

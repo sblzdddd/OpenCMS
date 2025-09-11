@@ -149,15 +149,16 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(24),
-                  onTap: () {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => buildActionPage({
-                            'id': getActionId(),
-                          }),
-                        ),
-                      );
+                  onTap: () async {
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
+                      final page = await buildActionPage({
+                        'id': getActionId(),
+                      });
+                      if (mounted) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => page),
+                        );
+                      }
                     });
                   },
                 ),
@@ -253,15 +254,16 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
-          onTap: () {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => buildActionPage({
-                    'id': getActionId(),
-                  }),
-                ),
-              );
+          onTap: () async {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              final page = await buildActionPage({
+                'id': getActionId(),
+              });
+              if (mounted) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => page),
+                );
+              }
             });
           },
           child: Padding(

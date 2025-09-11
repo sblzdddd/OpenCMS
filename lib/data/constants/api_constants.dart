@@ -6,11 +6,11 @@ library;
 
 class ApiConstants {
   // Base API configuration
-  static const String baseUrl = 'https://c''ms.a''le''vel''.co'+'m.cn';
+  static const String baseUrl = 'https://c''ms.a''le''vel''.co''m.cn';
   static const String baseApiUrl = '$baseUrl/api';
   
   // Legacy CMS base (old domain)
-  static const String legacyBaseUrl = 'https://w''ww.''ale''vel''.co'+'m.cn';
+  static const String legacyBaseUrl = 'https://w''ww.''ale''vel''.co''m.cn';
   static const String legacyCMSBaseUrl = '$legacyBaseUrl/user';
   
   // Authentication endpoint
@@ -79,6 +79,14 @@ class ApiConstants {
   // Daily Bulletin endpoint
   static String dailyBulletinUrl(String date) => '/legacy/bulletin/$date/';
   static String dailyBulletinDetailUrl(String username, int id) => '/$username/daily_bulletin/view/$id/';
+
+  // Referral comments endpoint
+  static const String referralUrl = '/legacy/students/my/referral/';
+
+  // Calendar endpoints (legacy)
+  static const String calendarUrl = '/getcalendar/';
+  static const String calendarDetailUrl = '/getcalendarbyid/';
+  static const String calendarCommentUrl = '/getcommentbyid/';
 
   static const String classroomsList = "(1006),(1008),(1009),(1010),A201,A202,A205,A206,A207,A208,A210,A211,A212,A215,A216,A219,A220,A301,A302,A305,A306,A307,A308,A310,A311,A314,A315,A318,A319,A401,A402,A406,A407,A408,A409,A410,A411,A414,A415,A416,A419,A501,A502,A505,A506,A507,A508,A509,A510,A511,A519,A606,A610,A611,A612,A613,A616,A617,(A704),(A705),(A706),(A707),(A710),(A711),(A715),(A803),(A805),(A806),(A809),B221,B320,B323,B324,B325,B326,B327,B329,B330,B331,B332,B333,B421,B423,B424,B427,B430,B431,B432,B433,B522,B523,B524,B525,B526,B530,B531,B532,B533,B534,(B618),(B619),(B621),(B622),(B624),(B629),(B631),(B719),(B721),(B722),(B724),(B726),(B728),(B731),(B812),(B814),(B815),(B817),(B819),(B821),(G019),G030,G031,(G117),(G118),(G119B),";
   

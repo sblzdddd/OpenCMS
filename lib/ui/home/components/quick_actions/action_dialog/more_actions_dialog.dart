@@ -43,12 +43,15 @@ class _MoreActionsDialogState extends BaseActionDialogState<MoreActionsDialog> {
       return;
     }
     
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => buildActionPage(action),
-        ),
-      );
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final page = await buildActionPage(action);
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => page,
+          ),
+        );
+      }
     });
   }
 }
