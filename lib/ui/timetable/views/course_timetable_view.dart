@@ -344,13 +344,13 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       return;
     }
 
-    final title = event.subject;
-    final subtitle = event.code;
+    final title = '${event.subject}-${event.code}';
+    final initialSubtitle = event.teacher;
 
     await CourseDetailDialog.show(
       context: context,
       title: title,
-      subtitle: subtitle,
+      initialSubtitle: initialSubtitle,
       loader: () async {
         final results = await _courseStatsService.fetchCourseStats(
           year: widget.selectedYear.year,
@@ -361,7 +361,11 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
             'Course stats not found for course id ${event.id}.',
           ),
         );
-        return statsForCourse;
+        // Return both stats and the full teacher name from the API
+        return (
+          stats: statsForCourse,
+          subtitle: statsForCourse.teachers,
+        );
       },
     );
   }

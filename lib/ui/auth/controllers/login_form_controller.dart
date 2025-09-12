@@ -78,27 +78,22 @@ class LoginFormController extends ChangeNotifier {
     final username = usernameController.text.trim();
     final password = passwordController.text;
 
-    // Attempt auto-solve captcha if not verified
     if (!_captchaManager.isCaptchaVerified || _captchaManager.captchaData == null) {
-      final autoSolved = await _captchaManager.attemptAutoSolve(context);
-      
-      if (!autoSolved) {
-        // Try manual captcha as fallback
-        _captchaManager.triggerManualVerification(
-          captchaKey,
-          onSuccess: (data) {
-            // Retry login after manual captcha
-            performLogin(
-              context,
-              formKey: formKey,
-              usernameController: usernameController,
-              passwordController: passwordController,
-              captchaKey: captchaKey,
-            );
-          },
-        );
-        return;
-      }
+      // Try manual captcha as fallback
+      _captchaManager.triggerManualVerification(
+        captchaKey,
+        onSuccess: (data) {
+          // Retry login after manual captcha
+          performLogin(
+            context,
+            formKey: formKey,
+            usernameController: usernameController,
+            passwordController: passwordController,
+            captchaKey: captchaKey,
+          );
+        },
+      );
+      return;
     }
 
     // Check if captcha is verified

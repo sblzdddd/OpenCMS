@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../data/constants/api_constants.dart';
 import 'captcha_dialog.dart';
-import 'captcha_method_dialog.dart';
-import '../../../../services/captcha_solver/captcha_solver.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// Callback function signature for captcha state changes
 typedef CaptchaStateCallback = void Function(bool isVerified, Object? captchaData);
@@ -48,21 +45,11 @@ class _CaptchaInputState extends State<CaptchaInput> {
   /// Internal state: whether captcha verification is in progress
   bool _isVerifying = false;
   
-  /// Current captcha verification method
-  CaptchaVerificationMethod _method = CaptchaVerificationMethod.manual;
-  
-  /// Whether force auto-solve is enabled
-  bool _forceAutoSolve = false;
-  
-  /// Check if we're in auto-solve mode (solvecaptcha method + force enabled)
-  bool get _isAutoSolveMode => _method == CaptchaVerificationMethod.solveCaptcha && _forceAutoSolve;
-  
   @override
   void initState() {
     super.initState();
     _isCaptchaVerified = widget.initiallyVerified;
     _initializeTencentCaptchaDialog();
-    _loadMethod();
   }
 
   /// Initialize Tencent Captcha service
@@ -75,20 +62,6 @@ class _CaptchaInputState extends State<CaptchaInput> {
     } catch (e) {
       print('Error initializing Tencent Captcha: $e');
     }
-  }
-
-  Future<void> _loadMethod() async {
-    try {
-      final settings = CaptchaSettingsService();
-      final m = await settings.getMethod();
-      final forceAutoSolve = await settings.getForceAutoSolve();
-      if (mounted) {
-        setState(() {
-          _method = m;
-          _forceAutoSolve = forceAutoSolve;
-        });
-      }
-    } catch (_) {}
   }
 
   /// Perform captcha verification
@@ -181,9 +154,6 @@ class _CaptchaInputState extends State<CaptchaInput> {
       _isVerifying = false;
     });
     
-    // Reload method after reset
-    _loadMethod();
-    
     // Notify parent of state change
     widget.onCaptchaStateChanged?.call(_isCaptchaVerified, _captchaData);
   }
@@ -204,45 +174,29 @@ class _CaptchaInputState extends State<CaptchaInput> {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: (_isVerifying || _isAutoSolveMode || !widget.enabled || _isCaptchaVerified) ? null : () => _performCaptchaVerification(null),
+        onTap: (_isVerifying || !widget.enabled || _isCaptchaVerified) ? null : () => _performCaptchaVerification(null),
         borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
+            border: Border.all(color: Theme.of(context).colorScheme.outline),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
               Checkbox(
-                value: _isAutoSolveMode ? true : _isCaptchaVerified,
-                fillColor: _isAutoSolveMode 
-                  ? WidgetStateProperty.all(Colors.grey)
-                  : (_isCaptchaVerified ? WidgetStateProperty.all(Colors.green) : WidgetStateProperty.all(Colors.transparent)),
+                value: _isCaptchaVerified,
+                fillColor: (_isCaptchaVerified ? WidgetStateProperty.all(Colors.green) : WidgetStateProperty.all(Colors.transparent)),
                 onChanged: null, // Disabled, controlled by captcha
               ),
               Expanded(
                 child: Text(
-                  _isAutoSolveMode
-                    ? 'Auto-solved captcha'
-                    : (_isVerifying
-                        ? 'Verifying...'
-                        : 'I am not a robot'),
+                  _isVerifying ? 'Verifying...' : 'I am not a robot',
                   style: TextStyle(
                     fontSize: 16,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-              ),
-              IconButton(
-                tooltip: 'Captcha settings',
-                icon: const Icon(Symbols.settings_rounded),
-                onPressed: () async {
-                  final saved = await CaptchaMethodDialog.show(context);
-                  if (saved) {
-                    await _loadMethod();
-                  }
-                },
               ),
             ],
           ),

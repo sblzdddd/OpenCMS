@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 import '../../data/constants/api_constants.dart';
 import '../../services/shared/storage_client.dart';
+import 'web_cms_style.dart';
 
 class WebCmsPage extends StatefulWidget {
   final String? initialUrl;
@@ -85,46 +86,21 @@ class _WebCmsPageState extends State<WebCmsPage> {
 
   Future<void> _injectZeroBodyMarginCss() async {
     if (_webViewController == null) return;
-		const String js = '''
-(function(){
-  try {
-    var ensure = function() {
-      try {
-        var existing = document.getElementById('ocms-css-inject');
-        if (!existing) {
-          var s = document.createElement('style');
-          s.id = 'ocms-css-inject';
-          s.type = 'text/css';
-          s.appendChild(document.createTextNode(`body{margin:0!important;}
-          :where(.css-45f3r4).ant-layout{background-color:transparent!important;}
-          `));
-          (document.head || document.documentElement).appendChild(s);
-        }
-      } catch (e) {}
-    };
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', ensure);
-    } else {
-      ensure();
-    }
-  } catch (e) {}
-})();
-''';
     try {
-      await _webViewController!.evaluateJavascript(source: js);
       if(widget.windowTitle != null) {
         await _webViewController!.evaluateJavascript(source: '''
           var s = document.createElement('style');
           s.id = 'ocms-css-inject';
           s.type = 'text/css';
           s.appendChild(document.createTextNode(`
-            .leftbar, #leaders1, .btop.a12, .main1>.main1.noprint {display:none!important;}
+            .leftbar, #leaders1, .btop.a12, .main1>.main1.noprint, .btop, .photo1.m_left, .mae_tok.a12 {display:none!important;}
             .main1, .rightbar1, .ctbody1, .meair_lef {width:100%!important;margin: 0!important;}
             
           `));
           (document.head || document.documentElement).appendChild(s);
         ''');
       }
+      await _webViewController!.evaluateJavascript(source: webCmsStyle(context));
     } catch (e) {
       debugPrint('WebCmsPage: CSS inject failed: $e');
     }
@@ -191,6 +167,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
                 // Keep defaults sensible; JavaScript enabled by default
                 mediaPlaybackRequiresUserGesture: false,
                 allowsInlineMediaPlayback: true,
+                isInspectable: true,
               ),
               onWebViewCreated: (controller) {
                 _webViewController = controller;

@@ -31,7 +31,7 @@ class _LoginFormState extends State<LoginForm> {
     super.initState();
     _controller = LoginFormController();
     _controller.initialize();
-    
+
     // Load saved credentials
     _controller.loadSavedCredentials(
       usernameController: widget.usernameController,
@@ -78,16 +78,16 @@ class _LoginFormState extends State<LoginForm> {
           children: [
             Form(
               key: widget.formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+              child: Stack(
                 children: [
                   // Clear form button (top right)
-                  Align(
-                    alignment: Alignment.topRight,
+                  Positioned(
+                    top: 0,
+                    right: 0,
                     child: Material(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       shape: const CircleBorder(),
                       child: IconButton(
                         tooltip: 'Clear form',
@@ -96,110 +96,132 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                   ),
-                  
-                  // App icon and welcome text
-                  Icon(
-                    Symbols.school_rounded,
-                    size: 80,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  Text(
-                    'Welcome Back!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Text(
-                    'Login with your'' SC''IE'' Account',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Username field
-                  UsernameInput(
-                    controller: widget.usernameController,
-                    labelText: 'Username',
-                    enabled: !isLoading,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Password field
-                  PasswordInput(
-                    controller: widget.passwordController,
-                    labelText: 'Password',
-                    enabled: !isLoading,
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Captcha field
-                  CaptchaInput(
-                    key: widget.captchaKey,
-                    onCaptchaStateChanged: _controller.captchaManager.onCaptchaStateChanged,
-                    initiallyVerified: _controller.captchaManager.isCaptchaVerified,
-                    enabled: !isLoading,
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Remember me checkbox
-                  CheckboxListTile(
-                    title: Text(
-                      'Remember my credentials',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 14,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 14),
+                      Icon(
+                        Symbols.school_rounded,
+                        size: 80,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                    ),
-                    subtitle: Text(
-                      'Securely save credentials for next login',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
-                        fontSize: 12,
+                      Text(
+                        'Welcome Back!',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    value: _controller.credentialsManager.rememberMe,
-                    onChanged: isLoading
-                        ? null
-                        : (value) {
-                            _controller.credentialsManager.rememberMe = value ?? false;
-                          },
-                    activeColor: Theme.of(context).colorScheme.primary,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-                    dense: true,
-                    controlAffinity: ListTileControlAffinity.leading,
-                  ),
-                  const SizedBox(height: 16),
+                      Text(
+                        'Login with your'
+                        ' SC'
+                        'IE'
+                        ' Account',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 32),
 
-                  // Login button
-                  ElevatedButton(
-                    onPressed: (isLoading || isLoadingCredentials)
-                        ? null
-                        : _performLogin,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      // Username field
+                      UsernameInput(
+                        controller: widget.usernameController,
+                        labelText: 'Username',
+                        enabled: !isLoading,
                       ),
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                    ),
-                    child: (isLoading || isLoadingCredentials)
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(
-                            'Login',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
+                      const SizedBox(height: 16),
+
+                      // Password field
+                      PasswordInput(
+                        controller: widget.passwordController,
+                        labelText: 'Password',
+                        enabled: !isLoading,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Captcha field
+                      CaptchaInput(
+                        key: widget.captchaKey,
+                        onCaptchaStateChanged:
+                            _controller.captchaManager.onCaptchaStateChanged,
+                        initiallyVerified:
+                            _controller.captchaManager.isCaptchaVerified,
+                        enabled: !isLoading,
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Remember me checkbox
+                      CheckboxListTile(
+                        title: Text(
+                          'Remember my credentials',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 14,
                           ),
+                        ),
+                        subtitle: Text(
+                          'Securely save credentials for next login',
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withAlpha(153),
+                            fontSize: 12,
+                          ),
+                        ),
+                        value: _controller.credentialsManager.rememberMe,
+                        onChanged: isLoading
+                            ? null
+                            : (value) {
+                                _controller.credentialsManager.rememberMe =
+                                    value ?? false;
+                              },
+                        activeColor: Theme.of(context).colorScheme.primary,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 0,
+                        ),
+                        dense: true,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Login button
+                      ElevatedButton(
+                        onPressed: (isLoading || isLoadingCredentials)
+                            ? null
+                            : _performLogin,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                        ),
+                        child: (isLoading || isLoadingCredentials)
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimary,
+                                ),
+                              ),
+                      ),
+                    ],
                   ),
                 ],
               ),

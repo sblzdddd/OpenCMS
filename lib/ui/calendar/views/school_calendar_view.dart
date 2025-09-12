@@ -225,7 +225,6 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         events.add(
           SchoolCalendarAppointment(
             title: event.title,
-            // eventType: event.eventType,
             from: eventDate,
             to: eventDate,
             color: color,
@@ -241,7 +240,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   }
 
   Color _getColorForEvent(CalendarEvent event) {
-    final String eventKey = '${event.kind}';
+    final String eventKey = event.kind;
     
     if (!_eventColors.containsKey(eventKey)) {
       final List<Color> palette = <Color>[

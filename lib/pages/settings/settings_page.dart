@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/data/constants/api_constants.dart';
+import 'package:opencms/pages/actions/web_cms.dart';
 import '../../ui/shared/dialog/confirm_dialog.dart';
 import 'theme_settings_page.dart';
 import '../../services/theme/theme_services.dart';
@@ -127,42 +129,42 @@ class _SettingsPageState extends State<SettingsPage> {
                           ],
                         ),
                       ),
-                      const Divider(height: 2),
+                      // const Divider(height: 2),
 
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 6.0,
-                          horizontal: 8.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.access_time,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Use 24H Time Format',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            Switch(
-                              value:
-                                  false, // TODO: Implement 24H time format toggle
-                              onChanged: (value) {
-                                // TODO: Implement 24H time format toggle
-                              },
-                              activeColor: Theme.of(
-                                context,
-                              ).colorScheme.primary,
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     vertical: 6.0,
+                      //     horizontal: 8.0,
+                      //   ),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       Row(
+                      //         children: [
+                      //           Icon(
+                      //             Icons.access_time,
+                      //             color: Theme.of(context).colorScheme.primary,
+                      //           ),
+                      //           const SizedBox(width: 12),
+                      //           Text(
+                      //             'Use 24H Time Format',
+                      //             style: Theme.of(context).textTheme.bodyLarge,
+                      //           ),
+                      //         ],
+                      //       ),
+                      //       Switch(
+                      //         value:
+                      //             false, // TODO: Implement 24H time format toggle
+                      //         onChanged: (value) {
+                      //           // TODO: Implement 24H time format toggle
+                      //         },
+                      //         activeColor: Theme.of(
+                      //           context,
+                      //         ).colorScheme.primary,
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   );
                 },
@@ -174,19 +176,19 @@ class _SettingsPageState extends State<SettingsPage> {
                 const ThemeSettingsPage(),
               ),
               const Divider(height: 2),
-              _buildSettingsTitle('Notifications'),
-              _buildSettingsItem(
-                'Notification Settings',
-                Icons.notifications,
-                const ThemeSettingsPage(),
-              ),
-              const Divider(height: 2),
+              // _buildSettingsTitle('Notifications'),
+              // _buildSettingsItem(
+              //   'Notification Settings',
+              //   Icons.notifications,
+              //   const ThemeSettingsPage(),
+              // ),
+              // const Divider(height: 2),
 
               _buildSettingsTitle('Account'),
               _buildSettingsItem(
                 'Change Password',
                 Icons.password,
-                const ThemeSettingsPage(),
+                const WebCmsPage(initialUrl: '${ApiConstants.cmsReferer}/auth/change_password', windowTitle: 'Change Password'),
               ),
               const Divider(height: 2),
               _buildSettingsItem(

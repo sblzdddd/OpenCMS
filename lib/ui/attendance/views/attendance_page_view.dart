@@ -365,7 +365,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
     await CourseDetailDialog.show(
       context: context,
       title: title,
-      subtitle: entry.grade,
+      initialSubtitle: entry.grade,
       loader: () async {
         // Try to find stats across two academic years: [date.year - 1, date.year]
         final int currentYear = date.year;
@@ -384,7 +384,11 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
             'Course stats not found for course id ${entry.courseId}.',
           ),
         );
-        return statsForCourse;
+        // Return both stats and the full teacher name from the API
+        return (
+          stats: statsForCourse,
+          subtitle: statsForCourse.teachers,
+        );
       },
     );
   }

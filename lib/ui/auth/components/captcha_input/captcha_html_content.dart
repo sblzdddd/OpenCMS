@@ -1,5 +1,6 @@
 /// HTML content for the Tencent Captcha verification interface
-const String captchaHtmlContent = '''
+String captchaHtmlContent (bool enableDarkMode) {
+  return '''
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,7 +8,7 @@ const String captchaHtmlContent = '''
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Web 前端接入示例</title>
+  <title>CMS Captcha</title>
   <!-- 验证码程序依赖(必须)。请勿修改以下程序依赖，如通过其他手段规避加载，会导致验证码无法正常更新，对抗能力无法保证，甚至引起误拦截。 -->
   <script src="https://turing.captcha.qcloud.com/TJCaptcha.js"></script>
 </head>
@@ -32,7 +33,7 @@ const String captchaHtmlContent = '''
     border-radius: 16px;
   }
 </style>
-  <p id="tencentCaptcha">creating TencentCaptcha...</p>
+  <p id="tencentCaptcha">creating Captcha...</p>
 </body>
 
 <script>
@@ -88,7 +89,7 @@ const String captchaHtmlContent = '''
       // 生成一个验证码对象
       // CaptchaAppId：登录验证码控制台，从【验证管理】页面进行查看。如果未创建过验证，请先新建验证。注意：不可使用客户端类型为小程序的CaptchaAppId，会导致数据统计错误。
       //callback：定义的回调函数
-      var captcha = new TencentCaptcha('194431589', callback, {userLanguage: 'en'});
+      var captcha = new TencentCaptcha('194431589', callback, {userLanguage: 'en', enableDarkMode: $enableDarkMode});
       // 调用方法，显示验证码
       captcha.show();
     } catch (error) {
@@ -100,3 +101,4 @@ const String captchaHtmlContent = '''
 
 </html>
 ''';
+}

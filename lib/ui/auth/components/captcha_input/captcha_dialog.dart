@@ -69,7 +69,7 @@ class TencentCaptchaDialog {
                     child: InAppWebView(
                       webViewEnvironment: webViewEnvironment,
                       initialData: InAppWebViewInitialData(
-                        data: captchaHtmlContent,
+                        data: captchaHtmlContent(Theme.of(context).brightness == Brightness.dark),
                         baseUrl: WebUri('https://localhost/'),
                       ),
                       initialSettings: InAppWebViewSettings(

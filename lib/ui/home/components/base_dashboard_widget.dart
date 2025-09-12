@@ -125,7 +125,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
         children: [
           // Background container with decoration
           Container(
-            padding: const EdgeInsets.all(13),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(24),
