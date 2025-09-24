@@ -34,32 +34,83 @@ class CalendarResponse {
 
   factory CalendarResponse.fromJson(Map<String, dynamic> json) {
     final Map<String, CalendarDay> calendarDays = {};
-    
-    // Parse calendar days from the response
+
     for (final key in json.keys) {
-      if (key.startsWith('td') && key.endsWith('kind')) {
-        final dayKey = key.substring(2, key.length - 4); // Remove 'td' prefix and 'kind' suffix
-        final dateKey = '${dayKey}date';
-        final dayKeyStr = '${dayKey}day';
-        final contentKey = dayKey;
-        
-        if (json.containsKey(dateKey) && json.containsKey(dayKeyStr)) {
-          final date = json[dateKey]?.toString() ?? '';
-          final day = json[dayKeyStr]?.toString() ?? '';
-          final content = json[contentKey]?.toString() ?? '';
-          final kind = json[key]?.toString() ?? '';
-          
-          if (date.isNotEmpty) {
-            calendarDays[dayKey] = CalendarDay(
-              dayKey: dayKey,
-              date: date,
-              day: day,
-              content: content,
-              kind: kind,
-              events: _parseEvents(content),
-            );
-          }
+      if (!key.endsWith('date')) continue;
+
+      final String base = key.substring(0, key.length - 4); // strip trailing 'date'
+      final RegExp pageSuffixRegex = RegExp(r'_page_\d+$');
+      final String root = base.replaceAll(pageSuffixRegex, ''); // e.g., Sat06
+      final String? pageSuffix = pageSuffixRegex.hasMatch(base)
+          ? pageSuffixRegex.firstMatch(base)!.group(0)
+          : null; // e.g., _page_1
+
+      final String date = json[key]?.toString() ?? '';
+      if (date.isEmpty) continue;
+
+      // Find day string. Try multiple key shapes observed in payloads
+      final List<String> dayKeyCandidates = <String>[
+        if (pageSuffix != null) '${root}day$pageSuffix', // Sat06day_page_1
+        '${base}day', // Sat06_page_1day
+        '${root}day', // Sat06day
+      ];
+      String day = '';
+      for (final candidate in dayKeyCandidates) {
+        if (json.containsKey(candidate)) {
+          day = json[candidate]?.toString() ?? '';
+          if (day.isNotEmpty) break;
         }
+      }
+
+      // Pick best available content: prefer unsuffixed root first, then base
+      String content = '';
+      if (json.containsKey(root)) {
+        content = json[root]?.toString() ?? '';
+      }
+      if (content.isEmpty && json.containsKey(base)) {
+        content = json[base]?.toString() ?? '';
+      }
+
+      // Kind may be under td<root>kind or td<base>kind
+      String kind = '';
+      final List<String> kindKeyCandidates = <String>[
+        'td${root}kind',
+        'td${base}kind',
+      ];
+      for (final candidate in kindKeyCandidates) {
+        if (json.containsKey(candidate)) {
+          kind = json[candidate]?.toString() ?? '';
+          break;
+        }
+      }
+
+      // Merge entries for the same root key (same calendar day) if seen multiple times
+      final List<CalendarEvent> parsedEvents = _parseEvents(content);
+      if (calendarDays.containsKey(root)) {
+        final existing = calendarDays[root]!;
+        final Map<String, CalendarEvent> mergedById = {
+          for (final e in existing.events) e.id: e,
+        };
+        for (final e in parsedEvents) {
+          mergedById[e.id] = e;
+        }
+        calendarDays[root] = CalendarDay(
+          dayKey: existing.dayKey,
+          date: existing.date.isNotEmpty ? existing.date : date,
+          day: existing.day.isNotEmpty ? existing.day : day,
+          content: existing.content.isNotEmpty ? existing.content : content,
+          kind: existing.kind.isNotEmpty ? existing.kind : kind,
+          events: mergedById.values.toList(),
+        );
+      } else {
+        calendarDays[root] = CalendarDay(
+          dayKey: root,
+          date: date,
+          day: day,
+          content: content,
+          kind: kind,
+          events: parsedEvents,
+        );
       }
     }
 
@@ -87,10 +138,11 @@ class CalendarResponse {
 
     final List<CalendarEvent> events = [];
     final eventStrings = content.split(' || ');
-    
+
     for (final eventString in eventStrings) {
       if (eventString.trim().isEmpty) continue;
-      
+      print(eventString);
+
       final parts = eventString.split('|');
       if (parts.length >= 6) {
         events.add(CalendarEvent(
@@ -103,7 +155,7 @@ class CalendarResponse {
         ));
       }
     }
-    
+
     return events;
   }
 }
@@ -127,10 +179,10 @@ class CalendarDay {
 
   /// Check if this is a current month day
   bool get isCurrentMonth => day != '0';
-  
+
   /// Check if this day has events
   bool get hasEvents => events.isNotEmpty;
-  
+
   /// Get formatted date
   DateTime? get dateTime {
     try {
@@ -160,7 +212,7 @@ class CalendarEvent {
 
   /// Check if this event is postponed
   bool get isPostponed => postponeStatus == '1';
-  
+
   /// Get event type description
   String get eventType {
     switch (kind) {
@@ -182,7 +234,7 @@ class CalendarEvent {
         return 'Unknown';
     }
   }
-  
+
   /// Get category color class
   String get colorClass {
     if (kind == 'calendar') {

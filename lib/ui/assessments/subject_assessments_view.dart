@@ -128,11 +128,13 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
-        const Text(
+        Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Text(
           'Performance Summary',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),),
+        const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
@@ -203,11 +205,14 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
-        const Text(
-          'Assessments',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text(
+            'Assessments',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -227,7 +232,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
     final gradeColor = _getGradeColor(assessment.mark);
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(1),

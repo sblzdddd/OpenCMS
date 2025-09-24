@@ -36,7 +36,7 @@ class CalendarService {
       final psid = username;
 
       final response = await _httpService.postLegacy(
-        ApiConstants.calendarUrl,
+        '${ApiConstants.calendarUrl}?psid=$psid&y=$year&p=$year&m=$month&kind=-1',
         body: 'psid=$psid&y=$year&p=$year&m=$month&kind=-1',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',

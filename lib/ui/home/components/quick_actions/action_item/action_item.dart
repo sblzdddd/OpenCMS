@@ -44,7 +44,6 @@ class _ActionItemState extends State<ActionItem> with AutomaticKeepAliveClientMi
         context,
         QuickActionTile(
           width: widget.tileWidth ?? 100,
-          // height: 114,
           icon: widget.action['icon'] as IconData,
           title: widget.action['title'] as String,
           onTap: widget.onTap ?? () => _handleActionTap(context),
@@ -75,13 +74,6 @@ class _ActionItemState extends State<ActionItem> with AutomaticKeepAliveClientMi
       onSecondaryTapUp: (details) {
         if (isDeleteDisabled) return;
         _showDeleteMenu(context, details.globalPosition);
-      },
-      onLongPress: () {
-        if (isDeleteDisabled) return;
-        // Basic long-press fallback for touch; may be pre-empted by drag in some cases
-        final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
-        final Offset center = overlay.size.center(Offset.zero);
-        _showDeleteMenu(context, overlay.localToGlobal(center));
       },
       child: child,
     );

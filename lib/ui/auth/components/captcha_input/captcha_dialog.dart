@@ -48,7 +48,7 @@ class TencentCaptchaDialog {
     required Function(dynamic) onSuccess,
     required Function(dynamic) onFail,
   }) async {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     await showDialog(
       context: context,
       barrierDismissible: false, // Disable clicking outside to close

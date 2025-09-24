@@ -39,7 +39,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
     super.dispose();
   }
 
-  Future<void> _loadCalendar(DateTime date) async {
+  Future<void> _loadCalendar(DateTime date, {bool refresh = false}) async {
     if (!mounted) return;
     setState(() {
       _isLoading = true;
@@ -50,7 +50,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
       final calendar = await _calendarService.getCalendar(
         year: date.year,
         month: date.month,
-        refresh: true,
+        refresh: refresh,
       );
       
       if (!mounted) return;
@@ -70,8 +70,9 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   }
 
   Future<void> _onViewChanged(ViewChangedDetails details) async {
-    final newDate = details.visibleDates.isNotEmpty 
-        ? details.visibleDates.first 
+    final List<DateTime> visible = details.visibleDates;
+    final DateTime newDate = visible.isNotEmpty
+        ? visible[visible.length ~/ 2]
         : DateTime.now();
 
     // Avoid reloading if already loading or month/year unchanged
@@ -92,7 +93,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => _loadCalendar(_calendarController.displayDate ?? DateTime.now()),
+            onPressed: () => _loadCalendar(_calendarController.displayDate ?? DateTime.now(), refresh: true),
           ),
         ],
       ),
@@ -102,12 +103,6 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
 
   Widget _buildCalendarBody() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-
     if (_errorMessage != null) {
       return Center(
         child: Column(
@@ -146,67 +141,77 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
     }
 
     final events = _buildCalendarEvents();
-
-    return SfCalendar(
-      controller: _calendarController,
-      allowedViews: [
-        CalendarView.month,
-        CalendarView.week,
-        CalendarView.workWeek,
-        CalendarView.day,
-      ],
-      view: CalendarView.month,
-      firstDayOfWeek: 1, // Monday
-      dataSource: _CalendarDataSource(events),
-      showCurrentTimeIndicator: true,
-      onViewChanged: _onViewChanged,
-      monthViewSettings: const MonthViewSettings(
-        showAgenda: true,
-        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-        agendaViewHeight: 200,
-        agendaItemHeight: 60,
-        showTrailingAndLeadingDates: true,
-      ),
-      timeSlotViewSettings: const TimeSlotViewSettings(
-        nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
-        timeIntervalHeight: 60,
-        timeRulerSize: 100,
-        minimumAppointmentDuration: Duration(minutes: 30),
-      ),
-      appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-        final SchoolCalendarAppointment event = details.appointments.first as SchoolCalendarAppointment;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-          decoration: BoxDecoration(
-            color: event.color,
-            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
+    return Stack(
+      children: [
+        SfCalendar(
+          controller: _calendarController,
+          allowedViews: [
+            CalendarView.month,
+            CalendarView.week,
+            CalendarView.workWeek,
+            CalendarView.day,
+          ],
+          view: CalendarView.week,
+          firstDayOfWeek: 7, // Sunday
+          dataSource: _CalendarDataSource(events),
+          showCurrentTimeIndicator: true,
+          onViewChanged: _onViewChanged,
+          monthViewSettings: const MonthViewSettings(
+            showAgenda: true,
+            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+            agendaViewHeight: 200,
+            agendaItemHeight: 60,
+            showTrailingAndLeadingDates: true,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                event.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+          timeSlotViewSettings: const TimeSlotViewSettings(
+            nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
+            timeIntervalHeight: 60,
+            timeRulerSize: 100,
+            minimumAppointmentDuration: Duration(minutes: 30),
+          ),
+          appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
+            final SchoolCalendarAppointment event = details.appointments.first as SchoolCalendarAppointment;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+              decoration: BoxDecoration(
+                color: event.color,
+                borderRadius: themeNotifier.getBorderRadiusAll(0.25),
               ),
-            ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    event.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            );
+          },
+          onTap: (details) {
+            if (details.targetElement == CalendarElement.appointment &&
+                details.appointments != null &&
+                details.appointments!.isNotEmpty) {
+              final SchoolCalendarAppointment tapped = details.appointments!.first as SchoolCalendarAppointment;
+              _showEventDetailDialog(tapped);
+            }
+          },
+        ),
+        if (_isLoading)
+          const Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            child: LinearProgressIndicator(minHeight: 2),
           ),
-        );
-      },
-      onTap: (details) {
-        if (details.targetElement == CalendarElement.appointment &&
-            details.appointments != null &&
-            details.appointments!.isNotEmpty) {
-          final SchoolCalendarAppointment tapped = details.appointments!.first as SchoolCalendarAppointment;
-          _showEventDetailDialog(tapped);
-        }
-      },
+      ],
     );
   }
 
@@ -215,25 +220,58 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
     
     if (_currentCalendar == null) return events;
 
+    // Group source events by day to assign pseudo time slots
+    final Map<DateTime, List<MapEntry<CalendarDay, CalendarEvent>>> eventsByDay = {};
+
     for (final dayEntry in _currentCalendar!.calendarDays.values) {
       if (!dayEntry.hasEvents) continue;
 
-      for (final event in dayEntry.events) {
-        final DateTime? eventDate = dayEntry.dateTime;
-        if (eventDate == null) continue;
+      final DateTime? eventDate = dayEntry.dateTime;
+      if (eventDate == null) continue;
 
-        // Create all-day events for calendar events
+      for (final event in dayEntry.events) {
+        eventsByDay.putIfAbsent(
+          DateTime(eventDate.year, eventDate.month, eventDate.day),
+          () => <MapEntry<CalendarDay, CalendarEvent>>[],
+        );
+        eventsByDay[DateTime(eventDate.year, eventDate.month, eventDate.day)]!
+            .add(MapEntry<CalendarDay, CalendarEvent>(dayEntry, event));
+      }
+    }
+
+    // Assign sequential 1-hour slots starting from 09:00 for each day
+    const int startHour = 0;
+    const int slotMinutes = 60;
+
+    for (final entry in eventsByDay.entries) {
+      final DateTime day = entry.key;
+      final List<MapEntry<CalendarDay, CalendarEvent>> dayEvents = entry.value;
+
+      // Stable ordering: by kind then title then id
+      dayEvents.sort((a, b) {
+        final int kindCmp = a.value.kind.compareTo(b.value.kind);
+        if (kindCmp != 0) return kindCmp;
+        final int titleCmp = a.value.title.compareTo(b.value.title);
+        if (titleCmp != 0) return titleCmp;
+        return a.value.id.compareTo(b.value.id);
+      });
+
+      for (int i = 0; i < dayEvents.length; i++) {
+        final CalendarEvent event = dayEvents[i].value;
+        final CalendarDay srcDay = dayEvents[i].key;
+        final DateTime from = DateTime(day.year, day.month, day.day, startHour + i, 0);
+        final DateTime to = from.add(const Duration(minutes: slotMinutes));
         final Color color = _getColorForEvent(event);
-        
+
         events.add(
           SchoolCalendarAppointment(
             title: event.title,
-            from: eventDate,
-            to: eventDate,
+            from: from,
+            to: to,
             color: color,
-            isAllDay: true,
+            isAllDay: false,
             sourceEvent: event,
-            sourceDay: dayEntry,
+            sourceDay: srcDay,
           ),
         );
       }
@@ -270,7 +308,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   Future<void> _showEventDetailDialog(SchoolCalendarAppointment appointment) async {
     final event = appointment.sourceEvent;
 
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     // Try to fetch detailed information
     CalendarDetailResponse? detail;
     String? comment;
