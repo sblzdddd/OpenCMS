@@ -2,12 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 import '../../../services/timetable/exam_timetable_service.dart';
 import '../../shared/views/refreshable_view.dart';
 import 'exam_timetable_list_view.dart';
 import 'exam_timetable_calendar_view.dart';
+import '../../../services/theme/theme_services.dart';
 
 class ExamTimetableView extends StatefulWidget {
   final AcademicYear selectedYear;
@@ -59,7 +60,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_isCalendarView) {
       return ExamTimetableCalendarView(
         exams: _exams,
@@ -76,7 +77,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -196,10 +197,9 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
           emailInvites: [],
         ),
       );
-      print(event.toJson());
       Add2Calendar.addEvent2Cal(event);
     } else {
-      print('Invalid exam date: ${exam.date}');
+      debugPrint('ExamTimetableView: Invalid exam date: ${exam.date}');
     }
   }
 
@@ -225,7 +225,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
                 DropdownButton<int>(
                   value: _selectedMonth,
                   onChanged: _onMonthChanged,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   padding: const EdgeInsets.only(
                     left: 12,
                     right: 6,

@@ -3,6 +3,8 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/profile/profile.dart';
 import '../../../services/profile/profile_service.dart';
 import '../widgets/profile_info_card.dart';
@@ -147,7 +149,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Student ID',
                           value: _profile!.generalInfo.id.toString(),
                           icon: Icons.badge,
-                          isCompact: true,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -161,7 +162,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           valueColor: _profile!.generalInfo.isActive
                               ? Colors.green
                               : Colors.red,
-                          isCompact: true,
                         ),
                       ),
                     ],
@@ -173,7 +173,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Chinese Name',
                           value: _profile!.generalInfo.name,
                           icon: Icons.translate,
-                          isCompact: true,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -182,7 +181,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'English Name',
                           value: _profile!.generalInfo.enName,
                           icon: Icons.language,
-                          isCompact: true,
                         ),
                       ),
                     ],
@@ -194,7 +192,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Full Name',
                           value: _profile!.generalInfo.fullName,
                           icon: Icons.assignment_ind,
-                          isCompact: true,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -203,7 +200,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Form Group',
                           value: _profile!.generalInfo.formGroup,
                           icon: Icons.group,
-                          isCompact: true,
                         ),
                       ),
                     ],
@@ -225,7 +221,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Grade',
                           value: _profile!.basicInfo.grade,
                           icon: Icons.school,
-                          isCompact: true,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -234,7 +229,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'House',
                           value: _profile!.basicInfo.house,
                           icon: Icons.home,
-                          isCompact: true,
                         ),
                       ),
                     ],
@@ -246,7 +240,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Dormitory',
                           value: _profile!.basicInfo.dormitory,
                           icon: Icons.bed,
-                          isCompact: true,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -255,7 +248,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Type',
                           value: _profile!.basicInfo.dormitoryKind,
                           icon: Icons.hotel,
-                          isCompact: true,
                         ),
                       ),
                     ],
@@ -267,7 +259,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Gender',
                           value: _profile!.basicInfo.gender,
                           icon: Icons.wc,
-                          isCompact: true,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -276,7 +267,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           title: 'Enrolled',
                           value: _profile!.basicInfo.enrollment,
                           icon: Icons.calendar_today,
-                          isCompact: true,
                         ),
                       ),
                     ],
@@ -299,7 +289,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           value: _profile!.basicInfo.mobile,
                           icon: Icons.phone,
                           isClickable: true,
-                          isCompact: true,
                           onTap: () => _showContactDialog(
                             'Mobile',
                             _profile!.basicInfo.mobile,
@@ -313,7 +302,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           value: _profile!.basicInfo.schoolEmail,
                           icon: Icons.email,
                           isClickable: true,
-                          isCompact: true,
                           onTap: () => _showContactDialog(
                             'School Email',
                             _profile!.basicInfo.schoolEmail,
@@ -327,7 +315,6 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                     value: _profile!.basicInfo.studentEmail,
                     icon: Icons.alternate_email,
                     isClickable: true,
-                    isCompact: true,
                     onTap: () => _showContactDialog(
                       'Personal Email',
                       _profile!.basicInfo.studentEmail,
@@ -343,9 +330,14 @@ class _StudentProfileViewState extends State<StudentProfileView> {
   }
 
   void _showContactDialog(String type, String value) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
         title: Text(type),
         content: SelectableText(value),
         actions: [

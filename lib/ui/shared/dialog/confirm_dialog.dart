@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../../../services/auth/auth_service.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../services/shared/storage_client.dart';
 import '../navigations/app_navigation_controller.dart';
 
 void showConfirmationDialog(BuildContext context, String title, String message, Future<void> Function(BuildContext) onConfirm) {
+  final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
   showDialog(
     context: context,
     builder: (BuildContext dialogContext) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+        shape: RoundedRectangleBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
         title: Text(
           title,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -64,7 +70,7 @@ void showClearDataDialog(BuildContext context) {
         await windowManager.setPreventClose(true);
       }
       if(!context.mounted) {
-        print('ClearDataDialog: Context is not mounted');
+        debugPrint('ClearDataDialog: Context is not mounted');
         return;
       }
       Navigator.of(

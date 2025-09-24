@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';  
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 
 /// Reusable password input field component with customizable label
 class PasswordInput extends StatefulWidget {
@@ -43,6 +45,7 @@ class _PasswordInputState extends State<PasswordInput> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return TextFormField(
       controller: widget.controller,
       obscureText: _obscureText,
@@ -60,7 +63,7 @@ class _PasswordInputState extends State<PasswordInput> {
             tooltip: _obscureText ? 'Show password' : 'Hide password',
           ),
         ),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(borderRadius: themeNotifier.getBorderRadiusAll(0.75)),
       ),
       validator: widget.validator ?? _defaultValidator,
     );

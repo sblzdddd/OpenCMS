@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../../data/constants/quick_actions_constants.dart';
+import '../../../../../data/constants/quick_actions.dart';
 import '../../../../../pages/actions.dart';
 import 'base_action_dialog.dart';
 

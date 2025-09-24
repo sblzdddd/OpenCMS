@@ -2,6 +2,8 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   final String title;
@@ -10,7 +12,6 @@ class ProfileInfoCard extends StatelessWidget {
   final IconData icon;
   final Color? valueColor;
   final bool isClickable;
-  final bool isCompact;
   final VoidCallback? onTap;
 
   const ProfileInfoCard({
@@ -21,28 +22,28 @@ class ProfileInfoCard extends StatelessWidget {
     required this.icon,
     this.valueColor,
     this.isClickable = false,
-    this.isCompact = false,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: isClickable ? onTap : null,
-        borderRadius: BorderRadius.circular(isCompact ? 8 : 12),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
         child: Container(
-          padding: EdgeInsets.all(isCompact ? 12 : 16),
+          padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(isCompact ? 8 : 12),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
             border: Border.all(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
             ),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
+                color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
                 blurRadius: 4,
                 offset: const Offset(0, 2),
               ),
@@ -52,20 +53,20 @@ class ProfileInfoCard extends StatelessWidget {
             children: [
               // Icon
               Container(
-                width: isCompact ? 32 : 40,
-                height: isCompact ? 32 : 40,
+                width: 32,
+                height: 32,
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(isCompact ? 6 : 8),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                 ),
                 child: Icon(
                   icon,
                   color: Theme.of(context).colorScheme.primary,
-                  size: isCompact ? 16 : 20,
+                  size: 16,
                 ),
               ),
               
-              SizedBox(width: isCompact ? 12 : 16),
+              SizedBox(width: 12),
               
               // Content
               Expanded(
@@ -74,37 +75,31 @@ class ProfileInfoCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: (isCompact 
-                          ? Theme.of(context).textTheme.bodySmall 
-                          : Theme.of(context).textTheme.bodySmall)?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                         fontWeight: FontWeight.w500,
-                        fontSize: isCompact ? 11 : null,
+                        fontSize: 11,
                       ),
                     ),
-                    SizedBox(height: isCompact ? 2 : 4),
+                    SizedBox(height: 2),
                     Text(
                       value,
-                      style: (isCompact 
-                          ? Theme.of(context).textTheme.bodyMedium 
-                          : Theme.of(context).textTheme.bodyLarge)?.copyWith(
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: valueColor ?? Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
-                        fontSize: isCompact ? 13 : null,
+                        fontSize: 13,
                       ),
-                      maxLines: isCompact ? 1 : null,
-                      overflow: isCompact ? TextOverflow.ellipsis : null,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     if (subtitle != null) ...[
-                      SizedBox(height: isCompact ? 1 : 2),
+                      SizedBox(height: 1),
                       Text(
                         subtitle!,
-                        style: (isCompact 
-                            ? Theme.of(context).textTheme.bodySmall 
-                            : Theme.of(context).textTheme.bodySmall)?.copyWith(
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.w500,
-                          fontSize: isCompact ? 10 : null,
+                          fontSize: 10,
                         ),
                       ),
                     ],
@@ -112,13 +107,12 @@ class ProfileInfoCard extends StatelessWidget {
                 ),
               ),
               
-              // Clickable indicator
               if (isClickable) ...[
-                SizedBox(width: isCompact ? 4 : 8),
+                SizedBox(width: 4),
                 Icon(
                   Icons.chevron_right,
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                  size: isCompact ? 16 : 20,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                  size: 16,
                 ),
               ],
             ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/constants/period_constants.dart';
+import '../../data/constants/periods.dart';
 import '../../data/models/assessment/assessment_response.dart';
 import '../../services/assessment/assessment_service.dart';
 import '../shared/views/refreshable_page.dart';
@@ -51,7 +51,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
   }
 
   @override
-  Widget buildPageContent(BuildContext context) {
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -74,7 +74,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +98,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: themeNotifier.getBorderRadiusAll(999),
                 ),
                 child: Text(
                   '${_currentSubject.assessments.length} Assessment${_currentSubject.assessments.length != 1 ? 's' : ''}',
@@ -155,6 +155,10 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
   Widget _buildSummaryCard(String label, String value, Color color) {
     return Card(
       elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
+      clipBehavior: Clip.antiAlias,
       color: Theme.of(context).colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -209,7 +213,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _currentSubject.assessments.length,
           itemBuilder: (context, index) {
-            final assessment = _currentSubject.assessments[index];
+            final assessment = _currentSubject.assessments.reversed.toList()[index];
             return _buildAssessmentItem(assessment);
           },
         ),
@@ -225,6 +229,10 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -248,7 +256,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: _getAssessmentTypeColor(assessment.kind).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(999),
+                          borderRadius: themeNotifier.getBorderRadiusAll(999),
                         ),
                         child: Text(
                           assessment.kind,
@@ -264,7 +272,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(999),
+                            borderRadius: themeNotifier.getBorderRadiusAll(999),
                           ),
                           child: Text(
                             assessment.teacher,

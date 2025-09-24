@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:intl/intl.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/assessment/assessment_response.dart';
 import '../../../services/assessment/assessment_service.dart';
 import 'dart:async';
@@ -31,7 +31,6 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
   @override
   void initState() {
     super.initState();
-    print('LatestAssessmentWidget: initState called, refreshTick: ${widget.refreshTick}');
     initializeWidget();
     startTimer();
   }
@@ -40,7 +39,6 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
   void didUpdateWidget(covariant LatestAssessmentWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.refreshTick != oldWidget.refreshTick) {
-      print('LatestAssessmentWidget: refreshTick changed from ${oldWidget.refreshTick} to ${widget.refreshTick} -> refreshing with refresh=true');
       refresh();
     }
   }
@@ -64,7 +62,7 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
 
   @override
   Future<void> refreshData() async {
-    print('LatestAssessmentWidget: Refreshing assessments');
+    debugPrint('LatestAssessmentWidget: Refreshing assessments');
     await _fetchAssessments(refresh: true);
     // Call the parent refresh callback if provided
     widget.onRefresh?.call();
@@ -91,7 +89,7 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
         setLoading(false);
         setError(true);
       }
-      print('LatestAssessmentWidget: Error fetching assessments: $e');
+      debugPrint('LatestAssessmentWidget: Error fetching assessments: $e');
     }
   }
 

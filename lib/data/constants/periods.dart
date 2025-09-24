@@ -96,8 +96,6 @@ class PeriodConstants {
   static String getGreeting(DateTime dt) {
     int hour = dt.hour;
 
-    print(hour);
-
     if (hour >= 5 && hour < 8) {
       return "Rise and shine 🌅";
     } else if (hour >= 8 && hour < 12) {

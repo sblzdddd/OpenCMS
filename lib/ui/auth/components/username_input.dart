@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';  
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 
 /// Reusable username input field component with customizable label
 class UsernameInput extends StatefulWidget {
@@ -34,13 +36,14 @@ class UsernameInput extends StatefulWidget {
 class _UsernameInputState extends State<UsernameInput> {
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return TextFormField(
       controller: widget.controller,
       decoration: InputDecoration(
         labelText: widget.labelText,
         prefixIcon: Icon(widget.prefixIcon ?? Symbols.person_rounded),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: themeNotifier.getBorderRadiusAll(0.75),
         ),
       ),
       validator: widget.validator ?? _defaultValidator,

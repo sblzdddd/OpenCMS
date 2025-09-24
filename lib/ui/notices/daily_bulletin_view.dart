@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../../services/theme/theme_services.dart';
 import '../../data/models/notification/daily_bulletin_response.dart' as cms;
 import '../../services/notification/daily_bulletin_service.dart';
 import '../shared/views/refreshable_view.dart';
@@ -27,7 +29,6 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
 
   Future<void> _navigateToDailyBulletinDetail(cms.DailyBulletin dailyBulletin) async {
     final contentUrl = await _dailyBulletinService.getDailyBulletinContentUrl(dailyBulletin.id);
-    print(contentUrl);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -40,11 +41,12 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
   }
 
   Widget _buildDailyBulletinItem(cms.DailyBulletin dailyBulletin) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
@@ -62,7 +64,7 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
                   ),
                   child: Text(
                     dailyBulletin.department,
@@ -83,7 +85,7 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_dailyBulletins == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -98,7 +100,7 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),

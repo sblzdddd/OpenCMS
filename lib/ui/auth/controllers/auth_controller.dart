@@ -30,9 +30,9 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
 
       if (loginResult.isSuccess) {
-        print('Successfully logged in as $username');
+        debugPrint('AuthController: Successfully logged in as $username');
         if(!context.mounted) {
-          print('AuthController: Context is not mounted');
+          debugPrint('AuthController: Context is not mounted');
           return false;
         }
 
@@ -54,7 +54,7 @@ class AuthController extends ChangeNotifier {
         
         return true;
       } else {
-        print('Login failed: ${loginResult.message}');
+        debugPrint('AuthController: Login failed: ${loginResult.message}');
 
         // Error dialog with rich details and copy action
         if (!context.mounted) return false;
@@ -75,9 +75,9 @@ class AuthController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      print('Login exception: $e');
+      debugPrint('AuthController: Login exception: $e');
       if(!context.mounted) {
-        print('AuthController: Context is not mounted');
+        debugPrint('AuthController: Context is not mounted');
         return false;
       }
       SnackbarUtils.showError(context, 'Login error: $e');

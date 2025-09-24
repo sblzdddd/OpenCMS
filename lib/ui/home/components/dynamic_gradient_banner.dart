@@ -4,11 +4,67 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
+class RGB {
+  final int r;
+  final int g;
+  final int b;
+
+  const RGB(this.r, this.g, this.b);
+}
+
+class ColorUtils {
+  static Color fromHex(String hex) {
+    var value = hex.replaceAll('#', '').trim();
+    if (value.length == 6) {
+      value = 'FF$value';
+    }
+    final int intValue = int.parse(value, radix: 16);
+    return Color(intValue);
+  }
+
+  static String toHex(Color color, {bool leadingHashSign = true, bool includeAlpha = false}) {
+    final String a = color.alpha.toRadixString(16).padLeft(2, '0');
+    final String r = color.red.toRadixString(16).padLeft(2, '0');
+    final String g = color.green.toRadixString(16).padLeft(2, '0');
+    final String b = color.blue.toRadixString(16).padLeft(2, '0');
+    final String body = includeAlpha ? '$a$r$g$b' : '$r$g$b';
+    return leadingHashSign ? '#$body' : body;
+  }
+
+  static RGB hexToRgb(String hex) {
+    final color = fromHex(hex);
+    return RGB(color.red, color.green, color.blue);
+  }
+
+  static String rgbToHex(int r, int g, int b, {bool leadingHashSign = true}) {
+    final rr = r.clamp(0, 255).toInt().toRadixString(16).padLeft(2, '0');
+    final gg = g.clamp(0, 255).toInt().toRadixString(16).padLeft(2, '0');
+    final bb = b.clamp(0, 255).toInt().toRadixString(16).padLeft(2, '0');
+    final body = '$rr$gg$bb';
+    return leadingHashSign ? '#$body' : body;
+  }
+
+  static Color adjustHsl(
+    Color color, {
+    double hueDelta = 0.0, // degrees
+    double saturation = 1.0,
+    double lightness = 1.0,
+  }) {
+    final hsl = HSLColor.fromColor(color);
+    final double newHue = (hsl.hue + hueDelta) % 360.0;
+    final double newSaturation = (saturation).clamp(0.0, 1.0);
+    final double newLightness = (lightness).clamp(0.0, 1.0);
+    return hsl.withHue(newHue).withSaturation(newSaturation).withLightness(newLightness).toColor();
+  }
+}
+
 class DynamicGradientBanner extends StatefulWidget {
   final Color color1;
   final Color color2;
   final Color color3;
   final Color color4;
+  final Color? themeColor;
+  final String? themeColorHex;
 
   const DynamicGradientBanner({
     super.key,
@@ -16,6 +72,8 @@ class DynamicGradientBanner extends StatefulWidget {
     this.color2 = const ui.Color.fromARGB(255, 166, 248, 250),
     this.color3 = const ui.Color.fromARGB(255, 44, 226, 231),
     this.color4 = const ui.Color.fromARGB(255, 131, 227, 255),
+    this.themeColor,
+    this.themeColorHex,
   });
 
   @override
@@ -60,14 +118,26 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
     if (program == null) {
       return const SizedBox.expand(child: ColoredBox(color: Colors.white));
     }
+
+    Color? b = Theme.of(context).colorScheme.primary;
+
+    final Color c1;
+    final Color c2;
+    final Color c3;
+    final Color c4;
+
+    c1 = ColorUtils.adjustHsl(b, hueDelta: 4, saturation: 0.75, lightness: 0.54);
+    c2 = ColorUtils.adjustHsl(b, hueDelta: 2, saturation: 0.9, lightness: 0.82);
+    c3 = ColorUtils.adjustHsl(b, hueDelta: 1, saturation: 0.8, lightness: 0.54);
+    c4 = ColorUtils.adjustHsl(b, hueDelta: 0, saturation: 1, lightness: 0.76);
     return CustomPaint(
       painter: _DynamicGradientPainter(
         program: program,
         time: _time,
-        color1: widget.color1,
-        color2: widget.color2,
-        color3: widget.color3,
-        color4: widget.color4,
+        color1: c1,
+        color2: c2,
+        color3: c3,
+        color4: c4,
       ),
       size: Size.infinite,
     );
@@ -95,8 +165,6 @@ class _DynamicGradientPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final shader = program.fragmentShader();
 
-    // Uniform packing must match shader declaration order
-    // uResolution (2), uTime(1), then 4 vec3 colors (12 floats)
     shader.setFloat(0, size.width);
     shader.setFloat(1, size.height);
     shader.setFloat(2, time.toDouble());

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'refreshable_view.dart';
+import '../../../services/theme/theme_services.dart';
+export '../../../services/theme/theme_services.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
@@ -44,16 +46,16 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return SingleChildScrollView(
       padding: bodyPadding,
       physics: const AlwaysScrollableScrollPhysics(),
-      child: buildPageContent(context),
+      child: buildPageContent(context, themeNotifier),
     );
   }
 
   /// Override this to build the main page content
-  Widget buildPageContent(BuildContext context);
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier);
 
   @override
   Widget buildLoadingWidget(BuildContext context) {
@@ -69,7 +71,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [

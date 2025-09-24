@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../shared/timetable_card.dart';
-import '../../../data/constants/attendance_constants.dart';
+import '../../../data/constants/attendance_types.dart';
 
 class AttendanceCardsView extends StatelessWidget {
   final List<RecordOfDay> days;

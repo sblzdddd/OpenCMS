@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 import '../error/error_placeholder.dart';
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
@@ -7,11 +9,15 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   bool _isLoading = true;
   String? _error;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  
+  /// Get the theme notifier from Provider
+  ThemeNotifier get themeNotifier => Provider.of<ThemeNotifier>(context, listen: true);
+  
   /// Override this to provide the main data fetching logic
   Future<void> fetchData({bool refresh = false});
 
   /// Override this to build the main content when data is loaded successfully
-  Widget buildContent(BuildContext context);
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier);
 
   /// Override this to provide custom loading widget (optional)
   Widget buildLoadingWidget(BuildContext context) {
@@ -27,7 +33,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   }
 
   /// Override this to provide custom empty state widget (optional)
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -87,7 +93,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
         });
       }
     } catch (e) {
-      print(e);
+      debugPrint('RefreshableView: Error loading data: $e');
       if (mounted) {
         setState(() {
           _error = e.toString();
@@ -136,9 +142,9 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
     }
 
     if (isEmpty) {
-      return buildEmptyWidget(context);
+      return buildEmptyWidget(context, themeNotifier);
     }
 
-    return buildContent(context);
+    return buildContent(context, themeNotifier);
   }
 }

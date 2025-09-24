@@ -29,10 +29,10 @@ class CredentialsManager extends ChangeNotifier {
         usernameController.text = savedCredentials.username;
         passwordController.text = savedCredentials.password;
         _rememberMe = savedCredentials.remember;
-        print('Loaded saved credentials for user: ${savedCredentials.username}');
+        debugPrint('CredentialsManager: Loaded saved credentials for user: ${savedCredentials.username}');
       }
     } catch (e) {
-      print('Error loading saved credentials: $e');
+      debugPrint('CredentialsManager: Error loading saved credentials: $e');
     } finally {
       _isLoadingCredentials = false;
       notifyListeners();
@@ -51,17 +51,17 @@ class CredentialsManager extends ChangeNotifier {
           password: password,
           remember: _rememberMe,
         );
-        print('Credentials saved securely');
+        debugPrint('CredentialsManager: Credentials saved securely');
       } catch (e) {
-        print('Error saving credentials: $e');
+        debugPrint('CredentialsManager: Error saving credentials: $e');
       }
     } else {
       // Clear any previously saved credentials if remember me is unchecked
       try {
         await _secureStorageService.clearCredentials();
-        print('Previously saved credentials cleared');
+        debugPrint('CredentialsManager: Previously saved credentials cleared');
       } catch (e) {
-        print('Error clearing credentials: $e');
+        debugPrint('CredentialsManager: Error clearing credentials: $e');
       }
     }
   }

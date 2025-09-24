@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 
 /// Custom snackbar widget with slide down/up animation and right top positioning
 class CustomSnackbar extends StatefulWidget {
@@ -125,6 +127,7 @@ class CustomSnackbarState extends State<CustomSnackbar>
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -142,7 +145,7 @@ class CustomSnackbarState extends State<CustomSnackbar>
                   opacity: _fadeAnimation.value,
                   child: Material(
                     elevation: widget.elevation,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                     color: Theme.of(context).colorScheme.surfaceContainerLowest,
                     shadowColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
                     child: Container(

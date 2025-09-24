@@ -1,17 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import 'action_item/action_item.dart';
-import 'action_item/add_action_item.dart';
-import 'action_dialog/add_action_dialog.dart';
 import 'action_dialog/more_actions_dialog.dart';
 import 'action_item/trash_can_item.dart';
 import 'reorderable_wrap.dart';
 
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../../data/constants/quick_actions_constants.dart';
+import '../../../../data/constants/quick_actions.dart';
 import '../../../../services/quick_actions/quick_actions_storage_service.dart';
 
+/// Controller to trigger actions on QuickActions from parent widgets
+class QuickActionsController extends ChangeNotifier {
+  void Function(Map<String, dynamic> action)? _addActionHandler;
+  void Function()? _resetHandler;
+  List<Map<String, dynamic>> Function()? _getAddableActionsHandler;
+
+  void addAction(Map<String, dynamic> action) {
+    _addActionHandler?.call(action);
+  }
+
+  void resetActions() async {
+    if (_resetHandler != null) {
+      _resetHandler!.call();
+      return;
+    }
+    // Fallback: write default actions directly to storage
+    final QuickActionsStorageService storage = QuickActionsStorageService();
+    final List<String> defaults = List<String>.from(QuickActionsConstants.defaultActionIds);
+    await storage.saveQuickActionsPreferences(defaults);
+    notifyListeners();
+  }
+
+  List<Map<String, dynamic>> getAddableActions() {
+    final handler = _getAddableActionsHandler;
+    if (handler != null) {
+      return handler();
+    }
+    // Fallback: compute from defaults when state not bound yet
+    final currentIds = List<String>.from(QuickActionsConstants.defaultActionIds);
+    return QuickActionsConstants.getAvailableActionsToAdd(currentIds);
+  }
+}
+
 class QuickActions extends StatefulWidget {
-  const QuickActions({super.key});
+  final QuickActionsController? controller;
+  const QuickActions({super.key, this.controller});
 
   @override
   State<QuickActions> createState() => _QuickActionsState();
@@ -27,6 +60,26 @@ class _QuickActionsState extends State<QuickActions> {
   void initState() {
     super.initState();
     _loadQuickActionsPreferences();
+    // Bind controller command handlers
+    widget.controller?._addActionHandler = (action) {
+      setState(() {
+        actions.add(action);
+      });
+      _saveQuickActionsPreferences();
+    };
+    widget.controller?._resetHandler = () async {
+      setState(() {
+        actions = QuickActionsConstants.getActionsFromIds(
+          QuickActionsConstants.defaultActionIds,
+        );
+        actions.add(QuickActionsConstants.moreAction);
+      });
+      await _saveQuickActionsPreferences();
+    };
+    widget.controller?._getAddableActionsHandler = () {
+      final currentActionIds = QuickActionsConstants.getIdsFromActions(actions);
+      return QuickActionsConstants.getAvailableActionsToAdd(currentActionIds);
+    };
   }
 
   /// Load user's quick actions preferences from secure storage
@@ -51,7 +104,7 @@ class _QuickActionsState extends State<QuickActions> {
         actions.add(QuickActionsConstants.moreAction);
       }
     } catch (e) {
-      print('Error loading quick actions preferences: $e');
+      debugPrint('QuickActions: Error loading quick actions preferences: $e');
       // Fallback to default actions
       actions = QuickActionsConstants.getActionsFromIds(
         QuickActionsConstants.defaultActionIds,
@@ -76,7 +129,7 @@ class _QuickActionsState extends State<QuickActions> {
       final actionIds = QuickActionsConstants.getIdsFromActions(actions);
       await _storageService.saveQuickActionsPreferences(actionIds);
     } catch (e) {
-      print('Error saving quick actions preferences: $e');
+      debugPrint('QuickActions: Error saving quick actions preferences: $e');
     }
   }
 
@@ -102,24 +155,6 @@ class _QuickActionsState extends State<QuickActions> {
     _saveQuickActionsPreferences();
   }
 
-  /// Handle adding new actions
-  void _onAddAction() {
-    final currentActionIds = QuickActionsConstants.getIdsFromActions(actions);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AddActionDialog(
-        currentActionIds: currentActionIds,
-        onActionSelected: (action) {
-          setState(() {
-            actions.add(action);
-          });
-          _saveQuickActionsPreferences();
-        },
-      ),
-    );
-  }
-
   /// Handle showing hidden actions (More...)
   void _onShowMoreActions() {
     final currentActionIds = QuickActionsConstants.getIdsFromActions(actions);
@@ -133,26 +168,10 @@ class _QuickActionsState extends State<QuickActions> {
     );
   }
 
-  /// Reset to default actions (plus persistent More...)
-  void _onResetActions() async {
-    setState(() {
-      actions = QuickActionsConstants.getActionsFromIds(
-        QuickActionsConstants.defaultActionIds,
-      );
-      actions.add(QuickActionsConstants.moreAction);
-    });
-    await _saveQuickActionsPreferences();
-  }
-
-  /// Exit edit mode
-  void _exitEditMode() {
-    setState(() {
-      _isEditMode = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Stack(
       children: [
         Column(
@@ -163,36 +182,19 @@ class _QuickActionsState extends State<QuickActions> {
               padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: themeNotifier.getBorderRadiusAll(1.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Categories',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        ),
-                        if (_isEditMode) IconButton(
-                          onPressed: _isLoading ? null : _onResetActions,
-                          icon: const Icon(Symbols.restart_alt_rounded),
-                          iconSize: 20,
-                          style: IconButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            fixedSize: const Size(30, 30),
-                          ),
-                          tooltip: 'Reset to default',
-                        ),
-                      ],
+                    child: Text(
+                      'Categories',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                   ),
                   _isLoading 
@@ -230,19 +232,26 @@ class _QuickActionsState extends State<QuickActions> {
                                         ? _onShowMoreActions
                                         : null,
                                     tileWidth: tileWidth,
+                                    onDelete: action['id'] == QuickActionsConstants.moreAction['id']
+                                        ? null
+                                        : () {
+                                            final String id = action['id'] as String;
+                                            final int currentIndex = actions.indexWhere((a) => a['id'] == id);
+                                            if (currentIndex != -1) {
+                                              _onRemove(currentIndex);
+                                            }
+                                          },
                                   ))
                               .toList();
 
                           if (_isEditMode) {
-                            // Add edit utilities with stable keys
-                            displayChildren.add(TrashCanItem(
+                            // Full-width trash can row
+                            displayChildren.add(SizedBox(
                               key: const ValueKey('trash_can'),
-                              tileWidth: tileWidth,
-                            ));
-                            displayChildren.add(AddActionItem(
-                              key: const ValueKey('add_action'),
-                              onTap: _onAddAction,
-                              tileWidth: tileWidth,
+                              width: availableWidth,
+                              child: TrashCanItem(
+                                tileWidth: availableWidth,
+                              ),
                             ));
                           }
                           return ReorderableWrap(
@@ -256,9 +265,13 @@ class _QuickActionsState extends State<QuickActions> {
                                 _isEditMode = true;
                               });
                             },
+                            onReorderEnd: () {
+                              if (mounted) {
+                                setState(() => _isEditMode = false);
+                              }
+                            },
                             onReorder: _onReorder,
                             onRemove: _onRemove,
-                            onAdd: _onAddAction,
                             children: displayChildren,
                           );
                         },
@@ -268,19 +281,6 @@ class _QuickActionsState extends State<QuickActions> {
             ),
           ],
         ),
-        // FAB to exit edit mode
-        if (_isEditMode)
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: FloatingActionButton(
-              onPressed: _exitEditMode,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              tooltip: 'Done',
-              child: const Icon(Symbols.check_rounded),
-            ),
-          ),
       ],
     );
   }

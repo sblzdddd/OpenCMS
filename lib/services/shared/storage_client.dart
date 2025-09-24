@@ -1,10 +1,10 @@
 import 'package:cookie_jar/cookie_jar.dart' show PersistCookieJar, Storage;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cookie_jar/cookie_jar.dart' show Cookie;
-import '../../data/constants/api_constants.dart';
 
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'dart:convert';
+
 
 
 /// Storage Client
@@ -61,10 +61,30 @@ class StorageClient {
     storage: cookieStorage,
   );
 
-  static Future<List<Cookie>> get currentCookies async {
-    final newCMSCookies = await StorageClient.cookieJar.loadForRequest(Uri.parse(ApiConstants.baseApiUrl));
-    final legacyCookies = await StorageClient.cookieJar.loadForRequest(Uri.parse(ApiConstants.legacyCMSBaseUrl));
-    return [...newCMSCookies, ...legacyCookies];
+  static Future<List<Cookie>>get currentCookies async {
+    await StorageClient.cookieJar.forceInit();
+    
+    final allCookies = <Cookie>[];
+    
+    // Get all domain cookies (cookies with domain attribute)
+    for (final domainEntry in StorageClient.cookieJar.domainCookies.entries) {
+      for (final pathEntry in domainEntry.value.entries) {
+        for (final cookieEntry in pathEntry.value.entries) {
+          allCookies.add(cookieEntry.value.cookie);
+        }
+      }
+    }
+    
+    // Get all host cookies (cookies without domain attribute)
+    for (final hostEntry in StorageClient.cookieJar.hostCookies.entries) {
+      for (final pathEntry in hostEntry.value.entries) {
+        for (final cookieEntry in pathEntry.value.entries) {
+          allCookies.add(cookieEntry.value.cookie);
+        }
+      }
+    }
+    
+    return allCookies;
   }
 
   static Future<void> setCookies(List<Cookie> cookies) async {

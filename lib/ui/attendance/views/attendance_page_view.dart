@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../services/attendance/attendance_service.dart';
 import '../../shared/dialog/course_detail_dialog.dart';
@@ -55,7 +57,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     final data = _data;
     if (data == null || data.recordOfDays.isEmpty) {
       return const Center(child: Text('No attendance records'));
@@ -199,6 +201,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       body: super.build(context),
       floatingActionButton: FloatingActionButton(
@@ -356,7 +359,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
 
 
   Future<void> _onEventTap(AttendanceEntry entry, DateTime date) async {
-    print('onEventTap: $entry, ${date.year}');
+    debugPrint('AttendancePageView: onEventTap: $entry, ${date.year}');
     if (entry.courseId == 0 || entry.courseName == '') {
       return;
     }

@@ -1,6 +1,6 @@
 library;
 
-export '../data/constants/api_constants.dart';
+export '../data/constants/api_endpoints.dart';
 export 'shared/shared_services.dart';
 export 'auth/auth_service.dart';
 export 'timetable/course_timetable_service.dart';

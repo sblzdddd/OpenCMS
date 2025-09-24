@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:intl/intl.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/homework/homework_response.dart';
 import '../../../services/homework/homework_service.dart';
 import 'dart:async';
@@ -39,7 +39,7 @@ class _HomeworkCardState extends State<HomeworkCard>
   void didUpdateWidget(covariant HomeworkCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.refreshTick != null && widget.refreshTick != oldWidget.refreshTick) {
-      print('HomeworkCard: refreshTick changed -> refreshing with refresh=true');
+      debugPrint('HomeworkCard: refreshTick changed -> refreshing with refresh=true');
       refresh();
     }
   }
@@ -89,7 +89,7 @@ class _HomeworkCardState extends State<HomeworkCard>
         setLoading(false);
         setError(true);
       }
-      print('HomeworkCard: Error fetching homework: $e');
+      debugPrint('HomeworkCard: Error fetching homework: $e');
     }
   }
 

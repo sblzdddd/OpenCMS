@@ -12,7 +12,6 @@ import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
 import 'util.dart';
-// import 'services/background/background_task_manager.dart';
 
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
@@ -24,7 +23,7 @@ Future<void> handleWindowClose() async {
   if (globalAppWindow != null) {
     await globalAppWindow!.hide();
   } else {
-    print('globalAppWindow is null');
+    debugPrint('Main: globalAppWindow is null');
   }
 }
 
@@ -39,6 +38,7 @@ Future<void> initInAppWebview() async {
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
     await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
   }
+  PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
 }
 
 Future<void> initWindowManager() async {

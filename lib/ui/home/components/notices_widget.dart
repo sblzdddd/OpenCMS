@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/notification/notification_response.dart'
     as notification_model;
 import '../../../data/models/notification/daily_bulletin_response.dart';
@@ -50,7 +52,7 @@ class _NoticeCardState extends State<NoticeCard>
     super.didUpdateWidget(oldWidget);
     if (widget.refreshTick != null &&
         widget.refreshTick != oldWidget.refreshTick) {
-      print('NoticeCard: refreshTick changed -> refreshing with refresh=true');
+      debugPrint('NoticeCard: refreshTick changed -> refreshing with refresh=true');
       refresh();
     }
   }
@@ -123,7 +125,7 @@ class _NoticeCardState extends State<NoticeCard>
   @override
   String getWidgetSubtitle() {
     if (isWideMode) {
-      return _latestNotice!.title;
+      return _latestNotice?.title ?? 'No recent notices';
     } else {
       // For compact mode, show only notice title
       if (_latestNotice != null) {
@@ -136,7 +138,7 @@ class _NoticeCardState extends State<NoticeCard>
   @override
   String? getRightSideText() {
     if (isWideMode) {
-      return _latestNotice!.addDate;
+      return _latestNotice?.addDate;
     } else {
       return null;
     }
@@ -170,14 +172,14 @@ class _NoticeCardState extends State<NoticeCard>
                   Row(
                     children: [
                       Text(
-                        _latestBulletin!.title,
+                        _latestBulletin?.title ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 12),
                       ),
                       const Spacer(),
                       Text(
-                        _latestBulletin!.department,
+                        _latestBulletin?.department ?? '',
                         style: TextStyle(
                           fontSize: 11,
                           color: Theme.of(
@@ -212,14 +214,14 @@ class _NoticeCardState extends State<NoticeCard>
                   Row(
                     children: [
                       Text(
-                        _latestEvent!.title,
+                        _latestEvent?.title ?? '',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 12),
                       ),
                       const Spacer(),
                       Text(
-                        _latestEvent!.applicant,
+                        _latestEvent?.applicant ?? '',
                         style: TextStyle(
                           fontSize: 11,
                           color: Theme.of(
@@ -248,14 +250,14 @@ class _NoticeCardState extends State<NoticeCard>
                 children: [
                   Expanded(
                     child: Text(
-                      _latestBulletin!.title,
+                      _latestBulletin?.title ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 11),
                     ),
                   ),
                   Text(
-                    _latestBulletin!.department,
+                    _latestBulletin?.department ?? '',
                     style: TextStyle(
                       fontSize: 11,
                       color: Theme.of(context).colorScheme.primary,
@@ -278,15 +280,17 @@ class _NoticeCardState extends State<NoticeCard>
     required String actionId,
     required Widget child,
   }) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         onTap: () async {
+          final navigator = Navigator.of(context);
           WidgetsBinding.instance.addPostFrameCallback((_) async {
             final page = await buildActionPage({'id': actionId});
             if (mounted) {
-              Navigator.of(context).push(
+              navigator.push(
                 MaterialPageRoute(
                   builder: (_) => page,
                 ),

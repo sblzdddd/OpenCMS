@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../../../services/theme/theme_services.dart';
 import '../action_item/quick_action_tile.dart';
 
 /// Base dialog class for action selection dialogs
@@ -61,9 +63,10 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: themeNotifier.getBorderRadiusAll(2),
       ),
       insetPadding: const EdgeInsets.all(28),
       child: Container(
@@ -103,19 +106,19 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                 hintText: searchHint,
                 prefixIcon: const Icon(Symbols.search_rounded),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.primary,
                     width: 2,

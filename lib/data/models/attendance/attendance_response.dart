@@ -1,4 +1,4 @@
-import '../../constants/attendance_constants.dart';
+import '../../constants/attendance_types.dart';
 
 class AttendanceResponse {
   final List<RecordOfDay> recordOfDays;

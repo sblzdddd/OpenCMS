@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../data/constants/period_constants.dart';
+import '../../data/constants/periods.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 
 /// Reusable academic year dropdown component with consistent styling
 class AcademicYearDropdown extends StatelessWidget {
@@ -50,12 +52,13 @@ class AcademicYearDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final defaultPadding = const EdgeInsets.symmetric(
       horizontal: 8.0,
       vertical: 4.0,
     );
     
-    final defaultBorderRadius = BorderRadius.circular(12);
+    final defaultBorderRadius = themeNotifier.getBorderRadiusAll(0.75);
     
     final defaultIcon = const Icon(Symbols.arrow_drop_down_rounded);
 

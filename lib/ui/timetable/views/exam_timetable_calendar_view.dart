@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 
 class ExamTimetableCalendarView extends StatefulWidget {
@@ -97,11 +99,12 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
       ),
       appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
         final ExamCourse course = details.appointments.first as ExamCourse;
+        final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
         return Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: course.color,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,8 +1,9 @@
-import '../../../data/constants/api_constants.dart';
+import '../../../data/constants/api_endpoints.dart';
 import '../../../data/models/auth/login_result.dart';
 import '../auth_service_base.dart';
 import 'legacy_functions.dart';
 import 'session_functions.dart';
+import 'package:flutter/foundation.dart';
 
 /// Login with username, password and captcha verification
 /// 
@@ -26,7 +27,7 @@ Future<LoginResult> performLogin(
   };
 
   try {
-    print('AuthService: Starting login process for user: $username');
+    debugPrint('LoginFunctions: Starting login process for user: $username');
     
     // Prepare and send login request
     final response = await authService.httpService.post(
@@ -56,7 +57,7 @@ Future<LoginResult> performLogin(
     }
     
   } catch (e) {
-    print('AuthService: Login exception: $e');
+    debugPrint('LoginFunctions: Login exception: $e');
     
     final sanitizedPayload = Map<String, dynamic>.from(loginPayload);
     if (sanitizedPayload.containsKey('password')) {
@@ -91,7 +92,7 @@ LoginResult handleSuccessResponse(
     final detail = responseData['detail'] as String;
     
     if (detail == 'Successfully logged in!') {
-      print('AuthService: Login successful');
+      debugPrint('LoginFunctions: Login successful');
       
       return LoginResult.success(
         message: detail,
@@ -116,7 +117,7 @@ LoginResult handleErrorResponse(
     // Prefer explicit 'error' string from API
     if (responseData['error'] is String) {
       final error = responseData['error'] as String;
-      print('AuthService: Login failed with error: $error');
+      debugPrint('LoginFunctions: Login failed with error: $error');
       return LoginResult.error(
         message: error,
         errorCode: error,
@@ -127,7 +128,7 @@ LoginResult handleErrorResponse(
     // Sometimes servers put error message under 'detail'
     if (responseData['detail'] is String) {
       final detail = responseData['detail'] as String;
-      print('AuthService: Login failed with detail: $detail');
+      debugPrint('LoginFunctions: Login failed with detail: $detail');
       return LoginResult.error(message: detail, data: responseData);
     }
   }

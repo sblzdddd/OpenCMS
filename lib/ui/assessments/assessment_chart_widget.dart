@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../data/models/assessment/assessment_response.dart';
 
 class AssessmentChartWidget extends StatelessWidget {
@@ -14,6 +16,7 @@ class AssessmentChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final validAssessments = assessments
         .where((assessment) => assessment.percentageScore != null)
         .toList();
@@ -36,6 +39,10 @@ class AssessmentChartWidget extends StatelessWidget {
     return Card(
       elevation: 0,
       color: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(0),
         child: Column(
@@ -147,9 +154,14 @@ class AssessmentChartWidget extends StatelessWidget {
   }
 
   Widget _buildNoDataWidget(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Card(
       elevation: 0,
       color: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(

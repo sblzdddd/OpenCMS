@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 
 class DayHeader extends StatelessWidget {
   final String title;
@@ -16,6 +18,7 @@ class DayHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextStyle? textStyle = Theme.of(context).textTheme.titleLarge;
 
@@ -46,7 +49,7 @@ class DayHeader extends StatelessWidget {
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
               color: leadingColor,
-              borderRadius: BorderRadius.circular(3),
+              borderRadius: themeNotifier.getBorderRadiusAll(0.125),
             ),
           ),
           Expanded(

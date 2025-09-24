@@ -1,5 +1,6 @@
 /// Handles user authentication state, session validation, and user information
 library;
+import 'package:flutter/foundation.dart';
 
 /// User information data model
 class UserInfo {
@@ -127,7 +128,7 @@ class AuthState {
     _loginTime = DateTime.now();
     _userInfo = userInfo;
     
-    print('AuthState: User authenticated - ${userInfo.username}');
+    debugPrint('AuthState: User authenticated - ${userInfo.username}');
   }
 
   /// Set authenticated state with JSON user information
@@ -144,7 +145,7 @@ class AuthState {
     _userInfo = null;
     _loginTime = null;
     
-    print('AuthState: Authentication cleared');
+    debugPrint('AuthState: Authentication cleared');
   }
 
   /// Check if session has expired (based on time)
@@ -168,7 +169,7 @@ class AuthState {
   void updateUserInfo(UserInfo updates) {
     if (_userInfo != null) {
       _userInfo = updates;
-      print('AuthState: User info updated');
+      debugPrint('AuthState: User info updated');
     }
   }
 
@@ -192,7 +193,7 @@ class AuthState {
         language: language,
         permissions: permissions,
       );
-      print('AuthState: User info fields updated');
+      debugPrint('AuthState: User info fields updated');
     }
   }
 }

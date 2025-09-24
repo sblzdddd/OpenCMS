@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:opencms/data/constants/constants.dart';
+import 'package:provider/provider.dart';
+import '../../services/theme/theme_services.dart';
+import '../../data/constants/subject_icons.dart';
 
 class TimetableCard extends StatelessWidget {
   final String subject;
@@ -27,6 +29,7 @@ class TimetableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final theme = Theme.of(context);
     final iconData = SubjectIconConstants.getIconForSubject(
       subjectName: subject,
@@ -36,7 +39,6 @@ class TimetableCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Header row: [Start period name] [stretch space] [time span]
         if (timespan != null || periodText != null)
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -68,18 +70,18 @@ class TimetableCard extends StatelessWidget {
           shadowColor: Colors.black.withValues(alpha: 0.05),
           color: backgroundColor ?? theme.colorScheme.surfaceContainer,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             child: Stack(
               children: [
                 // Content
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
+                    horizontal: 12,
                     vertical: 12,
                   ),
                   child: Row(
@@ -88,7 +90,7 @@ class TimetableCard extends StatelessWidget {
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: themeNotifier.getBorderRadiusAll(0.875),
                         ),
                         child: Icon(
                           iconData,

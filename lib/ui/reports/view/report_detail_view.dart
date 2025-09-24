@@ -29,7 +29,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
   }
 
   @override
-  Widget buildPageContent(BuildContext context) {
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -54,7 +54,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
         color: Theme.of(
           context,
         ).colorScheme.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +74,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
                   color: Theme.of(
                     context,
                   ).colorScheme.secondaryContainer.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: themeNotifier.getBorderRadiusAll(999),
                 ),
                 child: Text(widget.exam.examType),
               ),
@@ -108,6 +108,10 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
               elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: themeNotifier.getBorderRadiusAll(1),
+              ),
+              clipBehavior: Clip.antiAlias,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -152,7 +156,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
                               .colorScheme
                               .secondaryContainer
                               .withValues(alpha: 0.5),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: themeNotifier.getBorderRadiusAll(0.5),
                         ),
                         child: Text(
                           course.comment,
@@ -191,6 +195,10 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
         const SizedBox(height: 16),
         Card(
           elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: themeNotifier.getBorderRadiusAll(1),
+          ),
+          clipBehavior: Clip.antiAlias,
           color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
           child: Padding(
             padding: const EdgeInsets.all(16),

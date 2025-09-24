@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
 import '../../shared/timetable_card.dart';

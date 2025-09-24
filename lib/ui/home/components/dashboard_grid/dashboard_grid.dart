@@ -1,17 +1,47 @@
 import 'package:flutter/material.dart';
 import '../quick_actions/reorderable_wrap.dart';
 import '../quick_actions/action_item/trash_can_item.dart';
-import '../quick_actions/action_item/add_action_item.dart';
 import '../../../../services/home/dashboard_layout_storage_service.dart';
 import 'widget_size_manager.dart';
-import 'add_widget_drawer.dart';
 import 'widget_tile_builder.dart';
 
 /// Controller to trigger actions on DashboardGrid from parent widgets
 class DashboardGridController extends ChangeNotifier {
+  void Function(String widgetId, Size size)? _addWidgetHandler;
+  void Function()? _resetLayoutHandler;
+  List<String> Function()? _getAddableWidgetsHandler;
+
   /// Request all dashboard widgets to refresh their data
   void refresh() {
     notifyListeners();
+  }
+
+  /// Add a widget via the bound grid state
+  void addWidget(String widgetId, Size size) {
+    _addWidgetHandler?.call(widgetId, size);
+  }
+
+  /// Reset the layout to default via the bound grid state
+  void resetLayout() {
+    if (_resetLayoutHandler != null) {
+      _resetLayoutHandler!.call();
+      return;
+    }
+    // Fallback: persist default layout immediately so the grid picks it up on mount
+    final DashboardLayoutStorageService storage = DashboardLayoutStorageService();
+    storage.saveLayout(List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout));
+  }
+
+  /// Query which widgets are available to add right now
+  List<String> getAddableWidgets() {
+    final handler = _getAddableWidgetsHandler;
+    if (handler != null) {
+      return handler();
+    }
+    // Fallback: compute against current default layout when grid state is not yet bound
+    return WidgetSizeManager.getAddableWidgets(
+      List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout),
+    );
   }
 }
 
@@ -40,6 +70,24 @@ class _DashboardGridState extends State<DashboardGrid> {
     _loadLayout();
     // Attach controller listener if provided
     widget.controller?.addListener(_handleExternalRefresh);
+    // Bind controller command handlers
+    widget.controller?._addWidgetHandler = (id, size) => _addWidget(id, size);
+    widget.controller?._resetLayoutHandler = () {
+      setState(() {
+        _isEditMode = true; // briefly enter edit to show changes
+        _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
+      });
+      _saveLayout();
+      // Exit edit mode immediately since add button is persistent now
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() => _isEditMode = false);
+        }
+      });
+    };
+    widget.controller?._getAddableWidgetsHandler = () {
+      return WidgetSizeManager.getAddableWidgets(_widgetOrder);
+    };
   }
 
   @override
@@ -54,6 +102,11 @@ class _DashboardGridState extends State<DashboardGrid> {
   @override
   void dispose() {
     widget.controller?.removeListener(_handleExternalRefresh);
+    if (widget.controller != null) {
+      widget.controller!._addWidgetHandler = null;
+      widget.controller!._resetLayoutHandler = null;
+      widget.controller!._getAddableWidgetsHandler = null;
+    }
     super.dispose();
   }
 
@@ -77,7 +130,7 @@ class _DashboardGridState extends State<DashboardGrid> {
         });
       }
     } catch (e) {
-      print('DashboardGrid: Error loading layout: $e');
+      debugPrint('DashboardGrid: Error loading layout: $e');
       if (mounted) {
         setState(() {
           // On error, try to load the saved layout again, but if that fails, use default
@@ -144,28 +197,6 @@ class _DashboardGridState extends State<DashboardGrid> {
     _saveLayout();
   }
 
-  /// Exit edit mode
-  void _exitEditMode() {
-    setState(() {
-      _isEditMode = false;
-    });
-  }
-
-  /// Show the add widget drawer
-  void _showAddWidgetDrawer() {
-    final addableWidgets = WidgetSizeManager.getAddableWidgets(_widgetOrder);
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddWidgetDrawer(
-        addableWidgets: addableWidgets,
-        onAddWidget: _addWidget,
-      ),
-    );
-  }
-
   /// Handle widget size change
   void _handleSizeChange(String widgetId) {
     final currentIndex = _widgetOrder.indexWhere((e) => e.key == widgetId);
@@ -180,13 +211,14 @@ class _DashboardGridState extends State<DashboardGrid> {
     );
   }
 
-  Widget _buildTile(MapEntry<String, Size> entry, double baseTileWidth, double spacing) {
+  Widget _buildTile(MapEntry<String, Size> entry, double baseTileWidth, double spacing, BuildContext context) {
     return WidgetTileBuilder.buildTile(
       entry,
       baseTileWidth,
       spacing,
       _isEditMode,
       _handleSizeChange,
+      context,
       isEditModeParam: _isEditMode, // Pass edit mode to make widgets non-clickable
       onRefresh: widget.onRefresh, // Pass refresh callback to widgets
       refreshTick: _refreshTick, // Key child content by refresh tick
@@ -215,23 +247,20 @@ class _DashboardGridState extends State<DashboardGrid> {
             final double baseTileWidth = (constraints.maxWidth - (columns - 1) * spacing) / columns;
 
             final List<Widget> tiles = _widgetOrder
-                .map((entry) => _buildTile(entry, baseTileWidth, spacing))
+                .map((entry) => _buildTile(entry, baseTileWidth, spacing, context))
                 .toList();
             
             if (_isEditMode) {
-              // Add trash can
-              tiles.add(TrashCanItem(tileWidth: baseTileWidth));
-              
-              // Add add button if there are widgets available to add
-              final addableWidgets = WidgetSizeManager.getAddableWidgets(_widgetOrder);
-              if (addableWidgets.isNotEmpty) {
-                tiles.add(
-                  AddActionItem(
-                    tileWidth: baseTileWidth,
-                    onTap: _showAddWidgetDrawer,
-                  ),
-                );
-              }
+              // Force next line for the trash can row
+
+              // Full-width trash can row
+              tiles.add(SizedBox(
+                key: const ValueKey('trash_can'),
+                width: constraints.maxWidth,
+                child: TrashCanItem(
+                  tileWidth: constraints.maxWidth,
+                ),
+              ));
             }
 
             return ReorderableWrap(
@@ -245,43 +274,17 @@ class _DashboardGridState extends State<DashboardGrid> {
                   _isEditMode = true;
                 });
               },
+              onReorderEnd: () {
+                if (mounted) {
+                  setState(() => _isEditMode = false);
+                }
+              },
               onReorder: _onReorder,
               onRemove: _onRemove,
               children: tiles,
             );
           },
         ),
-        // FABs for edit mode
-        if (_isEditMode)
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
-                    });
-                    _saveLayout();
-                  },
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                  tooltip: 'Reset to Default',
-                  child: const Icon(Icons.refresh),
-                ),
-                const SizedBox(width: 16),
-                FloatingActionButton(
-                  onPressed: _exitEditMode,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                  tooltip: 'Done',
-                  child: const Icon(Icons.check),
-                ),
-              ],
-            ),
-          ),
       ],
     );
   }

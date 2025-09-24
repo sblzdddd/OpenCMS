@@ -1,4 +1,4 @@
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
@@ -107,7 +107,6 @@ class HttpService {
     };
     options.followRedirects = followRedirects;
     final url = '${ApiConstants.legacyCMSBaseUrl}$endpoint';
-    print(url);
     return _dio.post(url, data: body, options: options);
   }
   

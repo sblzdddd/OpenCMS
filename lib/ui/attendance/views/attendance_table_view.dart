@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../data/constants/period_constants.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/attendance_response.dart';
-import '../../../data/constants/attendance_constants.dart';
+import '../../../data/constants/attendance_types.dart';
 
 class AttendanceTableView extends StatelessWidget {
   final List<RecordOfDay> days;
@@ -135,7 +137,7 @@ class AttendanceTableView extends StatelessWidget {
     final subjectName = entry.getSubjectNameWithIndex(index);
     final backgroundColor = subjectName == "/" ? Colors.transparent : AttendanceConstants.kindBackgroundColor[entry.kind] ?? Colors.transparent;
     final textColor = subjectName == "/" ? Theme.of(context).colorScheme.onSurface : AttendanceConstants.kindTextColor[entry.kind] ?? Theme.of(context).colorScheme.onSurface;
-    
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return GestureDetector(
       onTap: () => onEventTap(entry, date),
       child: Container(
@@ -145,7 +147,7 @@ class AttendanceTableView extends StatelessWidget {
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: themeNotifier.getBorderRadiusAll(0.375),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

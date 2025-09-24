@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../data/constants/api_constants.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
+import '../../../../data/constants/api_endpoints.dart';
 import 'captcha_dialog.dart';
 
 /// Callback function signature for captcha state changes
@@ -58,9 +60,9 @@ class _CaptchaInputState extends State<CaptchaInput> {
       // Use provided appId or default for development
       final appId = widget.appId ?? ApiConstants.tencentCaptchaAppId;
       TencentCaptchaDialog.init(appId);
-      print('Tencent Captcha initialized with appId: $appId');
+      debugPrint('CaptchaInput: Tencent Captcha initialized with appId: $appId');
     } catch (e) {
-      print('Error initializing Tencent Captcha: $e');
+      debugPrint('CaptchaInput: Error initializing Tencent Captcha: $e');
     }
   }
 
@@ -72,7 +74,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
       _isVerifying = true;
     });
     
-    print('Starting Tencent Captcha verification...');
+    debugPrint('CaptchaInput: Starting Tencent Captcha verification...');
     
     try {
       final config = TencentCaptchaDialogConfig(
@@ -84,10 +86,10 @@ class _CaptchaInputState extends State<CaptchaInput> {
         context: context,
         config: config,
         onLoaded: (dynamic data) {
-          print('Captcha onLoaded: $data');
+          debugPrint('CaptchaInput: Captcha onLoaded: $data');
         },
         onSuccess: (dynamic data) {
-          print('Captcha onSuccess: $data');
+          debugPrint('CaptchaInput: Captcha onSuccess: $data');
           setState(() {
             _isCaptchaVerified = true;
             _captchaData = data;
@@ -100,7 +102,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
 
         },
         onFail: (dynamic data) {
-          print('Captcha onFail: $data');
+          debugPrint('CaptchaInput: Captcha onFail: $data');
           setState(() {
             _isCaptchaVerified = false;
             _captchaData = null;
@@ -114,7 +116,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Captcha verification failed! Try again.'),
+                content: Text('CaptchaInput: Captcha verification failed! Try again.'),
                 backgroundColor: Colors.red,
                 duration: Duration(seconds: 3),
               ),
@@ -123,7 +125,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
         },
       );
     } catch (e) {
-      print('Error during captcha verification: $e');
+      debugPrint('CaptchaInput: Error during captcha verification: $e');
       setState(() {
         _isCaptchaVerified = false;
         _captchaData = null;
@@ -137,7 +139,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Captcha error: $e'),
+            content: Text('CaptchaInput: Captcha error: $e'),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -171,16 +173,17 @@ class _CaptchaInputState extends State<CaptchaInput> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: (_isVerifying || !widget.enabled || _isCaptchaVerified) ? null : () => _performCaptchaVerification(null),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             border: Border.all(color: Theme.of(context).colorScheme.outline),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
           ),
           child: Row(
             children: [

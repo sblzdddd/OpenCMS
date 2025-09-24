@@ -99,7 +99,7 @@ class LoginFormController extends ChangeNotifier {
     // Check if captcha is verified
     if (!_captchaManager.isCaptchaVerified || _captchaManager.captchaData == null) {
       if(!context.mounted) {
-        print('LoginFormController: Context is not mounted');
+        debugPrint('LoginFormController: Context is not mounted');
         return;
       }
       SnackbarUtils.showWarning(
@@ -109,7 +109,7 @@ class LoginFormController extends ChangeNotifier {
       return;
     }
     if(!context.mounted) {
-      print('LoginFormController: Context is not mounted');
+      debugPrint('LoginFormController: Context is not mounted');
       return;
     }
     // Perform authentication

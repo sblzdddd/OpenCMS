@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../pages/actions.dart';
 import 'dart:async';
 
@@ -63,7 +65,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
 
   /// Refresh the widget data
   Future<void> refresh() async {
-    print('${widget.runtimeType}: Refreshing data');
+    debugPrint('${widget.runtimeType}: Refreshing data');
     await refreshData();
   }
 
@@ -119,6 +121,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
 
   /// Build the common widget layout
   Widget buildCommonLayout() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
       child: Stack(
@@ -128,7 +131,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             ),
             child: _buildContent(),
           ),
@@ -148,7 +151,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: themeNotifier.getBorderRadiusAll(1.5),
                   onTap: () async {
                     WidgetsBinding.instance.addPostFrameCallback((_) async {
                       final page = await buildActionPage({
@@ -200,6 +203,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget _buildDataState() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final rightText = getRightSideText();
     final bottomRightText = getBottomRightText();
     final bottomText = getBottomText();
@@ -253,7 +257,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
       mainContent = Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: themeNotifier.getBorderRadiusAll(0.5),
           onTap: () async {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
               final page = await buildActionPage({

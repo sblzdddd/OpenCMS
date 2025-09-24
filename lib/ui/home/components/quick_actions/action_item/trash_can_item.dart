@@ -28,24 +28,10 @@ class TrashCanItem extends StatelessWidget {
     );
 
     if (isHighlighted) {
-      return AnimatedContainer(
+      return AnimatedOpacity(
         duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
-              spreadRadius: 0,
-              blurRadius: 1,
-              offset: const Offset(0, 0),
-            ),
-          ],
-        ),
-        child: Transform.scale(
-          scale: 1.05,
-          child: baseItem,
-        ),
+        opacity: 0.6,
+        child: baseItem,
       );
     }
 

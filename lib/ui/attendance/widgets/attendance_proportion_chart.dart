@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
-import '../../../data/constants/attendance_constants.dart';
+import '../../../data/constants/attendance_types.dart';
 
 /// Widget to display attendance proportion chart
 class AttendanceProportionChart extends StatelessWidget {
@@ -14,6 +15,7 @@ class AttendanceProportionChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final totalLessons = stats.lessons;
     if (totalLessons == 0) return const SizedBox.shrink();
 
@@ -61,7 +63,7 @@ class AttendanceProportionChart extends StatelessWidget {
         Container(
           height: 8,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
           child: Row(
@@ -71,10 +73,7 @@ class AttendanceProportionChart extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: segment.color,
-                    borderRadius: BorderRadius.horizontal(
-                      left: segment == segments.first ? const Radius.circular(4) : Radius.zero,
-                      right: segment == segments.last ? const Radius.circular(4) : Radius.zero,
-                    ),
+                    borderRadius: themeNotifier.getBorderRadiusHorizontal(0.125),
                   ),
                 ),
               );
@@ -97,7 +96,7 @@ class AttendanceProportionChart extends StatelessWidget {
                   height: 12,
                   decoration: BoxDecoration(
                     color: segment.color,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.125),
                   ),
                 ),
                 const SizedBox(width: 4),

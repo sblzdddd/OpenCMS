@@ -25,11 +25,6 @@ class FreeClassroomResponse {
     final String roomsString = json['rooms'] ?? '';
     final List<String> classrooms = _parseRoomsString(roomsString);
     
-    print('FreeClassroomResponse.fromJson:');
-    print('  Raw JSON: $json');
-    print('  Rooms string: "$roomsString"');
-    print('  Parsed classrooms: $classrooms');
-    
     return FreeClassroomResponse(
       freeClassrooms: classrooms,
       date: json['date'] ?? '',
@@ -43,8 +38,6 @@ class FreeClassroomResponse {
     if (roomsString.isEmpty) return [];
     
     final List<String> classrooms = roomsString.trim().split(' ').where((part) => part.isNotEmpty).toList();
-    
-    print(classrooms);
     
     return classrooms;
   }

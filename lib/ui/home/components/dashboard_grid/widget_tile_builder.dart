@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../../services/theme/theme_services.dart';
 import '../banner_widget.dart';
 import '../homework_widget.dart';
 import '../latest_assessment_widget.dart';
@@ -15,8 +17,10 @@ class WidgetTileBuilder {
     double spacing,
     bool isEditMode,
     Function(String) onSizeChange,
+    BuildContext context,
     {bool? isEditModeParam, VoidCallback? onRefresh, int refreshTick = 0,}
   ) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final String id = entry.key;
     final Size span = entry.value;
     final double spanX = span.width;
@@ -53,7 +57,7 @@ class WidgetTileBuilder {
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.blue.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.5),
                   ),
                   child: Text(
                     '${span.width.toInt()}×${span.height.toInt()}',
@@ -93,7 +97,6 @@ class WidgetTileBuilder {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: Colors.grey.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
           ),
           child: Text(id),
         );
@@ -107,6 +110,7 @@ class WidgetTileBuilder {
     Size currentSize,
     Function(Size) onSizeChange,
   ) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     final alternativeSizes = WidgetSizeManager.getAlternativeSizes(widgetId, currentSize);
     
     if (alternativeSizes.isEmpty) {
@@ -117,6 +121,10 @@ class WidgetTileBuilder {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
         title: Text('Change ${WidgetSizeManager.getWidgetTitle(widgetId)} Size'),
         content: Column(
           mainAxisSize: MainAxisSize.min,

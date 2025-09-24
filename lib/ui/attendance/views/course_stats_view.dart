@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../services/theme/theme_services.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../shared/views/refreshable_view.dart';
@@ -39,7 +40,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return Column(
       children: [
         _buildYearSelector(),
@@ -56,7 +57,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
@@ -112,7 +113,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),

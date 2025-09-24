@@ -5,7 +5,7 @@ import 'actions/assessment.dart';
 import 'actions/homework.dart';
 import 'actions/web_cms.dart';
 import 'actions/free_classrooms.dart';
-import '../data/constants/quick_actions_constants.dart';
+import '../data/constants/quick_actions.dart';
 import '../ui/shared/navigations/app_navigation_controller.dart';
 import 'actions/timetable.dart';
 import 'settings/settings_page.dart';
@@ -14,7 +14,7 @@ import '../ui/referral/views/referral_comments_view.dart';
 import '../ui/calendar/calendar_ui.dart';
 import '../ui/profile/pages/profile_page.dart';
 import '../services/auth/auth_service.dart';
-import '../data/constants/api_constants.dart';
+import '../data/constants/api_endpoints.dart';
 
 String _actionTitle(String id) {
   return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
@@ -91,7 +91,6 @@ Future<Widget> buildLeaveRequestsPage() async {
 
 Future<Widget> buildActionPage(Map<String, dynamic> action) async {
   final String id = action['id'] as String;
-  print('buildActionPage: $id');
   switch (id) {
     case 'webcms':
       return const WebCmsPage();

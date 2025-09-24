@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
-import '../../data/constants/period_constants.dart';
+import '../../data/constants/periods.dart';
 import '../../data/models/classroom/all_periods_classroom_response.dart';
 import '../../services/classroom/free_classroom_service.dart';
 import '../../ui/shared/views/refreshable_page.dart';
@@ -120,6 +120,10 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     
     return Card(
       margin: const EdgeInsets.all(4),
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -187,7 +191,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade50,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
                         border: Border.all(color: Colors.grey.shade200),
                       ),
                       child: Row(
@@ -226,7 +230,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   }
 
   @override
-  Widget buildPageContent(BuildContext context) {
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -238,7 +242,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return Column(
       children: [
         Expanded(
@@ -290,7 +294,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   String get errorTitle => 'Error loading free classrooms';
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.2),

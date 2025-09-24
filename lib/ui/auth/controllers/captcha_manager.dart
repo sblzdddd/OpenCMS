@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../services/services.dart';
-import '../../shared/custom_snackbar/snackbar_utils.dart';
 
 /// Component responsible for managing captcha verification and auto-solving
 class CaptchaManager extends ChangeNotifier {
@@ -16,7 +14,7 @@ class CaptchaManager extends ChangeNotifier {
     _captchaData = data;
     notifyListeners();
 
-    print('Captcha state changed - Verified: $isVerified, Data: ${data?.runtimeType}');
+    debugPrint('Captcha state changed - Verified: $isVerified, Data: ${data?.runtimeType}');
   }
 
   /// Reset captcha verification state

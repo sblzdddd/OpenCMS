@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../../services/theme/theme_services.dart';
 
 /// A generic quick action tile used by various quick action components.
 class QuickActionTile extends StatefulWidget {
@@ -35,6 +37,7 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     
     final Color resolvedIconBg = widget.iconBackgroundColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
@@ -46,14 +49,14 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
       height: widget.height,
       child: Material(
         color: Theme.of(context).colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         child: InkWell(
           onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -64,7 +67,7 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
                   height: 50,
                   decoration: BoxDecoration(
                     color: resolvedIconBg,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: themeNotifier.getBorderRadiusAll(1),
                   ),
                   child: Stack(
                     children: [

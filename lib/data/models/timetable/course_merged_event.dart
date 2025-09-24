@@ -1,5 +1,5 @@
 import 'timetable_response.dart';
-import '../../constants/period_constants.dart';
+import '../../constants/periods.dart';
 import 'package:intl/intl.dart';
 
 /// Represents a timetable event that may span multiple consecutive periods

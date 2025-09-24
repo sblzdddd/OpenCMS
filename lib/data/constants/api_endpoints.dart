@@ -6,11 +6,12 @@ library;
 
 class ApiConstants {
   // Base API configuration
-  static const String baseUrl = 'https://c''ms.a''le''vel''.co''m.cn';
+  static const String baseDomain = 'a''le''vel''.c''o''m.c''n';
+  static const String baseUrl = 'https://c''ms.$baseDomain';
   static const String baseApiUrl = '$baseUrl/api';
   
   // Legacy CMS base (old domain)
-  static const String legacyBaseUrl = 'https://w''ww.''ale''vel''.co''m.cn';
+  static const String legacyBaseUrl = 'https://w''ww.$baseDomain';
   static const String legacyCMSBaseUrl = '$legacyBaseUrl/user';
   
   // Authentication endpoint
@@ -53,13 +54,6 @@ class ApiConstants {
   // Free classrooms endpoint (legacy)
   // parameters: b (date in yyyy-mm-dd format), w (week period like W1)
   static const String freeClassroomsUrl = '/classroom/get_freeroom_by_ajax/';
-  
-  // Third-party captcha solver (solvecaptcha) configuration
-  static const String solveCaptchaBaseUrl = 'https://api.solvecaptcha.com';
-  static const String solveCaptchaInEndpoint = '$solveCaptchaBaseUrl/in.php';
-  static const String solveCaptchaResEndpoint = '$solveCaptchaBaseUrl/res.php';
-  static const String solveCaptchaTencentMethod = 'tencent';
-  static const String solveCaptchaPageUrl = '$baseUrl/cms/auth/login';
   
   // HTTP configuration
   static const Duration defaultTimeout = Duration(seconds: 30);

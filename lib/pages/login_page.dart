@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/theme/theme_services.dart';
 import '../ui/auth/login_form.dart';
 
 class LoginPage extends StatefulWidget {
@@ -23,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       body: Stack(
         children: [
@@ -49,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                   elevation: 20,
                   color: Theme.of(context).colorScheme.surface,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(32),
+                    borderRadius: themeNotifier.getBorderRadiusAll(2),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import 'dynamic_gradient_banner.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../services/auth/auth_service.dart';
 import 'dart:async';
 import '../../../ui/profile/pages/profile_page.dart';
@@ -72,7 +74,7 @@ class _BannerWidgetState extends State<BannerWidget> with AutomaticKeepAliveClie
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return InkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
@@ -82,10 +84,10 @@ class _BannerWidgetState extends State<BannerWidget> with AutomaticKeepAliveClie
       height: 200, // Set a fixed height for the banner
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         child: Stack(
           children: [
             const Positioned.fill(

@@ -3,9 +3,10 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
+import '../../services/auth/auth_service.dart';
 import '../../services/shared/storage_client.dart';
-import 'web_cms_style.dart';
+import '../../data/constants/web_cms_styles.dart';
 
 class WebCmsPage extends StatefulWidget {
   final String? initialUrl;
@@ -19,6 +20,7 @@ class WebCmsPage extends StatefulWidget {
 
 class _WebCmsPageState extends State<WebCmsPage> {
   iaw.InAppWebViewController? _webViewController;
+  final AuthService _authService = AuthService();
   double _progress = 0.0;
   bool _cookiesPrepared = false;
   bool _canGoBack = false;
@@ -32,16 +34,15 @@ class _WebCmsPageState extends State<WebCmsPage> {
 
   Future<void> _prepareCookies() async {
     try {
+      await _authService.refreshLegacyCookies();
       final List<Cookie> cookies = await StorageClient.currentCookies;
       final iaw.CookieManager cookieManager = iaw.CookieManager.instance();
 
-      // Inject cookies for both new CMS and legacy CMS domains
       final iaw.WebUri baseUri = iaw.WebUri(ApiConstants.baseUrl);
       final iaw.WebUri legacyBaseUri = iaw.WebUri(ApiConstants.legacyCMSBaseUrl);
-      
-      // Inject stored cookies for both domains so they are available to the WebView session
+
       for (final Cookie cookie in cookies) {
-        // Inject for new CMS domain
+        if(cookie.value.isEmpty) continue;
         await cookieManager.setCookie(
           url: baseUri,
           name: cookie.name,
@@ -51,8 +52,6 @@ class _WebCmsPageState extends State<WebCmsPage> {
           domain: cookie.domain,
           isHttpOnly: cookie.httpOnly,
         );
-        
-        // Inject for legacy CMS domain (needed for notification/daily bulletin URLs)
         await cookieManager.setCookie(
           url: legacyBaseUri,
           name: cookie.name,
@@ -65,6 +64,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
       }
     } catch (e) {
       debugPrint('WebCmsPage: Failed to prepare cookies: $e');
+      if(!mounted) return;
     } finally {
       setState(() {
         _cookiesPrepared = true;
@@ -75,7 +75,7 @@ class _WebCmsPageState extends State<WebCmsPage> {
 
   void _loadCmsIfReady() {
     if (_cookiesPrepared && _webViewController != null) {
-      print('Loading CMS with URL: ${widget.initialUrl}');
+      debugPrint('WebCmsPage: Loading CMS with URL: ${widget.initialUrl}');
       _webViewController!.loadUrl(
         urlRequest: iaw.URLRequest(
           url: iaw.WebUri(widget.initialUrl ?? ApiConstants.cmsReferer),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../../services/calendar/calendar_service.dart';
 import '../../../data/models/calendar/calendar.dart';
@@ -99,6 +101,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   }
 
   Widget _buildCalendarBody() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -176,7 +179,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           decoration: BoxDecoration(
             color: event.color,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +269,8 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
 
   Future<void> _showEventDetailDialog(SchoolCalendarAppointment appointment) async {
     final event = appointment.sourceEvent;
-    
+
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     // Try to fetch detailed information
     CalendarDetailResponse? detail;
     String? comment;
@@ -302,8 +306,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         comment = commentResponse.content;
       }
     } catch (e) {
-      // If detail fetch fails, we'll show basic info
-      print('Failed to fetch event details: $e');
+      debugPrint('SchoolCalendarView: Failed to fetch event details: $e');
     }
 
     if (!mounted) return;
@@ -311,6 +314,10 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
         title: Text(event.title),
         content: SingleChildScrollView(
           child: Column(
@@ -326,7 +333,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.25),
                   ),
                   child: const Row(
                     children: [

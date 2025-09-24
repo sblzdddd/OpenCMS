@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../ui/home/components/quick_actions/quick_actions.dart';
 import '../ui/home/components/dashboard_grid/dashboard_grid.dart';
+import '../ui/home/components/dashboard_grid/add_widget_drawer.dart';
 import '../ui/shared/navigations/bottom_navigation.dart';
 import '../ui/shared/navigations/app_navigation_rail.dart';
 import 'actions/timetable.dart';
@@ -20,7 +22,9 @@ class _HomePageState extends State<HomePage> {
   final ValueNotifier<int> _selectedIndexNotifier = ValueNotifier<int>(0);
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
-  final DashboardGridController _dashboardController = DashboardGridController();
+  final DashboardGridController _dashboardController =
+      DashboardGridController();
+  final QuickActionsController _quickActionsController = QuickActionsController();
 
   int get _selectedIndex => _selectedIndexNotifier.value;
 
@@ -113,42 +117,70 @@ class _HomePageState extends State<HomePage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               // Use single column layout on smaller screens
-              if (constraints.maxWidth < 850) {
-                return Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DashboardGrid(controller: _dashboardController),
-                      const SizedBox(height: 16),
-                      const QuickActions(),
-                    ],
-                  ),
-                );
-              }
-
-              // Use two-column layout on larger screens
               return Padding(
-                padding: const EdgeInsets.all(24),
+                padding: EdgeInsets.all(constraints.maxWidth < 850 ? 18 : 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Dashboard",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 24),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          flex: 3,
-                          child: DashboardGrid(controller: _dashboardController),
+                        Text(
+                          "Home",
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
-                        const SizedBox(width: 24),
-                        Expanded(flex: 4, child: const QuickActions()),
+                        const Spacer(),
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            final addableWidgets = _dashboardController.getAddableWidgets();
+                            final addableActions = _quickActionsController.getAddableActions();
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => AddWidgetDrawer(
+                                addableWidgets: addableWidgets,
+                                onAddWidget: (id, size) {
+                                  _dashboardController.addWidget(id, size);
+                                  Navigator.of(context).pop();
+                                },
+                                addableActions: addableActions,
+                                onAddAction: (action) {
+                                  _quickActionsController.addAction(action);
+                                  Navigator.of(context).pop();
+                                },
+                                onReset: () {
+                                  _dashboardController.resetLayout();
+                                  _quickActionsController.resetActions();
+                                },
+                              ),
+                            );
+                          },
+                          icon: const Icon(Symbols.add_rounded, size: 26),
+                        ),
                       ],
                     ),
+                    const SizedBox(height: 20),
+                    if (constraints.maxWidth < 850) ...[
+                      DashboardGrid(controller: _dashboardController),
+                      const SizedBox(height: 16),
+                      QuickActions(controller: _quickActionsController),
+                    ] else ...[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: DashboardGrid(
+                              controller: _dashboardController,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(flex: 4, child: QuickActions(controller: _quickActionsController)),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               );

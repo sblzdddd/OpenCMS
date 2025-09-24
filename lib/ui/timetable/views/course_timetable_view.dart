@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../services/timetable/course_timetable_service.dart';
 import '../components/day_tabs.dart';
@@ -10,6 +10,7 @@ import 'timetable_calendar_view.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../shared/dialog/course_detail_dialog.dart';
 import '../../shared/views/refreshable_view.dart';
+import '../../../services/theme/theme_services.dart';
 
 enum _TimetableViewMode { mobile, calendar }
 
@@ -75,7 +76,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
 
   void _scrollToToday() {
     if (!mounted) {
-      print('Warning: _scrollToToday called but widget is not mounted');
+      debugPrint('CourseTimetableView: Warning: _scrollToToday called but widget is not mounted');
       return;
     }
     if (_todayIndex >= 0 && _todayIndex < _dayKeys.length) {
@@ -135,7 +136,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
         }
       }
     } catch (e) {
-      print('Error in scroll listener: $e');
+      debugPrint('CourseTimetableView: Error in scroll listener: $e');
     }
   }
 
@@ -157,7 +158,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       );
       return revealed.offset;
     } catch (e) {
-      print('Error getting header offset for index $index: $e');
+      debugPrint('CourseTimetableView: Error getting header offset for index $index: $e');
       return null;
     }
   }
@@ -175,7 +176,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
     
     // Check if day keys are ready
     if (!_areDayKeysReady()) {
-      print('Day keys are not ready yet, skipping scroll');
+      debugPrint('CourseTimetableView: Day keys are not ready yet, skipping scroll');
       return;
     }
     
@@ -183,14 +184,14 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
     try {
       // Check if scroll controller has clients
       if (!_scrollController.hasClients) {
-        print('Scroll controller has no clients, skipping scroll');
+        debugPrint('CourseTimetableView: Scroll controller has no clients, skipping scroll');
         return;
       }
       
       // Get header offset
       final headerOffset = _getHeaderOffset(index);
       if (headerOffset == null) {
-        print('Header offset is null for index $index, skipping scroll');
+        debugPrint('CourseTimetableView: Header offset is null for index $index, skipping scroll');
         return;
       }
       
@@ -205,7 +206,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
         );
       }
     } catch (e) {
-      print('Error scrolling to day $index: $e');
+      debugPrint('CourseTimetableView: Error scrolling to day $index: $e');
     } finally {
       _isAnimatingToTab = false;
     }
@@ -279,7 +280,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(

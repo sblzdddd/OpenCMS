@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
-import '../../../data/constants/period_constants.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
 
@@ -65,11 +67,12 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       specialRegions: _getTimeRegions(),
       appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
         final Course course = details.appointments.first as Course;
+        final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
         return Container(
           padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: course.color,
-            borderRadius: BorderRadius.circular(4),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

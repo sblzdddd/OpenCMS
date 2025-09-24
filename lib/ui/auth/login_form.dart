@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 import 'components/captcha_input/captcha_input.dart';
 import 'components/password_input.dart';
 import 'components/username_input.dart';
@@ -68,6 +70,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
@@ -198,7 +201,7 @@ class _LoginFormState extends State<LoginForm> {
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                           ),
                           backgroundColor: Theme.of(
                             context,

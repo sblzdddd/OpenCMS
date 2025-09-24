@@ -2,7 +2,7 @@
 library;
 
 import 'package:intl/intl.dart';
-import '../../constants/period_constants.dart';
+import '../../constants/periods.dart';
 import 'course_merged_event.dart';
 
 class TimetableResponse {

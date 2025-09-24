@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../../data/constants/period_constants.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
+import '../../../data/constants/periods.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
 import '../../../services/timetable/course_timetable_service.dart';
@@ -43,7 +45,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
   void didUpdateWidget(covariant NextClassWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.refreshTick != null && widget.refreshTick != oldWidget.refreshTick) {
-      print('NextClassWidget: refreshTick changed -> refreshing with refresh=true');
+      debugPrint('NextClassWidget: refreshTick changed -> refreshing with refresh=true');
       refresh();
     }
   }
@@ -98,7 +100,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
         setLoading(false);
         setError(true);
       }
-      print('NextClassWidget: Error fetching timetable: $e');
+      debugPrint('NextClassWidget: Error fetching timetable: $e');
     }
   }
 
@@ -184,6 +186,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
 
   @override
   Widget? getExtraContent(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bool hasCurrentClass = _currentClass != null;
     if (!hasCurrentClass) return null;
     
@@ -193,7 +196,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
       valueColor: AlwaysStoppedAnimation<Color>(
         Theme.of(context).colorScheme.primary,
       ),
-      borderRadius: BorderRadius.circular(4),
+      borderRadius: themeNotifier.getBorderRadiusAll(0.25),
     );
   }
 

@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart';
 import '../shared/http_service.dart';
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/assessment/assessment_response.dart';
 
 /// Service for fetching student assessments
@@ -19,7 +20,7 @@ class AssessmentService {
     bool refresh = false,
   }) async {
     try {
-      print('AssessmentService: Fetching assessments for year $year');
+      debugPrint('AssessmentService: Fetching assessments for year $year');
       
       final url = '${ApiConstants.assessmentsUrl}?year=$year';
       
@@ -35,7 +36,7 @@ class AssessmentService {
         throw Exception('Invalid response format: null data');
       }
     } catch (e) {
-      print('AssessmentService: Error fetching assessments: $e');
+      debugPrint('AssessmentService: Error fetching assessments: $e');
       rethrow;
     }
   }
@@ -60,7 +61,7 @@ class AssessmentService {
       
       return subject.assessments;
     } catch (e) {
-      print('AssessmentService: Error getting assessments by subject: $e');
+      debugPrint('AssessmentService: Error getting assessments by subject: $e');
       rethrow;
     }
   }
@@ -89,7 +90,7 @@ class AssessmentService {
       
       return allAssessments;
     } catch (e) {
-      print('AssessmentService: Error getting assessments by type: $e');
+      debugPrint('AssessmentService: Error getting assessments by type: $e');
       rethrow;
     }
   }
@@ -153,7 +154,7 @@ class AssessmentService {
         'homeworkCount': assessments.where((a) => a.isHomework).length,
       };
     } catch (e) {
-      print('AssessmentService: Error calculating subject performance: $e');
+      debugPrint('AssessmentService: Error calculating subject performance: $e');
       rethrow;
     }
   }

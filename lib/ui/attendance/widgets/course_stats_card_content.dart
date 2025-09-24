@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../widgets/attendance_proportion_chart.dart';
 
@@ -18,6 +20,7 @@ class CourseStatsCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final theme = Theme.of(context);
     final absentRate = _computeAbsentRatePercent(stats);
     return Column(
@@ -58,7 +61,7 @@ class CourseStatsCardContent extends StatelessWidget {
               color: absentRate >= 10
                   ? Theme.of(context).colorScheme.errorContainer
                   : Theme.of(context).colorScheme.tertiaryContainer,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: themeNotifier.getBorderRadiusAll(0.5),
               border: Border.all(
                 color: absentRate >= 10
                     ? Theme.of(context).colorScheme.errorContainer

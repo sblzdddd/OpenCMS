@@ -1,5 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
+import 'package:flutter/foundation.dart';
 import '../shared/storage_client.dart';
 import '../../data/models/auth/saved_credentials.dart';
 
@@ -28,13 +28,13 @@ class CredentialsStorageService {
           await _storage.write(key: _usernameKey, value: username);
           await _storage.write(key: _passwordKey, value: password);
           await _storage.write(key: _rememberCredentialsKey, value: 'true');
-        print('CredentialsStorageService: Credentials saved successfully');
+        debugPrint('CredentialsStorageService: Credentials saved successfully');
       } else {
         await clearCredentials();
       }
       return true;
     } catch (e) {
-      print('CredentialsStorageService: Error saving credentials: $e');
+      debugPrint('CredentialsStorageService: Error saving credentials: $e');
       return false;
     }
   }
@@ -47,12 +47,8 @@ class CredentialsStorageService {
       final rememberStr = await _storage.read(key: _rememberCredentialsKey);
       final remember = rememberStr == 'true';
 
-      print('CredentialsStorageService: Username: $username');
-      print('CredentialsStorageService: Password: $password');
-      print('CredentialsStorageService: Remember: $remember');
-
       if (remember && username != null && password != null) {
-        print('CredentialsStorageService: Credentials loaded successfully');
+        debugPrint('CredentialsStorageService: Credentials loaded successfully');
         return SavedCredentials(
           username: username,
           password: password,
@@ -60,10 +56,10 @@ class CredentialsStorageService {
           hasCredentials: true,
         );
       }
-      print('CredentialsStorageService: No saved credentials found');
+      debugPrint('CredentialsStorageService: No saved credentials found');
       return SavedCredentials.empty();
     } catch (e) {
-      print('CredentialsStorageService: Error loading credentials: $e');
+      debugPrint('CredentialsStorageService: Error loading credentials: $e');
       return SavedCredentials.empty();
     }
   }
@@ -74,10 +70,10 @@ class CredentialsStorageService {
       await _storage.delete(key: _usernameKey);
       await _storage.delete(key: _passwordKey);
       await _storage.delete(key: _rememberCredentialsKey);
-      print('CredentialsStorageService: Credentials cleared successfully');
+      debugPrint('CredentialsStorageService: Credentials cleared successfully');
       return true;
     } catch (e) {
-      print('CredentialsStorageService: Error clearing credentials: $e');
+      debugPrint('CredentialsStorageService: Error clearing credentials: $e');
       return false;
     }
   }
@@ -88,7 +84,7 @@ class CredentialsStorageService {
       final remember = await _storage.read(key: _rememberCredentialsKey);
       return remember == 'true';
     } catch (e) {
-      print('CredentialsStorageService: Error checking credentials: $e');
+      debugPrint('CredentialsStorageService: Error checking credentials: $e');
       return false;
     }
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/data/constants/period_constants.dart';
+import 'package:opencms/data/constants/periods.dart';
 import 'package:opencms/ui/shared/academic_year_dropdown.dart';
 import 'package:opencms/ui/shared/views/refreshable_page.dart';
 import '../../data/models/homework/homework_response.dart';
@@ -114,12 +114,12 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildFilters(),
+          _buildFilters(themeNotifier),
           Expanded(child: _buildHomeworkList()),
         ],
       ),
@@ -127,12 +127,12 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   }
 
   @override
-  Widget buildPageContent(BuildContext context) {
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
     // This method is not used since we override buildContent
     return const SizedBox.shrink();
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(ThemeNotifier themeNotifier) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -168,14 +168,14 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
           ],
         ),
         if (_showSettings) ...[
-          _buildSearchFilter(),
+          _buildSearchFilter(themeNotifier),
           const SizedBox(height: 12),
         ],
       ],
     );
   }
 
-  Widget _buildSearchFilter() {
+  Widget _buildSearchFilter(ThemeNotifier themeNotifier) {
     return Row(
       children: [
         Expanded(
@@ -187,19 +187,19 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
                 hintText: 'Search homework...',
                 prefixIcon: const Icon(Symbols.search_rounded),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
                     color: Theme.of(context).colorScheme.primary,
                     width: 2,
@@ -239,12 +239,12 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
 
   
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          _buildFilters(),
+          _buildFilters(themeNotifier),
           Expanded(
             child: Center(
               child: Column(

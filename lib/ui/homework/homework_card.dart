@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import '../../data/models/homework/homework_response.dart';
@@ -107,7 +109,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
       // Notify parent about completion status change
       widget.onCompletionStatusChanged?.call();
     } catch (e) {
-      print('Error toggling homework completion: $e');
+      debugPrint('HomeworkCard: Error toggling homework completion: $e');
       // Show error message to user if needed
     } finally {
       if (mounted) {
@@ -120,12 +122,16 @@ class _HomeworkCardState extends State<HomeworkCard> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final isOverdue = widget.homework.isOverdue;
     final daysUntilDue = widget.homework.daysUntilDue;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
       clipBehavior: Clip.antiAlias,
       child: Opacity(
         opacity: _isCompleted ? 0.5 : 1,

@@ -1,10 +1,11 @@
 /// Referral comments service for fetching student referral data
 library;
 
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/referral/referral_response.dart';
 import '../shared/http_service.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 /// Service for handling referral comments API calls
 class ReferralService {
@@ -22,20 +23,20 @@ class ReferralService {
     bool refresh = false,
   }) async {
     try {
-      print('ReferralService: Fetching referral comments (refresh: $refresh)');
+      debugPrint('ReferralService: Fetching referral comments (refresh: $refresh)');
       
       final response = await _httpService.get(
         ApiConstants.referralUrl,
         refresh: refresh,
       );
 
-      print('ReferralService: Response status: ${response.statusCode}');
+      debugPrint('ReferralService: Response status: ${response.statusCode}');
       
       if (response.statusCode == 200 || response.statusCode == 304) {
         final List<dynamic> data = response.data as List<dynamic>;
         final referralResponse = ReferralResponse.fromJson(data);
         
-        print('ReferralService: Successfully fetched ${referralResponse.comments.length} referral comments');
+        debugPrint('ReferralService: Successfully fetched ${referralResponse.comments.length} referral comments');
         return referralResponse;
       } else {
         throw DioException(
@@ -45,10 +46,10 @@ class ReferralService {
         );
       }
     } on DioException catch (e) {
-      print('ReferralService: DioException - ${e.message}');
+      debugPrint('ReferralService: DioException - ${e.message}');
       rethrow;
     } catch (e) {
-      print('ReferralService: Unexpected error - $e');
+      debugPrint('ReferralService: Unexpected error - $e');
       throw Exception('Failed to fetch referral comments: $e');
     }
   }
@@ -62,7 +63,7 @@ class ReferralService {
     try {
       return await getReferralComments(refresh: refresh);
     } catch (e) {
-      print('ReferralService: Safe fetch failed - $e');
+      debugPrint('ReferralService: Safe fetch failed - $e');
       return null;
     }
   }

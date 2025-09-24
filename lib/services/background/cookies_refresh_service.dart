@@ -1,5 +1,6 @@
 import 'background_fetcher.dart';
 import '../auth/auth_service.dart';
+import 'package:flutter/foundation.dart';
 
 class CookiesRefreshService extends BackgroundFetcher {
   static final CookiesRefreshService _instance = CookiesRefreshService._internal();
@@ -14,7 +15,7 @@ class CookiesRefreshService extends BackgroundFetcher {
   @override
   Future<void> start() async {
     await super.start();
-    print('CookiesRefreshService started');
+    debugPrint('CookiesRefreshService started');
   }
 
   @override

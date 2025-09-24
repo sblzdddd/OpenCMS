@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 
 class ProfilePhotoWidget extends StatelessWidget {
@@ -24,6 +25,8 @@ class ProfilePhotoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+
     // Get house-based color or fallback to global theme
     final houseColor = house != null && house!.isNotEmpty 
         ? ThemeNotifier.getHouseColor(house)
@@ -36,13 +39,13 @@ class ProfilePhotoWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            houseColor.withOpacity(0.1),
-            houseColor.withOpacity(0.05),
+            houseColor.withValues(alpha: 0.1),
+            houseColor.withValues(alpha: 0.05),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
         border: Border.all(
-          color: houseColor.withOpacity(0.2),
+          color: houseColor.withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -59,7 +62,7 @@ class ProfilePhotoWidget extends StatelessWidget {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: houseColor.withOpacity(0.3),
+                  color: houseColor.withValues(alpha: 0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -121,7 +124,7 @@ class ProfilePhotoWidget extends StatelessWidget {
                 Text(
                   studentType,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 

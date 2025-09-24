@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:opencms/data/constants/api_constants.dart';
+import 'package:opencms/data/constants/api_endpoints.dart';
 import 'package:opencms/pages/actions/web_cms.dart';
 import '../../ui/shared/dialog/confirm_dialog.dart';
 import 'theme_settings_page.dart';

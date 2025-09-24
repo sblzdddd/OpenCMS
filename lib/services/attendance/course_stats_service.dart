@@ -1,5 +1,5 @@
-
-import '../../data/constants/api_constants.dart';
+import 'package:flutter/foundation.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/attendance/course_stats_response.dart';
 import '../shared/http_service.dart';
 
@@ -18,7 +18,7 @@ class CourseStatsService {
     bool refresh = false,
   }) async {
     try {
-      print('CourseTimetableService: Fetching course stats for year $year');
+      debugPrint('CourseTimetableService: Fetching course stats for year $year');
       
       final url = '${ApiConstants.courseStatsUrl}?year=$year';
       
@@ -39,7 +39,7 @@ class CourseStatsService {
         throw Exception('Failed to parse JSON response: $e');
       }
     } catch (e) {
-      print('CourseTimetableService: Error fetching course stats: $e');
+      debugPrint('CourseTimetableService: Error fetching course stats: $e');
       rethrow;
     }
   }

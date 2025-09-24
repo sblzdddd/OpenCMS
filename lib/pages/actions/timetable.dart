@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/constants/period_constants.dart';
+import '../../data/constants/periods.dart';
 import '../../ui/shared/academic_year_dropdown.dart';
 import '../../ui/timetable/views/course_timetable_view.dart';
 import '../../ui/timetable/views/exam_timetable_view.dart';

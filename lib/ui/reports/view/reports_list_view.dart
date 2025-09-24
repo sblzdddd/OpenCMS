@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../services/reports/reports_service.dart';
 import '../../../data/models/reports/reports.dart';
 import '../../shared/views/refreshable_view.dart';
@@ -43,7 +44,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
@@ -61,7 +62,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
                   ),
                   child: Text(
                     exam.month,
@@ -73,7 +74,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
                   ),
                   child: Text(
                     exam.examType,
@@ -109,7 +110,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView.builder(
       itemCount: _reportsData!.gradeGroups.length,
       itemBuilder: (context, index) {
@@ -119,7 +120,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),

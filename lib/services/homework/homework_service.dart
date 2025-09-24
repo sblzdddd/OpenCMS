@@ -1,6 +1,7 @@
 import '../../data/models/homework/homework_response.dart';
 import '../shared/http_service.dart';
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
+import 'package:flutter/foundation.dart';
 
 class HomeworkService {
   static final HomeworkService _instance = HomeworkService._internal();
@@ -17,7 +18,7 @@ class HomeworkService {
     bool refresh=false,
   }) async {
     try {
-      print('HomeworkService: Fetching homework for year $academicYear');
+      debugPrint('HomeworkService: Fetching homework for year $academicYear');
       
       // New API endpoint
       final endpoint = '${ApiConstants.homeworkUrl}?year=$academicYear';
@@ -30,7 +31,7 @@ class HomeworkService {
         throw Exception('Invalid response format: expected JSON array');
       }
     } catch (e) {
-      print('HomeworkService: Error fetching homework: $e');
+      debugPrint('HomeworkService: Error fetching homework: $e');
       rethrow;
     }
   }
@@ -41,14 +42,14 @@ class HomeworkService {
   /// [homeworkId] - ID of the homework to mark as completed
   Future<bool> markHomeworkCompleted(int homeworkId) async {
     try {
-      print('HomeworkService: Marking homework $homeworkId as completed');
+      debugPrint('HomeworkService: Marking homework $homeworkId as completed');
       
       // TODO: Implement when new API supports marking homework as completed
       // For now, return false to indicate this feature is not available
-      print('HomeworkService: Marking homework as completed not supported in new API yet');
+      debugPrint('HomeworkService: Marking homework as completed not supported in new API yet');
       return false;
     } catch (e) {
-      print('HomeworkService: Error marking homework as completed: $e');
+      debugPrint('HomeworkService: Error marking homework as completed: $e');
       rethrow;
     }
   }

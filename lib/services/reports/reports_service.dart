@@ -1,6 +1,7 @@
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/reports/reports.dart';
 import '../shared/http_service.dart';
+import 'package:flutter/foundation.dart';
 
 /// Service for fetching student reports including:
 /// - Reports list grouped by grade
@@ -18,7 +19,7 @@ class ReportsService {
   /// Returns a list of grade groups, each containing exams for that grade
   Future<ReportsListResponse> fetchReportsList({bool refresh=false}) async {
     try {
-      print('ReportsService: Fetching reports list');
+      debugPrint('ReportsService: Fetching reports list');
       
       final response = await _httpService.get(ApiConstants.reportsListUrl, refresh: refresh);
 
@@ -33,7 +34,7 @@ class ReportsService {
         throw Exception('Failed to fetch reports list: ${response.statusCode}');
       }
     } catch (e) {
-      print('ReportsService: Error fetching reports list: $e');
+      debugPrint('ReportsService: Error fetching reports list: $e');
       rethrow;
     }
   }
@@ -44,7 +45,7 @@ class ReportsService {
   /// Returns detailed report data based on the exam type
   Future<ReportDetail> fetchReportDetail(int examId, {bool refresh = false}) async {
     try {
-      print('ReportsService: Fetching report detail for exam $examId');
+      debugPrint('ReportsService: Fetching report detail for exam $examId');
       
       final response = await _httpService.get(ApiConstants.reportsDetailUrl(examId), refresh: refresh);
 
@@ -59,7 +60,7 @@ class ReportsService {
         throw Exception('Failed to fetch report detail: ${response.statusCode}');
       }
     } catch (e) {
-      print('ReportsService: Error fetching report detail for exam $examId: $e');
+      debugPrint('ReportsService: Error fetching report detail for exam $examId: $e');
       rethrow;
     }
   }
@@ -75,7 +76,7 @@ class ReportsService {
           .where((group) => group.grade == grade)
           .toList();
     } catch (e) {
-      print('ReportsService: Error fetching reports by grade $grade: $e');
+      debugPrint('ReportsService: Error fetching reports by grade $grade: $e');
       rethrow;
     }
   }
@@ -99,7 +100,7 @@ class ReportsService {
       
       return exams;
     } catch (e) {
-      print('ReportsService: Error fetching reports by year $year: $e');
+      debugPrint('ReportsService: Error fetching reports by year $year: $e');
       rethrow;
     }
   }
@@ -124,7 +125,7 @@ class ReportsService {
       
       return exams;
     } catch (e) {
-      print('ReportsService: Error fetching reports by semester $year-$semester: $e');
+      debugPrint('ReportsService: Error fetching reports by semester $year-$semester: $e');
       rethrow;
     }
   }
@@ -162,7 +163,7 @@ class ReportsService {
       
       return mostRecent;
     } catch (e) {
-      print('ReportsService: Error getting most recent exam for grade $grade: $e');
+      debugPrint('ReportsService: Error getting most recent exam for grade $grade: $e');
       return null;
     }
   }
@@ -216,7 +217,7 @@ class ReportsService {
         'semesterDistribution': semesterDistribution,
       };
     } catch (e) {
-      print('ReportsService: Error getting grade statistics for $grade: $e');
+      debugPrint('ReportsService: Error getting grade statistics for $grade: $e');
       return {
         'error': e.toString(),
         'totalExams': 0,

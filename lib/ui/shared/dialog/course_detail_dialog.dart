@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../attendance/widgets/course_stats_card_content.dart';
 import '../error/error_placeholder.dart';
@@ -36,6 +38,7 @@ class CourseDetailDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return FutureBuilder<({CourseStats stats, String subtitle})>(
       future: future,
       builder: (context, snapshot) {
@@ -43,9 +46,12 @@ class CourseDetailDialog extends StatelessWidget {
         final currentSubtitle = snapshot.hasData 
             ? snapshot.data!.subtitle 
             : initialSubtitle;
-        print('currentSubtitle: $currentSubtitle');
             
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          ),
+          clipBehavior: Clip.antiAlias,
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

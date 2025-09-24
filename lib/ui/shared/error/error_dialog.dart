@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 
 /// Reusable error dialog component with text copy functionality
 class ErrorDialog extends StatelessWidget {
@@ -68,8 +70,12 @@ class ErrorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final details = _buildDetails();
-
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+      ),
+      clipBehavior: Clip.antiAlias,
       title: Text(title),
       content: SizedBox(
         width: double.maxFinite,

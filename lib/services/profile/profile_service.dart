@@ -1,7 +1,7 @@
 /// Profile service for handling user profile data
 library;
 
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/profile/profile.dart';
 import '../shared/http_service.dart';
 

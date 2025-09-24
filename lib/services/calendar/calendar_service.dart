@@ -3,7 +3,7 @@ library;
 
 import '../shared/http_service.dart';
 import '../auth/auth_service.dart';
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/calendar/calendar.dart';
 
 /// Service for handling calendar operations

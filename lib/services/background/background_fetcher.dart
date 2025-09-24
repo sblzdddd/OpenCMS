@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 class BackgroundFetcher {
   Timer? _timer;
@@ -18,7 +19,7 @@ class BackgroundFetcher {
 
   /// Override for your background task logic
   Future<void> onUpdate() async {
-    print('BackgroundFetcher: $name update');
+    debugPrint('BackgroundFetcher: $name update');
   }
 
   /// Start background service
@@ -27,10 +28,10 @@ class BackgroundFetcher {
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isAndroid) {
       _startDesktopTimer();
-      print('BackgroundFetcher: $name started (desktop)');
+      debugPrint('BackgroundFetcher: $name started (desktop)');
     } else if (Platform.isAndroid || Platform.isIOS) {
       await _startMobileTask();
-      print('BackgroundFetcher: $name started (mobile)');
+      debugPrint('BackgroundFetcher: $name started (mobile)');
     }
 
     isRunning = true;
@@ -45,13 +46,13 @@ class BackgroundFetcher {
     }
 
     isRunning = false;
-    print('BackgroundFetcher: $name stopped');
+    debugPrint('BackgroundFetcher: $name stopped');
   }
 
   /// Modify fetch interval while running
   Future<void> modifyInterval(Duration newInterval) async {
     interval = newInterval;
-    print('BackgroundFetcher: $name interval updated to $interval');
+    debugPrint('BackgroundFetcher: $name interval updated to $interval');
 
     if (isRunning) {
       await stop();

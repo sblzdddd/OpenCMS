@@ -6,7 +6,6 @@ class ReorderableWrap extends StatefulWidget {
   final List<Widget> children;
   final void Function(int oldIndex, int newIndex) onReorder;
   final void Function(int index)? onRemove;
-  final VoidCallback? onAdd;
   final VoidCallback? onReorderStart;
   final VoidCallback? onReorderEnd;
   final double spacing;
@@ -20,7 +19,6 @@ class ReorderableWrap extends StatefulWidget {
     required this.children,
     required this.onReorder,
     this.onRemove,
-    this.onAdd,
     this.onReorderStart,
     this.onReorderEnd,
     this.spacing = 0.0,
@@ -54,11 +52,10 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
         final index = entry.key;
         final child = entry.value;
         final isTrashCan = child.key == const ValueKey('trash_can');
-        final isAddAction = child.key == const ValueKey('add_action');
         final isIgnorePointer = child is IgnorePointer; // Check for spacer items
         
         // If it's trash can, add action, or spacer, don't make it draggable
-        if (isTrashCan || isAddAction || isIgnorePointer) {
+        if (isTrashCan || isIgnorePointer) {
           return DragTarget<Map<String, dynamic>>(
             onWillAcceptWithDetails: (details) {
               final draggedData = details.data;
@@ -85,14 +82,27 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
               final hasValidCandidate = candidateData.any((data) => data != null && data['wrapId'] == _uniqueId);
               
               if (isTrashCan && hasValidCandidate) {
-                // Return highlighted trash can when a valid candidate is hovering
-                return TrashCanItem(isHighlighted: true);
-              }
-              if (isAddAction) {
-                // Add action item with tap handling
-                return GestureDetector(
-                  onTap: widget.onAdd,
-                  child: RepaintBoundary(child: child),
+                // Preserve the original full-width SizedBox and only toggle the inner TrashCanItem highlight
+                if (child is SizedBox) {
+                  final sized = child;
+                  final inner = sized.child;
+                  final TrashCanItem originalTrash = inner is TrashCanItem ? inner : const TrashCanItem();
+                  return SizedBox(
+                    key: child.key,
+                    width: sized.width,
+                    height: sized.height,
+                    child: TrashCanItem(
+                      isHighlighted: true,
+                      tileWidth: originalTrash.tileWidth,
+                    ),
+                  );
+                }
+                // Fallback: ask the TrashCanItem to render its highlighted state
+                final TrashCanItem original = child is TrashCanItem ? child : const TrashCanItem();
+                return TrashCanItem(
+                  key: child.key,
+                  isHighlighted: true,
+                  tileWidth: original.tileWidth,
                 );
               }
               return RepaintBoundary(child: child);
@@ -155,7 +165,6 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(0),
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   ),
                   child: RepaintBoundary(child: child),

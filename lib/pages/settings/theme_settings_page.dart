@@ -33,6 +33,10 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
         title: const Text('Pick a custom color'),
         content: SingleChildScrollView(
           child: Column(
@@ -105,12 +109,12 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
         child: InkWell(
           onTap: () => themeNotifier.setColorTheme(color),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: themeNotifier.getBorderRadiusAll(0.75),
           child: Container(
             height: 60,
             decoration: BoxDecoration(
               color: colorValue,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: themeNotifier.getBorderRadiusAll(0.75),
               border: Border.all(
                 color: isSelected ? Colors.white : Colors.transparent,
                 width: 3,
@@ -167,7 +171,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Choose Theme Color',
+                  'Theme Color',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -220,12 +224,31 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                       ),
                     ),
                   ),
                 ),
-                
+
+                const SizedBox(height: 16),
+
+                // Border Radius
+                Text(
+                  'Border Radius',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                // Border Radius Slider
+                Slider(
+                  value: themeNotifier.borderRadius,
+                  min: 0,
+                  max: 32,
+                  divisions: 32,
+                  onChanged: (value) => themeNotifier.setBorderRadius(value),
+                ),
               ],
             ),
           );

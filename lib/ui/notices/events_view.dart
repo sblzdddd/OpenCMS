@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/theme/theme_services.dart';
 import '../../data/models/events/student_event.dart';
 import '../../services/events/events_service.dart';
 import '../../services/auth/auth_service.dart';
@@ -63,7 +64,7 @@ class _EventsViewState extends RefreshableView<EventsView> {
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
@@ -92,7 +93,7 @@ class _EventsViewState extends RefreshableView<EventsView> {
                     color: event.type == StudentEventType.led 
                         ? Colors.blue.withValues(alpha: 0.2)
                         : Colors.green.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
                   ),
                   child: Text(
                     event.applicant,
@@ -128,7 +129,7 @@ class _EventsViewState extends RefreshableView<EventsView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_studentLedEvents == null || _studentUnstaffedEvents == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -158,7 +159,7 @@ class _EventsViewState extends RefreshableView<EventsView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),

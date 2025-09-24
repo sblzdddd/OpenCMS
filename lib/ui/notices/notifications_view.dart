@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/theme/theme_services.dart';
 import '../../data/models/notification/notification_response.dart' as cms;
 import '../../services/notification/notification_service.dart';
 import '../shared/views/refreshable_view.dart';
@@ -25,7 +26,6 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
 
   Future<void> _navigateToNotificationDetail(cms.Notification notification) async {
     final contentUrl = await _notificationService.getNotificationContentUrl(notification.id);
-    print(contentUrl);
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -42,7 +42,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
@@ -61,7 +61,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.orange.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
                     ),
                     child: const Text(
                       'PINNED',
@@ -77,7 +77,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(999),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
                   ),
                   child: Text(
                     notification.addDate,
@@ -98,7 +98,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
   }
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_notifications == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -113,7 +113,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),

@@ -1,7 +1,8 @@
 import '../shared/http_service.dart';
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/timetable/timetable_response.dart';
 import '../../data/models/timetable/course_merged_event.dart';
+import 'package:flutter/foundation.dart';
 
 /// Service for fetching course timetable and course statistics
 class CourseTimetableService {
@@ -21,7 +22,7 @@ class CourseTimetableService {
     bool refresh=false,
   }) async {
     try {
-      print('CourseTimetableService: Fetching timetable for year $year, date $date');
+      debugPrint('CourseTimetableService: Fetching timetable for year $year, date $date');
       
       final url = '${ApiConstants.courseTimetableUrl}?year=$year&date=$date';
       
@@ -37,7 +38,7 @@ class CourseTimetableService {
         throw Exception('Invalid response format: null data');
       }
     } catch (e) {
-      print('CourseTimetableService: Error fetching timetable: $e');
+      debugPrint('CourseTimetableService: Error fetching timetable: $e');
       rethrow;
     }
   }
@@ -59,7 +60,7 @@ class CourseTimetableService {
 
       return timetable.getCurrentAndNextClass();
     } catch (e) {
-      print('CourseTimetableService: Error getting current and next class: $e');
+      debugPrint('CourseTimetableService: Error getting current and next class: $e');
       rethrow;
     }
   }
@@ -79,7 +80,7 @@ class CourseTimetableService {
 
       return timetable.getCurrentAndNextClass();
     } catch (e) {
-      print('CourseTimetableService: Error getting current and next class for date: $e');
+      debugPrint('CourseTimetableService: Error getting current and next class for date: $e');
       rethrow;
     }
   }

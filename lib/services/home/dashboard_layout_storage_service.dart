@@ -28,7 +28,7 @@ class DashboardLayoutStorageService {
       await _storage.write(key: _layoutKey, value: jsonString);
       return true;
     } catch (e) {
-      print('DashboardLayoutStorageService: Error saving layout: $e');
+      debugPrint('DashboardLayoutStorageService: Error saving layout: $e');
       return false;
     }
   }
@@ -56,7 +56,7 @@ class DashboardLayoutStorageService {
       }
       return null;
     } catch (e) {
-      print('DashboardLayoutStorageService: Error loading layout: $e');
+      debugPrint('DashboardLayoutStorageService: Error loading layout: $e');
       return null;
     }
   }
@@ -66,7 +66,7 @@ class DashboardLayoutStorageService {
       await _storage.delete(key: _layoutKey);
       return true;
     } catch (e) {
-      print('DashboardLayoutStorageService: Error clearing layout: $e');
+      debugPrint('DashboardLayoutStorageService: Error clearing layout: $e');
       return false;
     }
   }

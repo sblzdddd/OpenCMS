@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../data/constants/period_constants.dart';
+import '../../data/constants/periods.dart';
 import '../../data/models/assessment/assessment_response.dart';
 import '../../services/assessment/assessment_service.dart';
 import '../../ui/shared/academic_year_dropdown.dart';
 import '../../ui/shared/views/refreshable_view.dart';
+import '../../services/theme/theme_services.dart';
 import '../../ui/assessments/subject_assessments_view.dart';
 
 class AssessmentPage extends StatefulWidget {
@@ -75,7 +76,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
       elevation: 0,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
@@ -94,7 +95,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: _getAssessmentTypeColor('test').withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
                     ),
                     child: Text(
                       '$testCount Test${testCount > 1 ? 's' : ''}',
@@ -107,7 +108,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: _getAssessmentTypeColor('project').withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
                     ),
                     child: Text(
                       '$projectCount Project${projectCount > 1 ? 's' : ''}',
@@ -120,7 +121,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: _getAssessmentTypeColor('homework').withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
                     ),
                     child: Text(
                       '$homeworkCount HW',
@@ -133,7 +134,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: _getAssessmentTypeColor('practical').withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
                     ),
                     child: Text(
                       '$practicalCount Practical${practicalCount > 1 ? 's' : ''}',
@@ -146,7 +147,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: _getAssessmentTypeColor('formative').withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(999),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
                     ),
                     child: Text(
                       '$formativeCount Formative${formativeCount > 1 ? 's' : ''}',
@@ -203,7 +204,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
     return Colors.grey;
   }
   @override
-  Widget buildContent(BuildContext context) {
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_assessmentData == null) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -217,7 +218,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context) {
+  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),

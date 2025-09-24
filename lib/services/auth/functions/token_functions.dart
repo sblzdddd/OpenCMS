@@ -1,12 +1,13 @@
-import '../../../data/constants/api_constants.dart';
+import '../../../data/constants/api_endpoints.dart';
 import '../../shared/storage_client.dart';
 import '../auth_service_base.dart';
+import 'package:flutter/foundation.dart';
 
 /// Refresh authentication token using the refresh endpoint
 /// Returns true if refresh was successful, false otherwise
 Future<bool> refreshCookies(AuthServiceBase authService) async {
   try {
-    print('AuthService: Attempting to refresh token');
+    debugPrint('TokenFunctions: Attempting to refresh token');
     
     final response = await authService.httpService.post(
       ApiConstants.tokenRefreshEndpoint,
@@ -14,15 +15,15 @@ Future<bool> refreshCookies(AuthServiceBase authService) async {
     );
     
     if (response.statusCode == 200) {
-      print('AuthService: Token refresh successful');
+      debugPrint('TokenFunctions: Token refresh successful');
       return true;
     } else {
-      print('AuthService: Token refresh failed with status: ${response.statusCode}');
-      print('AuthService: Token refresh response: ${response.data}');
+      debugPrint('TokenFunctions: Token refresh failed with status: ${response.statusCode}');
+      debugPrint('TokenFunctions: Token refresh response: ${response.data}');
       return false;
     }
   } catch (e) {
-    print('AuthService: Token refresh exception: $e');
+    debugPrint('TokenFunctions: Token refresh exception: $e');
     return false;
   }
 }

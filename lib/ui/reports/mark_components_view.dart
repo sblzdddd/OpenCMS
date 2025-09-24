@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../services/theme/theme_services.dart';
 import '../../data/models/reports/reports.dart';
 
 class MarkComponentsView extends StatelessWidget {
@@ -11,6 +13,7 @@ class MarkComponentsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     if (markComponents.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -55,6 +58,10 @@ class MarkComponentsView extends StatelessWidget {
           
           return Card(
             margin: const EdgeInsets.only(bottom: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: themeNotifier.getBorderRadiusAll(0),
+            ),
+            clipBehavior: Clip.antiAlias,
             elevation: 0,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,10 +72,7 @@ class MarkComponentsView extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12),
-                    ),
+                    borderRadius: themeNotifier.getBorderRadiusTop(0.75),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,10 +200,7 @@ class MarkComponentsView extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12),
-                    ),
+                    borderRadius: themeNotifier.getBorderRadiusBottom(0.75),
                   ),
                   child: Row(
                     children: [

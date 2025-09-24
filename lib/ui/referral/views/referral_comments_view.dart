@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../data/constants/subject_icon_constants.dart';
+import '../../../data/constants/subject_icons.dart';
 import '../../../services/referral/referral_service.dart';
 import '../../../data/models/referral/referral_response.dart';
 import '../../shared/views/refreshable_page.dart';
@@ -48,7 +48,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(
                 context,
@@ -93,7 +93,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(
                 context,
@@ -123,7 +123,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
   }
 
   @override
-  Widget buildPageContent(BuildContext context) {
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_referralResponse == null) return const SizedBox.shrink();
 
     final filteredComments = _getFilteredAndSortedComments();
@@ -211,7 +211,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         color: Theme.of(
           context,
         ).colorScheme.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,7 +270,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
@@ -333,6 +333,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+      ),
+      clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -433,7 +437,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             color: chipColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
             border: Border.all(color: chipColor.withValues(alpha: 0.3)),
           ),
           child: Text(
@@ -456,7 +460,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         color: Theme.of(
           context,
         ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -471,7 +475,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: themeNotifier.getBorderRadiusAll(0.375),
                 border: Border.all(
                   color: Theme.of(
                     context,
@@ -507,7 +511,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),

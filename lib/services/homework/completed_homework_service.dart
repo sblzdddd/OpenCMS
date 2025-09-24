@@ -1,6 +1,7 @@
 import 'dart:convert';
 import '../../data/models/homework/homework_response.dart';
 import '../shared/storage_client.dart';
+import 'package:flutter/foundation.dart';
 
 /// Service for managing completed homework items in local storage
 class CompletedHomeworkService {
@@ -15,7 +16,7 @@ class CompletedHomeworkService {
       final List<dynamic> jsonList = jsonDecode(data);
       return jsonList.map((json) => CompletedHomework.fromJson(json)).toList();
     } catch (e) {
-      print('Error reading completed homeworks: $e');
+      debugPrint('Error reading completed homeworks: $e');
       return [];
     }
   }
@@ -52,7 +53,7 @@ class CompletedHomeworkService {
         await _saveCompletedHomeworks(completed);
       }
     } catch (e) {
-      print('Error marking homework as completed: $e');
+      debugPrint('Error marking homework as completed: $e');
     }
   }
   
@@ -67,7 +68,7 @@ class CompletedHomeworkService {
       
       await _saveCompletedHomeworks(completed);
     } catch (e) {
-      print('Error marking homework as not completed: $e');
+      debugPrint('Error marking homework as not completed: $e');
     }
   }
   
@@ -76,7 +77,7 @@ class CompletedHomeworkService {
     try {
       await StorageClient.instance.delete(key: _storageKey);
     } catch (e) {
-      print('Error clearing completed homeworks: $e');
+      debugPrint('Error clearing completed homeworks: $e');
     }
   }
   
@@ -87,7 +88,7 @@ class CompletedHomeworkService {
       final data = jsonEncode(jsonList);
       await StorageClient.instance.write(key: _storageKey, value: data);
     } catch (e) {
-      print('Error saving completed homeworks: $e');
+      debugPrint('Error saving completed homeworks: $e');
     }
   }
 }

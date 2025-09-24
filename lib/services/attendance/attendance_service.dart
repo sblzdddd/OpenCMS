@@ -1,4 +1,4 @@
-import '../../data/constants/api_constants.dart';
+import '../../data/constants/api_endpoints.dart';
 import '../../data/models/attendance/attendance_response.dart';
 import '../shared/http_service.dart';
 
