@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import '../../data/models/homework/homework_response.dart';
 import '../../services/homework/completed_homework_service.dart';
+import '../shared/scaled_ink_well.dart';
 
 class HomeworkCard extends StatefulWidget {
   final HomeworkItem homework;
@@ -126,135 +127,134 @@ class _HomeworkCardState extends State<HomeworkCard> {
     final isOverdue = widget.homework.isOverdue;
     final daysUntilDue = widget.homework.daysUntilDue;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Opacity(
-        opacity: _isCompleted ? 0.5 : 1,
-        child: InkWell(
-          onTap: widget.onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with course name and expand/collapse button
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.homework.courseName,
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: Theme.of(context).colorScheme.primary,
-                          decoration: _isCompleted
-                              ? TextDecoration.lineThrough
-                              : null,
-                          decorationColor: Theme.of(
-                            context,
-                          ).colorScheme.primary,
-                          decorationThickness: 2,
-                          fontWeight: FontWeight.bold,
-                        ),
+    return Opacity(
+      opacity: _isCompleted ? 0.5 : 1,
+      child: ScaledInkWell(
+        margin: const EdgeInsets.only(bottom: 8.0),
+        background: (inkWell) => Material(
+          color: Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          child: inkWell,
+        ),
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        onTap: widget.onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header with course name and expand/collapse button
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.homework.courseName,
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                        decoration: _isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
+                        decorationColor: Theme.of(
+                          context,
+                        ).colorScheme.primary,
+                        decorationThickness: 2,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    Icon(
-                      widget.isExpanded
-                          ? Symbols.expand_less_rounded
-                          : Symbols.expand_more_rounded,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 4),
-
-                // Title with strikethrough if completed
-                Text(
-                  widget.homework.title,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontSize: 14,
-                    decoration: _isCompleted
-                        ? TextDecoration.lineThrough
-                        : null,
-                    decorationColor: Theme.of(context).colorScheme.primary,
-                    decorationThickness: 2,
                   ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Basic info (always visible)
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                isOverdue
-                                    ? Symbols.warning_rounded
-                                    : Symbols.info_rounded,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  isOverdue
-                                      ? 'Overdue by ${daysUntilDue.abs()} days'
-                                      : daysUntilDue > 0
-                                      ? 'Due in $daysUntilDue days'
-                                      : 'Due today',
-                                  style: TextStyle(fontSize: 12),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Symbols.person_rounded, size: 16),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  widget.homework.teacherName,
-                                  style: TextStyle(fontSize: 12),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Expanded detailed info
-                if (widget.isExpanded) ...[
-                  const SizedBox(height: 16),
-                  const Divider(),
-                  const SizedBox(height: 12),
-                  _buildDetailedInfo(
-                    widget.homework,
-                    widget.selectedYearDisplayName,
+                  Icon(
+                    widget.isExpanded
+                        ? Symbols.expand_less_rounded
+                        : Symbols.expand_more_rounded,
                   ),
                 ],
+              ),
+
+              const SizedBox(height: 4),
+
+              // Title with strikethrough if completed
+              Text(
+                widget.homework.title,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: 14,
+                  decoration: _isCompleted
+                      ? TextDecoration.lineThrough
+                      : null,
+                  decorationColor: Theme.of(context).colorScheme.primary,
+                  decorationThickness: 2,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Basic info (always visible)
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              isOverdue
+                                  ? Symbols.warning_rounded
+                                  : Symbols.info_rounded,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                isOverdue
+                                    ? 'Overdue by ${daysUntilDue.abs()} days'
+                                    : daysUntilDue > 0
+                                    ? 'Due in $daysUntilDue days'
+                                    : 'Due today',
+                                style: TextStyle(fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Symbols.person_rounded, size: 16),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                widget.homework.teacherName,
+                                style: TextStyle(fontSize: 12),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              // Expanded detailed info
+              if (widget.isExpanded) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 12),
+                _buildDetailedInfo(
+                  widget.homework,
+                  widget.selectedYearDisplayName,
+                ),
               ],
-            ),
+            ],
           ),
         ),
       ),

@@ -10,8 +10,10 @@ import 'package:system_tray/system_tray.dart';
 import 'dart:io';
 import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
+import 'services/skin/skin_provider.dart';
 import 'package:provider/provider.dart';
 import 'util.dart';
+import 'global_press_scale.dart';
 
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
@@ -134,8 +136,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = createTextTheme(context, "Roboto", "EB Garamond");
-    return ChangeNotifierProvider(
-      create: (_) => ThemeNotifier(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider(create: (_) => SkinProvider()..initialize()),
+      ],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           Color seedColor = themeNotifier.currentColor;
@@ -155,6 +160,9 @@ class MyApp extends StatelessWidget {
                 bodyColor: lightColorScheme.onSurface,
                 displayColor: lightColorScheme.onSurface,
               ),
+              extensions: <ThemeExtension<dynamic>>[
+                const AppInteractionTheme(scaleDownFactor: 0.9),
+              ],
             ),
             darkTheme: ThemeData(
               colorScheme: darkColorScheme,
@@ -162,6 +170,9 @@ class MyApp extends StatelessWidget {
                 bodyColor: darkColorScheme.onSurface,
                 displayColor: darkColorScheme.onSurface,
               ),
+              extensions: <ThemeExtension<dynamic>>[
+                const AppInteractionTheme(scaleDownFactor: 0.9),
+              ],
             ),
             themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const AuthWrapper(),

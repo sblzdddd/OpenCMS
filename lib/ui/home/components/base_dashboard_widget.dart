@@ -3,24 +3,25 @@ import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import '../../../pages/actions.dart';
 import 'dart:async';
+import '../../shared/scaled_ink_well.dart';
+import '../../../global_press_scale.dart';
 
 /// Base mixin for dashboard widget states that provides common functionality
 /// including layout, refresh logic, error handling, and common UI patterns
 mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
-  
   bool _isLoading = true;
   bool _hasError = false;
   Timer? _updateTimer;
-  
+
   /// Get the current loading state
   bool get isLoading => _isLoading;
-  
+
   /// Get the current error state
   bool get hasError => _hasError;
-  
+
   /// Initialize the widget - override this to set up initial data
   Future<void> initializeWidget();
-  
+
   /// Start the update timer - override to customize update frequency
   void startTimer() {
     // Default: update every hour
@@ -71,7 +72,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
 
   /// Refresh data - override this to implement data fetching
   Future<void> refreshData();
-  
+
   /// Get the extra content for the widget
   Widget? getExtraContent(BuildContext context) => null;
 
@@ -122,17 +123,26 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
   /// Build the common widget layout
   Widget buildCommonLayout() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+    return ScaledInkWell(
+      borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+      splashFactory: hasMultipleTapAreas() ? NoSplash.splashFactory : InkSplash.splashFactory,
+      onTap: () async {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          final page = await buildActionPage({'id': getActionId()});
+          if (mounted) {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+          }
+        });
+      },
+      background: (inkWell) => Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        child: inkWell,
+      ),
       child: Stack(
         children: [
-          // Background container with decoration
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainer,
-              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-            ),
             child: _buildContent(),
           ),
           // Background icon positioned on the right side
@@ -142,31 +152,11 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             child: Icon(
               getWidgetIcon(),
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.1),
             ),
           ),
-          // InkWell overlay for tap handling (only if no multiple tap areas)
-          if (!hasMultipleTapAreas())
-            Positioned.fill(
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-                  onTap: () async {
-                    WidgetsBinding.instance.addPostFrameCallback((_) async {
-                      final page = await buildActionPage({
-                        'id': getActionId(),
-                      });
-                      if (mounted) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => page),
-                        );
-                      }
-                    });
-                  },
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -181,23 +171,24 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget _buildInactiveState() {
-    
     return Center(
       child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 20,
-          height: 20,
-          child: hasError ? Icon(Icons.error_outline, size: 20) : CircularProgressIndicator(strokeWidth: 2),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          hasError ? getErrorText() : getLoadingText(),
-          style: const TextStyle(fontSize: 12),
-        ),
-      ],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: hasError
+                ? Icon(Icons.error_outline, size: 20)
+                : CircularProgressIndicator(strokeWidth: 2),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            hasError ? getErrorText() : getLoadingText(),
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
       ),
     );
   }
@@ -208,7 +199,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
     final bottomRightText = getBottomRightText();
     final bottomText = getBottomText();
     final extraContent = getExtraContent(context);
-    
+
     // Build main content (title and subtitle)
     Widget mainContent = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,15 +221,14 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             if (rightText != null) ...[
               Text(
                 rightText,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ],
             if (rightText == null) ...[
-              const Padding(padding: EdgeInsets.only(top: 2), child: 
-              Icon(Icons.chevron_right, size: 18),),
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
+                child: Icon(Icons.chevron_right, size: 18),
+              ),
             ],
           ],
         ),
@@ -254,30 +244,25 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
 
     // Wrap main content in tappable area if there are multiple tap areas
     if (hasMultipleTapAreas()) {
-      mainContent = Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-          onTap: () async {
-            WidgetsBinding.instance.addPostFrameCallback((_) async {
-              final page = await buildActionPage({
-                'id': getActionId(),
-              });
-              if (mounted) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => page),
-                );
-              }
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 2),
-            child: mainContent,
-          ),
+      mainContent = ScaledInkWell(
+        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
+        onTap: () async {
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            final page = await buildActionPage({'id': getActionId()});
+            if (mounted) {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => page));
+            }
+          });
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 2),
+          child: mainContent,
         ),
       );
     }
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -292,7 +277,9 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
               const Spacer(),
@@ -307,11 +294,8 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             ],
           ),
         ],
-        if (extraContent != null) ...[
-          const Spacer(),
-          extraContent,
-        ],
+        if (extraContent != null) ...[const Spacer(), extraContent],
       ],
     );
   }
-} 
+}

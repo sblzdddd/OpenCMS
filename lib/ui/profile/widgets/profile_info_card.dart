@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
+import '../../shared/scaled_ink_well.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   final String title;
@@ -28,9 +29,8 @@ class ProfileInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
+    return ScaledInkWell(
+      child: ScaledInkWell(
         onTap: isClickable ? onTap : null,
         borderRadius: themeNotifier.getBorderRadiusAll(0.75),
         child: Container(

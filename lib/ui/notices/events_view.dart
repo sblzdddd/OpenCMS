@@ -5,6 +5,7 @@ import '../../services/events/events_service.dart';
 import '../../services/auth/auth_service.dart';
 import '../shared/views/refreshable_view.dart';
 import '../../pages/actions/web_cms.dart';
+import '../shared/scaled_ink_well.dart';
 
 class EventsView extends StatefulWidget {
   const EventsView({super.key});
@@ -60,14 +61,17 @@ class _EventsViewState extends RefreshableView<EventsView> {
   }
 
   Widget _buildEventItem(StudentEvent event) {
-    return Card(
-      elevation: 0,
+    return ScaledInkWell(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
+      borderRadius: themeNotifier.getBorderRadiusAll(1),
+      onTap: () => _navigateToEventDetail(event),
+      background: (inkWell) => Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(1),
+        child: inkWell,
       ),
-      clipBehavior: Clip.antiAlias,
       child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
         title: Text(
           event.title,
           style: const TextStyle(fontWeight: FontWeight.w500),
@@ -111,7 +115,6 @@ class _EventsViewState extends RefreshableView<EventsView> {
           ],
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => _navigateToEventDetail(event),
       ),
     );
   }

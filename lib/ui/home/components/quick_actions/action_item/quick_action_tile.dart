@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../services/theme/theme_services.dart';
+import '../../../../shared/scaled_ink_well.dart';
 
 /// A generic quick action tile used by various quick action components.
 class QuickActionTile extends StatefulWidget {
@@ -31,7 +32,7 @@ class QuickActionTile extends StatefulWidget {
   State<QuickActionTile> createState() => _QuickActionTileState();
 }
 
-class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAliveClientMixin {
+class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -47,50 +48,52 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
     return SizedBox(
       width: widget.width,
       height: widget.height,
-      child: Material(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+      child: ScaledInkWell(
+        scaleDownFactor: 0.9,
+        onTap: widget.onTap,
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-        child: InkWell(
-          onTap: widget.onTap,
+        background: (inkWell) => Material(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-            decoration: BoxDecoration(
-              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: resolvedIconBg,
-                    borderRadius: themeNotifier.getBorderRadiusAll(1),
-                  ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Icon(
-                          widget.icon,
-                          color: resolvedIconColor,
-                          size: 27,
-                        ),
+          child: inkWell,
+        ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: resolvedIconBg,
+                  borderRadius: themeNotifier.getBorderRadiusAll(1),
+                ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Icon(
+                        widget.icon,
+                        color: resolvedIconColor,
+                        size: 27,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  widget.title,
-                  style: resolvedTitleStyle,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                widget.title,
+                style: resolvedTitleStyle,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
         ),
       ),

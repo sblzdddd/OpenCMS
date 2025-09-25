@@ -6,6 +6,7 @@ import '../../data/models/notification/daily_bulletin_response.dart' as cms;
 import '../../services/notification/daily_bulletin_service.dart';
 import '../shared/views/refreshable_view.dart';
 import '../../pages/actions/web_cms.dart';
+import '../shared/scaled_ink_well.dart';
 
 class DailyBulletinView extends StatefulWidget {
   const DailyBulletinView({super.key});
@@ -41,15 +42,17 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
   }
 
   Widget _buildDailyBulletinItem(cms.DailyBulletin dailyBulletin) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    return Card(
-      elevation: 0,
+    return ScaledInkWell(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
+      borderRadius: themeNotifier.getBorderRadiusAll(1),
+      onTap: () => _navigateToDailyBulletinDetail(dailyBulletin),
+      background: (inkWell) => Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(1),
+        child: inkWell,
       ),
-      clipBehavior: Clip.antiAlias,
       child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
         title: Text(
           dailyBulletin.title,
           style: const TextStyle(fontWeight: FontWeight.w500),
@@ -79,7 +82,6 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
           ],
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => _navigateToDailyBulletinDetail(dailyBulletin),
       ),
     );
   }

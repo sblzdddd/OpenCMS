@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/theme/theme_services.dart';
 import '../../data/constants/subject_icons.dart';
+import 'scaled_ink_well.dart';
 
 class TimetableCard extends StatelessWidget {
   final String subject;
@@ -64,17 +65,13 @@ class TimetableCard extends StatelessWidget {
             ],
           ),
         if (timespan != null || periodText != null) const SizedBox(height: 8),
-        Card(
-          margin: EdgeInsets.only(bottom: 12),
-          elevation: 1,
-          shadowColor: Colors.black.withValues(alpha: 0.05),
-          color: backgroundColor ?? theme.colorScheme.surfaceContainer,
-          shape: RoundedRectangleBorder(
-            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
+        ScaledInkWell(
             onTap: onTap,
+            background: (inkWell) => Material(
+              color: backgroundColor ?? theme.colorScheme.surfaceContainer,
+              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+              child: inkWell,
+            ),
             borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             child: Stack(
               children: [
@@ -195,7 +192,6 @@ class TimetableCard extends StatelessWidget {
               ],
             ),
           ),
-        ),
       ],
     );
   }

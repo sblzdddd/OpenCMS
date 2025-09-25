@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/constants/periods.dart';
 import '../../data/models/assessment/assessment_response.dart';
 import '../../services/assessment/assessment_service.dart';
 import '../shared/views/refreshable_page.dart';
 import 'assessment_chart_widget.dart';
+import '../components/assessment_type_counts_widget.dart';
 
 class SubjectAssessmentsView extends StatefulWidget {
   final SubjectAssessment subject;
@@ -29,7 +31,7 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
   }
   
   @override
-  String get appBarTitle => _currentSubject.subject;
+  String get appBarTitle => 'Assessments - ${_currentSubject.name.split('.')[0]} ${_currentSubject.subject}';
 
   @override
   Future<void> fetchData({bool refresh = false}) async {
@@ -71,41 +73,43 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
 
   Widget _buildHeader() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _currentSubject.subject,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${widget.academicYear.year}-${widget.academicYear.year + 1}',
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            '${_currentSubject.name.split('.')[0]} ${_currentSubject.subject}',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 28,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.5),
-                  borderRadius: themeNotifier.getBorderRadiusAll(999),
-                ),
-                child: Text(
-                  '${_currentSubject.assessments.length} Assessment${_currentSubject.assessments.length != 1 ? 's' : ''}',
-                  style: const TextStyle(fontSize: 12),
-                ),
+              Icon(Symbols.school_rounded, size: 16),
+              const SizedBox(width: 4),
+              Text(
+                _currentSubject.name,
+                style: const TextStyle(fontSize: 12),
+              ),
+              const SizedBox(width: 8),
+              Icon(Symbols.calendar_month_rounded, size: 16),
+              const SizedBox(width: 4),
+              Text(
+                '${widget.academicYear.year}-${widget.academicYear.year + 1}',
+                style: const TextStyle(fontSize: 12),
               ),
             ],
+          ),
+          const SizedBox(height: 8),
+          AssessmentTypeCountsWidget(
+            assessments: _currentSubject.assessments,
+            themeNotifier: themeNotifier,
           ),
         ],
       ),

@@ -112,7 +112,7 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
         
         // Regular draggable items
         return LongPressDraggable<Map<String, dynamic>>(
-          delay: const Duration(milliseconds: 300),
+          delay: const Duration(milliseconds: 400),
           data: {
             'index': index,
             'wrapId': _uniqueId, // Include wrap identifier in drag data

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/constants/periods.dart';
 import '../../data/models/assessment/assessment_response.dart';
 import '../../services/assessment/assessment_service.dart';
@@ -6,6 +8,8 @@ import '../../ui/shared/academic_year_dropdown.dart';
 import '../../ui/shared/views/refreshable_view.dart';
 import '../../services/theme/theme_services.dart';
 import '../../ui/assessments/subject_assessments_view.dart';
+import '../../ui/components/assessment_type_counts_widget.dart';
+import '../../ui/shared/scaled_ink_well.dart';
 
 class AssessmentPage extends StatefulWidget {
   final int initialTabIndex;
@@ -59,107 +63,54 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
     );
   }
 
-  Widget _buildSubjectItem(SubjectAssessment subject) {
+  Widget _buildSubjectItem(SubjectAssessment subject, BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     // Calculate performance statistics
     final validAssessments = subject.assessments.where((a) => a.percentageScore != null).toList();
     final averageScore = validAssessments.isNotEmpty
         ? validAssessments.map((a) => a.percentageScore!).reduce((a, b) => a + b) / validAssessments.length
         : 0.0;
     
-    final testCount = subject.assessments.where((a) => a.isTestOrExam).length;
-    final projectCount = subject.assessments.where((a) => a.isProject).length;
-    final homeworkCount = subject.assessments.where((a) => a.isHomework).length;
-    final practicalCount = subject.assessments.where((a) => a.isPractical).length;
-    final formativeCount = subject.assessments.where((a) => a.isFormative).length;
-
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
+    return ScaledInkWell(
+      onTap: () => _navigateToSubjectAssessments(subject), // Add this line
+      margin: const EdgeInsets.only(bottom: 8.0),
+      background: (inkWell) => Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        child: inkWell,
       ),
-      clipBehavior: Clip.antiAlias,
+      borderRadius: themeNotifier.getBorderRadiusAll(1.5),
       child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
         title: Text(
-          subject.subject,
+          '${subject.name.split('.')[0]} ${subject.subject}',
           style: const TextStyle(fontWeight: FontWeight.w500),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Row(
-              children: [
-                if (testCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _getAssessmentTypeColor('test').withValues(alpha: 0.2),
-                      borderRadius: themeNotifier.getBorderRadiusAll(999),
-                    ),
-                    child: Text(
-                      '$testCount Test${testCount > 1 ? 's' : ''}',
-                      style: TextStyle(fontSize: 12, color: _getAssessmentTypeColor('test')),
-                    ),
-                  ),
-                if (testCount > 0) const SizedBox(width: 4),
-                if (projectCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _getAssessmentTypeColor('project').withValues(alpha: 0.2),
-                      borderRadius: themeNotifier.getBorderRadiusAll(999),
-                    ),
-                    child: Text(
-                      '$projectCount Project${projectCount > 1 ? 's' : ''}',
-                      style: TextStyle(fontSize: 12, color: _getAssessmentTypeColor('project')),
-                    ),
-                  ),
-                if (projectCount > 0) const SizedBox(width: 4),
-                if (homeworkCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _getAssessmentTypeColor('homework').withValues(alpha: 0.2),
-                      borderRadius: themeNotifier.getBorderRadiusAll(999),
-                    ),
-                    child: Text(
-                      '$homeworkCount HW',
-                      style: TextStyle(fontSize: 12, color: _getAssessmentTypeColor('homework')),
-                    ),
-                  ),
-                if (homeworkCount > 0) const SizedBox(width: 4),
-                if (practicalCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _getAssessmentTypeColor('practical').withValues(alpha: 0.2),
-                      borderRadius: themeNotifier.getBorderRadiusAll(999),
-                    ),
-                    child: Text(
-                      '$practicalCount Practical${practicalCount > 1 ? 's' : ''}',
-                      style: TextStyle(fontSize: 12, color: _getAssessmentTypeColor('practical')),
-                    ),
-                  ),
-                if (practicalCount > 0) const SizedBox(width: 4),
-                if (formativeCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _getAssessmentTypeColor('formative').withValues(alpha: 0.2),
-                      borderRadius: themeNotifier.getBorderRadiusAll(999),
-                    ),
-                    child: Text(
-                      '$formativeCount Formative${formativeCount > 1 ? 's' : ''}',
-                      style: TextStyle(fontSize: 12, color: _getAssessmentTypeColor('formative')),
-                    ),
-                  ),
-              ],
+            AssessmentTypeCountsWidget(
+              assessments: subject.assessments,
+              themeNotifier: themeNotifier,
             ),
             if (validAssessments.isNotEmpty) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
+                  Icon(Symbols.school_rounded, size: 16),
+                  const SizedBox(width: 4),
+                  Text(
+                    subject.name,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(Symbols.avg_pace_rounded, size: 16),
+                  const SizedBox(width: 2),
                   Text(
                     'Average: ',
                     style: TextStyle(
@@ -181,7 +132,6 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
           ],
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => _navigateToSubjectAssessments(subject),
       ),
     );
   }
@@ -194,26 +144,20 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
     return Colors.red;
   }
 
-  Color _getAssessmentTypeColor(String type) {
-    final lowerType = type.toLowerCase();
-    if (lowerType.contains('test') || lowerType.contains('exam')) return Colors.red;
-    if (lowerType.contains('project')) return Colors.blue;
-    if (lowerType.contains('homework')) return Colors.green;
-    if (lowerType.contains('practical')) return Colors.orange;
-    if (lowerType.contains('formative')) return Colors.purple;
-    return Colors.grey;
-  }
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_assessmentData == null) {
       return const Center(child: CircularProgressIndicator());
     }
     
-    return ListView.builder(
-      itemCount: _assessmentData!.subjects.length,
-      itemBuilder: (context, index) {
-        return _buildSubjectItem(_assessmentData!.subjects[index]);
-      },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: ListView.builder(
+        itemCount: _assessmentData!.subjects.length,
+        itemBuilder: (context, index) {
+          return _buildSubjectItem(_assessmentData!.subjects[index], context);
+        },
+      ),
     );
   }
 

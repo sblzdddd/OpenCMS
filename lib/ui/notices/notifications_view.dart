@@ -4,6 +4,7 @@ import '../../data/models/notification/notification_response.dart' as cms;
 import '../../services/notification/notification_service.dart';
 import '../shared/views/refreshable_view.dart';
 import '../../pages/actions/web_cms.dart';
+import '../shared/scaled_ink_well.dart';
 
 class NotificationsView extends StatefulWidget {
   const NotificationsView({super.key});
@@ -38,14 +39,17 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
   }
 
   Widget _buildNotificationItem(cms.Notification notification) {
-    return Card(
-      elevation: 0,
+    return ScaledInkWell(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
+      borderRadius: themeNotifier.getBorderRadiusAll(1),
+      onTap: () => _navigateToNotificationDetail(notification),
+      background: (inkWell) => Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(1),
+        child: inkWell,
       ),
-      clipBehavior: Clip.antiAlias,
       child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
         title: Text(
           notification.title,
           style: const TextStyle(fontWeight: FontWeight.w500),
@@ -92,7 +96,6 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
           ],
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => _navigateToNotificationDetail(notification),
       ),
     );
   }

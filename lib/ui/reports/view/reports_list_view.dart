@@ -4,6 +4,7 @@ import '../../../services/reports/reports_service.dart';
 import '../../../data/models/reports/reports.dart';
 import '../../shared/views/refreshable_view.dart';
 import 'report_detail_view.dart';
+import '../../shared/scaled_ink_well.dart';
 
 class ReportsListView extends StatefulWidget {
   const ReportsListView({super.key});
@@ -40,14 +41,17 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
   }
 
   Widget _buildReportItem(Exam exam) {
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      shape: RoundedRectangleBorder(
+    return ScaledInkWell(
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      borderRadius: themeNotifier.getBorderRadiusAll(1),
+      onTap: () => _navigateToReportDetail(exam),
+      background: (inkWell) => Material(
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(1),
+        child: inkWell,
       ),
-      clipBehavior: Clip.antiAlias,
       child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
         title: Text(
           exam.name,
           style: const TextStyle(fontWeight: FontWeight.w500),
@@ -86,7 +90,6 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
           ],
         ),
         trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => _navigateToReportDetail(exam),
       ),
     );
   }

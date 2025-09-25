@@ -54,6 +54,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   syncfusion_flutter_charts: ^30.2.7
   flutter_colorpicker: ^1.1.0
+  image_picker: ^1.2.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:

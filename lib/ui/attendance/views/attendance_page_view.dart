@@ -319,16 +319,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
               },
               child: const Text('Clear'),
             ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  _selectedCourseIds
-                    ..clear()
-                    ..addAll(courses.map((e) => e.key));
-                });
-              },
-              child: const Text('Select all'),
-            ),
           ],
         ),
         const SizedBox(height: 8),

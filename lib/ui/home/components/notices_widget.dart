@@ -11,6 +11,7 @@ import '../../../services/notification/daily_bulletin_service.dart';
 import '../../../services/events/events_service.dart';
 import '../../../pages/actions.dart';
 import 'base_dashboard_widget.dart';
+import '../../shared/scaled_ink_well.dart';
 
 class NoticeCard extends StatefulWidget {
   final Size? widgetSize;
@@ -52,7 +53,9 @@ class _NoticeCardState extends State<NoticeCard>
     super.didUpdateWidget(oldWidget);
     if (widget.refreshTick != null &&
         widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint('NoticeCard: refreshTick changed -> refreshing with refresh=true');
+      debugPrint(
+        'NoticeCard: refreshTick changed -> refreshing with refresh=true',
+      );
       refresh();
     }
   }
@@ -281,27 +284,20 @@ class _NoticeCardState extends State<NoticeCard>
     required Widget child,
   }) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-        onTap: () async {
-          final navigator = Navigator.of(context);
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            final page = await buildActionPage({'id': actionId});
-            if (mounted) {
-              navigator.push(
-                MaterialPageRoute(
-                  builder: (_) => page,
-                ),
-              );
-            }
-          });
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-          child: child,
-        ),
+    return ScaledInkWell(
+      borderRadius: themeNotifier.getBorderRadiusAll(0.5),
+      onTap: () async {
+        final navigator = Navigator.of(context);
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          final page = await buildActionPage({'id': actionId});
+          if (mounted) {
+            navigator.push(MaterialPageRoute(builder: (_) => page));
+          }
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+        child: child,
       ),
     );
   }

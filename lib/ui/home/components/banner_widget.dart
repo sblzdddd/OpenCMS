@@ -8,6 +8,7 @@ import '../../../data/constants/periods.dart';
 import '../../../services/auth/auth_service.dart';
 import 'dart:async';
 import '../../../ui/profile/pages/profile_page.dart';
+import '../../shared/scaled_ink_well.dart';
 class BannerWidget extends StatefulWidget {
   const BannerWidget({super.key});
 
@@ -75,7 +76,7 @@ class _BannerWidgetState extends State<BannerWidget> with AutomaticKeepAliveClie
   Widget build(BuildContext context) {
     super.build(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    return InkWell(
+    return ScaledInkWell(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfilePage()));
       },
