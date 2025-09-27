@@ -102,6 +102,7 @@ class WindowEffectService with ChangeNotifier {
         await Window.setEffect(effect: WindowEffect.disabled);
       } else {
         WindowEffect flutterEffect = _getFlutterWindowEffect(windowEffect);
+        print('info: flutterEffect: $flutterEffect, color: $color, isDarkMode: $isDarkMode');
         
         await Window.setEffect(
           effect: flutterEffect,
@@ -110,7 +111,6 @@ class WindowEffectService with ChangeNotifier {
         );
       }
     } catch (e) {
-      // Handle error silently or log it
       print('Failed to apply window effect: $e');
     }
   }
