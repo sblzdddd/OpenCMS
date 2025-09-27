@@ -89,16 +89,21 @@ LoginResult handleSuccessResponse(
   Map<String, dynamic>? responseData,
 ) {
   if (responseData != null && responseData.containsKey('detail')) {
-    final detail = responseData['detail'] as String;
-    
-    if (detail == 'Successfully logged in!') {
-      debugPrint('LoginFunctions: Login successful');
-      
-      return LoginResult.success(
-        message: detail,
-        data: responseData,
-      );
+    final detail = responseData['detail'];
+    // Safe casting with null check
+    if (detail is String) {
+      if (detail != 'Successfully logged in!') {
+        debugPrint('Warning: Login might not be successful with detail: $detail');
+        return LoginResult.error(
+          message: detail,
+          data: responseData,
+        );
+      }
     }
+    return LoginResult.success(
+      message: detail,
+      data: responseData,
+    );
   }
   
   // Unexpected success response format

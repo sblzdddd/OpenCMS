@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import '../../../services/calendar/calendar_service.dart';
 import '../../../data/models/calendar/calendar.dart';
+import '../../../ui/shared/widgets/custom_app_bar.dart';
 
 class SchoolCalendarView extends StatefulWidget {
   const SchoolCalendarView({super.key});
@@ -25,6 +28,12 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   // Track unique event types and their assigned colors
   final Map<String, Color> _eventColors = {};
   int _nextColorIndex = 0;
+  
+  // Calendar configuration
+  final bool _showLeadingAndTrailingDates = true;
+  final bool _showWeekNumber = false;
+  final bool _showDatePickerButton = true;
+  final ViewNavigationMode _viewNavigationMode = ViewNavigationMode.snap;
 
   @override
   void initState() {
@@ -88,11 +97,11 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('School Calendar'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Symbols.refresh_rounded),
             onPressed: () => _loadCalendar(_calendarController.displayDate ?? DateTime.now(), refresh: true),
           ),
         ],
@@ -109,7 +118,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              Symbols.error_outline_rounded,
               size: 48,
               color: Theme.of(context).colorScheme.error,
             ),
@@ -143,66 +152,86 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
     final events = _buildCalendarEvents();
     return Stack(
       children: [
-        SfCalendar(
-          controller: _calendarController,
-          allowedViews: [
-            CalendarView.month,
-            CalendarView.week,
-            CalendarView.workWeek,
-            CalendarView.day,
-          ],
-          view: CalendarView.week,
-          firstDayOfWeek: 7, // Sunday
-          dataSource: _CalendarDataSource(events),
-          showCurrentTimeIndicator: true,
-          onViewChanged: _onViewChanged,
-          monthViewSettings: const MonthViewSettings(
-            showAgenda: true,
-            appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
-            agendaViewHeight: 200,
-            agendaItemHeight: 60,
-            showTrailingAndLeadingDates: true,
+        SfCalendarTheme(
+          data: SfCalendarThemeData(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            headerTextStyle: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+            todayHighlightColor: Theme.of(context).colorScheme.primary,
+            viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
           ),
-          timeSlotViewSettings: const TimeSlotViewSettings(
-            nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
-            timeIntervalHeight: 60,
-            timeRulerSize: 100,
-            minimumAppointmentDuration: Duration(minutes: 30),
-          ),
-          appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-            final SchoolCalendarAppointment event = details.appointments.first as SchoolCalendarAppointment;
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-              decoration: BoxDecoration(
-                color: event.color,
-                borderRadius: themeNotifier.getBorderRadiusAll(0.25),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    event.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
+          child: SfCalendar(
+            controller: _calendarController,
+            allowedViews: [
+              CalendarView.month,
+              CalendarView.schedule,
+              CalendarView.week,
+              CalendarView.day,
+            ],
+            view: CalendarView.week,
+            firstDayOfWeek: 7, // Sunday
+            dataSource: _CalendarDataSource(events),
+            showCurrentTimeIndicator: true,
+            allowViewNavigation: true,
+            showDatePickerButton: _showDatePickerButton,
+            viewNavigationMode: _viewNavigationMode,
+            showWeekNumber: _showWeekNumber,
+            onViewChanged: _onViewChanged,
+            monthViewSettings: MonthViewSettings(
+              showAgenda: false,
+              appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+              showTrailingAndLeadingDates: _showLeadingAndTrailingDates,
+            ),
+            timeSlotViewSettings: const TimeSlotViewSettings(
+              nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
+              timeIntervalHeight: 60,
+              timeRulerSize: 50,
+              minimumAppointmentDuration: Duration(minutes: 30),
+            ),
+            appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
+              final SchoolCalendarAppointment event = details.appointments.first as SchoolCalendarAppointment;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: event.color,
+                  borderRadius: themeNotifier.getBorderRadiusAll(0.25),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      event.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            );
-          },
-          onTap: (details) {
-            if (details.targetElement == CalendarElement.appointment &&
-                details.appointments != null &&
-                details.appointments!.isNotEmpty) {
-              final SchoolCalendarAppointment tapped = details.appointments!.first as SchoolCalendarAppointment;
-              _showEventDetailDialog(tapped);
-            }
-          },
+                  ],
+                ),
+              );
+            },
+            onTap: (details) {
+              if (details.targetElement == CalendarElement.appointment &&
+                  details.appointments != null &&
+                  details.appointments!.isNotEmpty) {
+                final SchoolCalendarAppointment tapped = details.appointments!.first as SchoolCalendarAppointment;
+                _showEventDetailDialog(tapped);
+              } else if (details.targetElement == CalendarElement.calendarCell) {
+                // Navigate to day view when tapping on a month cell
+                final DateTime tappedDate = details.date!;
+                _calendarController.view = CalendarView.week;
+                _calendarController.displayDate = tappedDate;
+              }
+            },
+          ),
         ),
         if (_isLoading)
           const Positioned(
@@ -375,7 +404,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.schedule, color: Colors.orange, size: 16),
+                      Icon(Symbols.schedule_rounded, color: Colors.orange, size: 16),
                       SizedBox(width: 8),
                       Text(
                         'This event has been postponed',

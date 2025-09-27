@@ -63,9 +63,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_isCalendarView) {
       return ExamTimetableCalendarView(
-        exams: _exams,
         onExamTap: (exam) => _showExamOptionsMenu(context, exam),
-        selectedMonth: _selectedMonth,
         selectedYear: _selectedYear,
       );
     } else {
@@ -106,7 +104,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   String get errorTitle => 'Failed to load timetable';
 
   @override
-  bool get isEmpty => _exams.isEmpty;
+  bool get isEmpty => _isCalendarView ? false : _exams.isEmpty;
 
   void _onMonthChanged(int? newMonth) {
     if (newMonth == null) return;
@@ -152,7 +150,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
           value: 'add_to_calendar',
           child: Row(
             children: [
-              Icon(Icons.calendar_today, size: 20),
+              Icon(Symbols.calendar_today_rounded, size: 20),
               const SizedBox(width: 8),
               Text('Add schedule in system calendar'),
             ],
@@ -210,45 +208,47 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
     return Scaffold(
       body: Column(
         children: [
-          // Top bar with month and year dropdowns aligned right
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 4,
-              right: 12,
-              left: 12,
-              bottom: 4,
-            ),
-            child: Row(
-              children: [
-                Text('Month: ', style: Theme.of(context).textTheme.bodyLarge),
-                const SizedBox(width: 8),
-                DropdownButton<int>(
-                  value: _selectedMonth,
-                  onChanged: _onMonthChanged,
-                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-                  padding: const EdgeInsets.only(
-                    left: 12,
-                    right: 6,
-                    top: 0,
-                    bottom: 0,
-                  ),
-                  underline: Container(),
-                  items: months
-                      .map(
-                        (m) => DropdownMenuItem(
-                          value: m,
-                          child: Text(
-                            '${PeriodConstants.monthNames[m - 1]} ($m)',
+          // Top bar with month and year dropdowns aligned right - only show in list view
+          if (!_isCalendarView) ...[
+            Padding(
+              padding: const EdgeInsets.only(
+                top: 4,
+                right: 12,
+                left: 12,
+                bottom: 4,
+              ),
+              child: Row(
+                children: [
+                  Text('Month: ', style: Theme.of(context).textTheme.bodyLarge),
+                  const SizedBox(width: 8),
+                  DropdownButton<int>(
+                    value: _selectedMonth,
+                    onChanged: _onMonthChanged,
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      right: 6,
+                      top: 0,
+                      bottom: 0,
+                    ),
+                    underline: Container(),
+                    items: months
+                        .map(
+                          (m) => DropdownMenuItem(
+                            value: m,
+                            child: Text(
+                              '${PeriodConstants.monthNames[m - 1]} ($m)',
+                            ),
                           ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const SizedBox(width: 16),
-              ],
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(width: 16),
+                ],
+              ),
             ),
-          ),
-          const Divider(height: 1),
+            const Divider(height: 1),
+          ],
           Expanded(child: super.build(context)),
         ],
       ),
@@ -258,7 +258,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
           FloatingActionButton(
             onPressed: _toggleView,
             heroTag: 'toggle_view',
-            child: Icon(_isCalendarView ? Icons.list : Icons.calendar_month),
+            child: Icon(_isCalendarView ? Symbols.list_rounded : Symbols.calendar_month_rounded),
           ),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import '../../shared/scaled_ink_well.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   final String title;
@@ -110,7 +111,7 @@ class ProfileInfoCard extends StatelessWidget {
               if (isClickable) ...[
                 SizedBox(width: 4),
                 Icon(
-                  Icons.chevron_right,
+                  Symbols.chevron_right_rounded,
                   color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   size: 16,
                 ),

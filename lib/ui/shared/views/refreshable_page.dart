@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'refreshable_view.dart';
 import '../../../services/theme/theme_services.dart';
+import '../../../ui/shared/widgets/custom_app_bar.dart';
 export '../../../services/theme/theme_services.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
@@ -32,7 +34,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: Text(appBarTitle),
         leading: appBarLeading,
         actions: appBarActions,
@@ -81,7 +83,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.inbox_outlined,
+                Symbols.inbox_rounded,
                 size: 64,
                 color: Colors.grey,
               ),

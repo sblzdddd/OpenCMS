@@ -163,10 +163,13 @@ class _HomeworkCardState extends State<HomeworkCard> {
                       ),
                     ),
                   ),
-                  Icon(
-                    widget.isExpanded
-                        ? Symbols.expand_less_rounded
-                        : Symbols.expand_more_rounded,
+                  AnimatedRotation(
+                    turns: widget.isExpanded ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeOutCubic,
+                    child: Icon(
+                      Symbols.expand_more_rounded,
+                    ),
                   ),
                 ],
               ),
@@ -244,16 +247,24 @@ class _HomeworkCardState extends State<HomeworkCard> {
                 ],
               ),
 
-              // Expanded detailed info
-              if (widget.isExpanded) ...[
-                const SizedBox(height: 16),
-                const Divider(),
-                const SizedBox(height: 12),
-                _buildDetailedInfo(
-                  widget.homework,
-                  widget.selectedYearDisplayName,
-                ),
-              ],
+              // Expanded detailed info with animation
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                child: widget.isExpanded
+                    ? Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          const Divider(),
+                          const SizedBox(height: 12),
+                          _buildDetailedInfo(
+                            widget.homework,
+                            widget.selectedYearDisplayName,
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
             ],
           ),
         ),

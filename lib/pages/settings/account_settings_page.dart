@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
+import '../../ui/shared/widgets/custom_app_bar.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -13,9 +15,9 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Symbols.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('Theme Settings'),
@@ -48,8 +50,8 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                               children: [
                                 Icon(
                                   themeNotifier.isDarkMode 
-                                    ? Icons.dark_mode 
-                                    : Icons.light_mode,
+                                    ? Symbols.dark_mode_rounded 
+                                    : Symbols.light_mode_rounded,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 12),
@@ -77,7 +79,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                             Row(
                               children: [
                                 Icon(
-                                  Icons.access_time,
+                                  Symbols.access_time_rounded,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 12),

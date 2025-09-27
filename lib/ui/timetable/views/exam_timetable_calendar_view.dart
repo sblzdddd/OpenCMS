@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import '../../../../services/theme/theme_services.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
+import '../../../services/timetable/exam_timetable_service.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ExamTimetableCalendarView extends StatefulWidget {
-  final List<ExamTimetableEntry> exams;
   final Function(ExamTimetableEntry) onExamTap;
-  final int selectedMonth;
   final int selectedYear;
 
   const ExamTimetableCalendarView({
     super.key,
-    required this.exams,
     required this.onExamTap,
-    required this.selectedMonth,
     required this.selectedYear,
   });
 
@@ -23,27 +22,38 @@ class ExamTimetableCalendarView extends StatefulWidget {
 }
 
 class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
+  final ExamTimetableService _examService = ExamTimetableService();
+  late CalendarController _calendarController;
+  
+  List<ExamTimetableEntry> _exams = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+  int? _loadedYear;
+  int? _loadedMonth;
+  
   // Track unique courses and their assigned colors
   final Map<String, Color> _courseColors = {};
   int _nextColorIndex = 0;
-  late CalendarController _calendarController;
-  late DateTime _currentDisplayDate;
+  
+  // Calendar configuration
+  final bool _showLeadingAndTrailingDates = true;
+  final bool _showWeekNumber = false;
+  final bool _showDatePickerButton = true;
+  final ViewNavigationMode _viewNavigationMode = ViewNavigationMode.snap;
 
   @override
   void initState() {
     super.initState();
     _calendarController = CalendarController();
-    _currentDisplayDate = DateTime(widget.selectedYear, widget.selectedMonth, 1);
+    _loadExams(DateTime.now());
   }
 
   @override
   void didUpdateWidget(ExamTimetableCalendarView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Navigate to the selected month when it changes
-    if (oldWidget.selectedMonth != widget.selectedMonth || 
-        oldWidget.selectedYear != widget.selectedYear) {
-      _currentDisplayDate = DateTime(widget.selectedYear, widget.selectedMonth, 1);
-      _calendarController.displayDate = _currentDisplayDate;
+    // Navigate to the selected year when it changes
+    if (oldWidget.selectedYear != widget.selectedYear) {
+      _loadExams(DateTime(widget.selectedYear, 1, 1));
     }
   }
 
@@ -53,113 +63,235 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
     super.dispose();
   }
 
+  Future<void> _loadExams(DateTime date, {bool refresh = false}) async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final exams = await _examService.fetchExamTimetable(
+        year: date.year,
+        month: date.month,
+        refresh: refresh,
+      );
+      
+      if (!mounted) return;
+      setState(() {
+        _exams = exams;
+        _loadedYear = date.year;
+        _loadedMonth = date.month;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _errorMessage = e.toString();
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _onViewChanged(ViewChangedDetails details) async {
+    final List<DateTime> visible = details.visibleDates;
+    final DateTime newDate = visible.isNotEmpty
+        ? visible[visible.length ~/ 2]
+        : DateTime.now();
+
+    // Avoid reloading if already loading or month/year unchanged
+    if (_isLoading == true) return;
+    if (_loadedYear == newDate.year && _loadedMonth == newDate.month) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _loadExams(newDate);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final courses = _buildCourses();
+    return _buildCalendarBody();
+  }
 
-    if (courses.isEmpty) {
+  Widget _buildCalendarBody() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    if (_errorMessage != null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.event_busy_rounded,
+              Symbols.error_outline_rounded,
               size: 48,
-              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+              color: Theme.of(context).colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load exam timetable',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
-            const Text('No exams scheduled for this month'),
+            Text(
+              _errorMessage!,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => _loadExams(DateTime.now()),
+              child: const Text('Retry'),
+            ),
           ],
         ),
       );
     }
 
-    return SfCalendar(
-      controller: _calendarController,
-      allowedViews: [CalendarView.month, CalendarView.workWeek],
-      view: CalendarView.month,
-      firstDayOfWeek: 1,
-      dataSource: _ExamDataSource(courses),
-      showCurrentTimeIndicator: true,
-      initialDisplayDate: _currentDisplayDate,
-      monthViewSettings: const MonthViewSettings(
-        showAgenda: true,
-        appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-        agendaViewHeight: 200,
-        agendaItemHeight: 60,
-        showTrailingAndLeadingDates: true,
-      ),
-      timeSlotViewSettings: TimeSlotViewSettings(
-        startHour: 7.5, // 07:30
-        endHour: 18.5, // 18:30
-        nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
-        timeIntervalHeight: 60,
-        timeRulerSize: 100,
-        minimumAppointmentDuration: Duration(minutes: 30),
-      ),
-      appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-        final ExamCourse course = details.appointments.first as ExamCourse;
-        final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-        return Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: course.color,
-            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                course.subject,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+    final courses = _buildCourses();
+    return Column(
+      children: [
+        if (_isLoading)
+          const LinearProgressIndicator(minHeight: 2),
+        Expanded(
+          child: SfCalendarTheme(
+            data: SfCalendarThemeData(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              headerTextStyle: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
-              Text(
-                course.code,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 8,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              todayHighlightColor: Theme.of(context).colorScheme.primary,
+              viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            ),
+            child: SfCalendar(
+              controller: _calendarController,
+              allowedViews: [
+                CalendarView.month,
+                CalendarView.schedule,
+                CalendarView.week,
+                CalendarView.day,
+                CalendarView.timelineDay,
+                CalendarView.timelineWeek,
+              ],
+              view: CalendarView.month,
+              firstDayOfWeek: 1,
+              dataSource: _ExamDataSource(courses),
+              showCurrentTimeIndicator: true,
+              allowViewNavigation: true,
+              showDatePickerButton: _showDatePickerButton,
+              viewNavigationMode: _viewNavigationMode,
+              showWeekNumber: _showWeekNumber,
+              onViewChanged: _onViewChanged,
+              monthViewSettings: MonthViewSettings(
+                showAgenda: false,
+                appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+                showTrailingAndLeadingDates: _showLeadingAndTrailingDates,
               ),
-              if (course.location.isNotEmpty && course.location != 'TBA') ...[
-                const Spacer(),
-                Text(
-                  '${course.location} • ${course.seat}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
+              timeSlotViewSettings: TimeSlotViewSettings(
+                startHour: 7.5, // 07:30
+                endHour: 18.5, // 18:30
+                nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
+                timeIntervalHeight: 60,
+                timeRulerSize: 50,
+                minimumAppointmentDuration: Duration(minutes: 30),
+              ),
+              appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
+                final ExamCourse course = details.appointments.first as ExamCourse;
+                final CalendarView currentView = _calendarController.view ?? CalendarView.month;
+                
+                // Simplified layout for month view
+                if (currentView == CalendarView.month) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: course.color,
+                      borderRadius: themeNotifier.getBorderRadiusAll(0.25),
+                    ),
+                    child: Text(
+                      course.subject,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }
+                
+                // Detailed layout for other views (week, workWeek, day)
+                return Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: course.color,
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.25),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ]
-            ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        course.subject,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        course.code,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 8,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (course.location.isNotEmpty && course.location != 'TBA') ...[
+                        const Spacer(),
+                        Text(
+                          '${course.location} • ${course.seat}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ]
+                    ],
+                  ),
+                );
+              },
+              onTap: (details) {
+                if (details.targetElement == CalendarElement.appointment &&
+                    details.appointments != null &&
+                    details.appointments!.isNotEmpty) {
+                  final ExamCourse tapped = details.appointments!.first as ExamCourse;
+                  widget.onExamTap(tapped.sourceExam);
+                } else if (details.targetElement == CalendarElement.calendarCell) {
+                  // Navigate to day view when tapping on a month cell
+                  final DateTime tappedDate = details.date!;
+                  _calendarController.view = CalendarView.week;
+                  _calendarController.displayDate = tappedDate;
+                }
+              },
+            ),
           ),
-        );
-      },
-      onTap: (details) {
-        if (details.targetElement == CalendarElement.appointment &&
-            details.appointments != null &&
-            details.appointments!.isNotEmpty) {
-          final ExamCourse tapped = details.appointments!.first as ExamCourse;
-          widget.onExamTap(tapped.sourceExam);
-        }
-      },
+        ),
+      ],
     );
   }
 
   List<ExamCourse> _buildCourses() {
     final List<ExamCourse> courses = <ExamCourse>[];
     
-    for (final exam in widget.exams) {
+    for (final exam in _exams) {
       final DateTime startDate = _parseExamDateTime(exam.date, exam.startTime);
       final DateTime endDate = _parseExamDateTime(exam.date, exam.endTime);
       

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class MyGpaView extends StatelessWidget {
   const MyGpaView({super.key});
@@ -10,7 +11,7 @@ class MyGpaView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.calculate_outlined,
+            Symbols.calculate_rounded,
             size: 64,
             color: Colors.grey,
           ),

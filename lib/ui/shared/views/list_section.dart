@@ -3,12 +3,12 @@ library;
 
 import 'package:flutter/material.dart';
 
-class ProfileSection extends StatelessWidget {
+class ListSection extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
 
-  const ProfileSection({
+  const ListSection({
     super.key,
     required this.title,
     required this.icon,
@@ -27,15 +27,14 @@ class ProfileSection extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 20,
+                size: 16,
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 6),
               Text(
                 title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],

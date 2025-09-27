@@ -71,7 +71,13 @@ select:-webkit-autofill {
   background-color: transparent !important;
 }
 
-.ant-card-bordered, .ant-breadcrumb, .sidebar-link:hover, .ant-menu {
+.ant-layout-header .ant-menu.ant-menu-root.ant-menu-horizontal.ant-menu-dark {
+  display: none!important;
+}
+
+.ant-card-bordered, .ant-breadcrumb, .sidebar-link:hover, .ant-menu,
+.navbar-inner, .list-group-item,
+.main_tops, .red {
   background-color: $darkCardColorCss !important;
   border: none !important;
 }
@@ -144,8 +150,8 @@ body {
   overflow: hidden !important;
 }
 
-.span6 {
-  background-color: $primaryColorCss !important;
+.span6, .span12 {
+  background-color: $primaryColorCssTransparent !important;
 }
 
 .ant-radio-button-wrapper-checked {
@@ -752,7 +758,7 @@ a:hover{text-decoration:underline;color:$primaryColorCss;font-size:14px;}
 .absent{background:#ffeeee;cursor:pointer}
 .yearlist{background:transparent; border-bottom: 1px solid $primaryColorCss;}
 .yearlist_top{background:transparent; border-top: 1px solid $primaryColorCss;}
-.studentgpa{background:#ffffff url('/static/images/bgyearlist.gif') repeat-x bottom; padding:0px 0px 0px 10px;}
+.studentgpa{background:$cardHeadColorCss repeat-x bottom; padding:0px 0px 0px 10px;}
 .monlist{border:1px solid #BB5557;border-top:0px;background:#EC8688 url('/static/images/bgmonth.gif') repeat-x top;height:28px;}
 .actyear{font-size:12px;font-weight:bold;color:$primaryColorCss;float:right;border:1px solid #BB5557;border-bottom:1px solid #F2ABAD;padding:0px 10px;line-height:24px;margin-right:5px;background:#F2A7A8 url('/static/images/bgyear.gif') repeat-x top;}
 .actyear_mor{font-size:12px;font-weight:bold;color:$primaryColorCss;float:right;border:1px solid #BB5557;border-bottom:1px solid #F2ABAD;padding:0px 10px;line-height:24px;margin-right:5px;background:#F2A7A8 url('/static/images/bgyear_mor.gif') repeat-x top;}
@@ -1189,9 +1195,9 @@ a:hover{text-decoration:underline;color:$primaryColorCss;font-size:14px;}
 .wiveye{float:left;background:$primaryColorCss;color:#ffffff;padding:0 3px;line-height:14px;text-align:center;margin-right:3px;}
 .wiveye_span{background-color:$primaryColorCss;color:#ffffff;padding:3px;line-height:14px;text-align:center;margin-right:3px;}
 .wiveye_span2{background-color:$primaryColorCss;color:#ffffff;padding:3px;line-height:14px;text-align:center;margin:1px;display:inline-block;}
-.taeiyv_bj{background:url('/static/images/techrtr_bj.jpg') repeat-x; height:34px;color:#555;line-height: 18px;}
-.taeiyv_bj1{background:url('/static/images/techrtr_bj1.jpg') repeat-x; height:34px;color:#555;line-height: 18px;}
-.taeiyv_bj_11per{background:url('/static/images/techrtr_bj_11per.jpg') repeat-x; height:34px;color:#555;line-height: 18px;}
+.taeiyv_bj{background:none; height:34px;color:#555;line-height: 18px;}
+.taeiyv_bj1{background:none; height:34px;color:#555;line-height: 18px;}
+.taeiyv_bj_11per{background:none; height:34px;color:#555;line-height: 18px;}
 .taeiyv_bj .week,.taeiyv_bj1 .week,.taeiyv_bj_11per .week{padding-left:30px;font-weight: bold;}
 .taeiyv_bj .lesson,.taeiyv_bj1 .lesson,.taeiyv_bj_11per .lesson{font-weight: bold;}
 .taepafy{position:relative;top:7px;}
@@ -1383,8 +1389,8 @@ div.isntw .ws-div{color:#aaa;}
 .sel12 a:visited{text-decoration:none;color:#000000;font-size:12px;}
 .sel12 a:hover{text-decoration:none;color:#ffffff;font-size:12px;}
 
-.adfev{font-size:12px;font-weight:bold;color:$primaryColorCss;float:right;border:1px solid #BB5557;border-bottom:1px solid #F2ABAD;padding:0px 10px;line-height:24px;margin-right:5px;background:#F2A7A8 url('/static/images/bgyear_eve.gif') repeat-x top;}
-.evwear{float:right;border:1px solid #cccccc;border-bottom:0px;padding:0px 10px;line-height:24px;margin-right:5px;background:$cardHeadColorCss !important;}
+.adfev{font-size:12px;font-weight:bold;color:$primaryColorCss;float:right;border:1px solid $primaryColorCss;border-bottom:1px solid #F2ABAD;padding:0px 10px;line-height:24px;margin-right:5px;background:$primaryColorCssTransparent !important;}
+.evwear{float:right;border:1px solid #cccccc;border-bottom:0px;padding:0px 10px;line-height:24px;margin-right:5px;background:transparent !important;}
 .evwear_1{float:right;border:1px solid #cccccc;padding:0px 10px;line-height:24px;margin-right:5px;background:$cardHeadColorCss !important;}
 
 /*  1迟到.2旷课.3请假  4病假 5事假*/
@@ -1792,14 +1798,92 @@ input{vertical-align:middle; margin-top:-2px; margin-bottom:1px;}
 .rotate315{transform: rotate(315deg);}
 .gradient-bg-180{background-image: linear-gradient(180deg, #003399, #CC0033);color: #FFF;}
 #blockCity{ position:absolute;font-size:9pt;  background-color:#FFFFCC; padding:5px; border:1px solid #F5C66B;line-height:160%; width:auto; display:none;}
-            
+
+.rightbar1>#leaders1>ul>.sec1:nth-child(1),
+.rightbar1>#leaders1>ul>.sec1:nth-child(3) {
+  display: none!important;
+}
+
+
+.searchable-select-holder, .searchable-select-dropdown, .searchable-has-privious {
+  background-color: $cardHeadColorCss !important;
+}
+
+option {
+  background-color: $cardHeadColorCss !important;
+  color: $onSurfaceCss !important;
+}
+
+.main1_w100>.main1_w100.noprint {
+  display: none!important;
+}
+
+.main1>.main1.noprint,
+.leftbar>.login>.a12.top5.t_right,
+header .ant-space.ant-space-horizontal.ant-space-align-center.ant-space-gap-row-small.ant-space-gap-col-small.ant-dropdown-trigger:nth-child(3) {
+  display: none!important;
+}
+
+.main1>.leftbar>.logo>a {
+  pointer-events: none!important;
+}
+
+.list-group-item > a {
+  color: $onSurfaceCss !important;
+}
+
+.category-block{display:inline-block;margin-left:10px; margin-top:10px; background-color:$cardHeadColorCss !important;color:#555;height:130px;text-align: center;cursor: pointer; line-height: 2.15em;}
+.category-block.available{background-color:$primaryColorCssTransparent !important;color:#FFF;}
+.category-block.available.other{background-color: #f0bf00 !important;color: #FFF;}
+.category-block .t_right{margin-right: 5px;}
+.category-block .title{font-size:1.5em;}
+.category-block .themes{font-size:0.9em;font-weight: normal;line-height: 1.5em;}
 `));
 (document.head || document.documentElement).appendChild(s);
-const header = document.querySelector('.ant-layout-header');
-if (header) {
+// Observer for ant-layout-header creation
+const headerObserver = new MutationObserver((mutations) => {
+  mutations.forEach((mutation) => {
+    mutation.addedNodes.forEach((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        // Check if the added node is the header itself
+        if (node.classList && node.classList.contains('ant-layout-header')) {
+          applyHeaderStyles(node);
+        }
+        // Check if the added node contains the header
+        const header = node.querySelector && node.querySelector('.ant-layout-header');
+        if (header) {
+          applyHeaderStyles(header);
+        }
+      }
+    });
+  });
+});
+
+// Function to apply header styles
+function applyHeaderStyles(header) {
+  console.log(header);
   header.style.backgroundImage = 'none';
   header.style.background = 'none';
   header.style.height = '64px';
+  // Remove color attribute from all anchor tags
+  console.log(header.querySelectorAll("a"));
+  header.querySelectorAll("a").forEach(el => {
+    console.log(el);
+    el.removeAttribute("color");
+    el.style.color = '';
+  });
+}
+
+// Start observing
+headerObserver.observe(document.body, {
+  childList: true,
+  subtree: true
+});
+
+// Also check if header already exists
+const existingHeader = document.querySelector('.ant-layout-header');
+if (existingHeader) {
+  applyHeaderStyles(existingHeader);
 }
 
 const footer = document.querySelector('.ant-layout-footer');
@@ -1816,7 +1900,20 @@ if (content) {
 document.querySelectorAll(".part_uae.m_bottom5, .ct2.a12.b, #msform, .main1.noprint, .top20.t_12").forEach(el => {
   el.removeAttribute("style");
 });
+
+if(window.location.pathname.includes("/user/")) {
+  document.querySelectorAll("th, td").forEach(el => {
+    el.style.backgroundColor = 'transparent';
+  });
+  document.querySelectorAll("tr").forEach(el => {
+    el.style.backgroundColor = 'transparent';
+    el.bgColor = 'transparent';
+  });
 }
+
+
+}
+ensure2();
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', ensure2);
 } else {

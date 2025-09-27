@@ -12,8 +12,9 @@ import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
 import 'services/skin/skin_provider.dart';
 import 'package:provider/provider.dart';
-import 'util.dart';
-import 'global_press_scale.dart';
+import 'utils/text_theme_util.dart';
+import 'utils/global_press_scale.dart';
+import 'ui/shared/widgets/custom_app_bar.dart';
 
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
@@ -52,9 +53,8 @@ Future<void> initWindowManager() async {
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = WindowOptions(
-    size: Size(1000, 720),
     minimumSize: Size(400, 400),
-    titleBarStyle: TitleBarStyle.normal,
+    titleBarStyle: TitleBarStyle.hidden,
   );
   windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
@@ -180,6 +180,12 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const LoginPage(),
               '/home': (context) => const HomePage(),
             },
+            builder: (context, child) {
+              return MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+                  child: child!,
+                );
+            },
           );
         },
       ),
@@ -275,6 +281,11 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
               ),
             ],
           ),
+        ),
+        
+        appBar: PreferredSize(
+          preferredSize: const Size(double.maxFinite, 50),
+          child: CustomAppBar(),
         ),
       );
     }

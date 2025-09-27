@@ -52,7 +52,7 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsB
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       controller: widget.scrollController,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -68,8 +68,8 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsB
             ),
             const SizedBox(height: 8),
             ..._buildDayEvents(dayIndex),
-            const SizedBox(height: 16),
-            if (dayIndex != 4) const Divider(height: 32),
+            const SizedBox(height: 8),
+            if (dayIndex != 4) const Divider(height: 16),
             if (dayIndex != 4) const SizedBox(height: 8),
           ],
           const SizedBox(height: 400),

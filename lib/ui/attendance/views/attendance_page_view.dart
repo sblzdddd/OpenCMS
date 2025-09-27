@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../services/attendance/attendance_service.dart';
@@ -147,7 +146,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
             children: [
               Text(
                 '${_startDate?.year}-${_endDate?.year} Attendance',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               const Spacer(),
               if (_selectedCourseIds.isNotEmpty)
@@ -157,28 +156,48 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
                   overflow: TextOverflow.ellipsis,
                 ),
               const SizedBox(width: 8),
-              IconButton(
-                tooltip: 'Toggle settings',
-                icon: Icon(
-                  Symbols.settings_rounded,
-                  fill: _showSettings ? 1 : 0,
+              AnimatedRotation(
+                turns: _showSettings ? 0.125 : 0.0, // 45 degrees rotation
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                child: IconButton(
+                  tooltip: 'Toggle settings',
+                  icon: Icon(
+                    Symbols.settings_rounded,
+                    fill: _showSettings ? 1 : 0,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _showSettings = !_showSettings;
+                    });
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    _showSettings = !_showSettings;
-                  });
-                },
               ),
               const SizedBox(width: 8),
             ],
           ),
           const SizedBox(height: 12),
-          if (_showSettings) ...[
-            _buildDatePickers(context),
-            const SizedBox(height: 12),
-            _buildCourseFilter(days),
-            const SizedBox(height: 12),
-          ],
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) {
+              return SizeTransition(
+                sizeFactor: animation,
+                child: child,
+              );
+            },
+            child: _showSettings
+                ? Column(
+                    children: [
+                      _buildDatePickers(context),
+                      const SizedBox(height: 12),
+                      _buildCourseFilter(days),
+                      const SizedBox(height: 12),
+                    ],
+                  )
+                : const SizedBox.shrink(),
+          ),
           Expanded(
             child: _isTableView
                 ? AttendanceTableView(
@@ -201,7 +220,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       body: super.build(context),
       floatingActionButton: FloatingActionButton(
@@ -212,7 +230,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
         },
         tooltip: _isTableView ? 'Switch to Cards View' : 'Switch to Table View',
         child: Icon(
-          _isTableView ? Icons.view_agenda_rounded : Icons.table_chart_rounded,
+          _isTableView ? Symbols.view_agenda_rounded : Symbols.table_chart_rounded,
         ),
       ),
     );

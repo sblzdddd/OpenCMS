@@ -11,6 +11,7 @@ import '../../../services/attendance/course_stats_service.dart';
 import '../../shared/dialog/course_detail_dialog.dart';
 import '../../shared/views/refreshable_view.dart';
 import '../../../services/theme/theme_services.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 enum _TimetableViewMode { mobile, calendar }
 
@@ -332,8 +333,8 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
             : 'Switch to List View',
         child: Icon(
           _viewMode == _TimetableViewMode.mobile
-              ? Icons.calendar_month_rounded
-              : Icons.view_agenda_rounded,
+              ? Symbols.calendar_month_rounded
+              : Symbols.view_agenda_rounded,
         ),
       ),
     );

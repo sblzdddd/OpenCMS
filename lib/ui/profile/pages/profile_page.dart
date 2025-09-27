@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import '../views/student_profile_view.dart';
+import '../../../ui/shared/widgets/custom_app_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -10,7 +11,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         title: const Text('Student Profile'),
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,

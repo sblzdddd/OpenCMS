@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 import '../error/error_placeholder.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
 abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
@@ -43,7 +44,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.inbox_outlined,
+                Symbols.inbox_rounded,
                 size: 64,
                 color: Colors.grey,
               ),

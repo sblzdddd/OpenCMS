@@ -67,7 +67,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
               ),
               const SizedBox(width: 4),
               Icon(
-                Icons.arrow_drop_down,
+                Symbols.arrow_drop_down_rounded,
                 size: 18,
                 color: Theme.of(
                   context,
@@ -101,7 +101,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
             ),
           ),
           child: Icon(
-            Icons.sort,
+            Symbols.sort_rounded,
             size: 20,
             color: Theme.of(
               context,
@@ -224,14 +224,14 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           Row(
             children: [
               Expanded(
-                child: _buildStatCard('Total', total.toString(), Icons.comment),
+                child: _buildStatCard('Total', total.toString(), Symbols.comment_rounded),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: _buildStatCard(
                   'Commendations',
                   commendations.toString(),
-                  Icons.thumb_up,
+                  Symbols.thumb_up_rounded,
                   Colors.green,
                 ),
               ),
@@ -240,7 +240,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
                 child: _buildStatCard(
                   'Concerns',
                   concerns.toString(),
-                  Icons.warning,
+                  Symbols.warning_rounded,
                   Colors.orange,
                 ),
               ),
@@ -249,7 +249,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
                 child: _buildStatCard(
                   'Replies',
                   withReplies.toString(),
-                  Icons.reply,
+                  Symbols.reply_rounded,
                   Colors.blue,
                 ),
               ),
@@ -313,7 +313,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         padding: EdgeInsets.all(32.0),
         child: Column(
           children: [
-            Icon(Icons.comment_outlined, size: 64, color: Colors.grey),
+            Icon(Symbols.comment_rounded, size: 64, color: Colors.grey),
             SizedBox(height: 16),
             Text(
               'No comments found',
@@ -577,18 +577,5 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         ],
       ),
     );
-  }
-
-  Color _getCategoryColor(String category) {
-    switch (category.toLowerCase()) {
-      case 'academic':
-        return Colors.blue;
-      case 'pastoral':
-        return Colors.green;
-      case 'residence':
-        return Colors.purple;
-      default:
-        return Colors.grey;
-    }
   }
 }

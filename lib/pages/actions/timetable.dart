@@ -37,15 +37,9 @@ class _TimetablePageState extends State<TimetablePage> {
       title: 'Timetable',
       initialTabIndex: widget.initialTabIndex,
       actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16.0,
-            vertical: 8.0,
-          ),
-          child: AcademicYearDropdown(
-            selectedYear: _selectedYear,
-            onChanged: _onYearChanged,
-          ),
+        AcademicYearDropdown(
+          selectedYear: _selectedYear,
+          onChanged: _onYearChanged,
         ),
       ],
       tabs: const [

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import '../../services/theme/theme_services.dart';
+import '../../ui/shared/widgets/custom_app_bar.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -65,7 +67,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                 child: TextField(
                   controller: _hexController,
                   decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.tag),
+                    prefixIcon: Icon(Symbols.tag_rounded),
                     labelText: 'Hex Color',
                     border: OutlineInputBorder(),
                   ),
@@ -154,9 +156,9 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Symbols.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('Theme Settings'),
@@ -215,7 +217,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () => _showColorPicker(context, themeNotifier),
-                    icon: const Icon(Icons.palette),
+                    icon: const Icon(Symbols.palette_rounded),
                     label: const Text('Custom Color'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: themeNotifier.selectedColor == ThemeColor.custom

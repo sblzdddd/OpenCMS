@@ -3,8 +3,8 @@ import '../../services/theme/theme_services.dart';
 import '../../data/models/notification/notification_response.dart' as cms;
 import '../../services/notification/notification_service.dart';
 import '../shared/views/refreshable_view.dart';
-import '../../pages/actions/web_cms.dart';
-import '../shared/scaled_ink_well.dart';
+import 'adaptive_notifications_layout.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class NotificationsView extends StatefulWidget {
   const NotificationsView({super.key});
@@ -16,6 +16,7 @@ class NotificationsView extends StatefulWidget {
 class _NotificationsViewState extends RefreshableView<NotificationsView> {
   final NotificationService _notificationService = NotificationService();
   List<cms.Notification>? _notifications;
+  cms.Notification? _selectedNotification;
 
   @override
   Future<void> fetchData({bool refresh = false}) async {
@@ -25,92 +26,20 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
     });
   }
 
-  Future<void> _navigateToNotificationDetail(cms.Notification notification) async {
-    final contentUrl = await _notificationService.getNotificationContentUrl(notification.id);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => WebCmsPage(
-          initialUrl: contentUrl,
-          windowTitle: notification.title,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNotificationItem(cms.Notification notification) {
-    return ScaledInkWell(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      borderRadius: themeNotifier.getBorderRadiusAll(1),
-      onTap: () => _navigateToNotificationDetail(notification),
-      background: (inkWell) => Material(
-        color: Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-        child: inkWell,
-      ),
-      child: ListTile(
-        mouseCursor: SystemMouseCursors.click,
-        title: Text(
-          notification.title,
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                if (notification.isPinned)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.2),
-                      borderRadius: themeNotifier.getBorderRadiusAll(999),
-                    ),
-                    child: const Text(
-                      'PINNED',
-                      style: TextStyle(
-                        fontSize: 12, 
-                        color: Colors.orange,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                if (notification.isPinned) const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                    borderRadius: themeNotifier.getBorderRadiusAll(999),
-                  ),
-                  child: Text(
-                    notification.addDate,
-                    style: TextStyle(
-                      fontSize: 12, 
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      ),
-    );
-  }
 
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_notifications == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-      itemCount: _notifications!.length,
-      itemBuilder: (context, index) {
-        return _buildNotificationItem(_notifications![index]);
+      
+    return AdaptiveNotificationsLayout(
+      notifications: _notifications!,
+      selectedNotification: _selectedNotification,
+      onNotificationSelected: (notification) {
+        setState(() {
+          _selectedNotification = notification;
+        });
       },
     );
   }
@@ -125,7 +54,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.notifications_none_outlined,
+                Symbols.notifications_none_rounded,
                 size: 64,
                 color: Colors.grey,
               ),

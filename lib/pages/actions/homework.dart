@@ -55,6 +55,14 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   String get appBarTitle => 'Homework';
 
   @override
+  List<Widget>? get appBarActions => [
+    AcademicYearDropdown(
+      selectedYear: _selectedYear,
+      onChanged: _onYearChanged,
+    ),
+  ];
+
+  @override
   bool get isEmpty => _homeworkResponse == null || _homeworkResponse!.homeworkItems.isEmpty;
 
   @override
@@ -115,14 +123,11 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
 
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          _buildFilters(themeNotifier),
-          Expanded(child: _buildHomeworkList()),
-        ],
-      ),
+    return Column(
+      children: [
+        _buildFilters(themeNotifier),
+        Expanded(child: _buildHomeworkList()),
+      ],
     );
   }
 
@@ -133,7 +138,9 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   }
 
   Widget _buildFilters(ThemeNotifier themeNotifier) {
-    return Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
@@ -147,32 +154,49 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
                 setState(() {
                   _showCompleted = val;
                 });
-                _loadCompleted();
+                _refreshFilteredList();
               },
-            ),
-            const SizedBox(width: 12),
-            AcademicYearDropdown(
-              selectedYear: _selectedYear,
-              onChanged: _onYearChanged,
             ),
             const Spacer(),
-            IconButton(
-              tooltip: 'Toggle settings',
-              icon: Icon(Symbols.search_rounded, fill: _showSettings ? 1 : 0),
-              onPressed: () {
-                setState(() {
-                  _showSettings = !_showSettings;
-                });
-              },
+            AnimatedRotation(
+              turns: _showSettings ? 0.125 : 0.0, // 45 degrees rotation
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOutCubic,
+              child: IconButton(
+                tooltip: 'Toggle settings',
+                icon: Icon(Symbols.search_rounded, fill: _showSettings ? 1 : 0),
+                onPressed: () {
+                  setState(() {
+                    _showSettings = !_showSettings;
+                  });
+                },
+              ),
             ),
           ],
         ),
-        if (_showSettings) ...[
-          _buildSearchFilter(themeNotifier),
-          const SizedBox(height: 12),
-        ],
+        const SizedBox(height: 8),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            return SizeTransition(
+              sizeFactor: animation,
+              child: child,
+            );
+          },
+          child: _showSettings
+              ? Column(
+                  key: const ValueKey('search_filter'),
+                  children: [
+                    _buildSearchFilter(themeNotifier),
+                    const SizedBox(height: 12),
+                  ],
+                )
+              : const SizedBox.shrink(key: ValueKey('empty')),
+        ),
       ],
-    );
+    ));
   }
 
   Widget _buildSearchFilter(ThemeNotifier themeNotifier) {
@@ -182,6 +206,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
           child: 
             // Search bar
             TextField(
+              controller: _searchController,
               onChanged: _filterHomework,
               decoration: InputDecoration(
                 hintText: 'Search homework...',
@@ -220,6 +245,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
 
   Widget _buildHomeworkList() {
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: _filteredHomeworkItems.length,
       itemBuilder: (context, index) {
         final homework = _filteredHomeworkItems[index];

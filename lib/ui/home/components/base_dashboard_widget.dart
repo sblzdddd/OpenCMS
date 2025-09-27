@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import '../../../pages/actions.dart';
 import 'dart:async';
 import '../../shared/scaled_ink_well.dart';
-import '../../../global_press_scale.dart';
 
 /// Base mixin for dashboard widget states that provides common functionality
 /// including layout, refresh logic, error handling, and common UI patterns
@@ -110,7 +110,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
   String getActionId();
 
   /// Get the widget icon
-  IconData getWidgetIcon() => Icons.dashboard;
+  IconData getWidgetIcon() => Symbols.dashboard_rounded;
 
   /// Check if widget has multiple tap areas (overrides main tap behavior)
   bool hasMultipleTapAreas() => false;
@@ -180,7 +180,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             width: 20,
             height: 20,
             child: hasError
-                ? Icon(Icons.error_outline, size: 20)
+                ? Icon(Symbols.error_outline_rounded, size: 20)
                 : CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(height: 12),
@@ -227,7 +227,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             if (rightText == null) ...[
               const Padding(
                 padding: EdgeInsets.only(top: 2),
-                child: Icon(Icons.chevron_right, size: 18),
+                child: Icon(Symbols.chevron_right_rounded, size: 18),
               ),
             ],
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 import 'nav_items.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -24,7 +25,11 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return NavigationRail(
+        return GestureDetector(
+          onTapDown: (_) {
+            windowManager.startDragging();
+          },
+          child: NavigationRail(
           leading: Container(
             height: 56,
             alignment: Alignment.center,
@@ -44,6 +49,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
                 ),
               )
               .toList(),
+          ),
         );
       },
     );

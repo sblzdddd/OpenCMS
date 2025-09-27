@@ -5,7 +5,6 @@ import 'actions/assessment.dart';
 import 'actions/homework.dart';
 import 'actions/web_cms.dart';
 import 'actions/free_classrooms.dart';
-import '../data/constants/quick_actions.dart';
 import '../ui/shared/navigations/app_navigation_controller.dart';
 import 'actions/timetable.dart';
 import 'settings/settings_page.dart';
@@ -15,10 +14,7 @@ import '../ui/calendar/calendar_ui.dart';
 import '../ui/profile/pages/profile_page.dart';
 import '../services/auth/auth_service.dart';
 import '../data/constants/api_endpoints.dart';
-
-String _actionTitle(String id) {
-  return QuickActionsConstants.getActionById(id)?['title'] as String? ?? id;
-}
+import '../ui/shared/widgets/custom_app_bar.dart';
 
 /// Returns true if the action is handled by switching the bottom/rail navigation.
 /// timetable -> tab 1, homeworks -> tab 2, assessment -> tab 3
@@ -45,22 +41,6 @@ bool handleActionNavigation(BuildContext context, Map<String, dynamic> action) {
   return false;
 }
 
-class ActionPageScaffold extends StatelessWidget {
-  final String id;
-  const ActionPageScaffold(this.id, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final String title = _actionTitle(id);
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(
-        child: Text('$title page coming soon'),
-      ),
-    );
-  }
-}
-
 class UnknownActionPage extends StatelessWidget {
   final String id;
   final String title;
@@ -68,7 +48,7 @@ class UnknownActionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title.isNotEmpty ? title : id)),
+      appBar: CustomAppBar(title: Text(title.isNotEmpty ? title : id)),
       body: Center(child: Text('Page for "$id" not implemented yet')),
     );
   }

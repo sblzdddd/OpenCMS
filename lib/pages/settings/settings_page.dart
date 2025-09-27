@@ -3,9 +3,11 @@ import 'package:opencms/data/constants/api_endpoints.dart';
 import 'package:opencms/pages/actions/web_cms.dart';
 import '../../ui/shared/dialog/confirm_dialog.dart';
 import 'theme_settings_page.dart';
+import 'skin_settings_page.dart';
 import '../../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
-
+import '../../ui/shared/widgets/custom_app_bar.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -47,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ],
             ),
             Icon(
-              Icons.chevron_right,
+              Symbols.chevron_right_rounded,
               color: Theme.of(
                 context,
               ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -63,7 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
       padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
@@ -73,9 +75,9 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: CustomAppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Symbols.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('Settings'),
@@ -106,8 +108,8 @@ class _SettingsPageState extends State<SettingsPage> {
                               children: [
                                 Icon(
                                   themeNotifier.isDarkMode
-                                      ? Icons.dark_mode
-                                      : Icons.light_mode,
+                                      ? Symbols.dark_mode_rounded
+                                      : Symbols.light_mode_rounded,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 12),
@@ -142,7 +144,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       //       Row(
                       //         children: [
                       //           Icon(
-                      //             Icons.access_time,
+                      //             Symbols.access_time_rounded,
                       //             color: Theme.of(context).colorScheme.primary,
                       //           ),
                       //           const SizedBox(width: 12),
@@ -172,14 +174,20 @@ class _SettingsPageState extends State<SettingsPage> {
               const Divider(height: 2),
               _buildSettingsItem(
                 'Theme Settings',
-                Icons.palette,
+                Symbols.palette_rounded,
                 const ThemeSettingsPage(),
+              ),
+              const Divider(height: 2),
+              _buildSettingsItem(
+                'Skins',
+                Symbols.brush_rounded,
+                const SkinSettingsPage(),
               ),
               const Divider(height: 2),
               // _buildSettingsTitle('Notifications'),
               // _buildSettingsItem(
               //   'Notification Settings',
-              //   Icons.notifications,
+              //   Symbols.notifications_rounded,
               //   const ThemeSettingsPage(),
               // ),
               // const Divider(height: 2),
@@ -187,28 +195,28 @@ class _SettingsPageState extends State<SettingsPage> {
               _buildSettingsTitle('Account'),
               _buildSettingsItem(
                 'Change Password',
-                Icons.password,
+                Symbols.password_rounded,
                 const WebCmsPage(initialUrl: '${ApiConstants.cmsReferer}/auth/change_password', windowTitle: 'Change Password'),
               ),
               const Divider(height: 2),
               _buildSettingsItem(
                 'Logout',
-                Icons.logout,
+                Symbols.logout_rounded,
                 null,
                 onTap: () => showLogoutDialog(context),
               ),
               const Divider(height: 2),
               _buildSettingsItem(
                 'Clear User Data',
-                Icons.delete_forever,
+                Symbols.delete_forever_rounded,
                 null,
                 onTap: () => _clearUserData(),
               ),
               const Divider(height: 2),
               _buildSettingsTitle("About This App"),
-              _buildSettingsItem('App Info', Icons.info, null),
+              _buildSettingsItem('App Info', Symbols.info_rounded, null),
               const Divider(height: 2),
-              _buildSettingsItem('Privacy Policy', Icons.privacy_tip, null),
+              _buildSettingsItem('Privacy Policy', Symbols.privacy_tip_rounded, null),
               const Divider(height: 2),
             ],
           ),

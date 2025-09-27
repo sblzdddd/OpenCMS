@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import '../dynamic_gradient_banner.dart';
@@ -89,7 +90,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close_rounded),
+                  icon: const Icon(Symbols.close_rounded),
                   style: IconButton.styleFrom(
                     backgroundColor: Theme.of(
                       context,
@@ -107,7 +108,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
               onChanged: (value) => setState(() => searchQuery = value),
               decoration: InputDecoration(
                 hintText: 'Search widgets and quick actions...',
-                prefixIcon: const Icon(Icons.search_rounded),
+                prefixIcon: const Icon(Symbols.search_rounded),
                 border: OutlineInputBorder(
                   borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
@@ -208,7 +209,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                       widget.onReset?.call();
                       Navigator.of(context).pop();
                     },
-                    icon: const Icon(Icons.refresh),
+                    icon: const Icon(Symbols.refresh_rounded),
                     label: const Text('Reset to Default'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(

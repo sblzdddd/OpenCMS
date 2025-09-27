@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'dart:async';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 import '../../data/constants/periods.dart';
 import '../../data/models/classroom/all_periods_classroom_response.dart';
 import '../../services/classroom/free_classroom_service.dart';
@@ -15,40 +18,47 @@ class FreeClassroomsPage extends StatefulWidget {
 
 class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   final FreeClassroomService _freeClassroomService = FreeClassroomService();
+  late CalendarController _calendarController;
   
   DateTime _selectedDate = DateTime.now();
   AllPeriodsClassroomResponse? _allPeriodsData;
   StreamSubscription<AllPeriodsClassroomResponse>? _dataSubscription;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   String get appBarTitle => 'Free Classrooms';
 
   @override
   List<Widget>? get appBarActions => [
-    OutlinedButton.icon(
-      onPressed: () => _selectDate(context),
-      icon: const Icon(Icons.calendar_today, size: 18),
-      label: Text(
-        DateFormat('MMM dd, yyyy').format(_selectedDate),
-        style: const TextStyle(fontSize: 14),
-      ),
+    IconButton(
+      icon: const Icon(Symbols.refresh_rounded),
+      onPressed: () => loadData(refresh: true),
     ),
   ];
 
   @override
   void initState() {
     super.initState();
+    _calendarController = CalendarController();
     loadData();
   }
 
   @override
   void dispose() {
     _dataSubscription?.cancel();
+    _calendarController.dispose();
     super.dispose();
   }
 
   @override
   Future<void> fetchData({bool refresh = false}) async {
+    if (!mounted) return;
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
     final dateString = FreeClassroomService.formatDate(_selectedDate);
     
     // Cancel previous subscription
@@ -59,205 +69,319 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
       date: dateString,
       refresh: refresh,
     ).listen((response) {
-      setState(() {
-        _allPeriodsData = response;
-      });
+      if (mounted) {
+        setState(() {
+          _allPeriodsData = response;
+          _isLoading = false;
+        });
+      }
+    }, onError: (error) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = error.toString();
+          _isLoading = false;
+        });
+      }
     });
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 30)),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      helpText: 'Select date',
-    );
+  List<CalendarResource> _buildCalendarResources() {
+    if (_allPeriodsData == null) return [];
     
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-      await loadData(refresh: true);
+    // Get all unique classrooms across all periods
+    final Set<String> allClassrooms = {};
+    for (int period = 1; period <= 10; period++) {
+      if (_allPeriodsData!.hasData(period)) {
+        allClassrooms.addAll(_allPeriodsData!.getClassroomsForPeriod(period));
+      }
     }
+    
+    // Create resources for each classroom
+    return allClassrooms.map((classroom) {
+      return CalendarResource(
+        displayName: classroom,
+        id: classroom,
+        color: _getClassroomColor(classroom),
+      );
+    }).toList();
   }
 
-  Widget _buildClassroomBadge(String classroom) {
-    return Container(
-      margin: const EdgeInsets.only(right: 2, bottom: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.meeting_room,
-            size: 14,
-            color: Colors.green.withValues(alpha: 0.7),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            classroom,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Colors.green.withValues(alpha: 0.7),
+  Color _getClassroomColor(String classroom) {
+    // Generate consistent colors for classrooms
+    final colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.pink,
+      Colors.indigo,
+      Colors.amber,
+      Colors.cyan,
+      Colors.lime,
+    ];
+    
+    final hash = int.parse(classroom.replaceAll('(', '').substring(1, 2));
+    return colors[hash.abs() % colors.length].withValues(alpha: 0.7);
+  }
+
+  List<ClassroomAppointment> _buildCalendarAppointments() {
+    final List<ClassroomAppointment> appointments = [];
+    
+    if (_allPeriodsData == null) return appointments;
+    
+    for (int period = 1; period <= 10; period++) {
+      if (!_allPeriodsData!.hasData(period)) continue;
+      
+      final classrooms = _allPeriodsData!.getClassroomsForPeriod(period);
+      if (classrooms.isEmpty) continue;
+      
+      final periodInfo = PeriodConstants.periods.firstWhere(
+        (p) => p.name == 'Period $period',
+        orElse: () => const PeriodInfo(name: 'Period 1', startTime: '08:10', endTime: '08:50'),
+      );
+      
+      final startTime = _parseTime(periodInfo.startTime);
+      final endTime = _parseTime(periodInfo.endTime);
+      
+      final appointmentDate = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        startTime.hour,
+        startTime.minute,
+      );
+      
+      final endDate = DateTime(
+        _selectedDate.year,
+        _selectedDate.month,
+        _selectedDate.day,
+        endTime.hour,
+        endTime.minute,
+      );
+      
+      for (final classroom in classrooms) {
+        appointments.add(ClassroomAppointment(
+          subject: 'Period $period',
+          startTime: appointmentDate,
+          endTime: endDate,
+          resourceIds: [classroom],
+          color: _getClassroomColor(classroom),
+          classroom: classroom,
+          period: period,
+        ));
+      }
+    }
+    
+    return appointments;
+  }
+
+  DateTime _parseTime(String timeString) {
+    final parts = timeString.split(':');
+    return DateTime(2024, 1, 1, int.parse(parts[0]), int.parse(parts[1]));
+  }
+
+  Future<void> _onViewChanged(ViewChangedDetails details) async {
+    final List<DateTime> visible = details.visibleDates;
+    final DateTime newDate = visible.isNotEmpty
+        ? visible[visible.length ~/ 2]
+        : DateTime.now();
+
+    // Check if the date has actually changed
+    if (_selectedDate.year == newDate.year && 
+        _selectedDate.month == newDate.month && 
+        _selectedDate.day == newDate.day) {
+      return; // No change needed
+    }
+
+    // Defer the state update until after the current build is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      
+      setState(() {
+        _selectedDate = newDate;
+      });
+      
+      await loadData(refresh: true);
+    });
+  }
+
+  @override
+  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
+    return _buildCalendarBody(themeNotifier);
+  }
+
+  @override
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
+    return _buildCalendarBody(themeNotifier);
+  }
+
+  Widget _buildCalendarBody(ThemeNotifier themeNotifier) {
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Symbols.error_outline_rounded,
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
             ),
+            const SizedBox(height: 16),
+            Text(
+              'Failed to load free classrooms',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage!,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => loadData(refresh: true),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_allPeriodsData == null && !_isLoading) {
+      return const Center(
+        child: Text('No classroom data available'),
+      );
+    }
+
+    final resources = _buildCalendarResources();
+    final appointments = _buildCalendarAppointments();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = constraints.maxWidth;
+        final calendarWidth = screenWidth > 800 ? screenWidth : 800.0;
+        
+        return Center(
+          child: SizedBox(
+            width: calendarWidth,
+            child: Stack(
+              children: [
+                SfCalendarTheme(
+                  data: SfCalendarThemeData(
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    headerTextStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    todayHighlightColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  child: SfCalendar(
+                    controller: _calendarController,
+                    view: CalendarView.timelineDay,
+                    dataSource: _ClassroomDataSource(appointments, resources),
+                    showCurrentTimeIndicator: true,
+                    allowViewNavigation: true,
+                    showDatePickerButton: true,
+                    viewNavigationMode: ViewNavigationMode.snap,
+                    onViewChanged: _onViewChanged,
+                    resourceViewSettings: ResourceViewSettings(
+                      showAvatar: false,
+                      displayNameTextStyle: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      size: 42,
+                    ),
+                    timeSlotViewSettings: TimeSlotViewSettings(
+                      timeIntervalHeight: 40,
+                      minimumAppointmentDuration: const Duration(minutes: 30),
+                      startHour: 8,
+                      endHour: 17,
+                    ),
+                    appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
+                      final ClassroomAppointment appointment = details.appointments.first as ClassroomAppointment;
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: appointment.color,
+                          borderRadius: themeNotifier.getBorderRadiusAll(0.25),
+                        ),
+                      );
+                    },
+                    onTap: (details) {
+                      if (details.targetElement == CalendarElement.appointment &&
+                          details.appointments != null &&
+                          details.appointments!.isNotEmpty) {
+                        final ClassroomAppointment tapped = details.appointments!.first as ClassroomAppointment;
+                        _showClassroomDetailDialog(tapped, themeNotifier);
+                      }
+                    },
+                  ),
+                ),
+                if (_isLoading)
+                  const Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    child: LinearProgressIndicator(minHeight: 2),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showClassroomDetailDialog(ClassroomAppointment appointment, ThemeNotifier themeNotifier) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+        ),
+        clipBehavior: Clip.antiAlias,
+        title: Text('${appointment.classroom} - ${appointment.subject}'),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildDetailRow('Classroom', appointment.classroom),
+            _buildDetailRow('Period', 'Period ${appointment.period}'),
+            _buildDetailRow('Time', '${DateFormat('HH:mm').format(appointment.startTime)} - ${DateFormat('HH:mm').format(appointment.endTime)}'),
+            _buildDetailRow('Date', DateFormat('MMM dd, yyyy').format(appointment.startTime)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPeriodCard(int period) {
-    final isInitialLoading = _allPeriodsData == null;
-    final isLoading = _allPeriodsData?.isLoading(period) ?? false;
-    final hasError = _allPeriodsData?.hasError(period) ?? false;
-    final errorMessage = _allPeriodsData?.getError(period);
-    final classrooms = _allPeriodsData?.getClassroomsForPeriod(period) ?? [];
-    final hasData = _allPeriodsData?.hasData(period) ?? false;
-    final periodTime = PeriodConstants.periods.firstWhere((p) => p.name == 'Period $period').startTime;
-    final periodEndTime = PeriodConstants.periods.firstWhere((p) => p.name == 'Period $period').endTime;
-    
-    return Card(
-      margin: const EdgeInsets.all(4),
-      shape: RoundedRectangleBorder(
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    '$periodTime - $periodEndTime',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                if (hasError)
-                  IconButton(
-                    icon: const Icon(Icons.refresh, size: 20),
-                    onPressed: () => loadData(refresh: true),
-                    tooltip: 'Retry',
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (isInitialLoading || isLoading)
-              const Center(
-                child: Column(
-                  children: [
-                    CircularProgressIndicator(strokeWidth: 2),
-                    SizedBox(height: 8),
-                    Text(
-                      'Loading classrooms...',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              )
-            else if (hasError)
-              Text(
-                'Error: ${errorMessage ?? 'Unknown error'}',
-                style: TextStyle(
-                  color: Colors.red.shade600,
-                  fontSize: 14,
-                ),
-              )
-            else if (hasData)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${classrooms.length} free classroom${classrooms.length != 1 ? 's' : ''}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  if (classrooms.isNotEmpty)
-                    Wrap(
-                      children: classrooms.map((classroom) => _buildClassroomBadge(classroom)).toList(),
-                    )
-                  else
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade50,
-                        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.meeting_room_outlined,
-                            size: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'All classrooms occupied',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAllPeriodsList() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ...FreeClassroomService.getAllPeriods().map((period) => _buildPeriodCard(period)),
-      ],
-    );
-  }
-
-  @override
-  Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: _buildAllPeriodsList(),
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: bodyPadding,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildAllPeriodsList(),
-              ],
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
-        ),
-      ],
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
     );
   }
 
@@ -303,7 +427,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.meeting_room_outlined,
+                Symbols.meeting_room_rounded,
                 size: 64,
                 color: Colors.grey,
               ),
@@ -324,4 +448,46 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
       ],
     );
   }
+}
+
+class ClassroomAppointment {
+  final String subject;
+  final DateTime startTime;
+  final DateTime endTime;
+  final List<Object> resourceIds;
+  final Color color;
+  final String classroom;
+  final int period;
+
+  ClassroomAppointment({
+    required this.subject,
+    required this.startTime,
+    required this.endTime,
+    required this.resourceIds,
+    required this.color,
+    required this.classroom,
+    required this.period,
+  });
+}
+
+class _ClassroomDataSource extends CalendarDataSource {
+  _ClassroomDataSource(List<ClassroomAppointment> source, List<CalendarResource> resourceColl) {
+    appointments = source;
+    resources = resourceColl;
+  }
+
+  @override
+  DateTime getStartTime(int index) => appointments![index].startTime as DateTime;
+
+  @override
+  DateTime getEndTime(int index) => appointments![index].endTime as DateTime;
+
+  @override
+  String getSubject(int index) => appointments![index].subject as String;
+
+  @override
+  Color getColor(int index) => appointments![index].color as Color;
+
+  @override
+  List<Object> getResourceIds(int index) => appointments![index].resourceIds as List<Object>;
 }

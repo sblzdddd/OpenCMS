@@ -9,7 +9,8 @@ import '../../../data/models/profile/profile.dart';
 import '../../../services/profile/profile_service.dart';
 import '../widgets/profile_info_card.dart';
 import '../widgets/profile_photo_widget.dart';
-import '../widgets/profile_section.dart';
+import '../../shared/views/list_section.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class StudentProfileView extends StatefulWidget {
   const StudentProfileView({super.key});
@@ -79,7 +80,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              Symbols.error_outline_rounded,
               size: 64,
               color: Theme.of(context).colorScheme.error,
             ),
@@ -97,7 +98,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _loadProfile,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(Symbols.refresh_rounded),
               label: const Text('Retry'),
             ),
           ],
@@ -138,9 +139,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
               const SizedBox(height: 16),
 
               // Personal Information (2-column layout)
-              ProfileSection(
+              ListSection(
                 title: 'Personal Information',
-                icon: Icons.person,
+                icon: Symbols.person_rounded,
                 children: [
                   Row(
                     children: [
@@ -148,7 +149,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Student ID',
                           value: _profile!.generalInfo.id.toString(),
-                          icon: Icons.badge,
+                          icon: Symbols.badge_rounded,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -158,7 +159,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                           value: _profile!.generalInfo.isActive
                               ? 'Active'
                               : 'Inactive',
-                          icon: Icons.check_circle,
+                          icon: Symbols.check_circle_rounded,
                           valueColor: _profile!.generalInfo.isActive
                               ? Colors.green
                               : Colors.red,
@@ -172,7 +173,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Chinese Name',
                           value: _profile!.generalInfo.name,
-                          icon: Icons.translate,
+                          icon: Symbols.translate_rounded,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -180,7 +181,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'English Name',
                           value: _profile!.generalInfo.enName,
-                          icon: Icons.language,
+                          icon: Symbols.language_rounded,
                         ),
                       ),
                     ],
@@ -191,7 +192,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Full Name',
                           value: _profile!.generalInfo.fullName,
-                          icon: Icons.assignment_ind,
+                          icon: Symbols.assignment_ind_rounded,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -199,7 +200,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Form Group',
                           value: _profile!.generalInfo.formGroup,
-                          icon: Icons.group,
+                          icon: Symbols.group_rounded,
                         ),
                       ),
                     ],
@@ -210,9 +211,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
               const SizedBox(height: 16),
 
               // Academic & Residential Information
-              ProfileSection(
+              ListSection(
                 title: 'Academic & Residential',
-                icon: Icons.school,
+                icon: Symbols.school_rounded,
                 children: [
                   Row(
                     children: [
@@ -220,7 +221,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Grade',
                           value: _profile!.basicInfo.grade,
-                          icon: Icons.school,
+                          icon: Symbols.school_rounded,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -228,7 +229,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'House',
                           value: _profile!.basicInfo.house,
-                          icon: Icons.home,
+                          icon: Symbols.home_rounded,
                         ),
                       ),
                     ],
@@ -239,7 +240,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Dormitory',
                           value: _profile!.basicInfo.dormitory,
-                          icon: Icons.bed,
+                          icon: Symbols.bed_rounded,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -247,7 +248,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Type',
                           value: _profile!.basicInfo.dormitoryKind,
-                          icon: Icons.hotel,
+                          icon: Symbols.hotel_rounded,
                         ),
                       ),
                     ],
@@ -258,7 +259,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Gender',
                           value: _profile!.basicInfo.gender,
-                          icon: Icons.wc,
+                          icon: Symbols.wc_rounded,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -266,7 +267,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Enrolled',
                           value: _profile!.basicInfo.enrollment,
-                          icon: Icons.calendar_today,
+                          icon: Symbols.calendar_today_rounded,
                         ),
                       ),
                     ],
@@ -277,9 +278,9 @@ class _StudentProfileViewState extends State<StudentProfileView> {
               const SizedBox(height: 16),
 
               // Contact Information
-              ProfileSection(
+              ListSection(
                 title: 'Contact Information',
-                icon: Icons.contact_phone,
+                icon: Symbols.contact_phone_rounded,
                 children: [
                   Row(
                     children: [
@@ -287,7 +288,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'Mobile',
                           value: _profile!.basicInfo.mobile,
-                          icon: Icons.phone,
+                          icon: Symbols.phone_rounded,
                           isClickable: true,
                           onTap: () => _showContactDialog(
                             'Mobile',
@@ -300,7 +301,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                         child: ProfileInfoCard(
                           title: 'School Email',
                           value: _profile!.basicInfo.schoolEmail,
-                          icon: Icons.email,
+                          icon: Symbols.email_rounded,
                           isClickable: true,
                           onTap: () => _showContactDialog(
                             'School Email',
@@ -313,7 +314,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
                   ProfileInfoCard(
                     title: 'Personal Email',
                     value: _profile!.basicInfo.studentEmail,
-                    icon: Icons.alternate_email,
+                    icon: Symbols.alternate_email_rounded,
                     isClickable: true,
                     onTap: () => _showContactDialog(
                       'Personal Email',

@@ -72,15 +72,15 @@ class WidgetSizeManager {
   static IconData getWidgetIcon(String widgetId) {
     switch (widgetId) {
       case 'notices':
-        return Icons.notifications;
+        return Symbols.notifications_rounded;
       case 'homework':
-        return Icons.assignment;
+        return Symbols.assignment_rounded;
       case 'assessments':
-        return Icons.assessment;
+        return Symbols.assessment_rounded;
       case 'next_class':
-        return Icons.schedule;
+        return Symbols.schedule_rounded;
       default:
-        return Icons.widgets;
+        return Symbols.widgets_rounded;
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
@@ -167,7 +168,7 @@ class AssessmentChartWidget extends StatelessWidget {
         child: Column(
           children: [
             Icon(
-              Icons.analytics_outlined,
+              Symbols.analytics_rounded,
               size: 48,
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
