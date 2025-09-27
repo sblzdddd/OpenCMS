@@ -319,6 +319,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: super.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

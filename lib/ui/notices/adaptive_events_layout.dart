@@ -4,7 +4,7 @@ import '../../data/models/events/student_event.dart';
 import '../../services/theme/theme_services.dart';
 import '../../services/auth/auth_service.dart';
 import '../shared/scaled_ink_well.dart';
-import '../shared/views/web_cms_content.dart';
+import '../web_cms/web_cms_content.dart';
 import '../shared/views/list_section.dart';
 import '../../pages/actions/web_cms.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -91,7 +91,7 @@ class AdaptiveEventsLayout extends StatelessWidget {
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -100,6 +100,7 @@ class AdaptiveEventsLayout extends StatelessWidget {
             ListSection(
               title: 'Student-Led Events',
               icon: Symbols.person_rounded,
+              padding: const EdgeInsets.only(left: 16, bottom: 12),
               children: studentLedEvents.map((event) => _buildEventItem(event, context)).toList(),
             ),
           
@@ -108,6 +109,7 @@ class AdaptiveEventsLayout extends StatelessWidget {
             ListSection(
               title: 'Student-Unstaffed Events',
               icon: Symbols.person_rounded,
+              padding: const EdgeInsets.only(left: 16, bottom: 12, top: 12),
               children: studentUnstaffedEvents.map((event) => _buildEventItem(event, context)).toList(),
             ),
         ],
@@ -122,9 +124,15 @@ class AdaptiveEventsLayout extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: ScaledInkWell(
-        margin: const EdgeInsets.only(bottom: 8.0),
+        margin: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 16.0),
         background: (inkWell) => Material(
-          color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3) : Theme.of(context).colorScheme.surfaceContainer,
+          color: isSelected
+              ? Theme.of(
+                  context,
+                ).colorScheme.primaryContainer.withValues(alpha: 0.3)
+              : themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
+              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6),
           borderRadius: themeNotifier.getBorderRadiusAll(1),
           child: inkWell,
         ),

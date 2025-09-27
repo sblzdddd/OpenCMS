@@ -44,9 +44,12 @@ class AdaptiveReportsLayout extends StatelessWidget {
     return Material(
         color: Colors.transparent,
         child: ScaledInkWell(
-          margin: const EdgeInsets.only(bottom: 8.0),
+          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
           background: (inkWell) => Material(
-            color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3) : Theme.of(context).colorScheme.surfaceContainer,
+            color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(1),
             child: inkWell,
           ),

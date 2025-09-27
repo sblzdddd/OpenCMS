@@ -71,7 +71,9 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
               ? Theme.of(
                   context,
                 ).colorScheme.primaryContainer.withValues(alpha: 0.3)
-              : Theme.of(context).colorScheme.surfaceContainer,
+              : themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
+              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6),
           borderRadius: themeNotifier.getBorderRadiusAll(1),
           child: inkWell,
         ),

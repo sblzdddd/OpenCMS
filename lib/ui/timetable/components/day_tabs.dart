@@ -18,7 +18,6 @@ class DayTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Container(
-      color: Theme.of(context).colorScheme.surface,
       child: TabBar(
         controller: controller,
         onTap: onTap,

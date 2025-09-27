@@ -7,12 +7,14 @@ class ListSection extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
+  final EdgeInsets padding;
 
   const ListSection({
     super.key,
     required this.title,
     required this.icon,
     required this.children,
+    this.padding = const EdgeInsets.only(left: 4, bottom: 8),
   });
 
   @override
@@ -22,7 +24,7 @@ class ListSection extends StatelessWidget {
       children: [
         // Section Header
         Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
+          padding: padding,
           child: Row(
             children: [
               Icon(

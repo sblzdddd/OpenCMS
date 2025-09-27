@@ -5,7 +5,7 @@ import 'actions/assessment.dart';
 import 'actions/homework.dart';
 import 'actions/web_cms.dart';
 import 'actions/free_classrooms.dart';
-import '../ui/shared/navigations/app_navigation_controller.dart';
+import '../ui/navigations/app_navigation_controller.dart';
 import 'actions/timetable.dart';
 import 'settings/settings_page.dart';
 import 'actions/reports.dart';

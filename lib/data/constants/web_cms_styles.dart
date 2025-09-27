@@ -1210,7 +1210,7 @@ a:hover{text-decoration:underline;color:$primaryColorCss;font-size:14px;}
 .teachertb tr td div{text-align: center;}
 .normal_td_t30{background-color:$surfaceColorCss; color: $onSurfaceCss !important;}
 .normal_td_t30 div{margin-top:-35px;}
-.normal_td, td{background-color:$surfaceColorCss!important;vertical-align: bottom; color: $onSurfaceCss !important;}
+.normal_td, td{background-color: transparent!important;vertical-align: bottom; color: $onSurfaceCss !important;}
 textarea {background-color: $darkCardColorCss;}
 .breaktime_td{height: 0px;border:1px;}
 .lunchtime_td{background-color:#fae3d5;}

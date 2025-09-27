@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../ui/shared/views/web_cms_base.dart';
+import '../../ui/web_cms/web_cms_base.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
+import '../../ui/shared/widgets/custom_scaffold.dart';
 
 class WebCmsPage extends WebCmsBase {
   final bool disableControls;
@@ -57,7 +58,9 @@ class _WebCmsPageState extends WebCmsBaseState<WebCmsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
+      context: context,
       appBar: CustomAppBar(
         title: Text(widget.windowTitle ?? 'Web CMS'),
         actions: widget.disableControls ? [] : [

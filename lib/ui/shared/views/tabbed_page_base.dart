@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'keep_alive_wrapper.dart';
 import '../../../ui/shared/widgets/custom_app_bar.dart';
+import '../../../ui/shared/widgets/custom_scaffold.dart';
 
 /// Base widget for pages with tabs that provides common tab functionality
 class TabbedPageBase extends StatefulWidget {
@@ -47,7 +48,9 @@ class _TabbedPageBaseState extends State<TabbedPageBase>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
+      context: context,
       appBar: CustomAppBar(
         title: Text(widget.title),
         automaticallyImplyLeading: widget.automaticallyImplyLeading,

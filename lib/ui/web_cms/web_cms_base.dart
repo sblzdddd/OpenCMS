@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:cookie_jar/cookie_jar.dart';
-import '../../../data/constants/api_endpoints.dart';
-import '../../../services/auth/auth_service.dart';
-import '../../../services/shared/storage_client.dart';
-import '../../../data/constants/web_cms_styles.dart';
+import '../../data/constants/api_endpoints.dart';
+import '../../services/auth/auth_service.dart';
+import '../../services/shared/storage_client.dart';
+import '../../data/constants/web_cms_styles.dart';
 
 /// Base class for web CMS components that handles common functionality
 /// like cookie preparation, web view management, and CSS injection

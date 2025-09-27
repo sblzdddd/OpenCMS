@@ -39,7 +39,7 @@ class AssessmentChartWidget extends StatelessWidget {
 
     return Card(
       elevation: 0,
-      color: Theme.of(context).colorScheme.surface,
+      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),

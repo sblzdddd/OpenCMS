@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../../services/theme/theme_services.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'dart:io';
+import '../../services/theme/window_effect_service.dart';
+import '../../ui/shared/widgets/custom_scaffold.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -103,6 +106,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     );
   }
 
+
   Widget _buildColorButton(ThemeColor color, String label, Color colorValue, ThemeNotifier themeNotifier) {
     bool isSelected = themeNotifier.selectedColor == color;
     
@@ -155,7 +159,9 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
+      context: context,
       appBar: CustomAppBar(
         leading: IconButton(
           icon: const Icon(Symbols.arrow_back_rounded),
@@ -245,12 +251,49 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
 
                 // Border Radius Slider
                 Slider(
+                  padding: const EdgeInsets.symmetric(horizontal: 0),
                   value: themeNotifier.borderRadius,
                   min: 0,
                   max: 32,
                   divisions: 32,
                   onChanged: (value) => themeNotifier.setBorderRadius(value),
                 ),
+
+                // Only show window effects on desktop platforms
+                if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
+                  const SizedBox(height: 32),
+                  
+                  Text(
+                    'Window Effect',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Window Effect Dropdown
+                  DropdownButtonFormField<WindowEffectType>(
+                    value: themeNotifier.windowEffect,
+                    decoration: InputDecoration(
+                      labelText: 'Window Effect',
+                      border: OutlineInputBorder(
+                        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+                      ),
+                      prefixIcon: const Icon(Symbols.window_rounded),
+                    ),
+                    items: ThemeNotifier.availableWindowEffects.map((effect) {
+                      return DropdownMenuItem(
+                        value: effect,
+                        child: Text(ThemeNotifier.getWindowEffectDisplayName(effect)),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        themeNotifier.setWindowEffect(value);
+                      }
+                    },
+                  ),
+                ],
               ],
             ),
           );

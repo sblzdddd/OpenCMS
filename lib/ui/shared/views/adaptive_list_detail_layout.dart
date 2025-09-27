@@ -93,7 +93,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(0),
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];

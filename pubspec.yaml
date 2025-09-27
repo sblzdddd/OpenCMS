@@ -48,6 +48,7 @@ dependencies:
   shared_preferences: ^2.5.3
   provider: ^6.1.2
   google_fonts: ^6.3.0
+  flutter_acrylic: ^1.1.4
   dio_cache_interceptor: ^3.5.1
   add_2_calendar: ^3.0.1
   syncfusion_flutter_calendar: ^30.2.6

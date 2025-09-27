@@ -4,13 +4,14 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../ui/home/components/dashboard_grid/add_widget_drawer.dart';
 import '../ui/home/components/quick_actions/quick_actions.dart';
 import '../ui/home/components/dashboard_grid/dashboard_grid.dart';
-import '../ui/shared/navigations/bottom_navigation.dart';
-import '../ui/shared/navigations/app_navigation_rail.dart';
+import '../ui/navigations/bottom_navigation.dart';
+import '../ui/navigations/app_navigation_rail.dart';
 import 'actions/timetable.dart';
 import 'actions/homework.dart';
 import 'actions/assessment.dart';
 import 'settings/settings_page.dart';
 import '../ui/shared/widgets/custom_app_bar.dart';
+import '../services/theme/theme_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
       builder: (context, constraints) {
         final bool useRail = constraints.maxWidth >= 800;
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: Colors.transparent,
           body: SafeArea(
             child: useRail
                 ? Row(
@@ -103,7 +104,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildScrollableHomeContent() {
-    return RefreshIndicator(
+    final themeNotifier = ThemeNotifier.instance;
+    final bgColor = Theme.of(context).colorScheme.surface.withValues(
+      alpha: themeNotifier.needTransparentBG ? 
+      themeNotifier.isDarkMode ? 0.8 : 0.5
+      : 1,
+    );
+    return Container(color: bgColor, child: RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: _refreshHomePage,
       child: ScrollConfiguration(
@@ -166,13 +173,14 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 16),
                 ],
               );
             },
           ),
         ),
       ),
-    );
+    ));
   }
 
   void _showAddWidgetDrawer() {

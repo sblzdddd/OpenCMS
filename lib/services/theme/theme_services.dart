@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'window_effect_service.dart';
 
 extension ColorExtension on Color {
   String toHex() {
@@ -15,7 +16,31 @@ enum ThemeColor {
   custom,
 }
 
+
 class ThemeNotifier with ChangeNotifier {
+  // Singleton instance
+  static ThemeNotifier? _instance;
+  static bool _isInitialized = false;
+  
+  // Private constructor
+  ThemeNotifier._internal();
+  
+  // Static getter to access the singleton instance
+  static ThemeNotifier get instance {
+    _instance ??= ThemeNotifier._internal();
+    return _instance!;
+  }
+  
+  // Initialize the singleton (call this once in main.dart)
+  static Future<void> initialize() async {
+    if (!_isInitialized) {
+      _instance = ThemeNotifier._internal();
+      await _instance!._loadThemeAsync();
+      await WindowEffectService.initialize();
+      _isInitialized = true;
+    }
+  }
+  
   bool _isDarkMode = false;
   ThemeColor _selectedColor = ThemeColor.red;
   Color _customColor = const Color(0xffb33b15); // Default red color
@@ -25,6 +50,8 @@ class ThemeNotifier with ChangeNotifier {
   ThemeColor get selectedColor => _selectedColor;
   Color get customColor => _customColor;
   double get borderRadius => _borderRadius;
+  WindowEffectType get windowEffect => WindowEffectService.instance.windowEffect;
+  bool get needTransparentBG => WindowEffectService.instance.needTransparentBG;
   
   // Predefined colors
   static const Map<ThemeColor, Color> predefinedColors = {
@@ -33,6 +60,13 @@ class ThemeNotifier with ChangeNotifier {
     ThemeColor.blue: Color.fromARGB(255, 40, 198, 255),
     ThemeColor.green: Color.fromARGB(255, 76, 175, 97),
   };
+  
+  // Delegate window effect methods to WindowEffectService
+  static List<WindowEffectType> get availableWindowEffects => 
+      WindowEffectService.availableWindowEffects;
+  
+  static String getWindowEffectDisplayName(WindowEffectType effect) => 
+      WindowEffectService.getWindowEffectDisplayName(effect);
   
   Color get currentColor {
     if (_selectedColor == ThemeColor.custom) {
@@ -61,21 +95,28 @@ class ThemeNotifier with ChangeNotifier {
         return predefinedColors[ThemeColor.red]!; // Default fallback
     }
   }
-  
-  ThemeNotifier() {
-    loadTheme();
+  void reapplyWindowEffect() {
+    notifyListeners();
+    WindowEffectService.instance.reapplyWindowEffect(
+      color: currentColor,
+      isDarkMode: _isDarkMode,
+    );
   }
   
+  
   void toggleTheme() {
+    print('toggleTheme');
     _isDarkMode = !_isDarkMode;
     saveTheme();
     notifyListeners();
+    reapplyWindowEffect();
   }
   
   void setColorTheme(ThemeColor color) {
     _selectedColor = color;
     saveTheme();
     notifyListeners();
+    reapplyWindowEffect();
   }
   
   void setCustomColor(Color color) {
@@ -83,6 +124,7 @@ class ThemeNotifier with ChangeNotifier {
     _selectedColor = ThemeColor.custom;
     saveTheme();
     notifyListeners();
+    reapplyWindowEffect();
   }
   
   void setBorderRadius(double radius) {
@@ -98,17 +140,25 @@ class ThemeNotifier with ChangeNotifier {
   void setBorderRadiusExtraLarge() => setBorderRadius(24.0);
   void setBorderRadiusNone() => setBorderRadius(0.0);
   
-  // Calculate border radius with multiplier
+  // Window effect methods - delegate to WindowEffectService
+  void setWindowEffect(WindowEffectType effect) {
+    WindowEffectService.instance.setWindowEffect(effect, color: currentColor, isDarkMode: _isDarkMode);
+    saveTheme(); // Save preferences when window effect changes
+  }
+  
+  // Get the current ColorScheme based on theme settings
+  ColorScheme getCurrentColorScheme() {
+    return ColorScheme.fromSeed(
+      seedColor: currentColor,
+      brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+    );
+  }
+  
+  
   double calculateBorderRadius(double multiplier) {
     return (_borderRadius * multiplier).clamp(0.0, 50.0);
   }
   
-  // Calculate border radius with addition/subtraction
-  double calculateBorderRadiusOffset(double offset) {
-    return (_borderRadius + offset).clamp(0.0, 50.0);
-  }
-  
-  // Get BorderRadius objects with calculated values
   BorderRadius getBorderRadiusAll(double multiplier) => 
       BorderRadius.circular(calculateBorderRadius(multiplier));
   
@@ -122,59 +172,31 @@ class ThemeNotifier with ChangeNotifier {
     bottomRight: Radius.circular(calculateBorderRadius(multiplier)),
   );
   
-  BorderRadius getBorderRadiusHorizontal(double multiplier) => BorderRadius.horizontal(
-    left: Radius.circular(calculateBorderRadius(multiplier)),
-    right: Radius.circular(calculateBorderRadius(multiplier)),
-  );
-  
-  BorderRadius getBorderRadiusLeft(double multiplier) => BorderRadius.only(
-    topLeft: Radius.circular(calculateBorderRadius(multiplier)),
-    bottomLeft: Radius.circular(calculateBorderRadius(multiplier)),
-  );
-  
-  BorderRadius getBorderRadiusRight(double multiplier) => BorderRadius.only(
-    topRight: Radius.circular(calculateBorderRadius(multiplier)),
-    bottomRight: Radius.circular(calculateBorderRadius(multiplier)),
-  );
-  
-  // Get BorderRadius objects with offset values
-  BorderRadius getBorderRadiusAllOffset(double offset) => 
-      BorderRadius.circular(calculateBorderRadiusOffset(offset));
-  
-  BorderRadius getBorderRadiusTopOffset(double offset) => BorderRadius.only(
-    topLeft: Radius.circular(calculateBorderRadiusOffset(offset)),
-    topRight: Radius.circular(calculateBorderRadiusOffset(offset)),
-  );
-  
-  BorderRadius getBorderRadiusBottomOffset(double offset) => BorderRadius.only(
-    bottomLeft: Radius.circular(calculateBorderRadiusOffset(offset)),
-    bottomRight: Radius.circular(calculateBorderRadiusOffset(offset)),
-  );
-  
-  BorderRadius getBorderRadiusLeftOffset(double offset) => BorderRadius.only(
-    topLeft: Radius.circular(calculateBorderRadiusOffset(offset)),
-    bottomLeft: Radius.circular(calculateBorderRadiusOffset(offset)),
-  );
-  
-  BorderRadius getBorderRadiusRightOffset(double offset) => BorderRadius.only(
-    topRight: Radius.circular(calculateBorderRadiusOffset(offset)),
-    bottomRight: Radius.circular(calculateBorderRadiusOffset(offset)),
-  );
-  
   void saveTheme() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', _isDarkMode);
     await prefs.setInt('selectedColor', _selectedColor.index);
     await prefs.setInt('customColor', _customColor.toARGB32());
     await prefs.setDouble('borderRadius', _borderRadius);
+    await prefs.setInt('windowEffect', WindowEffectService.instance.windowEffect.index);
   }
   
   void loadTheme() async {
+    await _loadThemeAsync();
+  }
+  
+  Future<void> _loadThemeAsync() async {
+    print('loadTheme');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _isDarkMode = prefs.getBool('isDarkMode') ?? false;
     _selectedColor = ThemeColor.values[prefs.getInt('selectedColor') ?? 0];
     _customColor = Color(prefs.getInt('customColor') ?? 0xffb33b15);
     _borderRadius = prefs.getDouble('borderRadius') ?? 8.0;
+    
+    // Load window effect preference
+    WindowEffectService.instance.windowEffect = WindowEffectType.values[prefs.getInt('windowEffect') ?? 0];
+    
     notifyListeners();
+    reapplyWindowEffect();
   }
 }

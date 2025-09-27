@@ -78,7 +78,9 @@ class _HomeworkCardState extends State<HomeworkCard> {
     final event = Event(
       title: '${widget.homework.courseName} Homework',
       description: widget.homework.title,
-      location: "SC""IE",
+      location:
+          "SC"
+          "IE",
       startDate: startDate,
       endDate: endDate,
     );
@@ -132,7 +134,10 @@ class _HomeworkCardState extends State<HomeworkCard> {
       child: ScaledInkWell(
         margin: const EdgeInsets.only(bottom: 8.0),
         background: (inkWell) => Material(
-          color: Theme.of(context).colorScheme.surfaceContainer,
+          color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+          : Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
         ),
@@ -155,9 +160,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
                         decoration: _isCompleted
                             ? TextDecoration.lineThrough
                             : null,
-                        decorationColor: Theme.of(
-                          context,
-                        ).colorScheme.primary,
+                        decorationColor: Theme.of(context).colorScheme.primary,
                         decorationThickness: 2,
                         fontWeight: FontWeight.bold,
                       ),
@@ -167,9 +170,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
                     turns: widget.isExpanded ? 0.5 : 0.0,
                     duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOutCubic,
-                    child: Icon(
-                      Symbols.expand_more_rounded,
-                    ),
+                    child: Icon(Symbols.expand_more_rounded),
                   ),
                 ],
               ),
@@ -181,9 +182,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
                 widget.homework.title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontSize: 14,
-                  decoration: _isCompleted
-                      ? TextDecoration.lineThrough
-                      : null,
+                  decoration: _isCompleted ? TextDecoration.lineThrough : null,
                   decorationColor: Theme.of(context).colorScheme.primary,
                   decorationThickness: 2,
                 ),
@@ -348,7 +347,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
         // actions
         Row(
           children: [
-            if(Platform.isAndroid || Platform.isIOS) ...[
+            if (Platform.isAndroid || Platform.isIOS) ...[
               Expanded(
                 child: OutlinedButton(
                   onPressed: () {
@@ -388,9 +387,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
                                 : null,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            _isCompleted ? 'Undone' : 'Done',
-                          ),
+                          Text(_isCompleted ? 'Undone' : 'Done'),
                         ],
                       ),
               ),

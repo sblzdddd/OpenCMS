@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'refreshable_view.dart';
 import '../../../services/theme/theme_services.dart';
 import '../../../ui/shared/widgets/custom_app_bar.dart';
+import '../../../ui/shared/widgets/custom_scaffold.dart';
 export '../../../services/theme/theme_services.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -33,7 +34,9 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
+      context: context,
       appBar: CustomAppBar(
         title: Text(appBarTitle),
         leading: appBarLeading,
@@ -42,7 +45,6 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
         foregroundColor: appBarForegroundColor,
         elevation: appBarElevation,
       ),
-      backgroundColor: bodyBackgroundColor,
       body: super.build(context),
     );
   }

@@ -181,7 +181,10 @@ class _QuickActionsState extends State<QuickActions> {
               width: double.infinity,
               padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainer,
+                color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+                    ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                    : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+                : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(1.5),
               ),
               child: Column(

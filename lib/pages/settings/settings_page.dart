@@ -8,6 +8,7 @@ import '../../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import '../../ui/shared/widgets/custom_scaffold.dart';
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -74,7 +75,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
+      context: context,
       appBar: CustomAppBar(
         leading: IconButton(
           icon: const Icon(Symbols.arrow_back_rounded),
@@ -123,6 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               value: themeNotifier.isDarkMode,
                               onChanged: (value) {
                                 themeNotifier.toggleTheme();
+                                // Window effect will be automatically reapplied in toggleTheme()
                               },
                               activeColor: Theme.of(
                                 context,

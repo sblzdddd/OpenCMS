@@ -107,7 +107,10 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     return Padding(padding: const EdgeInsets.all(6), child: Container(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer,
+        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+        : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
       child: Column(
@@ -201,7 +204,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
-      color: Theme.of(context).colorScheme.surface,
+      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.4),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -274,6 +277,10 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     final gradeColor = _getGradeColor(assessment.mark);
 
     return Card(
+      color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+          ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+      : Theme.of(context).colorScheme.surfaceContainer,
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       elevation: 0,
       shape: RoundedRectangleBorder(

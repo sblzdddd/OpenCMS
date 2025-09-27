@@ -5,7 +5,7 @@ import 'package:window_manager/window_manager.dart';
 import '../../../services/auth/auth_service.dart';
 import '../../../services/theme/theme_services.dart';
 import '../../../services/shared/storage_client.dart';
-import '../navigations/app_navigation_controller.dart';
+import '../../navigations/app_navigation_controller.dart';
 
 void showConfirmationDialog(BuildContext context, String title, String message, Future<void> Function(BuildContext) onConfirm) {
   final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);

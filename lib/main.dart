@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'utils/text_theme_util.dart';
 import 'utils/global_press_scale.dart';
 import 'ui/shared/widgets/custom_app_bar.dart';
+import 'package:flutter_acrylic/flutter_acrylic.dart';
 
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
@@ -104,14 +105,25 @@ Future<void> initSystemTray() async {
   });
 }
 
+Future<void> initFlutterAcrylic() async {
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    await Window.initialize();
+  }
+}
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initFlutterAcrylic();
   await initInAppWebview();
   await initWindowManager();
   await initSystemTray();
   // await Workmanager().initialize(_callbackDispatcher, isInDebugMode: true);
   await CookiesRefreshService().start();
+  
+  // Initialize ThemeNotifier singleton
+  await ThemeNotifier.initialize();
   
   // await Workmanager().registerOneOffTask(
   //   "ping_test", // unique ID
@@ -138,7 +150,7 @@ class MyApp extends StatelessWidget {
     TextTheme textTheme = createTextTheme(context, "Roboto", "EB Garamond");
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeNotifier()),
+        ChangeNotifierProvider.value(value: ThemeNotifier.instance),
         ChangeNotifierProvider(create: (_) => SkinProvider()..initialize()),
       ],
       child: Consumer<ThemeNotifier>(

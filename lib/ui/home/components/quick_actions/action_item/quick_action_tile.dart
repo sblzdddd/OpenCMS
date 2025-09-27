@@ -53,7 +53,10 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
         onTap: widget.onTap,
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         background: (inkWell) => Material(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+              ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.7)
+              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.4))
+          : Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
         ),

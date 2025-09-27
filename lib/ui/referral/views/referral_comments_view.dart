@@ -47,7 +47,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(
@@ -92,7 +95,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         child: Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(
@@ -269,7 +275,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+        : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
@@ -332,6 +341,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
   Widget _buildCommentCard(ReferralComment comment) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
+      color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+          ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+      : Theme.of(context).colorScheme.surfaceContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(1),
@@ -474,7 +487,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
+                color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+                    ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                    : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+                : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(0.375),
                 border: Border.all(
                   color: Theme.of(
@@ -510,7 +526,10 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       margin: EdgeInsets.only(top: 2),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+        : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),

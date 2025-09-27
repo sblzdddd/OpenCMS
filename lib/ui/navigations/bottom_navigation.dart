@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'nav_items.dart';
+import '../../services/theme/theme_services.dart';
 
 class BottomNavigation extends StatelessWidget {
   const BottomNavigation({
@@ -13,9 +14,15 @@ class BottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = ThemeNotifier.instance;
+    final bgColor = Theme.of(context).colorScheme.surface.withValues(
+      alpha: themeNotifier.needTransparentBG ? 
+      themeNotifier.isDarkMode ? 0.6 : 0
+      : 1,
+    );
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: bgColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
@@ -27,7 +34,7 @@ class BottomNavigation extends StatelessWidget {
       child: NavigationBar(
         selectedIndex: selectedIndex,
         onDestinationSelected: onTapCallback,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: bgColor,
         // indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         destinations: appNavItems

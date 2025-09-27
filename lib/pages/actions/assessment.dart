@@ -9,6 +9,7 @@ import '../../services/theme/theme_services.dart';
 import '../../ui/assessments/subject_assessments_view.dart';
 import '../../ui/assessments/adaptive_assessment_layout.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
+import '../../ui/shared/widgets/custom_scaffold.dart';
 
 class AssessmentPage extends StatefulWidget {
   final int initialTabIndex;
@@ -129,7 +130,9 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   @override
   Widget build(BuildContext context) {
     
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
+      context: context,
       appBar: CustomAppBar(
         title: const Text('Assessment'),
         centerTitle: false,

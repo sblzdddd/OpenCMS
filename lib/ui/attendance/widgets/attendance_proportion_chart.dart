@@ -73,7 +73,7 @@ class AttendanceProportionChart extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: segment.color,
-                    borderRadius: themeNotifier.getBorderRadiusHorizontal(0.125),
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.125),
                   ),
                 ),
               );

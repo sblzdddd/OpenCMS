@@ -6,7 +6,7 @@ import '../../services/theme/theme_services.dart';
 import '../../services/notification/daily_bulletin_service.dart';
 import '../shared/scaled_ink_well.dart';
 import '../shared/views/adaptive_list_detail_layout.dart';
-import '../shared/views/web_cms_content.dart';
+import '../web_cms/web_cms_content.dart';
 import '../../pages/actions/web_cms.dart';
 
 class AdaptiveDailyBulletinLayout extends StatelessWidget {
@@ -57,9 +57,15 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: ScaledInkWell(
-        margin: const EdgeInsets.only(bottom: 8.0),
+        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
         background: (inkWell) => Material(
-          color: isSelected ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3) : Theme.of(context).colorScheme.surfaceContainer,
+          color: isSelected
+              ? Theme.of(
+                  context,
+                ).colorScheme.primaryContainer.withValues(alpha: 0.3)
+              : themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
+              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6),
           borderRadius: themeNotifier.getBorderRadiusAll(1),
           child: inkWell,
         ),

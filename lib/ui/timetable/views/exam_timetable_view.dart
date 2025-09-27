@@ -206,6 +206,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
     final months = List<int>.generate(12, (i) => i + 1);
     
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           // Top bar with month and year dropdowns aligned right - only show in list view
