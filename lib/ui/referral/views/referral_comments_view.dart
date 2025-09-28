@@ -5,6 +5,7 @@ import '../../../services/referral/referral_service.dart';
 import '../../../data/models/referral/referral_response.dart';
 import '../../shared/views/refreshable_page.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import 'package:opencms/ui/shared/widgets/skin_icon_widget.dart';
 
 class ReferralCommentsView extends StatefulWidget {
   const ReferralCommentsView({super.key});
@@ -18,6 +19,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
   ReferralResponse? _referralResponse;
   String _selectedFilter = 'All';
   String _selectedSort = 'Recent';
+  final String skinKey = 'comments';
 
   final List<String> _filters = [
     'All',
@@ -50,7 +52,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           decoration: BoxDecoration(
             color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
                 ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
             : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
@@ -98,7 +100,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           decoration: BoxDecoration(
             color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
                 ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
             : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
@@ -278,7 +280,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       decoration: BoxDecoration(
         color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
             ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
         : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
@@ -344,7 +346,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
           ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
       : Theme.of(context).colorScheme.surfaceContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -377,12 +379,13 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
           backgroundColor: Theme.of(
             context,
           ).colorScheme.primary.withValues(alpha: 0.1),
-          child: Icon(
-            SubjectIconConstants.getIconForSubject(
-              subjectName: comment.subject ?? '',
-              code: comment.subject ?? '',
-              placeholder: Symbols.person_rounded,
-            ),
+          child: SkinIcon(
+            imageKey: 'subjectIcons.${SubjectIconConstants.getCategoryForSubject(subjectName: comment.subject ?? '', code: comment.subject ?? '')}',
+            fallbackIcon: Symbols.person_rounded,
+            fallbackIconColor: Theme.of(context).colorScheme.primary,
+            fallbackIconBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            size: 40,
+            iconSize: 20,
           ),
         ),
         const SizedBox(width: 12),
@@ -490,7 +493,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
               decoration: BoxDecoration(
                 color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
                     ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+                    : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
                 : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(0.375),
                 border: Border.all(
@@ -529,7 +532,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       decoration: BoxDecoration(
         color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
             ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
         : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(

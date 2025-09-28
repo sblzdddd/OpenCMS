@@ -161,8 +161,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      isTransparent: true,
-      context: context,
+      skinKey: 'settings',
       appBar: CustomAppBar(
         leading: IconButton(
           icon: const Icon(Symbols.arrow_back_rounded),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'window_effect_service.dart';
+import '../skin/skin_service.dart';
 
 extension ColorExtension on Color {
   String toHex() {
@@ -37,6 +38,8 @@ class ThemeNotifier with ChangeNotifier {
       _instance = ThemeNotifier._internal();
       await _instance!._loadThemeAsync();
       await WindowEffectService.initialize();
+      // Listen to skin service changes to update needTransparentBG
+      SkinService.instance.addListener(_instance!._onSkinChanged);
       _isInitialized = true;
     }
   }
@@ -51,7 +54,23 @@ class ThemeNotifier with ChangeNotifier {
   Color get customColor => _customColor;
   double get borderRadius => _borderRadius;
   WindowEffectType get windowEffect => WindowEffectService.instance.windowEffect;
-  bool get needTransparentBG => WindowEffectService.instance.needTransparentBG;
+  bool get needTransparentBG {
+    // If skin has background image, always need transparent background
+    if (hasActiveSkinBackgroundImage) {
+      return true;
+    }
+    
+    // Otherwise, use the window effect setting
+    return WindowEffectService.instance.needTransparentBG;
+  }
+
+  bool get hasTransparentWindowEffect {
+    return WindowEffectService.instance.windowEffect != WindowEffectType.disabled;
+  }
+
+  bool get hasActiveSkinBackgroundImage {
+    return SkinService.instance.activeSkin?.hasAnyBGImage() ?? false;
+  }
   
   // Predefined colors
   static const Map<ThemeColor, Color> predefinedColors = {
@@ -94,6 +113,12 @@ class ThemeNotifier with ChangeNotifier {
       default:
         return predefinedColors[ThemeColor.red]!; // Default fallback
     }
+  }
+  
+  // Called when skin service changes (active skin changes)
+  void _onSkinChanged() {
+    // Notify listeners that needTransparentBG might have changed
+    notifyListeners();
   }
   void reapplyWindowEffect() {
     notifyListeners();

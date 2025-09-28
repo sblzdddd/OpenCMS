@@ -13,6 +13,8 @@ class ReportDetailView extends StatefulWidget {
 }
 
 class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
+  final String skinKey = 'reports';
+
   @override
   String get appBarTitle => 'Report Detail';
 

@@ -25,6 +25,7 @@ class TrashCanItem extends StatelessWidget {
         fontSize: 11,
         color: Colors.red,
       ),
+      skinImageKey: 'actionIcons.unknown', // Trash can doesn't have a specific skin icon
     );
 
     if (isHighlighted) {

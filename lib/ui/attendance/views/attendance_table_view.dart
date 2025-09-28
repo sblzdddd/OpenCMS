@@ -39,35 +39,40 @@ class AttendanceTableView extends StatelessWidget {
             child: CustomChildScrollView(
               child: RepaintBoundary(
                 child: DataTable(
-              columnSpacing: 0,
-              horizontalMargin: 0,
-              headingRowHeight: 40,
-              dataRowMinHeight: 60,
-              dataRowMaxHeight: 90,
-              columns: [
-                DataColumn(
-                  label: SizedBox(
-                    width: columnWidth,
-                    child: const Text('Date', textAlign: TextAlign.left),
-                  ),
-                ),
-                ...periods.map((period) => DataColumn(
-                  label: SizedBox(
-                    width: columnWidth,
-                    child: Text(
-                      period.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 12),
+                  columnSpacing: 0,
+                  horizontalMargin: 0,
+                  headingRowHeight: 40,
+                  dataRowMinHeight: 60,
+                  dataRowMaxHeight: 90,
+                  columns: [
+                    DataColumn(
+                      label: SizedBox(
+                        width: columnWidth,
+                        child: const Text('Date', textAlign: TextAlign.left),
+                      ),
                     ),
-                  ),
-                )),
-              ],
-              rows: days
-                  .map((day) => _buildDataRow(context, day, periods, columnWidth))
-                  .toList(),
+                    ...periods.map(
+                      (period) => DataColumn(
+                        label: SizedBox(
+                          width: columnWidth,
+                          child: Text(
+                            period.name,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  rows: days
+                      .map(
+                        (day) =>
+                            _buildDataRow(context, day, periods, columnWidth),
+                      )
+                      .toList(),
+                ),
               ),
             ),
-          ),
           ),
         );
       },
@@ -81,14 +86,27 @@ class AttendanceTableView extends StatelessWidget {
   }
 
   String _getDayOfWeek(DateTime date) {
-    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const weekdays = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
     return weekdays[date.weekday - 1];
   }
 
-  DataRow _buildDataRow(BuildContext context, RecordOfDay day, List<PeriodInfo> periods, double columnWidth) {
+  DataRow _buildDataRow(
+    BuildContext context,
+    RecordOfDay day,
+    List<PeriodInfo> periods,
+    double columnWidth,
+  ) {
     // Create a map of period index to attendance entry
     final Map<int, AttendanceEntry> attendanceMap = {};
-    
+
     for (int i = 0; i < day.attendances.length && i < periods.length; i++) {
       final entry = day.attendances[i];
       attendanceMap[i] = entry; // Include all records, including present ones
@@ -105,14 +123,19 @@ class AttendanceTableView extends StatelessWidget {
               children: [
                 Text(
                   _formatDate(day.date),
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
                   textAlign: TextAlign.left,
                 ),
                 Text(
                   _getDayOfWeek(day.date),
                   style: TextStyle(
                     fontSize: 10,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                   textAlign: TextAlign.left,
                 ),
@@ -126,7 +149,9 @@ class AttendanceTableView extends StatelessWidget {
             SizedBox(
               width: columnWidth,
               height: 80,
-              child: entry != null ? _buildAttendanceCell(context, entry, day.date, index) : const SizedBox.shrink(),
+              child: entry != null
+                  ? _buildAttendanceCell(context, entry, day.date, index)
+                  : const SizedBox.shrink(),
             ),
           );
         }),
@@ -134,11 +159,23 @@ class AttendanceTableView extends StatelessWidget {
     );
   }
 
-  Widget _buildAttendanceCell(BuildContext context, AttendanceEntry entry, DateTime date, int index) {
-    final subjectName = entry.getSubjectNameWithIndex(index);
-    final backgroundColor = subjectName == "/" ? Colors.transparent : AttendanceConstants.kindBackgroundColor[entry.kind] ?? Colors.transparent;
-    final textColor = subjectName == "/" ? Theme.of(context).colorScheme.onSurface : AttendanceConstants.kindTextColor[entry.kind] ?? Theme.of(context).colorScheme.onSurface;
+  Widget _buildAttendanceCell(
+    BuildContext context,
+    AttendanceEntry entry,
+    DateTime date,
+    int index,
+  ) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final subjectName = entry.getSubjectNameWithIndex(index);
+    final backgroundColor = subjectName == "/"
+        ? Colors.transparent
+        : (AttendanceConstants.kindBackgroundColor[entry.kind] ??
+                  Colors.transparent)
+              .withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1);
+    final textColor = subjectName == "/"
+        ? Theme.of(context).colorScheme.onSurface
+        : AttendanceConstants.kindTextColor[entry.kind] ??
+              Theme.of(context).colorScheme.onSurface;
     return GestureDetector(
       onTap: () => onEventTap(entry, date),
       child: Container(
@@ -177,10 +214,7 @@ class AttendanceTableView extends StatelessWidget {
                 child: Center(
                   child: Text(
                     entry.kindText,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: 7,
-                    ),
+                    style: TextStyle(color: textColor, fontSize: 7),
                     textAlign: TextAlign.center,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

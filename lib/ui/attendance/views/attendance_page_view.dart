@@ -9,6 +9,7 @@ import '../../../services/attendance/course_stats_service.dart';
 import 'attendance_cards_view.dart';
 import 'attendance_table_view.dart';
 import '../../shared/views/refreshable_view.dart';
+import '../../shared/widgets/custom_scaffold.dart';
 
 class AttendancePageView extends StatefulWidget {
   const AttendancePageView({super.key});
@@ -32,7 +33,10 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
   void initState() {
     super.initState();
     _endDate = DateTime.now();
-    _startDate = DateTime(_endDate!.year - 1, _endDate!.month, _endDate!.day);
+    _startDate = DateTime(_endDate!.year - 1, 8, 1);
+    if(_endDate!.month >= 8 && _endDate!.day >= 1) {
+      _startDate = DateTime(_endDate!.year, 8, 1);
+    }
   }
 
   @override
@@ -220,7 +224,8 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      isTransparent: true,
       body: super.build(context),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

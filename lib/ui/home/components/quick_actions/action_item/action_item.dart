@@ -47,6 +47,7 @@ class _ActionItemState extends State<ActionItem>
         title: widget.action['title'] as String,
         onTap: widget.onTap ?? () => _handleActionTap(context),
         showDragIndicator: true,
+        skinImageKey: 'actionIcons.${widget.action['id']}',
       ),
     );
   }
@@ -57,6 +58,7 @@ class _ActionItemState extends State<ActionItem>
       icon: widget.action['icon'] as IconData,
       title: widget.action['title'] as String,
       onTap: widget.onTap ?? () => _handleActionTap(context),
+      skinImageKey: 'actionIcons.${widget.action['id']}',
     );
   }
 

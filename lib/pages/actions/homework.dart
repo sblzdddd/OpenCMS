@@ -9,7 +9,8 @@ import '../../services/homework/completed_homework_service.dart';
 import '../../ui/homework/homework_card.dart';
 
 class HomeworkPage extends StatefulWidget {
-  const HomeworkPage({super.key});
+  final bool isTransparent;
+  const HomeworkPage({super.key, this.isTransparent = false});
 
   @override
   State<HomeworkPage> createState() => _HomeworkPageState();
@@ -24,9 +25,13 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   List<HomeworkItem> _filteredHomeworkItems = [];
   bool _showCompleted = false;
   Set<String> _completedKeys = {};
+  final String skinKey = 'homeworks';
+  @override
+  late bool isTransparent;
 
   @override
   void initState() {
+    isTransparent = widget.isTransparent;
     _selectedYear = PeriodConstants.getAcademicYears().first;
     super.initState();
     _loadCompleted();

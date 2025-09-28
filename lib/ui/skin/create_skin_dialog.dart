@@ -20,7 +20,7 @@ class _CreateSkinDialogState extends State<CreateSkinDialog> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _authorController = TextEditingController();
-  final SkinService _skinService = SkinService();
+  final SkinService _skinService = SkinService.instance;
   bool _isLoading = false;
 
   @override

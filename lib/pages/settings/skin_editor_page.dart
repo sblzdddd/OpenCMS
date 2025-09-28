@@ -7,7 +7,8 @@ import '../../ui/skin/base_image_customizer.dart';
 import '../../ui/skin/skin_categories_helper.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import '../../ui/shared/custom_snackbar/snackbar_utils.dart';
-import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import '../../ui/shared/widgets/custom_scaffold.dart';
+import '../../ui/shared/widgets/custom_scroll_view.dart';
 
 /// Dedicated page for editing skin configurations
 class SkinEditorPage extends StatefulWidget {
@@ -23,7 +24,7 @@ class SkinEditorPage extends StatefulWidget {
 }
 
 class _SkinEditorPageState extends State<SkinEditorPage> with SingleTickerProviderStateMixin {
-  final SkinService _skinService = SkinService();
+  final SkinService _skinService = SkinService.instance;
   late Skin _currentSkin;
   bool _isLoading = false;
   String? _error;
@@ -35,8 +36,9 @@ class _SkinEditorPageState extends State<SkinEditorPage> with SingleTickerProvid
     super.initState();
     _currentSkin = widget.skin;
     _categories = SkinCategoriesHelper.getCategories();
-    _skinService.initialize();
     _tabController = TabController(length: _categories.length + 1, vsync: this);
+    // Ensure we have the freshest copy from storage (in case of edits elsewhere)
+    _loadLatestSkin();
   }
 
   @override
@@ -81,9 +83,23 @@ class _SkinEditorPageState extends State<SkinEditorPage> with SingleTickerProvid
     }
   }
 
+  Future<void> _loadLatestSkin() async {
+    try {
+      final response = await _skinService.getSkinById(_currentSkin.id);
+      if (response.success && response.skin != null && mounted) {
+        setState(() {
+          _currentSkin = response.skin!;
+        });
+      }
+    } catch (_) {
+      // ignore and keep current
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      skinKey: 'settings',
       appBar: CustomAppBar(
         title: Text('Edit skin "${_currentSkin.name}"'),
         backgroundColor: Colors.transparent,
@@ -106,17 +122,12 @@ class _SkinEditorPageState extends State<SkinEditorPage> with SingleTickerProvid
             ),
         ],
         bottom: TabBar(
-          labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-          ),
+          labelStyle: Theme.of(context).textTheme.labelLarge,
           controller: _tabController,
           isScrollable: true,
           tabs: [
             const Tab(text: 'Info'),
-            ..._categories.map(
-              (category) => Tab(
-                text: category,
-              ),
-            ),
+            ..._categories.map((category) => Tab(text: category)),
           ],
         ),
       ),
@@ -277,7 +288,7 @@ class _SkinEditorPageState extends State<SkinEditorPage> with SingleTickerProvid
                   const SizedBox(height: 12),
                   _buildStatRow('Total Elements', '${_currentSkin.imageData.length}'),
                   _buildStatRow('Customized', '${_getCustomizedCount()}'),
-                  _buildStatRow('Categories', '${_categories.length}'),
+                  _buildStatRow('Themed %', '${(_getCustomizedCount() / _currentSkin.imageData.length * 100).toStringAsFixed(2)}%'),
                 ],
               ),
             ),
@@ -366,8 +377,6 @@ class _SkinEditorPageState extends State<SkinEditorPage> with SingleTickerProvid
                   setState(() {
                     _currentSkin = updatedSkin;
                   });
-                  // Auto-save when image is updated
-                  _updateSkin(updatedSkin);
                 },
               );
             }).toList(),

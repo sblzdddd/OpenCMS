@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../services/theme/theme_services.dart';
 import '../../../../shared/scaled_ink_well.dart';
+import '../../../../shared/widgets/skin_icon_widget.dart';
 
 /// A generic quick action tile used by various quick action components.
 class QuickActionTile extends StatefulWidget {
@@ -14,6 +15,7 @@ class QuickActionTile extends StatefulWidget {
   final TextStyle? titleStyle;
   final VoidCallback? onTap;
   final bool showDragIndicator;
+  final String? skinImageKey;
 
   const QuickActionTile({
     super.key,
@@ -26,6 +28,7 @@ class QuickActionTile extends StatefulWidget {
     this.titleStyle,
     this.onTap,
     this.showDragIndicator = false,
+    this.skinImageKey,
   });
 
   @override
@@ -69,26 +72,15 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: resolvedIconBg,
-                  borderRadius: themeNotifier.getBorderRadiusAll(1),
-                ),
-                child: Stack(
-                  children: [
-                    Center(
-                      child: Icon(
-                        widget.icon,
-                        color: resolvedIconColor,
-                        size: 27,
-                      ),
-                    ),
-                  ],
-                ),
+              SkinIcon(
+                imageKey: widget.skinImageKey ?? 'actionIcons.unknown',
+                fallbackIcon: widget.icon,
+                fallbackIconColor: resolvedIconColor,
+                fallbackIconBackgroundColor: resolvedIconBg,
+                size: 56,
+                iconSize: 30,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               Text(
                 widget.title,
                 style: resolvedTitleStyle,

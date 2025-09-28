@@ -173,6 +173,10 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
           itemBuilder: (context, index) {
             final course = _reportDetail!.courseMark[index];
             return Card(
+              color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+                  ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                  : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+              : Theme.of(context).colorScheme.surfaceContainer,
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
               elevation: 0,
               shape: RoundedRectangleBorder(

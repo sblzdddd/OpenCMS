@@ -68,7 +68,6 @@ const defaultImageData = {
 
   'login.background': SkinImageData(type: SkinImageType.background),
   'login.foreground': SkinImageData(type: SkinImageType.foreground),
-  'login.cardBackground': SkinImageData(type: SkinImageType.background),
   'login.cardForeground': SkinImageData(type: SkinImageType.foreground),
 
   'home.background': SkinImageData(type: SkinImageType.background),
@@ -77,17 +76,17 @@ const defaultImageData = {
   'home.bannerBackground': SkinImageData(type: SkinImageType.background),
   'home.bannerForeground': SkinImageData(type: SkinImageType.foreground),
 
-  'home.homeworkWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.homeworkWidgetForeground': SkinImageData(type: SkinImageType.foreground),
-  'home.homeworkWidgetIcon': SkinImageData(type: SkinImageType.icon),
+  'home.homeworksWidgetBackground': SkinImageData(type: SkinImageType.background),
+  'home.homeworksWidgetForeground': SkinImageData(type: SkinImageType.foreground),
+  'home.homeworksWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
-  'home.nextClassWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.nextClassWidgetForeground': SkinImageData(type: SkinImageType.foreground),
-  'home.nextClassWidgetIcon': SkinImageData(type: SkinImageType.icon),
+  'home.timetableWidgetBackground': SkinImageData(type: SkinImageType.background),
+  'home.timetableWidgetForeground': SkinImageData(type: SkinImageType.foreground),
+  'home.timetableWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
-  'home.noticesWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.noticesWidgetForeground': SkinImageData(type: SkinImageType.foreground),
-  'home.noticesWidgetIcon': SkinImageData(type: SkinImageType.icon),
+  'home.noticeWidgetBackground': SkinImageData(type: SkinImageType.background),
+  'home.noticeWidgetForeground': SkinImageData(type: SkinImageType.foreground),
+  'home.noticeWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
   'home.assessmentWidgetBackground': SkinImageData(type: SkinImageType.background),
   'home.assessmentWidgetForeground': SkinImageData(type: SkinImageType.foreground),
@@ -104,6 +103,9 @@ const defaultImageData = {
 
   'attendance.background': SkinImageData(type: SkinImageType.background),
   'attendance.foreground': SkinImageData(type: SkinImageType.foreground),
+
+  'course_stats.background': SkinImageData(type: SkinImageType.background),
+  'course_stats.foreground': SkinImageData(type: SkinImageType.foreground),
 
   'reports.background': SkinImageData(type: SkinImageType.background),
   'reports.foreground': SkinImageData(type: SkinImageType.foreground),
@@ -123,19 +125,19 @@ const defaultImageData = {
   'homeworks.background': SkinImageData(type: SkinImageType.background),
   'homeworks.foreground': SkinImageData(type: SkinImageType.foreground),
 
-  'documents.background': SkinImageData(type: SkinImageType.background),
-  'documents.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'available_classrooms.background': SkinImageData(type: SkinImageType.background),
   'available_classrooms.foreground': SkinImageData(type: SkinImageType.foreground),
 
-  'maintenance.background': SkinImageData(type: SkinImageType.background),
-  'maintenance.foreground': SkinImageData(type: SkinImageType.foreground),
+  'daily_bulletin.background': SkinImageData(type: SkinImageType.background),
+  'daily_bulletin.foreground': SkinImageData(type: SkinImageType.foreground),
 
-  'leave_requests.background': SkinImageData(type: SkinImageType.background),
-  'leave_requests.foreground': SkinImageData(type: SkinImageType.foreground),
+  'events.background': SkinImageData(type: SkinImageType.background),
+  'events.foreground': SkinImageData(type: SkinImageType.foreground),
 
   'student_profile.background': SkinImageData(type: SkinImageType.background),
   'student_profile.foreground': SkinImageData(type: SkinImageType.foreground),
+
+  'settings.background': SkinImageData(type: SkinImageType.background),
+  'settings.foreground': SkinImageData(type: SkinImageType.foreground),
 
 };

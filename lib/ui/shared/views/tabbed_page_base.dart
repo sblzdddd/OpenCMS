@@ -11,6 +11,8 @@ class TabbedPageBase extends StatefulWidget {
   final int initialTabIndex;
   final List<Widget>? actions;
   final bool automaticallyImplyLeading;
+  final bool isTransparent;
+  final List<String> skinKey;
 
   const TabbedPageBase({
     super.key,
@@ -20,6 +22,8 @@ class TabbedPageBase extends StatefulWidget {
     this.initialTabIndex = 0,
     this.actions,
     this.automaticallyImplyLeading = true,
+    this.isTransparent = false,
+    this.skinKey = const ['global'],
   });
 
   @override
@@ -38,10 +42,20 @@ class _TabbedPageBaseState extends State<TabbedPageBase>
       vsync: this,
       initialIndex: widget.initialTabIndex,
     );
+    _tabController.addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    if (_tabController.indexIsChanging) {
+      setState(() {
+        // This will trigger a rebuild with the new skinKey
+      });
+    }
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
     _tabController.dispose();
     super.dispose();
   }
@@ -49,8 +63,8 @@ class _TabbedPageBaseState extends State<TabbedPageBase>
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      isTransparent: true,
-      context: context,
+      isTransparent: widget.isTransparent,
+      skinKey: widget.skinKey[_tabController.index],
       appBar: CustomAppBar(
         title: Text(widget.title),
         automaticallyImplyLeading: widget.automaticallyImplyLeading,

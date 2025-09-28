@@ -11,6 +11,7 @@ class AttendancePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return TabbedPageBase(
       title: 'Attendance',
+      skinKey: ['attendance', 'course_stats'],
       initialTabIndex: initialTabIndex,
       tabs: const [
         Tab(text: 'Attendance'),

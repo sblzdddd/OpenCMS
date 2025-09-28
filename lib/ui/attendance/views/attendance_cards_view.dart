@@ -3,6 +3,8 @@ import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../shared/timetable_card.dart';
 import '../../../data/constants/attendance_types.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 
 class AttendanceCardsView extends StatelessWidget {
   final List<RecordOfDay> days;
@@ -67,6 +69,7 @@ class AttendanceCardsView extends StatelessWidget {
   }
 
   Widget _buildDaySection(BuildContext context, RecordOfDay day, Set<int> selectedCourseIds) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final periods = PeriodConstants.attendancePeriods;
     final atts = day.attendances;
     final int count = atts.length < periods.length ? atts.length : periods.length;
@@ -108,7 +111,7 @@ class AttendanceCardsView extends StatelessWidget {
         extraInfo: startEntry.grade,
         timespan: timespan,
         periodText: periodText,
-        backgroundColor: AttendanceConstants.kindBackgroundColor[startEntry.kind],
+        backgroundColor: (AttendanceConstants.kindBackgroundColor[startEntry.kind] ?? Colors.transparent).withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
         textColor: AttendanceConstants.kindTextColor[startEntry.kind],
         onTap: () {
           onEventTap(startEntry, day.date);

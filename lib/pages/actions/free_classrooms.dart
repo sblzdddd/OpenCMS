@@ -25,6 +25,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   StreamSubscription<AllPeriodsClassroomResponse>? _dataSubscription;
   bool _isLoading = false;
   String? _errorMessage;
+  final String skinKey = 'free_classrooms';
 
   @override
   String get appBarTitle => 'Free Classrooms';

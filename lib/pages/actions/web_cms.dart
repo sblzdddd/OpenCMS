@@ -59,8 +59,8 @@ class _WebCmsPageState extends WebCmsBaseState<WebCmsPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      isTransparent: true,
-      context: context,
+      isTransparent: false,
+      skinKey: 'web_cms',
       appBar: CustomAppBar(
         title: Text(widget.windowTitle ?? 'Web CMS'),
         actions: widget.disableControls ? [] : [

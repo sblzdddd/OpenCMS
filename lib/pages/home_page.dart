@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
 import '../ui/home/components/dashboard_grid/add_widget_drawer.dart';
 import '../ui/home/components/quick_actions/quick_actions.dart';
 import '../ui/home/components/dashboard_grid/dashboard_grid.dart';
@@ -9,10 +10,10 @@ import '../ui/navigations/app_navigation_rail.dart';
 import 'actions/timetable.dart';
 import 'actions/homework.dart';
 import 'actions/assessment.dart';
-import 'settings/settings_page.dart';
 import '../ui/shared/widgets/custom_app_bar.dart';
-import '../services/theme/theme_services.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import 'package:opencms/ui/shared/widgets/custom_scaffold.dart';
+import 'package:opencms/services/theme/theme_services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -47,11 +48,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final bgColor = themeNotifier.hasTransparentWindowEffect ? (!themeNotifier.isDarkMode
+        ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
+        : Theme.of(context).colorScheme.surface.withValues(alpha: 0.8))
+    : Colors.transparent;
     return LayoutBuilder(
       builder: (context, constraints) {
         final bool useRail = constraints.maxWidth >= 800;
-        return Scaffold(
-          backgroundColor: Colors.transparent,
+        return CustomScaffold(
+          skinKey: ['home', 'timetable', 'homeworks', 'assessment'][_selectedIndex],
+          isHomePage: true,
           body: SafeArea(
             child: useRail
                 ? Row(
@@ -62,10 +69,10 @@ class _HomePageState extends State<HomePage> {
                         onTapCallback: _onNavTap,
                       ),
                       const VerticalDivider(width: 1),
-                      Expanded(child: _buildPageContent()),
+                      Expanded(child: Container(color: bgColor, child: _buildPageContent())),
                     ],
                   )
-                : _buildPageContent(),
+                : Container(color: bgColor, child: _buildPageContent()),
           ),
           bottomNavigationBar: useRail
               ? null
@@ -92,26 +99,18 @@ class _HomePageState extends State<HomePage> {
       case 0:
         return _buildScrollableHomeContent();
       case 1:
-        return TimetablePage(initialTabIndex: 0);
+        return TimetablePage(initialTabIndex: 0, isTransparent: true);
       case 2:
-        return const HomeworkPage();
+        return const HomeworkPage(isTransparent: true);
       case 3:
-        return const AssessmentPage();
-      case 4:
-        return const SettingsPage();
+        return const AssessmentPage(isTransparent: true);
       default:
         return _buildScrollableHomeContent();
     }
   }
 
   Widget _buildScrollableHomeContent() {
-    final themeNotifier = ThemeNotifier.instance;
-    final bgColor = Theme.of(context).colorScheme.surface.withValues(
-      alpha: themeNotifier.needTransparentBG ? 
-      themeNotifier.isDarkMode ? 0.8 : 0.5
-      : 1,
-    );
-    return Container(color: bgColor, child: RefreshIndicator(
+    return RefreshIndicator(
       key: _refreshIndicatorKey,
       onRefresh: _refreshHomePage,
       child: ScrollConfiguration(
@@ -131,10 +130,16 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomAppBar(
-                    padding: EdgeInsets.symmetric(horizontal: isWideScreen ? 20 : 5, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isWideScreen ? 20 : 5,
+                      vertical: 10,
+                    ),
                     title: Text('Home'),
                     actions: [
-                      IconButton(onPressed: _showAddWidgetDrawer, icon: Icon(Symbols.add_rounded)),
+                      IconButton(
+                        onPressed: _showAddWidgetDrawer,
+                        icon: Icon(Symbols.add_rounded),
+                      ),
                     ],
                     forceMaterialTransparency: true,
                     surfaceTintColor: Colors.transparent,
@@ -180,7 +185,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-    ));
+    );
   }
 
   void _showAddWidgetDrawer() {

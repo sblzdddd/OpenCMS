@@ -1,37 +1,89 @@
-import 'dart:io';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/models/skin/skin.dart';
+import '../../data/models/skin/skin_image.dart';
 import '../../data/models/skin/skin_response.dart';
 
 /// Service for managing skin configurations and image files
-class SkinService {
+class SkinService extends ChangeNotifier {
   static const String _skinsKey = 'app_skins';
   static const String _activeSkinKey = 'active_skin_id';
   
   final ImagePicker _imagePicker = ImagePicker();
+  
+  /// Current active skin
+  Skin? _activeSkin;
+  
+  /// Singleton instance
+  static final SkinService _instance = SkinService._internal();
+  
+  /// Private constructor
+  SkinService._internal();
+  
+  /// Get the singleton instance
+  static SkinService get instance => _instance;
+  
+  /// Get the current active skin
+  Skin? get activeSkin => _activeSkin;
 
   /// Initialize the skin service
   Future<void> initialize() async {
   }
 
-  /// Get all available skins
+  /// Get a skin by its ID
+  Future<SkinResponse> getSkinById(String skinId) async {
+    try {
+      final allSkinsResponse = await getAllSkins();
+      if (!allSkinsResponse.success) {
+        return allSkinsResponse;
+      }
+
+      final skins = allSkinsResponse.skins ?? [];
+      final skin = skins.firstWhere(
+        (s) => s.id == skinId,
+        orElse: () => throw Exception('Skin not found'),
+      );
+
+      return SkinResponse.success(skin: skin);
+    } catch (e) {
+      return SkinResponse.error('Failed to get skin by id: $e');
+    }
+  }
+
+  /// Get all available skins (excluding default skin)
   Future<SkinResponse> getAllSkins() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final skinsJson = prefs.getStringList(_skinsKey) ?? [];
+      final activeSkinId = prefs.getString(_activeSkinKey);
       
       final skins = skinsJson
           .map((json) => Skin.fromJson(jsonDecode(json)))
+          .where((skin) => !skin.isDefault) // Exclude default skin from stored skins
           .toList();
 
-      // Sort skins: active first, then by creation date
-      skins.sort((a, b) {
-        if (a.isActive && !b.isActive) return -1;
-        if (!a.isActive && b.isActive) return 1;
-        return b.createdAt.compareTo(a.createdAt);
-      });
+      // Ensure only one skin is active at a time
+      bool hasActiveSkin = false;
+      if (activeSkinId != null && activeSkinId != 'default') {
+        for (var skin in skins) {
+          if (skin.id == activeSkinId) {
+            skin.isActive = true;
+            hasActiveSkin = true;
+          } else {
+            skin.isActive = false;
+          }
+        }
+      } else {
+        // If activeSkinId is 'default' or null, deactivate all stored skins
+        for (var skin in skins) {
+          skin.isActive = false;
+        }
+      }
+
+      // Sort skins by creation date (newest first)
+      skins.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       return SkinResponse.success(skins: skins);
     } catch (e) {
@@ -45,9 +97,12 @@ class SkinService {
       final prefs = await SharedPreferences.getInstance();
       final activeSkinId = prefs.getString(_activeSkinKey);
       
-      if (activeSkinId == null) {
-        // Return default skin if no active skin is set
-        return _getDefaultSkin();
+      if (activeSkinId == null || activeSkinId == 'default') {
+        // Return default skin if no active skin is set or default is selected
+        final defaultSkin = createDefaultSkin();
+        _activeSkin = defaultSkin;
+        notifyListeners();
+        return SkinResponse.success(skin: defaultSkin);
       }
 
       final allSkinsResponse = await getAllSkins();
@@ -57,10 +112,12 @@ class SkinService {
 
       final activeSkin = allSkinsResponse.skins?.firstWhere(
         (skin) => skin.id == activeSkinId,
-        orElse: () => _createDefaultSkin(),
+        orElse: () => createDefaultSkin(),
       );
 
-      return SkinResponse.success(skin: activeSkin);
+      _activeSkin = activeSkin?.copyWith(isActive: true);
+      notifyListeners();
+      return SkinResponse.success(skin: _activeSkin);
     } catch (e) {
       return SkinResponse.error('Failed to get active skin: $e');
     }
@@ -144,7 +201,7 @@ class SkinService {
     }
   }
 
-  /// Set a skin as active
+  /// Set a skin as active (only one skin can be active at a time)
   Future<SkinResponse> setActiveSkin(String skinId) async {
     try {
       final allSkinsResponse = await getAllSkins();
@@ -157,7 +214,7 @@ class SkinService {
         orElse: () => throw Exception('Skin not found'),
       );
 
-      // Deactivate all other skins
+      // Deactivate all other skins and activate the selected one
       final updatedSkins = allSkinsResponse.skins!.map((s) {
         return s.copyWith(isActive: s.id == skinId);
       }).toList();
@@ -168,12 +225,45 @@ class SkinService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_activeSkinKey, skinId);
 
+      // Update cached active skin and notify listeners
+      _activeSkin = skin?.copyWith(isActive: true);
+      notifyListeners();
+
       return SkinResponse.success(
         message: 'Skin activated successfully',
-        skin: skin,
+        skin: _activeSkin,
       );
     } catch (e) {
       return SkinResponse.error('Failed to set active skin: $e');
+    }
+  }
+
+  /// Clear the active skin (reset to default)
+  Future<SkinResponse> clearActiveSkin() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_activeSkinKey, 'default');
+
+      // Deactivate all skins in storage
+      final allSkinsResponse = await getAllSkins();
+      if (allSkinsResponse.success) {
+        final updatedSkins = allSkinsResponse.skins!.map((s) {
+          return s.copyWith(isActive: false);
+        }).toList();
+        await _saveSkinsToStorage(updatedSkins);
+      }
+
+      // Update cached active skin to default and notify listeners
+      final defaultSkin = createDefaultSkin();
+      _activeSkin = defaultSkin;
+      notifyListeners();
+
+      return SkinResponse.success(
+        message: 'Default skin is now active',
+        skin: defaultSkin,
+      );
+    } catch (e) {
+      return SkinResponse.error('Failed to clear active skin: $e');
     }
   }
 
@@ -230,6 +320,12 @@ class SkinService {
       skins[skinIndex] = updatedSkin;
       await _saveSkinsToStorage(skins);
 
+      // Update cached active skin if this is the active skin
+      if (_activeSkin?.id == skinId) {
+        _activeSkin = updatedSkin;
+        notifyListeners();
+      }
+
       return SkinResponse.success(
         message: 'Image set successfully',
         skin: updatedSkin,
@@ -269,12 +365,67 @@ class SkinService {
       skins[skinIndex] = updatedSkin;
       await _saveSkinsToStorage(skins);
 
+      // Update cached active skin if this is the active skin
+      if (_activeSkin?.id == skinId) {
+        _activeSkin = updatedSkin;
+        notifyListeners();
+      }
+
       return SkinResponse.success(
         message: 'Image removed successfully',
         skin: updatedSkin,
       );
     } catch (e) {
       return SkinResponse.error('Failed to remove image: $e');
+    }
+  }
+
+  /// Update image data for a specific image key in a skin
+  Future<SkinResponse> updateSkinImageData({
+    required String skinId,
+    required String imageKey,
+    required SkinImageData updatedImageData,
+  }) async {
+    try {
+      final allSkinsResponse = await getAllSkins();
+      if (!allSkinsResponse.success) {
+        return allSkinsResponse;
+      }
+
+      final skins = allSkinsResponse.skins ?? [];
+      final skinIndex = skins.indexWhere((skin) => skin.id == skinId);
+      
+      if (skinIndex == -1) {
+        return SkinResponse.error('Skin not found');
+      }
+
+      final skin = skins[skinIndex];
+      
+      // Create a new skin with updated image data
+      final updatedImageDataMap = Map<String, SkinImageData>.from(skin.imageData);
+      updatedImageDataMap[imageKey] = updatedImageData;
+      
+      final updatedSkin = skin.copyWith(
+        imageData: updatedImageDataMap,
+        updatedAt: DateTime.now(),
+      );
+
+      // Update skin in storage
+      skins[skinIndex] = updatedSkin;
+      await _saveSkinsToStorage(skins);
+
+      // Update cached active skin if this is the active skin
+      if (_activeSkin?.id == skinId) {
+        _activeSkin = updatedSkin;
+        notifyListeners();
+      }
+
+      return SkinResponse.success(
+        message: 'Image data updated successfully',
+        skin: updatedSkin,
+      );
+    } catch (e) {
+      return SkinResponse.error('Failed to update image data: $e');
     }
   }
 
@@ -309,21 +460,18 @@ class SkinService {
     await prefs.setStringList(_skinsKey, skinsJson);
   }
 
-  /// Get default skin
-  SkinResponse _getDefaultSkin() {
-    return SkinResponse.success(skin: _createDefaultSkin());
-  }
 
-  /// Create default skin
-  Skin _createDefaultSkin() {
+  /// Create default skin (placeholder - not stored in skins list)
+  Skin createDefaultSkin() {
     return Skin(
       id: 'default',
       name: 'Default',
-      author: 'Default',
+      author: 'sblzdddd',
+      description: 'The vanilla look for the app',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       isDefault: true,
-      isActive: true,
+      isActive: false, // Will be set to true when selected
     );
   }
 }

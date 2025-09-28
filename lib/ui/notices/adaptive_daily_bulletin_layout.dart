@@ -65,7 +65,7 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
                 ).colorScheme.primaryContainer.withValues(alpha: 0.3)
               : themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
               ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6),
+              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8),
           borderRadius: themeNotifier.getBorderRadiusAll(1),
           child: inkWell,
         ),

@@ -13,7 +13,8 @@ import '../../ui/shared/widgets/custom_scaffold.dart';
 
 class AssessmentPage extends StatefulWidget {
   final int initialTabIndex;
-  const AssessmentPage({super.key, this.initialTabIndex = 0});
+  final bool isTransparent;
+  const AssessmentPage({super.key, this.initialTabIndex = 0, this.isTransparent = false});
 
   @override
   State<AssessmentPage> createState() => _AssessmentPageState();
@@ -24,6 +25,9 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   final AssessmentService _assessmentService = AssessmentService();
   AssessmentResponse? _assessmentData;
   SubjectAssessment? _selectedSubject;
+
+  @override
+  bool get isTransparent => widget.isTransparent;
   
   @override
   void initState() {
@@ -131,8 +135,8 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   Widget build(BuildContext context) {
     
     return CustomScaffold(
-      isTransparent: true,
-      context: context,
+      isTransparent: widget.isTransparent,
+      skinKey: 'assessment',
       appBar: CustomAppBar(
         title: const Text('Assessment'),
         centerTitle: false,

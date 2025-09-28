@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
+import 'package:provider/provider.dart';
 import '../../services/theme/theme_services.dart';
 import 'nav_items.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -46,11 +47,11 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = ThemeNotifier.instance;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
-      alpha: themeNotifier.needTransparentBG ? 
+      alpha: themeNotifier.hasTransparentWindowEffect ? 
       themeNotifier.isDarkMode ? 0.6 : 0
-      : 1,
+      : 0,
     );
     return LayoutBuilder(
       builder: (context, constraints) {

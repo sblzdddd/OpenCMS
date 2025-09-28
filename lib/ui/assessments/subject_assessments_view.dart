@@ -19,6 +19,8 @@ class SubjectAssessmentsView extends StatefulWidget {
 }
 
 class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsView> {
+  final String skinKey = 'assessments';
+
   @override
   String get appBarTitle => 'Assessments - ${widget.subject.name.split('.')[0]} ${widget.subject.subject}';
 

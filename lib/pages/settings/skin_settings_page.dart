@@ -7,6 +7,7 @@ import './skin_editor_page.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../ui/shared/custom_snackbar/snackbar_utils.dart';
+import '../../ui/shared/widgets/custom_scaffold.dart';
 
 /// Settings page for managing app skins
 class SkinSettingsPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class SkinSettingsPage extends StatefulWidget {
 }
 
 class _SkinSettingsPageState extends State<SkinSettingsPage> {
-  final SkinService _skinService = SkinService();
+  final SkinService _skinService = SkinService.instance;
   List<Skin> _skins = [];
   bool _isLoading = true;
   String? _error;
@@ -56,6 +57,11 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
     }
   }
 
+  /// Check if default skin is currently active
+  bool _isDefaultSkinActive() {
+    return !_skins.any((skin) => skin.isActive);
+  }
+
   Future<void> _createSkin() async {
     final result = await showDialog<Skin>(
       context: context,
@@ -74,6 +80,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
   }
 
   Future<void> _setActiveSkin(Skin skin) async {
+    // If this skin is already active, do nothing
     if (skin.isActive) return;
 
     setState(() {
@@ -89,7 +96,43 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
         }
       } else {
         if (mounted) {
-          SnackbarUtils.showError(context, response.error ?? 'Failed to activate skin');
+          SnackbarUtils.showError(
+            context,
+            response.error ?? 'Failed to activate skin',
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        SnackbarUtils.showError(context, 'Error: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _setDefaultSkin() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await _skinService.clearActiveSkin();
+      if (response.success) {
+        await _loadSkins();
+        if (mounted) {
+          SnackbarUtils.showSuccess(context, 'Default skin is now active');
+        }
+      } else {
+        if (mounted) {
+          SnackbarUtils.showError(
+            context,
+            response.error ?? 'Failed to activate default skin',
+          );
         }
       }
     } catch (e) {
@@ -110,7 +153,9 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Skin'),
-        content: Text('Are you sure you want to delete "${skin.name}"? This action cannot be undone.'),
+        content: Text(
+          'Are you sure you want to delete "${skin.name}"? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -142,7 +187,10 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
           }
         } else {
           if (mounted) {
-            SnackbarUtils.showError(context, response.error ?? 'Failed to delete skin');
+            SnackbarUtils.showError(
+              context,
+              response.error ?? 'Failed to delete skin',
+            );
           }
         }
       } catch (e) {
@@ -162,9 +210,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
   Future<void> _editSkin(Skin skin) async {
     final result = await Navigator.push<Skin>(
       context,
-      MaterialPageRoute(
-        builder: (context) => SkinEditorPage(skin: skin),
-      ),
+      MaterialPageRoute(builder: (context) => SkinEditorPage(skin: skin)),
     );
 
     if (result != null) {
@@ -176,16 +222,16 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
     return SkinCard(
       skin: skin,
       isSelected: skin.isActive,
-      onTap: () => _setActiveSkin(skin),
-      onEdit: () => _editSkin(skin),
+      onTap: skin.isDefault ? () => _setDefaultSkin() : () => _setActiveSkin(skin),
+      onEdit: skin.isDefault ? null : () => _editSkin(skin),
       onDelete: skin.isDefault ? null : () => _deleteSkin(skin),
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      skinKey: 'settings',
       appBar: CustomAppBar(
         title: const Text('Skins'),
         backgroundColor: Colors.transparent,
@@ -201,77 +247,62 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Symbols.error_outline_rounded,
-                        size: 64,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Error loading skins',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _error!,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadSkins,
-                        child: const Text('Retry'),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Symbols.error_outline_rounded,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
                   ),
-                )
-              : _skins.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Symbols.palette_rounded,
-                            size: 64,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'No skins available',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Create your first custom skin to get started',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadSkins,
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _skins.length,
-                        itemBuilder: (context, index) {
-                          final skin = _skins[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: _buildSkinCard(skin),
-                          );
-                        },
-                      ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading skins',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _error!,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadSkins,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadSkins,
+              child: ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                itemCount: _skins.length + 1, // +1 for default skin card
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    // Create default skin with proper active state
+                    final defaultSkin = _skinService.createDefaultSkin();
+                    final activeDefaultSkin = defaultSkin.copyWith(isActive: _isDefaultSkinActive());
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: _buildSkinCard(activeDefaultSkin),
+                    );
+                  }
+                  final skin = _skins[index - 1];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: _buildSkinCard(skin),
+                  );
+                },
+              ),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _createSkin,
         icon: const Icon(Symbols.add_rounded),

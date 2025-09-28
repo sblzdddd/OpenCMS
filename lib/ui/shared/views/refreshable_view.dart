@@ -7,10 +7,13 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
 abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
+  final bool isTransparent;
   bool _isLoading = true;
   String? _error;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  
+
+  RefreshableView({this.isTransparent = false});
+
   /// Get the theme notifier from Provider
   ThemeNotifier get themeNotifier => Provider.of<ThemeNotifier>(context, listen: true);
   

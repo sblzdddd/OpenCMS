@@ -11,6 +11,7 @@ class ReportsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return TabbedPageBase(
       title: 'Reports',
+      skinKey: ['reports', 'gpa'],
       initialTabIndex: initialTabIndex,
       tabs: const [
         Tab(text: 'Reports'),

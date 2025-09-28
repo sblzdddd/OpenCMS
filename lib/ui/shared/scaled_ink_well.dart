@@ -79,31 +79,30 @@ class _ScaledInkWellState extends State<ScaledInkWell> {
   }
 
   Widget _buildInkWell() {
-    return 
-              InkWell(
-                onTap: widget.onTap,
-                onLongPress: widget.onLongPress,
-                onDoubleTap: widget.onDoubleTap,
-                onTapDown: widget.onTapDown,
-                onTapCancel: widget.onTapCancel,
-                focusColor: widget.focusColor,
-                hoverColor: widget.hoverColor,
-                highlightColor: widget.highlightColor,
-                overlayColor: widget.overlayColor,
-                splashColor: widget.splashColor,
-                splashFactory: widget.splashFactory,
-                radius: widget.radius,
-                borderRadius: widget.borderRadius,
-                customBorder: widget.customBorder,
-                enableFeedback: widget.enableFeedback,
-                excludeFromSemantics: widget.excludeFromSemantics,
-                focusNode: widget.focusNode,
-                canRequestFocus: widget.canRequestFocus,
-                autofocus: widget.autofocus,
-                mouseCursor: widget.mouseCursor,
-                onHighlightChanged: _handleHighlightChanged,
-                child: widget.child,
-              );
+    return InkWell(
+      onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
+      onDoubleTap: widget.onDoubleTap,
+      onTapDown: widget.onTapDown,
+      onTapCancel: widget.onTapCancel,
+      focusColor: widget.focusColor,
+      hoverColor: widget.hoverColor,
+      highlightColor: widget.highlightColor,
+      overlayColor: widget.overlayColor,
+      splashColor: widget.splashColor,
+      splashFactory: widget.splashFactory,
+      radius: widget.radius,
+      borderRadius: widget.borderRadius,
+      customBorder: widget.customBorder,
+      enableFeedback: widget.enableFeedback,
+      excludeFromSemantics: widget.excludeFromSemantics,
+      focusNode: widget.focusNode,
+      canRequestFocus: widget.canRequestFocus,
+      autofocus: widget.autofocus,
+      mouseCursor: widget.mouseCursor,
+      onHighlightChanged: _handleHighlightChanged,
+      child: widget.child,
+    );
   }
 
   @override
@@ -113,17 +112,12 @@ class _ScaledInkWellState extends State<ScaledInkWell> {
       duration: widget.duration,
       curve: Curves.easeOutQuad,
       child: widget.background != null
-          ? widget.background!(
-            _buildInkWell()
-          )
+          ? widget.background!(_buildInkWell())
           : _buildInkWell(),
     );
 
     return widget.margin != null
-        ? Padding(
-            padding: widget.margin!,
-            child: inkWell,
-          )
+        ? Padding(padding: widget.margin!, child: inkWell)
         : inkWell;
   }
 }

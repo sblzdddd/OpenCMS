@@ -7,7 +7,8 @@ import '../../ui/shared/views/tabbed_page_base.dart';
 
 class TimetablePage extends StatefulWidget {
   final int initialTabIndex;
-  const TimetablePage({super.key, this.initialTabIndex = 0});
+  final bool isTransparent;
+  const TimetablePage({super.key, this.initialTabIndex = 0, this.isTransparent = false});
 
   @override
   State<TimetablePage> createState() => _TimetablePageState();
@@ -34,7 +35,9 @@ class _TimetablePageState extends State<TimetablePage> {
   @override
   Widget build(BuildContext context) {
     return TabbedPageBase(
+      isTransparent: widget.isTransparent,
       title: 'Timetable',
+      skinKey: ['timetable', 'exam'],
       initialTabIndex: widget.initialTabIndex,
       actions: [
         AcademicYearDropdown(

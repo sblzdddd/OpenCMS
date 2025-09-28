@@ -35,7 +35,7 @@ class BaseImageCustomizer extends StatefulWidget {
 }
 
 class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
-  final SkinService _skinService = SkinService();
+  final SkinService _skinService = SkinService.instance;
   bool _isLoading = false;
 
   @override
@@ -57,7 +57,6 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
 
   @override
   void dispose() {
-    // Clean up any resources if needed
     super.dispose();
   }
 
@@ -79,12 +78,12 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
         debugPrint('${widget.imageKey} image set successfully');
       } else {
         if (mounted) {
-          _onImageSetError(response.error ?? 'Failed to set image');
+          SnackbarUtils.showError(context, 'Error setting image: ${response.error ?? 'Failed to set image'}');
         }
       }
     } catch (e) {
       if (mounted) {
-        _onImageSetError('Error: $e');
+        SnackbarUtils.showError(context, 'Error: $e');
       }
     } finally {
       if (mounted) {
@@ -112,12 +111,12 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
         debugPrint('${widget.imageKey} image removed');
       } else {
         if (mounted) {
-          _onImageRemovedError(response.error ?? 'Failed to remove image');
+          SnackbarUtils.showError(context, 'Error removing image: ${response.error ?? 'Failed to remove image'}');
         }
       }
     } catch (e) {
       if (mounted) {
-        _onImageRemovedError('Error: $e');
+        SnackbarUtils.showError(context, 'Error: $e');
       }
     } finally {
       if (mounted) {
@@ -128,17 +127,14 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     }
   }
 
-  /// Get the current image data for the key
   SkinImageData? get currentImageData {
     return widget.skin.imageData[widget.imageKey];
   }
 
-  /// Get the current image path for the key
   String? get currentImagePath {
     return currentImageData?.imagePath;
   }
 
-  /// Check if there's a current image
   bool get hasCurrentImage {
     final path = currentImagePath;
     if (path == null || path.isEmpty) {
@@ -146,19 +142,16 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
       return false;
     }
     
-    // Check if file exists
     final file = File(path);
     final exists = file.existsSync();
     debugPrint('${widget.imageKey}: Image path: $path, exists: $exists');
     return exists;
   }
 
-  /// Get the image type for this key
   SkinImageType get imageType {
     return currentImageData?.type ?? SkinImageType.background;
   }
 
-  /// Build image preview widget
   Widget buildImagePreview({
     double? height,
     double? width,
@@ -185,13 +178,21 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
         borderRadius: borderRadius ?? BorderRadius.circular(8),
         child: Stack(
           children: [
-            Image.file(
-              File(currentImagePath!),
-              fit: effectiveFit,
-              errorBuilder: (context, error, stackTrace) {
-                return _buildImagePlaceholder(height: height, width: width, borderRadius: borderRadius);
-              },
+            // Apply opacity and scale transformations
+            Opacity(
+              opacity: imageData.opacity,
+              child: Transform.scale(
+                scale: imageData.validatedScale,
+                child: Image.file(
+                  File(currentImagePath!),
+                  fit: effectiveFit,
+                  errorBuilder: (context, error, stackTrace) {
+                    return _buildImagePlaceholder(height: height, width: width, borderRadius: borderRadius);
+                  },
+                ),
+              ),
             ),
+            // Show scale indicator if not 100%
             if (imageData.scale != 1.0)
               Positioned(
                 top: 8,
@@ -212,13 +213,33 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
                   ),
                 ),
               ),
+            // Show opacity indicator if not 100%
+            if (imageData.opacity != 1.0)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '${(imageData.opacity * 100).round()}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  /// Build image placeholder widget
   Widget _buildImagePlaceholder({
     double? height,
     double? width,
@@ -254,7 +275,6 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     );
   }
 
-  /// Get appropriate placeholder icon based on image type
   IconData _getPlaceholderIcon() {
     switch (imageType) {
       case SkinImageType.background:
@@ -266,7 +286,6 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     }
   }
 
-  /// Build action buttons for image operations
   Widget buildActionButtons(BuildContext context) {
     return Row(
       children: [
@@ -274,7 +293,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
           child: IconButton(
             visualDensity: VisualDensity.compact,
             tooltip: 'Change Image',
-            onPressed: _isLoading ? null : () => pickImage(),
+            onPressed: _isLoading ? null : pickImage,
             icon: const Icon(Symbols.edit_rounded),
             style: OutlinedButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.primary,
@@ -287,7 +306,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
           IconButton(
             visualDensity: VisualDensity.compact,
             tooltip: 'Settings',
-            onPressed: () => _showImageSettingsDialog(),
+            onPressed: _showImageSettingsDialog,
             icon: const Icon(Symbols.settings_rounded, size: 16),
             style: OutlinedButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.primary,
@@ -309,17 +328,6 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     );
   }
 
-  /// Callback when image set fails
-  void _onImageSetError(String error) {
-    SnackbarUtils.showError(context, 'Error setting image: $error');
-  }
-
-  /// Callback when image removal fails
-  void _onImageRemovedError(String error) {
-    SnackbarUtils.showError(context, 'Error removing image: $error');
-  }
-
-  /// Show image settings dialog
   Future<void> _showImageSettingsDialog() async {
     if (currentImageData == null || !mounted) return;
 
@@ -327,44 +335,50 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
       context: context,
       builder: (context) => ImageSettingsDialog(
         imageData: currentImageData!,
-        onImageDataChanged: (updatedData) {
-          // Update the image data in real-time for preview
-          if (mounted) {
-            _updateImageDataInSkin(updatedData);
-          }
-        },
       ),
     );
 
     if (result != null && mounted) {
-      // Final update when dialog is closed with Apply
-      _updateImageDataInSkin(result);
+      await _updateImageDataInSkin(result);
     }
   }
 
-  /// Update image data in the skin
-  void _updateImageDataInSkin(SkinImageData updatedData) {
+  Future<void> _updateImageDataInSkin(SkinImageData updatedData) async {
     if (!mounted) return;
     
-    setState(() {
-      // Create a new skin with updated image data
-      final updatedImageData = Map<String, SkinImageData>.from(widget.skin.imageData);
-      updatedImageData[widget.imageKey] = updatedData;
-      
-      final updatedSkin = widget.skin.copyWith(
-        imageData: updatedImageData,
-        updatedAt: DateTime.now(),
+    try {
+      final response = await _skinService.updateSkinImageData(
+        skinId: widget.skin.id,
+        imageKey: widget.imageKey,
+        updatedImageData: updatedData,
       );
       
-      widget.onSkinUpdated?.call(updatedSkin);
-    });
+      if (response.success && response.skin != null) {
+        if (mounted) {
+          setState(() {
+            widget.onSkinUpdated?.call(response.skin!);
+          });
+        }
+      } else {
+        if (mounted) {
+          SnackbarUtils.showError(
+            context,
+            response.message ?? 'Failed to update image data',
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        SnackbarUtils.showError(
+          context,
+          'Failed to update image data: $e',
+        );
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('${widget.imageKey}: Building BaseImageCustomizer');
-    debugPrint('${widget.imageKey}: hasCurrentImage = $hasCurrentImage');
-    
     final content = Column(
       children: [
         if (widget.title != null) ...[

@@ -17,7 +17,10 @@ class AttendanceService {
     bool refresh=false,
   }) async {
     final DateTime today = DateTime.now();
-    final DateTime start = startDate ?? DateTime(today.year - 1, today.month, today.day);
+    DateTime start = startDate ?? DateTime(today.year - 1, 8, 1);
+    if(today.month >= 8 && today.day >= 1) {
+      start = DateTime(today.year, 8, 1);
+    }
     final DateTime end = endDate ?? today;
 
     final String startStr = _fmt(start);

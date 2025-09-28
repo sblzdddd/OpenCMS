@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'nav_items.dart';
 import '../../services/theme/theme_services.dart';
 
@@ -14,7 +15,7 @@ class BottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = ThemeNotifier.instance;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
       alpha: themeNotifier.needTransparentBG ? 
       themeNotifier.isDarkMode ? 0.6 : 0

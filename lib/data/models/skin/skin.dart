@@ -1,6 +1,7 @@
 import 'skin_image.dart';
 import '../../constants/skin_constants.dart';
 import '../../../services/skin/skin_file_manager.dart';
+import 'skin_image_type.dart';
 
 /// Configuration for skin customization elements
 class Skin {
@@ -53,7 +54,7 @@ class Skin {
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
-      imageData: imageData ?? this.imageData,
+      imageData: imageData ?? Map<String, SkinImageData>.from(this.imageData),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       author: author ?? this.author,
@@ -143,12 +144,18 @@ class Skin {
       homepage: json['homepage'] as String? ?? '',
       version: json['version'] as String? ?? '1.0',
       skinVersion: json['skinVersion'] as String? ?? '1.0',
+      isDefault: false,
+      isActive: false,
     );
   }
   
   /// Check if skin has an image of the specified type
   bool hasImage(String key) {
     return imageData[key]?.hasImage ?? false;
+  }
+
+  bool hasAnyBGImage() {
+    return imageData.values.any((image) => image.type == SkinImageType.background && image.hasImage);
   }
 
   /// Check if image file exists for the specified type
@@ -167,9 +174,9 @@ class Skin {
   }
 
   Future<Skin?> setImagePath(String key, String? imagePath) async {
-    if (imageData[key] == null) {
-      return null;
-    }
+    // if (imageData[key] == null) {
+    //   return null;
+    // }
     final oldPath = imageData[key]?.imagePath;
     await SkinFileManager.deleteFileIfExists(oldPath, id);
     

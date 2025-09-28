@@ -9,6 +9,10 @@ import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
+  final bool isTransparent;
+  final String skinKey;
+  RefreshablePage({this.isTransparent = false, this.skinKey = 'global'});
+
   /// Override this to provide a custom app bar title
   String get appBarTitle => 'Page';
 
@@ -36,8 +40,8 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      isTransparent: true,
-      context: context,
+      isTransparent: isTransparent,
+      skinKey: skinKey,
       appBar: CustomAppBar(
         title: Text(appBarTitle),
         leading: appBarLeading,

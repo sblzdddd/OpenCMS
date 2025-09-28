@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../services/theme/theme_services.dart';
 import '../../data/models/skin/skin.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -21,8 +23,15 @@ class SkinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Card(
       elevation: isSelected ? 8 : 2,
+      color: isSelected 
+          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
+          : themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
+              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+          : Theme.of(context).colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: isSelected
@@ -115,7 +124,7 @@ class SkinCard extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      if (onEdit != null)
+                      if (!skin.isDefault && onEdit != null)
                         ElevatedButton.icon(
                           onPressed: onEdit,
                           icon: const Icon(Symbols.edit_rounded, size: 16),

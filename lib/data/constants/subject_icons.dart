@@ -155,33 +155,33 @@ class SubjectIconConstants {
   /// Returns an icon for the given subject.
   /// Priority: subject name/aliases (exact match, case-insensitive) -> code (exact match, case-insensitive) -> 
   /// subject name/aliases (substring match, case-insensitive) -> code (substring match, case-insensitive) -> default.
-  static IconData getIconForSubject({required String subjectName, required String code, IconData? placeholder = Symbols.school_rounded}) {
+  static String getCategoryForSubject({required String subjectName, required String code}) {
     final name = subjectName.toLowerCase();
     final upperCode = code.toUpperCase();
     
     // Try exact matches first
     if (_aliasToCategory.containsKey(name)) {
       final category = _aliasToCategory[name]!;
-      return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+      return category;
     }
     
     if (_codeToCategory.containsKey(upperCode)) {
       final category = _codeToCategory[upperCode]!;
-      return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+      return category;
     }
     
     // Try substring matches
     for (final entry in _aliasToCategory.entries) {
       if (name.contains(entry.key)) {
         final category = entry.value;
-        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+        return category;
       }
     }
     
     for (final entry in _codeToCategory.entries) {
       if (upperCode.contains(entry.key)) {
         final category = entry.value;
-        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+        return category;
       }
     }
     
@@ -190,7 +190,7 @@ class SubjectIconConstants {
     for (final entry in _aliasToCategory.entries) {
       if (codeName.contains(entry.key)) {
         final category = entry.value;
-        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+        return category;
       }
     }
     
@@ -199,11 +199,15 @@ class SubjectIconConstants {
     for (final entry in _codeToCategory.entries) {
       if (nameCode.contains(entry.key)) {
         final category = entry.value;
-        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+        return category;
       }
     }
 
-    return placeholder ?? _defaultIcon;
+    return "unknown";
+  }
+
+  static IconData getIconForCategory({required String category}) {
+    return _categoryToIcon[category] ?? _defaultIcon;
   }
 }
 

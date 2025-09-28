@@ -155,15 +155,15 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
         Expanded(
           child: SfCalendarTheme(
             data: SfCalendarThemeData(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              backgroundColor: themeNotifier.needTransparentBG ? Colors.transparent : Theme.of(context).colorScheme.surface,
+              headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
               headerTextStyle: TextStyle(
-                color: Colors.white,
+                color: themeNotifier.needTransparentBG ? Colors.white : Theme.of(context).colorScheme.onSurface,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
               todayHighlightColor: Theme.of(context).colorScheme.primary,
-              viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+              viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
             ),
             child: SfCalendar(
               controller: _calendarController,
@@ -355,12 +355,12 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
     // If we haven't assigned a color to this exam yet, assign the next available color
     if (!_courseColors.containsKey(examKey)) {
       if (_nextColorIndex < palette.length) {
-        _courseColors[examKey] = palette[_nextColorIndex].withValues(alpha: 0.9);
+        _courseColors[examKey] = palette[_nextColorIndex].withValues(alpha: 0.5);
         _nextColorIndex++;
       } else {
         // If we've used all palette colors, cycle back to the beginning
         final int colorIndex = _nextColorIndex % palette.length;
-        _courseColors[examKey] = palette[colorIndex].withValues(alpha: 0.9);
+        _courseColors[examKey] = palette[colorIndex].withValues(alpha: 0.5);
         _nextColorIndex++;
       }
     }

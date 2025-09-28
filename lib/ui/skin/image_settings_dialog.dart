@@ -6,12 +6,10 @@ import '../../data/models/skin/skin_image_type.dart';
 /// Dialog for configuring image settings
 class ImageSettingsDialog extends StatefulWidget {
   final SkinImageData imageData;
-  final Function(SkinImageData)? onImageDataChanged;
 
   const ImageSettingsDialog({
     super.key,
     required this.imageData,
-    this.onImageDataChanged,
   });
 
   @override
@@ -38,22 +36,15 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
   }
 
   void _updateImageData() {
-    final updatedData = _currentImageData.copyWith(
-      scale: _scale,
-      opacity: _opacity,
-      inside: _inside,
-      fillMode: _fillMode,
-      position: _position,
-    );
-    
     setState(() {
-      _currentImageData = updatedData;
+      _currentImageData = _currentImageData.copyWith(
+        scale: _scale,
+        opacity: _opacity,
+        inside: _inside,
+        fillMode: _fillMode,
+        position: _position,
+      );
     });
-    
-    // Only call the callback if the dialog is still mounted
-    if (mounted) {
-      widget.onImageDataChanged?.call(updatedData);
-    }
   }
 
   @override
@@ -73,10 +64,6 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Scale Settings
-              _buildSectionHeader('Scale', Symbols.zoom_in_rounded),
-              _buildScaleSlider(),
-              const SizedBox(height: 16),
               
               // Opacity Settings
               _buildSectionHeader('Opacity', Symbols.opacity_rounded),
@@ -92,6 +79,10 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
               
               // Position (for foreground images)
               if (_currentImageData.type == SkinImageType.foreground) ...[
+                // Scale Settings
+                _buildSectionHeader('Scale', Symbols.zoom_in_rounded),
+                _buildScaleSlider(),
+                const SizedBox(height: 16),
                 _buildInsideToggle(),
                 const SizedBox(height: 16),
                 _buildPositionSelector(),
@@ -108,7 +99,6 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
         ),
         FilledButton(
           onPressed: () {
-            _updateImageData();
             Navigator.of(context).pop(_currentImageData);
           },
           child: const Text('Apply'),
@@ -136,70 +126,62 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
   }
 
   Widget _buildScaleSlider() {
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Slider(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                value: _scale,
-                min: 0.5,
-                max: 2.0,
-                divisions: 15,
-                label: '${(_scale * 100).round()}%',
-                onChanged: (value) {
-                  setState(() {
-                    _scale = value;
-                  });
-                  _updateImageData();
-                },
-              ),
-            ),
-            SizedBox(
-              width: 60,
-              child: Text(
-                '${(_scale * 100).round()}%',
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
+        Expanded(
+          child: Slider(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            value: _scale,
+            min: 0.5,
+            max: 2.0,
+            divisions: 15,
+            label: '${(_scale * 100).round()}%',
+            onChanged: (value) {
+              setState(() {
+                _scale = value;
+              });
+              _updateImageData();
+            },
+          ),
+        ),
+        SizedBox(
+          width: 60,
+          child: Text(
+            '${(_scale * 100).round()}%',
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );
   }
 
   Widget _buildOpacitySlider() {
-    return Column(
+    return Row(
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Slider(
-                padding: const EdgeInsets.symmetric(horizontal: 0),
-                value: _opacity,
-                min: 0.0,
-                max: 1.0,
-                divisions: 20,
-                label: '${(_opacity * 100).round()}%',
-                onChanged: (value) {
-                  setState(() {
-                    _opacity = value;
-                  });
-                  _updateImageData();
-                },
-              ),
-            ),
-            SizedBox(
-              width: 60,
-              child: Text(
-                '${(_opacity * 100).round()}%',
-                style: Theme.of(context).textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
+        Expanded(
+          child: Slider(
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+            value: _opacity,
+            min: 0.0,
+            max: 1.0,
+            divisions: 20,
+            label: '${(_opacity * 100).round()}%',
+            onChanged: (value) {
+              setState(() {
+                _opacity = value;
+              });
+              _updateImageData();
+            },
+          ),
+        ),
+        SizedBox(
+          width: 60,
+          child: Text(
+            '${(_opacity * 100).round()}%',
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
     );

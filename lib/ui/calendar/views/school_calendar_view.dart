@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import '../../../services/calendar/calendar_service.dart';
 import '../../../data/models/calendar/calendar.dart';
 import '../../../ui/shared/widgets/custom_app_bar.dart';
+import '../../../ui/shared/widgets/custom_scaffold.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class SchoolCalendarView extends StatefulWidget {
@@ -97,7 +98,8 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return CustomScaffold(
+      skinKey: 'calendar',
       appBar: CustomAppBar(
         title: const Text('School Calendar'),
         actions: [
@@ -155,15 +157,15 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
       children: [
         SfCalendarTheme(
           data: SfCalendarThemeData(
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            backgroundColor: themeNotifier.needTransparentBG ? Colors.transparent : Theme.of(context).colorScheme.surface,
+            headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
             headerTextStyle: TextStyle(
-              color: Colors.white,
+              color: themeNotifier.needTransparentBG ? Colors.white : Theme.of(context).colorScheme.onSurface,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
             todayHighlightColor: Theme.of(context).colorScheme.primary,
-            viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+            viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
           ),
           child: SfCalendar(
             controller: _calendarController,
@@ -323,11 +325,11 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
       ];
       
       if (_nextColorIndex < palette.length) {
-        _eventColors[eventKey] = palette[_nextColorIndex].withValues(alpha: 0.8);
+        _eventColors[eventKey] = palette[_nextColorIndex].withValues(alpha: 0.5);
         _nextColorIndex++;
       } else {
         final int colorIndex = _nextColorIndex % palette.length;
-        _eventColors[eventKey] = palette[colorIndex].withValues(alpha: 0.8);
+        _eventColors[eventKey] = palette[colorIndex].withValues(alpha: 0.5);
         _nextColorIndex++;
       }
     }

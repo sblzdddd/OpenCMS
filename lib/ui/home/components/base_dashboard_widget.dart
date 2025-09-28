@@ -5,6 +5,7 @@ import '../../../../services/theme/theme_services.dart';
 import '../../../pages/actions.dart';
 import 'dart:async';
 import '../../shared/scaled_ink_well.dart';
+import 'package:opencms/ui/shared/widgets/skin_icon_widget.dart';
 
 /// Base mixin for dashboard widget states that provides common functionality
 /// including layout, refresh logic, error handling, and common UI patterns
@@ -136,29 +137,30 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
       },
       background: (inkWell) => Material(
         color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.6)
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
         : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         child: inkWell,
       ),
       child: Stack(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: _buildContent(),
-          ),
           // Background icon positioned on the right side
           Positioned(
             right: 8,
             bottom: 8,
-            child: Icon(
-              getWidgetIcon(),
+            child: SkinIcon(
+              imageKey: 'home.${getActionId()}WidgetIcon',
+              fallbackIcon: getWidgetIcon(),
+              fallbackIconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+              fallbackIconBackgroundColor: Colors.transparent,
               size: 64,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.1),
+              iconSize: 64,
             ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: _buildContent(),
           ),
         ],
       ),

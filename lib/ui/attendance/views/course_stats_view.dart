@@ -114,7 +114,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
       elevation: 0,
       color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
           ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
       : Theme.of(context).colorScheme.surfaceContainer,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(

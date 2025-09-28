@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/theme/theme_services.dart';
 import '../../data/constants/subject_icons.dart';
+import 'package:opencms/ui/shared/widgets/skin_icon_widget.dart';
 import 'scaled_ink_well.dart';
 
 class TimetableCard extends StatelessWidget {
@@ -32,9 +33,12 @@ class TimetableCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final theme = Theme.of(context);
-    final iconData = SubjectIconConstants.getIconForSubject(
+    final category = SubjectIconConstants.getCategoryForSubject(
       subjectName: subject,
       code: code,
+    );
+    final iconData = SubjectIconConstants.getIconForCategory(
+      category: category,
     );
 
     return Column(
@@ -74,7 +78,7 @@ class TimetableCard extends StatelessWidget {
                 backgroundColor ??
                 (themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
                     ? theme.colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : theme.colorScheme.surfaceContainer.withValues(alpha: 0.6)),
+                    : theme.colorScheme.surfaceContainer.withValues(alpha: 0.8)),
             borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             child: inkWell,
           ),
@@ -89,17 +93,25 @@ class TimetableCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.tertiaryContainer,
-                        borderRadius: themeNotifier.getBorderRadiusAll(0.875),
-                      ),
-                      child: Icon(
-                        iconData,
-                        size: 40,
-                        color: theme.colorScheme.onTertiaryContainer,
-                      ),
+                    // Container(
+                    //   padding: const EdgeInsets.all(8),
+                    //   decoration: BoxDecoration(
+                    //     color: theme.colorScheme.tertiaryContainer,
+                    //     borderRadius: themeNotifier.getBorderRadiusAll(0.875),
+                    //   ),
+                    //   child: Icon(
+                    //     iconData,
+                    //     size: 40,
+                    //     color: theme.colorScheme.onTertiaryContainer,
+                    //   ),
+                    // ),
+                    SkinIcon(
+                      imageKey: 'subjectIcons.$category',
+                      fallbackIcon: iconData,
+                      fallbackIconColor: theme.colorScheme.onTertiaryContainer,
+                      fallbackIconBackgroundColor: theme.colorScheme.tertiaryContainer,
+                      size: 54,
+                      iconSize: 40,
                     ),
                     const SizedBox(width: 12),
                     Expanded(

@@ -15,11 +15,11 @@ class SkinImageData {
     this.type = SkinImageType.background,
     this.imagePath,
     this.scale = 1.0,
-    this.opacity = 1.0,
+    double? opacity,
     this.inside = true,
     this.fillMode = SkinImageFillMode.cover,
-    this.position = SkinImagePosition.mc,
-  });
+    this.position = SkinImagePosition.br,
+  }) : opacity = opacity ?? (type == SkinImageType.icon ? 1.0 : 0.2);
 
   /// Create a copy with updated fields
   SkinImageData copyWith({
@@ -59,7 +59,7 @@ class SkinImageData {
       json['scale'] = scale;
     }
     
-    if (opacity != 1.0) {
+    if (opacity != (type == SkinImageType.icon ? 1.0 : 0.2)) {
       json['opacity'] = opacity;
     }
     
@@ -71,7 +71,7 @@ class SkinImageData {
       json['fillMode'] = fillMode.name;
     }
     
-    if (position != SkinImagePosition.mc) {
+    if (position != SkinImagePosition.br) {
       json['position'] = position.name;
     }
     
@@ -80,14 +80,15 @@ class SkinImageData {
 
   /// Create from JSON
   factory SkinImageData.fromJson(Map<String, dynamic> json) {
+    final type = SkinImageType.values.firstWhere(
+      (type) => type.name == (json['type'] as String?),
+      orElse: () => SkinImageType.background,
+    );
     return SkinImageData(
-      type: SkinImageType.values.firstWhere(
-        (type) => type.name == (json['type'] as String?),
-        orElse: () => SkinImageType.background,
-      ),
+      type: type,
       imagePath: json['imagePath'] as String?,
       scale: (json['scale'] as num?)?.toDouble() ?? 1.0,
-      opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
+      opacity: (json['opacity'] as num?)?.toDouble() ?? (type == SkinImageType.icon ? 1.0 : 0.2),
       inside: json['inside'] as bool? ?? true,
       fillMode: SkinImageFillMode.values.firstWhere(
         (mode) => mode.name == (json['fillMode'] as String?),
@@ -95,7 +96,7 @@ class SkinImageData {
       ),
       position: SkinImagePosition.values.firstWhere(
         (pos) => pos.name == (json['position'] as String?),
-        orElse: () => SkinImagePosition.mc,
+        orElse: () => SkinImagePosition.br,
       ),
     );
   }
@@ -103,9 +104,9 @@ class SkinImageData {
   /// Check if image exists
   bool get hasImage => imagePath != null && imagePath!.isNotEmpty;
 
-  /// Get validated scale (clamped between 0.5 and 2.0)
+  /// Get validated scale (clamped between 0.2 and 2.0)
   double get validatedScale {
-    return scale.clamp(0.5, 2.0);
+    return scale.clamp(0.2, 2.0);
   }
 
   /// Get BoxFit based on inside setting
@@ -117,6 +118,7 @@ class SkinImageData {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is SkinImageData &&
+        other.type == type &&
         other.imagePath == imagePath &&
         other.scale == scale &&
         other.opacity == opacity &&
@@ -126,7 +128,7 @@ class SkinImageData {
   }
 
   @override
-  int get hashCode => Object.hash(imagePath, scale, opacity, inside, fillMode, position);
+  int get hashCode => Object.hash(type, imagePath, scale, opacity, inside, fillMode, position);
 
   @override
   String toString() {

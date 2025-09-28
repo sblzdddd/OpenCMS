@@ -197,6 +197,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                                 width: tileWidth,
                                 icon: action['icon'] as IconData,
                                 title: action['title'] as String,
+                                skinImageKey: 'actionIcons.${action['id']}',
                                 onTap: () {
                                   onActionTap(action);
                                   Navigator.of(context).pop();

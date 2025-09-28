@@ -109,7 +109,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
       decoration: BoxDecoration(
         color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
             ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
         : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
@@ -279,7 +279,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     return Card(
       color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
           ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.6))
+          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
       : Theme.of(context).colorScheme.surfaceContainer,
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       elevation: 0,

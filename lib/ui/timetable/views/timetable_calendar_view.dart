@@ -262,12 +262,12 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
     // If we haven't assigned a color to this course yet, assign the next available color
     if (!_courseColors.containsKey(courseKey)) {
       if (_nextColorIndex < palette.length) {
-        _courseColors[courseKey] = palette[_nextColorIndex].withValues(alpha: 0.9);
+        _courseColors[courseKey] = palette[_nextColorIndex].withValues(alpha: 0.5);
         _nextColorIndex++;
       } else {
         // If we've used all palette colors, cycle back to the beginning
         final int colorIndex = _nextColorIndex % palette.length;
-        _courseColors[courseKey] = palette[colorIndex].withValues(alpha: 0.9);
+        _courseColors[courseKey] = palette[colorIndex].withValues(alpha: 0.5);
         _nextColorIndex++;
       }
     }

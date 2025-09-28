@@ -12,6 +12,7 @@ class NoticesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return TabbedPageBase(
       title: 'Notices',
+      skinKey: ['notice', 'daily_bulletin', 'events'],
       initialTabIndex: initialTabIndex,
       tabs: const [
         Tab(text: 'Notifications'),
