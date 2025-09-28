@@ -4,10 +4,12 @@ on:
     branches:
       - dev
       - test
+      - main
   push:
     branches:
       - dev
-      - test 
+      - test
+      - main 
 
 jobs:  # Telling what jobs we need to happen
   build:      # Specify the building name and machine
