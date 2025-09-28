@@ -99,9 +99,10 @@ jobs:  # Telling what jobs we need to happen
       - name: Check if Tag Exists
         id: check_tag
         run: |
-          if (git rev-parse "v$env:VERSION" 2>$null) {
+          try {
+            git rev-parse "v$env:VERSION" | Out-Null
             echo "TAG_EXISTS=true" >> $env:GITHUB_ENV
-          } else {
+          } catch {
             echo "TAG_EXISTS=false" >> $env:GITHUB_ENV
           }
       - name: Modify Tag
