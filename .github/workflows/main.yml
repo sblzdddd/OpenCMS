@@ -12,8 +12,8 @@ on:
       - main 
 
 jobs:  # Telling what jobs we need to happen
-  build:      # Specify the building name and machine
-    name: Build & Release  # you can name the build whatever you want
+  build-macos:      # Specify the building name and machine
+    name: Build & Release (macOS)  # you can name the build whatever you want
     runs-on: macos-latest # here we selected macos-latest to be able to get ios build
     steps:
       - name: Checkout code
@@ -41,7 +41,6 @@ jobs:  # Telling what jobs we need to happen
           name: Releases
           path: |
             build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
             build/ios_build.tar.gz
       - name: Extract version from pubspec.yaml
         id: extract_version
@@ -66,6 +65,54 @@ jobs:  # Telling what jobs we need to happen
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
+          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/ios_build.tar.gz"
+          tag: v${{ env.VERSION }}
+          token: ${{ secrets.TOKEN }}
+
+  build-windows:      # Windows build job
+    name: Build & Release (Windows)  # Windows build name
+    runs-on: windows-latest # Windows environment
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Build Windows
+        run: flutter build windows --release
+      - name: Compress Windows Build
+        run: |
+          cd build
+          Compress-Archive -Path windows -DestinationPath windows_build.zip
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Releases
+          path: |
+            build/windows_build.zip
+      - name: Extract version from pubspec.yaml
+        id: extract_version
+        run: |
+          $version = (Get-Content pubspec.yaml | Select-String '^version: ').Line.Split(' ')[1].Trim()
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+      - name: Check if Tag Exists
+        id: check_tag
+        run: |
+          if (git rev-parse "v$env:VERSION" 2>$null) {
+            echo "TAG_EXISTS=true" >> $env:GITHUB_ENV
+          } else {
+            echo "TAG_EXISTS=false" >> $env:GITHUB_ENV
+          }
+      - name: Modify Tag
+        if: env.TAG_EXISTS == 'true'
+        id: modify_tag
+        run: |
+          $new_version = "$env:VERSION-build-$env:GITHUB_RUN_NUMBER"
+          echo "VERSION=$new_version" >> $env:GITHUB_ENV
+      - name: Create Windows Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/windows_build.zip"
           tag: v${{ env.VERSION }}
           token: ${{ secrets.TOKEN }}

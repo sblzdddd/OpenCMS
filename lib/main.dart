@@ -118,25 +118,11 @@ void main() async {
   await initInAppWebview();
   await initWindowManager();
   await initSystemTray();
-  // await Workmanager().initialize(_callbackDispatcher, isInDebugMode: true);
   await CookiesRefreshService().start();
   
   // Initialize ThemeNotifier singleton
   await ThemeNotifier.initialize();
   
-  // await Workmanager().registerOneOffTask(
-  //   "ping_test", // unique ID
-  //   "ping_test", // task name
-  //   initialDelay: const Duration(seconds: 10),
-  // );
-  // // Periodic task with custom frequency  
-  // Workmanager().registerPeriodicTask(
-  //   "hourly-sync",
-  //   "data_sync",
-  //   frequency: Duration(hours: 1),        // Android: minimum 15 minutes
-  //   initialDelay: Duration(seconds: 10),   // Wait before first execution
-  //   inputData: {'syncType': 'incremental'}
-  // );
   runApp(const MyApp());
 }
 
