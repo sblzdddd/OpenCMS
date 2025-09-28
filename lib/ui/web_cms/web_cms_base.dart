@@ -97,22 +97,10 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
     if (_webViewController == null) return;
     try {
       if(widget.windowTitle != null) {
-        await _webViewController!.evaluateJavascript(source: '''
-          var s = document.createElement('style');
-          s.id = 'ocms-css-inject';
-          s.type = 'text/css';
-          s.appendChild(document.createTextNode(`
-            .leftbar, #leaders1, .btop.a12, .main1>.main1.noprint, .btop, .photo1.m_left, .mae_tok.a12 {display:none!important;}
-            .main1, .rightbar1, .ctbody1, .meair_lef {width:100%!important;margin: 0!important;}
-            
-          `));
-          (document.head || document.documentElement).appendChild(s);
-        ''');
+        await _webViewController!.evaluateJavascript(source: zeroBodyMarginStyle());
       }
-      // Capture the webCmsStyle result before async operations to avoid using context across async gaps
-      final currentContext = context;
-      final webCmsStyleString = webCmsStyle(currentContext);
       if (mounted) {
+        final webCmsStyleString = webCmsStyle(context);
         await _webViewController!.evaluateJavascript(source: webCmsStyleString);
       }
     } catch (e) {

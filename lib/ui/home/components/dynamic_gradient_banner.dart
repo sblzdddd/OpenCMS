@@ -23,17 +23,21 @@ class ColorUtils {
   }
 
   static String toHex(Color color, {bool leadingHashSign = true, bool includeAlpha = false}) {
-    final String a = color.alpha.toRadixString(16).padLeft(2, '0');
-    final String r = color.red.toRadixString(16).padLeft(2, '0');
-    final String g = color.green.toRadixString(16).padLeft(2, '0');
-    final String b = color.blue.toRadixString(16).padLeft(2, '0');
+    final String a = ((color.a * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
+    final String r = ((color.r * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
+    final String g = ((color.g * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
+    final String b = ((color.b * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
     final String body = includeAlpha ? '$a$r$g$b' : '$r$g$b';
     return leadingHashSign ? '#$body' : body;
   }
 
   static RGB hexToRgb(String hex) {
     final color = fromHex(hex);
-    return RGB(color.red, color.green, color.blue);
+    return RGB(
+      ((color.r * 255.0).round() & 0xff),
+      ((color.g * 255.0).round() & 0xff),
+      ((color.b * 255.0).round() & 0xff),
+    );
   }
 
   static String rgbToHex(int r, int g, int b, {bool leadingHashSign = true}) {

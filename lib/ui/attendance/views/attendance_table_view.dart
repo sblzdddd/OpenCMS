@@ -4,6 +4,7 @@ import '../../../../services/theme/theme_services.dart';
 import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../data/constants/attendance_types.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class AttendanceTableView extends StatelessWidget {
   final List<RecordOfDay> days;
@@ -31,11 +32,11 @@ class AttendanceTableView extends StatelessWidget {
         final int totalColumns = 1 + periods.length;
         final double columnWidth = tableWidth / totalColumns;
 
-        return SingleChildScrollView(
+        return CustomChildScrollView(
           scrollDirection: Axis.horizontal,
           child: SizedBox(
             width: tableWidth,
-            child: SingleChildScrollView(
+            child: CustomChildScrollView(
               child: RepaintBoundary(
                 child: DataTable(
               columnSpacing: 0,

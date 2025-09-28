@@ -68,7 +68,7 @@ class _ActionItemState extends State<ActionItem>
     // wait for 1 second
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final page = await buildActionPage(widget.action);
-      if (mounted) {
+      if (mounted && context.mounted) {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => page,

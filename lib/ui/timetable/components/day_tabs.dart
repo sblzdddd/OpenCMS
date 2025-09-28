@@ -17,25 +17,21 @@ class DayTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    return Container(
-      child: TabBar(
-        controller: controller,
-        onTap: onTap,
-        tabs: [
-          for (int i = 0; i < labels.length; i++)
-            Tab(
-              child: Text(
-                labels[i],
-                style: TextStyle(
-                  color: i == todayIndex ? colorScheme.primary : null,
-                  fontWeight: i == todayIndex ? FontWeight.w600 : FontWeight.w400,
-                ),
+    return TabBar(
+      controller: controller,
+      onTap: onTap,
+      tabs: [
+        for (int i = 0; i < labels.length; i++)
+          Tab(
+            child: Text(
+              labels[i],
+              style: TextStyle(
+                color: i == todayIndex ? colorScheme.primary : null,
+                fontWeight: i == todayIndex ? FontWeight.w600 : FontWeight.w400,
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
-
-

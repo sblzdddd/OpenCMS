@@ -77,7 +77,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   @override
   Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
         Center(

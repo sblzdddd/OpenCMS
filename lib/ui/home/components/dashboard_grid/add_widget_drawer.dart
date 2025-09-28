@@ -141,6 +141,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
           // Available widgets and actions
           Expanded(
             child: ListView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 if (addableWidgets.isNotEmpty) ...[
@@ -235,6 +236,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
     final bool showWidgets = _filteredWidgets.isNotEmpty;
     if (showActions || showWidgets) {
       return ListView(
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           if (showWidgets) ...[

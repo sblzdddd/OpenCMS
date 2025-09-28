@@ -12,6 +12,7 @@ import 'actions/assessment.dart';
 import 'settings/settings_page.dart';
 import '../ui/shared/widgets/custom_app_bar.dart';
 import '../services/theme/theme_services.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -121,8 +122,7 @@ class _HomePageState extends State<HomePage> {
             PointerDeviceKind.trackpad,
           },
         ),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: CustomChildScrollView(
           child: LayoutBuilder(
             builder: (context, constraints) {
               final isWideScreen = constraints.maxWidth >= 850;

@@ -1,5 +1,18 @@
 import 'package:flutter/material.dart';
 
+String zeroBodyMarginStyle() {
+  return '''
+          var s = document.createElement('style');
+          s.id = 'ocms-css-inject';
+          s.type = 'text/css';
+          s.appendChild(document.createTextNode(`
+            .leftbar, #leaders1, .btop.a12, .main1>.main1.noprint, .btop, .photo1.m_left, .mae_tok.a12 {display:none!important;}
+            .main1, .rightbar1, .ctbody1, .meair_lef {width:100%!important;margin: 0!important;}
+            
+          `));
+          (document.head || document.documentElement).appendChild(s);
+        ''';
+}
 
 String convertColorToCss(Color color) {
   return 'rgba(${color.r*255}, ${color.g*255}, ${color.b*255}, ${color.a})';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/theme/theme_services.dart';
 import '../ui/auth/login_form.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -44,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           // Main content
           Center(
-            child: SingleChildScrollView(
+            child: CustomChildScrollView(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),
                 child: Card(

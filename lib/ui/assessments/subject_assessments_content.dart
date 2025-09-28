@@ -7,6 +7,7 @@ import '../../services/assessment/assessment_service.dart';
 import '../../services/theme/theme_services.dart';
 import '../components/assessment_type_counts_widget.dart';
 import 'assessment_chart_widget.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class SubjectAssessmentsContent extends StatefulWidget {
   final SubjectAssessment subject;
@@ -78,8 +79,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     
-    final content = SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
+    final content = CustomChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -259,8 +259,8 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         ),
         const SizedBox(height: 8),
         ListView.builder(
+          physics: const BouncingScrollPhysics(),
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
           itemCount: _currentSubject.assessments.length,
           itemBuilder: (context, index) {
             final assessment = _currentSubject.assessments.reversed.toList()[index];

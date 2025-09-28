@@ -93,6 +93,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
     }
 
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       itemCount: items.length,
       itemBuilder: (context, index) {

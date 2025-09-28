@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
+            VALUE "CompanyName", "sblzdddd" "\0"
             VALUE "FileDescription", "opencms" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "opencms" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 sblzdddd. All rights reserved." "\0"
             VALUE "OriginalFilename", "opencms.exe" "\0"
             VALUE "ProductName", "opencms" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

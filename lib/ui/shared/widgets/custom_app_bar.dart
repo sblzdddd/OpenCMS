@@ -65,14 +65,13 @@ class CustomAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _CustomAppBarState extends State<CustomAppBar> {
-  int lastClickmilliseconds = DateTime.now().millisecondsSinceEpoch;
+  int lastClickMilliseconds = DateTime.now().millisecondsSinceEpoch;
   bool isMaximized = false;
 
   @override
   Widget build(BuildContext context) {
     // Check if we're on a desktop platform
-    final isDesktop =
-        !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+    final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
 
     // Create the list of actions, adding window controls for desktop
     List<Widget> allActions = widget.actions ?? <Widget>[];
@@ -151,10 +150,10 @@ class _CustomAppBarState extends State<CustomAppBar> {
         },
         onTapDown: (_) {
           int currMills = DateTime.now().millisecondsSinceEpoch;
-          if ((currMills - lastClickmilliseconds) < 500) {
+          if ((currMills - lastClickMilliseconds) < 600) {
             onDoubleTap();
           } else {
-            lastClickmilliseconds = currMills;
+            lastClickMilliseconds = currMills;
             onSingleTap();
           }
         },

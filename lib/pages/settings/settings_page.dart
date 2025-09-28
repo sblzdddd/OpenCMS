@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../ui/shared/widgets/custom_scaffold.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
@@ -87,7 +89,7 @@ class _SettingsPageState extends State<SettingsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
+      body: CustomChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(

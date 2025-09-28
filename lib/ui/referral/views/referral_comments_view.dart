@@ -4,6 +4,7 @@ import '../../../data/constants/subject_icons.dart';
 import '../../../services/referral/referral_service.dart';
 import '../../../data/models/referral/referral_response.dart';
 import '../../shared/views/refreshable_page.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class ReferralCommentsView extends StatefulWidget {
   const ReferralCommentsView({super.key});
@@ -134,7 +135,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
 
     final filteredComments = _getFilteredAndSortedComments();
 
-    return SingleChildScrollView(
+    return CustomChildScrollView(
       child: Column(
         children: [
           _buildStatistics(),

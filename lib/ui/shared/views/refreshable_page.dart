@@ -5,6 +5,7 @@ import '../../../ui/shared/widgets/custom_app_bar.dart';
 import '../../../ui/shared/widgets/custom_scaffold.dart';
 export '../../../services/theme/theme_services.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
@@ -51,9 +52,8 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
 
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
-    return SingleChildScrollView(
+    return CustomChildScrollView(
       padding: bodyPadding,
-      physics: const AlwaysScrollableScrollPhysics(),
       child: buildPageContent(context, themeNotifier),
     );
   }
@@ -64,7 +64,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   @override
   Widget buildLoadingWidget(BuildContext context) {
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.4),
         const Center(
@@ -77,7 +77,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   @override
   Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
         const Center(

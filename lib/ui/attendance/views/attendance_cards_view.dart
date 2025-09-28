@@ -37,6 +37,7 @@ class AttendanceCardsView extends StatelessWidget {
     }
 
     return ListView.separated(
+      physics: const BouncingScrollPhysics(),
       itemCount: visibleDayIndices.length,
       padding: EdgeInsets.zero,
       cacheExtent: 800,

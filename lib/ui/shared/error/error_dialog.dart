@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 /// Reusable error dialog component with text copy functionality
 class ErrorDialog extends StatelessWidget {
@@ -79,7 +80,7 @@ class ErrorDialog extends StatelessWidget {
       title: Text(title),
       content: SizedBox(
         width: double.maxFinite,
-        child: SingleChildScrollView(
+        child: CustomChildScrollView(
           child: SelectableText(details),
         ),
       ),

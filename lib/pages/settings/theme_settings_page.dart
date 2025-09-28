@@ -7,6 +7,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'dart:io';
 import '../../services/theme/window_effect_service.dart';
 import '../../ui/shared/widgets/custom_scaffold.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -43,7 +44,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
         ),
         clipBehavior: Clip.antiAlias,
         title: const Text('Pick a custom color'),
-        content: SingleChildScrollView(
+        content: CustomChildScrollView(
           child: Column(
             children: [
               ColorPicker(
@@ -173,7 +174,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
       ),
       body: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
-          return SingleChildScrollView(
+          return CustomChildScrollView(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

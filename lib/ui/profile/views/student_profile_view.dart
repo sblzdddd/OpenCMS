@@ -11,6 +11,7 @@ import '../widgets/profile_info_card.dart';
 import '../widgets/profile_photo_widget.dart';
 import '../../shared/views/list_section.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class StudentProfileView extends StatefulWidget {
   const StudentProfileView({super.key});
@@ -120,8 +121,7 @@ class _StudentProfileViewState extends State<StudentProfileView> {
             PointerDeviceKind.trackpad,
           },
         ),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+        child: CustomChildScrollView(
           padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -245,6 +245,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
 
   Widget _buildHomeworkList() {
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: _filteredHomeworkItems.length,
       itemBuilder: (context, index) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/services/auth/auth_service.dart';
 import '../dialog/confirm_dialog.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class ErrorPlaceholder extends StatelessWidget {
   ErrorPlaceholder({
@@ -23,7 +24,7 @@ class ErrorPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
+      child: CustomChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(5),
           constraints: const BoxConstraints(maxWidth: 400),

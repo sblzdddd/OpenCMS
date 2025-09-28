@@ -8,6 +8,7 @@ import '../web_cms/web_cms_content.dart';
 import '../shared/views/list_section.dart';
 import '../../pages/actions/web_cms.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class AdaptiveEventsLayout extends StatelessWidget {
   final List<StudentEvent> studentLedEvents;
@@ -90,7 +91,7 @@ class AdaptiveEventsLayout extends StatelessWidget {
       return _buildEmptyState(context);
     }
 
-    return SingleChildScrollView(
+    return CustomChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

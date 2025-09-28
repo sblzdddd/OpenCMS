@@ -5,6 +5,7 @@ import '../../../data/models/reports/reports.dart';
 import '../../../services/theme/theme_services.dart';
 import '../mark_components_view.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class ReportDetailContent extends StatefulWidget {
   final Exam exam;
@@ -92,8 +93,7 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
       );
     }
 
-    final content = SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
+    final content = CustomChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,8 +167,8 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
         ),
         const SizedBox(height: 16),
         ListView.builder(
-          shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
           itemCount: _reportDetail!.courseMark.length,
           itemBuilder: (context, index) {
             final course = _reportDetail!.courseMark[index];

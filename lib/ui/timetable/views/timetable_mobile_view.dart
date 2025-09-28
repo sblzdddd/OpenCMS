@@ -5,6 +5,7 @@ import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
 import '../../shared/timetable_card.dart';
 import '../components/day_header.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class TimetableMobileView extends StatefulWidget {
   final ScrollController scrollController;
@@ -50,7 +51,7 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with WidgetsB
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return CustomChildScrollView(
       controller: widget.scrollController,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Column(

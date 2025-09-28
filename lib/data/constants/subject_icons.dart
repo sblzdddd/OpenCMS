@@ -3,8 +3,8 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// Provides icon lookup for subjects based on name aliases first, then code.
 class SubjectIconConstants {
-  // Map of lowercase alias substring -> icon
-  static const Map<String, IconData> _aliasToIcon = {
+  // Unified category mapping - groups related subjects and maps to icons
+  static const Map<String, IconData> _categoryToIcon = {
     // Sciences
     'physics': Symbols.specific_gravity_rounded,
     'chemistry': Symbols.experiment_rounded,
@@ -13,11 +13,9 @@ class SubjectIconConstants {
 
     // Mathematics
     'mathematics': Symbols.calculate_rounded,
-    'further math': Symbols.functions_rounded,
-    'further mathematics': Symbols.functions_rounded,
+    'further_math': Symbols.functions_rounded,
 
     // English / Languages
-    'english': Symbols.menu_book_rounded,
     'literature': Symbols.menu_book_rounded,
     'language': Symbols.language_rounded,
     'chinese': Symbols.language_chinese_cangjie_rounded,
@@ -25,10 +23,7 @@ class SubjectIconConstants {
     'spanish': Symbols.language_spanish_rounded,
 
     // Technology
-    'computer science': Symbols.dns_rounded,
-    'computing': Symbols.dns_rounded,
-    'ict': Symbols.memory_rounded,
-    'information technology': Symbols.memory_rounded,
+    'computer_science': Symbols.dns_rounded,
 
     // Social Sciences / Business
     'economics': Symbols.trending_up_rounded,
@@ -38,107 +33,173 @@ class SubjectIconConstants {
     'history': Symbols.auto_stories_rounded,
     'psychology': Symbols.psychology_rounded,
     'sociology': Symbols.groups_3_rounded,
-    'global perspectives': Symbols.language_rounded,
 
     // Arts / PE
     'art': Symbols.palette_rounded,
     'design': Symbols.draw_rounded,
     'music': Symbols.music_note_rounded,
     'pe': Symbols.sports_gymnastics_rounded,
-    'physical education': Symbols.sports_gymnastics_rounded,
 
     // General
-    'form time': Symbols.badge_rounded,
+    'form_time': Symbols.badge_rounded,
     'pastoral': Symbols.volunteer_activism_rounded,
-    'pshe': Symbols.volunteer_activism_rounded,
     'tutor': Symbols.co_present_rounded,
     'rpq': Symbols.emoji_objects_rounded,
-    'evening study': Symbols.local_library_rounded
+    'evening_study': Symbols.local_library_rounded
   };
 
-  // Map of uppercase code substring -> icon
-  static const Map<String, IconData> _codeToIcon = {
+  // Map of lowercase alias substring -> category key
+  static const Map<String, String> _aliasToCategory = {
     // Sciences
-    'PHY': Symbols.specific_gravity_rounded,
-    'CHE': Symbols.experiment_rounded,
-    'CHM': Symbols.experiment_rounded,
-    'BIO': Symbols.biotech_rounded,
-    'SCI': Symbols.specific_gravity_rounded,
+    'physics': 'physics',
+    'chemistry': 'chemistry',
+    'biology': 'biology',
+    'science': 'science',
 
     // Mathematics
-    'MAT': Symbols.calculate_rounded,
-    'MATH': Symbols.calculate_rounded,
-    'FM': Symbols.functions_rounded,
-    'FURTHER': Symbols.functions_rounded,
+    'mathematics': 'mathematics',
+    'further math': 'further_math',
+    'further mathematics': 'further_math',
 
     // English / Languages
-    'ENG': Symbols.menu_book_rounded,
-    'LIT': Symbols.menu_book_rounded,
-    'LAN': Symbols.language_rounded,
-    'CHN': Symbols.language_chinese_cangjie_rounded,
-    'CHI': Symbols.language_chinese_cangjie_rounded,
-    'JAP': Symbols.language_japanese_kana_rounded,
-    'SPA': Symbols.language_spanish_rounded,
-    
+    'literature': 'literature',
+    'language': 'language',
+    'chinese': 'chinese',
+    'japanese': 'japanese',
+    'spanish': 'spanish',
+
     // Technology
-    'CPU': Symbols.dns_rounded,
-    'CS': Symbols.dns_rounded,
-    'ICT': Symbols.dns_rounded,
+    'computer science': 'computer_science',
+    'computer_science': 'computer_science',
 
     // Social Sciences / Business
-    'ECO': Symbols.trending_up_rounded,
-    'BUS': Symbols.business_center_rounded,
-    'ACC': Symbols.request_quote_rounded,
-    'GEO': Symbols.public_rounded,
-    'HIS': Symbols.auto_stories_rounded,
-    'PSY': Symbols.psychology_rounded,
-    'SOC': Symbols.groups_3_rounded,
-    'GP': Symbols.language_rounded,
+    'economics': 'economics',
+    'business': 'business',
+    'accounting': 'accounting',
+    'geography': 'geography',
+    'history': 'history',
+    'psychology': 'psychology',
+    'sociology': 'sociology',
+    'global perspectives': 'language',
 
     // Arts / PE
-    'ART': Symbols.palette_rounded,
-    'DES': Symbols.draw_rounded,
-    'MUS': Symbols.music_note_rounded,
-    'PE': Symbols.sports_gymnastics_rounded,
+    'art': 'art',
+    'design': 'design',
+    'music': 'music',
+    'pe': 'pe',
+    'physical education': 'pe',
 
     // General
-    'FORM': Symbols.badge_rounded,
-    'TUTOR': Symbols.co_present_rounded,
-    'PSHE': Symbols.volunteer_activism_rounded,
-    'RPQ': Symbols.emoji_objects_rounded,
-    'ES': Symbols.local_library_rounded
+    'form time': 'form_time',
+    'pastoral': 'pastoral',
+    'pshe': 'pastoral',
+    'tutor': 'tutor',
+    'rpq': 'rpq',
+    'evening study': 'evening_study'
+  };
+
+  // Map of uppercase code substring -> category key
+  static const Map<String, String> _codeToCategory = {
+    // Sciences
+    'PHY': 'physics',
+    'CHE': 'chemistry',
+    'CHM': 'chemistry',
+    'BIO': 'biology',
+    'SCI': 'science',
+
+    // Mathematics
+    'MAT': 'mathematics',
+    'MATH': 'mathematics',
+    'FM': 'further_math',
+    'FURTHER': 'further_math',
+
+    // English / Languages
+    'ENG': 'literature',
+    'LIT': 'literature',
+    'LAN': 'language',
+    'CHN': 'chinese',
+    'CHI': 'chinese',
+    'JAP': 'japanese',
+    'SPA': 'spanish',
+    
+    // Technology
+    'CPU': 'computer_science',
+    'CS': 'computer_science',
+
+    // Social Sciences / Business
+    'ECO': 'economics',
+    'BUS': 'business',
+    'ACC': 'accounting',
+    'GEO': 'geography',
+    'HIS': 'history',
+    'PSY': 'psychology',
+    'SOC': 'sociology',
+    'GP': 'language',
+
+    // Arts / PE
+    'ART': 'art',
+    'DES': 'design',
+    'MUS': 'music',
+    'PE': 'pe',
+
+    // General
+    'FORM': 'form_time',
+    'TUTOR': 'tutor',
+    'PSHE': 'pastoral',
+    'RPQ': 'rpq',
+    'ES': 'evening_study'
   };
 
   static const IconData _defaultIcon = Symbols.school_rounded;
 
   /// Returns an icon for the given subject.
-  /// Priority: subject name/aliases (substring match, case-insensitive) -> code (substring match, case-insensitive) -> default.
+  /// Priority: subject name/aliases (exact match, case-insensitive) -> code (exact match, case-insensitive) -> 
+  /// subject name/aliases (substring match, case-insensitive) -> code (substring match, case-insensitive) -> default.
   static IconData getIconForSubject({required String subjectName, required String code, IconData? placeholder = Symbols.school_rounded}) {
     final name = subjectName.toLowerCase();
-    for (final entry in _aliasToIcon.entries) {
-      if (name == entry.key) {
-        return entry.value;
-      }
-    }
-
     final upperCode = code.toUpperCase();
-    for (final entry in _codeToIcon.entries) {
-      if (upperCode == entry.key) {
-        return entry.value;
+    
+    // Try exact matches first
+    if (_aliasToCategory.containsKey(name)) {
+      final category = _aliasToCategory[name]!;
+      return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+    }
+    
+    if (_codeToCategory.containsKey(upperCode)) {
+      final category = _codeToCategory[upperCode]!;
+      return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+    }
+    
+    // Try substring matches
+    for (final entry in _aliasToCategory.entries) {
+      if (name.contains(entry.key)) {
+        final category = entry.value;
+        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
       }
     }
-
-    final nameCode = subjectName.toUpperCase();
-    for (final entry in _codeToIcon.entries) {
-      if (nameCode.contains(entry.key)) {
-        return entry.value;
+    
+    for (final entry in _codeToCategory.entries) {
+      if (upperCode.contains(entry.key)) {
+        final category = entry.value;
+        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
       }
     }
-
+    
+    // Try code as lowercase for alias matching
     final codeName = code.toLowerCase();
-    for (final entry in _aliasToIcon.entries) {
+    for (final entry in _aliasToCategory.entries) {
       if (codeName.contains(entry.key)) {
-        return entry.value;
+        final category = entry.value;
+        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
+      }
+    }
+    
+    // Try subject name as uppercase for code matching
+    final nameCode = subjectName.toUpperCase();
+    for (final entry in _codeToCategory.entries) {
+      if (nameCode.contains(entry.key)) {
+        final category = entry.value;
+        return _categoryToIcon[category] ?? (placeholder ?? _defaultIcon);
       }
     }
 

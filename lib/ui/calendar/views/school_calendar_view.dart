@@ -7,6 +7,7 @@ import 'package:syncfusion_flutter_core/theme.dart';
 import '../../../services/calendar/calendar_service.dart';
 import '../../../data/models/calendar/calendar.dart';
 import '../../../ui/shared/widgets/custom_app_bar.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 class SchoolCalendarView extends StatefulWidget {
   const SchoolCalendarView({super.key});
@@ -386,7 +387,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         ),
         clipBehavior: Clip.antiAlias,
         title: Text(event.title),
-        content: SingleChildScrollView(
+        content: CustomChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

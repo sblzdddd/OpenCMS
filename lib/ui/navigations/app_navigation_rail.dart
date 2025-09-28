@@ -22,6 +22,28 @@ class AppNavigationRail extends StatefulWidget {
 
 class _AppNavigationRailState extends State<AppNavigationRail> {
 
+  int lastClickMilliseconds = DateTime.now().millisecondsSinceEpoch;
+
+  void onDoubleTap() {
+    _handleDoubleTap();
+  }
+
+  void _handleDoubleTap() async {
+    try {
+      bool isMaximized = await windowManager.isMaximized();
+      if (!isMaximized) {
+        await windowManager.maximize();
+      } else {
+        await windowManager.unmaximize();
+      }
+    } catch (e) {
+      // Handle any errors silently to avoid blocking the UI
+      debugPrint('Error handling double tap: $e');
+    }
+  }
+
+  void onSingleTap() {}
+
   @override
   Widget build(BuildContext context) {
     final themeNotifier = ThemeNotifier.instance;
@@ -33,8 +55,18 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
-          onTapDown: (_) {
+          behavior: HitTestBehavior.translucent,
+          onPanStart: (details) {
             windowManager.startDragging();
+          },
+          onTapDown: (_) {
+            int currMills = DateTime.now().millisecondsSinceEpoch;
+            if ((currMills - lastClickMilliseconds) < 600) {
+              onDoubleTap();
+            } else {
+              lastClickMilliseconds = currMills;
+              onSingleTap();
+            }
           },
           child: NavigationRail(
             leading: Container(

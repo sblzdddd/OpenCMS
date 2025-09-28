@@ -24,7 +24,7 @@ class ExamTimetableListView extends StatelessWidget {
 
     if (exams.isEmpty) {
       return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.3),
           Center(
@@ -46,6 +46,7 @@ class ExamTimetableListView extends StatelessWidget {
     }
 
     return ListView.builder(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: sortedDates.length,
       itemBuilder: (context, index) {

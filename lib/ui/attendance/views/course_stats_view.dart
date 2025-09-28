@@ -46,6 +46,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
         _buildYearSelector(),
         Expanded(
           child: ListView.builder(
+            physics: const BouncingScrollPhysics(),
             itemCount: _courseStats!.length,
             itemBuilder: (context, index) {
               return _buildCourseCard(_courseStats![index]);
@@ -59,7 +60,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
   @override
   Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
         const Center(

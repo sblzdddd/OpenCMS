@@ -23,7 +23,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   /// Override this to provide custom loading widget (optional)
   Widget buildLoadingWidget(BuildContext context) {
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.4),
         const Center(
@@ -36,7 +36,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   /// Override this to provide custom empty state widget (optional)
   Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.3),
         const Center(
@@ -126,7 +126,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   Widget _buildPageContent() {
     if (_error != null) {
       return ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const BouncingScrollPhysics(),
         children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.3),
           ErrorPlaceholder(

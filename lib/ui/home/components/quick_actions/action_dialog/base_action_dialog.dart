@@ -4,6 +4,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../../../services/theme/theme_services.dart';
 import '../action_item/quick_action_tile.dart';
+import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 
 /// Base dialog class for action selection dialogs
 abstract class BaseActionDialog extends StatefulWidget {
@@ -186,7 +187,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                         final double tileWidth =
                             (availableWidth - (columns - 1) * spacing) / columns;
 
-                        return SingleChildScrollView(
+                        return CustomChildScrollView(
                           child: Wrap(
                             spacing: spacing,
                             runSpacing: spacing,

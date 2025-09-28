@@ -10,7 +10,6 @@ import 'package:system_tray/system_tray.dart';
 import 'dart:io';
 import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
-import 'services/skin/skin_provider.dart';
 import 'package:provider/provider.dart';
 import 'utils/text_theme_util.dart';
 import 'utils/global_press_scale.dart';
@@ -151,7 +150,6 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(value: ThemeNotifier.instance),
-        ChangeNotifierProvider(create: (_) => SkinProvider()..initialize()),
       ],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {

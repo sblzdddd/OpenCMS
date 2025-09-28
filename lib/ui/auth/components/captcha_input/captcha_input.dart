@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import '../../../../data/constants/api_endpoints.dart';
 import 'captcha_dialog.dart';
+import '../../../../ui/shared/custom_snackbar/snackbar_utils.dart';
 
 /// Callback function signature for captcha state changes
 typedef CaptchaStateCallback = void Function(bool isVerified, Object? captchaData);
@@ -114,13 +115,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
           
           // Show failure feedback
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('CaptchaInput: Captcha verification failed! Try again.'),
-                backgroundColor: Colors.red,
-                duration: Duration(seconds: 3),
-              ),
-            );
+            SnackbarUtils.showError(context, 'CaptchaInput: Captcha verification failed! Try again.');
           }
         },
       );
@@ -137,13 +132,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
       
       // Show error feedback
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('CaptchaInput: Captcha error: $e'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        SnackbarUtils.showError(context, 'CaptchaInput: Captcha error: $e');
       }
     }
   }
