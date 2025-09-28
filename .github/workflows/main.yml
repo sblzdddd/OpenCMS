@@ -45,7 +45,7 @@ jobs:  # Telling what jobs we need to happen
       - name: Extract version from pubspec.yaml
         id: extract_version
         run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
+          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r' | cut -d '+' -f 1)
           echo "VERSION=$version" >> $GITHUB_ENV
       - name: Check if Tag Exists
         id: check_tag
@@ -94,7 +94,7 @@ jobs:  # Telling what jobs we need to happen
       - name: Extract version from pubspec.yaml
         id: extract_version
         run: |
-          $version = (Get-Content pubspec.yaml | Select-String '^version: ').Line.Split(' ')[1].Trim()
+          $version = (Get-Content pubspec.yaml | Select-String '^version: ').Line.Split(' ')[1].Trim().Split('+')[0]
           echo "VERSION=$version" >> $env:GITHUB_ENV
       - name: Check if Tag Exists
         id: check_tag
