@@ -66,28 +66,5 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return ListView(
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.description_rounded,
-                size: 64,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'No reports available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  String get emptyTitle => 'No reports available';
 }

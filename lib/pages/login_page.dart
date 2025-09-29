@@ -4,6 +4,7 @@ import '../services/theme/theme_services.dart';
 import '../ui/auth/login_form.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/widgets/custom_scaffold.dart';
+import 'package:opencms/utils/app_info.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -17,6 +18,21 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   final GlobalKey _captchaKey = GlobalKey();
+  String _footerText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFooter();
+  }
+
+  Future<void> _loadFooter() async {
+    final String combined = await AppInfoUtil.getCombinedFooterText();
+    if (!mounted) return;
+    setState(() {
+      _footerText = combined;
+    });
+  }
 
   @override
   void dispose() {
@@ -41,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
               : Theme.of(context).colorScheme.surface,
               margin: const EdgeInsets.all(24),
               elevation: 20,
+              shadowColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
               shape: RoundedRectangleBorder(
                 borderRadius: themeNotifier.getBorderRadiusAll(2),
               ),
@@ -57,6 +74,21 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+      bottomNavigationBar: _footerText.isNotEmpty
+          ? SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Text(
+                  _footerText,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 }

@@ -12,6 +12,8 @@ class SkinIcon extends StatefulWidget {
   final Color? fallbackIconBackgroundColor;
   final double size;
   final double? iconSize;
+  final BorderRadius? borderRadius;
+  final double fill;
 
   const SkinIcon({
     super.key,
@@ -21,6 +23,8 @@ class SkinIcon extends StatefulWidget {
     this.fallbackIconBackgroundColor,
     this.size = 50,
     this.iconSize,
+    this.borderRadius,
+    this.fill = 0,
   });
 
   @override
@@ -99,7 +103,7 @@ class _SkinIconState extends State<SkinIcon> {
       //   borderRadius: BorderRadius.circular(widget.size * 0.2),
       // ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(widget.size * 0.2),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.size * 0.2),
         child: Opacity(
           opacity: imageData.opacity,
           child: Image.file(
@@ -122,11 +126,12 @@ class _SkinIconState extends State<SkinIcon> {
       height: widget.size,
       decoration: BoxDecoration(
         color: widget.fallbackIconBackgroundColor,
-        borderRadius: BorderRadius.circular(widget.size * 0.2),
+        borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.size * 0.2),
       ),
       child: Icon(
         widget.fallbackIcon,
         color: widget.fallbackIconColor,
+        fill: widget.fill,
         size: widget.iconSize ?? widget.size * 0.54, // 27/50 ratio from original
       ),
     );

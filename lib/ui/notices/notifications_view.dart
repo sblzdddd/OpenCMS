@@ -4,7 +4,6 @@ import '../../data/models/notification/notification_response.dart' as cms;
 import '../../services/notification/notification_service.dart';
 import '../shared/views/refreshable_view.dart';
 import 'adaptive_notifications_layout.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class NotificationsView extends StatefulWidget {
   const NotificationsView({super.key});
@@ -45,36 +44,7 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return ListView(
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.notifications_none_rounded,
-                size: 64,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'No notifications available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Check back later for new notifications',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  String get emptyTitle => 'No notifications available';
 
   @override
   String get errorTitle => 'Error loading notifications';

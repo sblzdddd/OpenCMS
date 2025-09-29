@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
+import '../shared/widgets/skin_icon_widget.dart';
 import 'components/captcha_input/captcha_input.dart';
 import 'components/password_input.dart';
 import 'components/username_input.dart';
@@ -87,16 +88,36 @@ class _LoginFormState extends State<LoginForm> {
                   Positioned(
                     top: 0,
                     right: 0,
-                    child: Material(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
-                      shape: const CircleBorder(),
-                      child: IconButton(
-                        tooltip: 'Clear form',
-                        icon: const Icon(Symbols.delete_sweep_rounded),
-                        onPressed: isLoading ? null : _clearForm,
-                      ),
+                    child: Column(
+                      children: [
+                        Material(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          shape: const CircleBorder(),
+                          child: IconButton(
+                            tooltip: 'Clear form',
+                            icon: const Icon(Symbols.delete_sweep_rounded),
+                            onPressed: isLoading ? null : _clearForm,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Material(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          shape: const CircleBorder(),
+                          child: IconButton(
+                            tooltip: themeNotifier.isDarkMode ? 'Switch to light theme' : 'Switch to dark theme',
+                            icon: Icon(
+                              themeNotifier.isDarkMode 
+                                ? Symbols.light_mode_rounded 
+                                : Symbols.dark_mode_rounded,
+                            ),
+                            onPressed: isLoading ? null : () => themeNotifier.toggleTheme(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Column(
@@ -105,11 +126,15 @@ class _LoginFormState extends State<LoginForm> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 14),
-                      Icon(
-                        Symbols.school_rounded,
+                      SkinIcon(
+                        imageKey: 'global.app_icon',
+                        fallbackIcon: Symbols.school_rounded,
                         size: 80,
-                        color: Theme.of(context).colorScheme.primary,
+                        iconSize: 80,
+                        fallbackIconColor: Theme.of(context).colorScheme.primary,
+                        fallbackIconBackgroundColor: Colors.transparent,
                       ),
+                      const SizedBox(height: 8),
                       Text(
                         'Welcome Back!',
                         style: TextStyle(
@@ -119,6 +144,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                         textAlign: TextAlign.center,
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         'Login with your'
                         ' SC'
@@ -130,7 +156,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 24),
 
                       // Username field
                       UsernameInput(

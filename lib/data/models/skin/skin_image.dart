@@ -47,9 +47,7 @@ class SkinImageData {
     final json = <String, dynamic>{};
     
     // Only serialize non-default values
-    if (type != SkinImageType.background) {
-      json['type'] = type.name;
-    }
+    // Do not serialize `type`; it is derived from defaults
     
     if (imagePath != null && imagePath!.isNotEmpty) {
       json['imagePath'] = imagePath;
@@ -97,6 +95,26 @@ class SkinImageData {
       position: SkinImagePosition.values.firstWhere(
         (pos) => pos.name == (json['position'] as String?),
         orElse: () => SkinImagePosition.br,
+      ),
+    );
+  }
+
+  /// Create from JSON using provided defaults (type and default values come from defaults)
+  factory SkinImageData.fromJsonWithDefaults(Map<String, dynamic> json, SkinImageData defaults) {
+    final type = defaults.type;
+    return SkinImageData(
+      type: type,
+      imagePath: (json['imagePath'] as String?) ?? defaults.imagePath,
+      scale: (json['scale'] as num?)?.toDouble() ?? defaults.scale,
+      opacity: (json['opacity'] as num?)?.toDouble() ?? defaults.opacity,
+      inside: json['inside'] as bool? ?? defaults.inside,
+      fillMode: SkinImageFillMode.values.firstWhere(
+        (mode) => mode.name == (json['fillMode'] as String?),
+        orElse: () => defaults.fillMode,
+      ),
+      position: SkinImagePosition.values.firstWhere(
+        (pos) => pos.name == (json['position'] as String?),
+        orElse: () => defaults.position,
       ),
     );
   }

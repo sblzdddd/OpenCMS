@@ -75,30 +75,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return ListView(
-      physics: const BouncingScrollPhysics(),
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.event_busy_rounded,
-                size: 48,
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.5),
-              ),
-              const SizedBox(height: 8),
-              const Text('No exams scheduled for this month'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  String get emptyTitle => 'No exams scheduled for this month';
 
   @override
   String get errorTitle => 'Failed to load timetable';

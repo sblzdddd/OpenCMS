@@ -13,8 +13,11 @@ Future<Directory> getSkinsDirectory() async {
 }
 
 const defaultImageData = {
+  'global.app_icon': SkinImageData(type: SkinImageType.icon),
   'global.background': SkinImageData(type: SkinImageType.background),
   'global.foreground': SkinImageData(type: SkinImageType.foreground),
+  'global.empty_icon': SkinImageData(type: SkinImageType.icon),
+  'global.error_icon': SkinImageData(type: SkinImageType.icon),
 
   'actionIcons.unknown': SkinImageData(type: SkinImageType.icon),
   'actionIcons.webcms': SkinImageData(type: SkinImageType.icon),
@@ -36,6 +39,7 @@ const defaultImageData = {
   'actionIcons.eca': SkinImageData(type: SkinImageType.icon),
   'actionIcons.settings': SkinImageData(type: SkinImageType.icon),
   'actionIcons.more': SkinImageData(type: SkinImageType.icon),
+  'actionIcons.trash_can': SkinImageData(type: SkinImageType.icon),
 
   'subjectIcons.physics': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.chemistry': SkinImageData(type: SkinImageType.icon),
@@ -68,7 +72,6 @@ const defaultImageData = {
 
   'login.background': SkinImageData(type: SkinImageType.background),
   'login.foreground': SkinImageData(type: SkinImageType.foreground),
-  'login.cardForeground': SkinImageData(type: SkinImageType.foreground),
 
   'home.background': SkinImageData(type: SkinImageType.background),
   'home.foreground': SkinImageData(type: SkinImageType.foreground),

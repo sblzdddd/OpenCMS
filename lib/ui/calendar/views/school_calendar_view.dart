@@ -6,6 +6,7 @@ import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import '../../../services/calendar/calendar_service.dart';
 import '../../../data/models/calendar/calendar.dart';
+import '../../../ui/shared/error/error_placeholder.dart';
 import '../../../ui/shared/widgets/custom_app_bar.dart';
 import '../../../ui/shared/widgets/custom_scaffold.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
@@ -116,39 +117,10 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   Widget _buildCalendarBody() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     if (_errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Symbols.error_outline_rounded,
-              size: 48,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Failed to load calendar',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage!,
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => _loadCalendar(DateTime.now()),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    if (_currentCalendar == null) {
-      return const Center(
-        child: Text('No calendar data available'),
+      return ErrorPlaceholder(
+        title: 'Failed to load calendar',
+        errorMessage: _errorMessage!,
+        onRetry: () => _loadCalendar(DateTime.now()),
       );
     }
 

@@ -10,7 +10,6 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
   final T? selectedItem;
   final Function(T item) onItemSelected;
   final Widget? header;
-  final Widget? emptyState;
   final double breakpoint;
 
   const AdaptiveListDetailLayout({
@@ -21,7 +20,6 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
     required this.onItemSelected,
     this.selectedItem,
     this.header,
-    this.emptyState,
     this.breakpoint = 800.0,
   });
 
@@ -88,9 +86,6 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
   }
 
   Widget _buildList(BuildContext context) {
-    if (items.isEmpty) {
-      return emptyState ?? _buildDefaultEmptyState(context);
-    }
 
     return ListView.builder(
       physics: const BouncingScrollPhysics(),
@@ -101,42 +96,6 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
         final isSelected = selectedItem == item;
         return itemBuilder(item, isSelected);
       },
-    );
-  }
-
-  Widget _buildDefaultEmptyState(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(
-              Symbols.inbox_rounded,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No items available',
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Check back later for updates',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 

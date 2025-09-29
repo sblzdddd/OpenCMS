@@ -376,9 +376,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       children: [
         CircleAvatar(
           radius: 20,
-          backgroundColor: Theme.of(
-            context,
-          ).colorScheme.primary.withValues(alpha: 0.1),
+          backgroundColor: Colors.transparent,
           child: SkinIcon(
             imageKey: 'subjectIcons.${SubjectIconConstants.getCategoryForSubject(subjectName: comment.subject ?? '', code: comment.subject ?? '')}',
             fallbackIcon: Symbols.person_rounded,
@@ -601,4 +599,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
       ),
     );
   }
+
+  @override
+  String get emptyTitle => 'No comments found';
 }

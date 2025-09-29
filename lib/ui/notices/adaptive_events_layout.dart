@@ -87,9 +87,6 @@ class AdaptiveEventsLayout extends StatelessWidget {
   }
 
   Widget _buildEventsList(BuildContext context) {
-    if (studentLedEvents.isEmpty && studentUnstaffedEvents.isEmpty) {
-      return _buildEmptyState(context);
-    }
 
     return CustomChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -311,42 +308,6 @@ class AdaptiveEventsLayout extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Choose an event from the list to view details',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(
-              Symbols.event_note_rounded,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No events available',
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Check back later for new events',
               style: TextStyle(
                 fontSize: 14,
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),

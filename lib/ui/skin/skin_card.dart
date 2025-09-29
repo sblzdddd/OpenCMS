@@ -25,11 +25,11 @@ class SkinCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Card(
-      elevation: isSelected ? 8 : 2,
+      elevation: 0,
       color: isSelected 
           ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
           : themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
+              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.6)
               : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
           : Theme.of(context).colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(

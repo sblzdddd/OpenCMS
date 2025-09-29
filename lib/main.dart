@@ -15,6 +15,9 @@ import 'utils/text_theme_util.dart';
 import 'utils/global_press_scale.dart';
 import 'ui/shared/widgets/custom_app_bar.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'services/update/update_checker.dart';
+import 'ui/shared/widgets/skin_icon_widget.dart';
+import 'utils/app_info.dart';
 
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
@@ -200,6 +203,8 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   final AuthService _authService = AuthService();
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
+  String _versionInfoText = '';
+  String _deviceInfoText = '';
 
   @override
   void initState() {
@@ -210,6 +215,28 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
     globalAuthWrapper = this;
     
     _checkAuthenticationStatus();
+    _initVersionAndDeviceInfo();
+
+    // Non-blocking update check after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        UpdateChecker.checkForUpdates(context);
+      }
+    });
+  }
+
+  Future<void> _initVersionAndDeviceInfo() async {
+    try {
+      final String versionText = await AppInfoUtil.getVersionText();
+      final String deviceText = await AppInfoUtil.getDeviceText();
+      if (!mounted) return;
+      setState(() {
+        _versionInfoText = versionText;
+        _deviceInfoText = deviceText;
+      });
+    } catch (_) {
+      // No-op on failure; footer will simply be hidden
+    }
   }
 
   @override
@@ -260,21 +287,16 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Symbols.school_rounded,
-                size: 80,
-                color: Theme.of(context).colorScheme.primary,
+              SkinIcon(
+                imageKey: 'global.app_icon',
+                fallbackIcon: Symbols.school_rounded,
+                fallbackIconColor: Theme.of(context).colorScheme.primary,
+                fallbackIconBackgroundColor: Colors.transparent,
+                size: 96,
+                borderRadius: BorderRadius.circular(4),
               ),
               const SizedBox(height: 24),
               const CircularProgressIndicator(),
-              const SizedBox(height: 16),
-              Text(
-                'Loading OpenCMS...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha(178),
-                ),
-              ),
             ],
           ),
         ),
@@ -283,6 +305,24 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
           preferredSize: const Size(double.maxFinite, 50),
           child: CustomAppBar(),
         ),
+        bottomNavigationBar: (_versionInfoText.isNotEmpty || _deviceInfoText.isNotEmpty)
+            ? SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    [
+                      if (_versionInfoText.isNotEmpty) _versionInfoText,
+                      if (_deviceInfoText.isNotEmpty) _deviceInfoText,
+                    ].join(' • '),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ),
+              )
+            : null,
       );
     }
 

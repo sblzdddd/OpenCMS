@@ -32,7 +32,6 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
       breakpoint: breakpoint,
       itemBuilder: (dailyBulletin, isSelected) => _buildDailyBulletinItem(dailyBulletin, isSelected, context),
       detailBuilder: (dailyBulletin) => _buildDailyBulletinDetail(dailyBulletin, context),
-      emptyState: _buildEmptyState(context),
     );
   }
 
@@ -176,39 +175,4 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(
-              Symbols.notifications_none_rounded,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No daily bulletins available',
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Check back later for new daily bulletins',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -100,14 +100,19 @@ class Skin {
       json['isActive'] = isActive;
     }
     
-    // Only serialize imageData if it differs from default
-    final hasNonDefaultImageData = imageData.entries.any((entry) {
+    // Serialize only entries that differ from defaults
+    final Map<String, dynamic> diffImageData = {};
+    for (final entry in imageData.entries) {
       final defaultData = defaultImageData[entry.key];
-      return defaultData == null || entry.value != defaultData;
-    });
-    
-    if (hasNonDefaultImageData) {
-      json['imageData'] = imageData.map((key, value) => MapEntry(key, value.toJson()));
+      if (defaultData == null || entry.value != defaultData) {
+        final valueJson = entry.value.toJson();
+        if (valueJson.isNotEmpty) {
+          diffImageData[entry.key] = valueJson;
+        }
+      }
+    }
+    if (diffImageData.isNotEmpty) {
+      json['imageData'] = diffImageData;
     }
     
     return json;
@@ -119,11 +124,26 @@ class Skin {
     if (json.containsKey('imageData') && json['imageData'] != null) {
       print('Skin.fromJson: Using new imageData format');
       try {
-        imageData = Map<String, SkinImageData>.from(
-          (json['imageData'] as Map<String, dynamic>).map(
-            (key, value) => MapEntry(key, SkinImageData.fromJson(value as Map<String, dynamic>))
-          )
+        final Map<String, dynamic> raw = (json['imageData'] as Map<String, dynamic>);
+        // Merge with defaults so that type and defaults come from defaultImageData
+        imageData = Map<String, SkinImageData>.fromEntries(
+          defaultImageData.entries.map((defaultEntry) {
+            final key = defaultEntry.key;
+            final defaults = defaultEntry.value;
+            final valueJson = raw[key];
+            if (valueJson is Map<String, dynamic>) {
+              return MapEntry(key, SkinImageData.fromJsonWithDefaults(valueJson, defaults));
+            }
+            return MapEntry(key, defaults);
+          })
         );
+        // Preserve any unknown keys by parsing them with background type as fallback
+        for (final extra in raw.entries) {
+          if (!imageData.containsKey(extra.key) && extra.value is Map<String, dynamic>) {
+            final defaults = const SkinImageData();
+            imageData[extra.key] = SkinImageData.fromJsonWithDefaults(extra.value as Map<String, dynamic>, defaults);
+          }
+        }
       } catch (e) {
         print('Skin.fromJson: Error parsing imageData: $e');
         imageData = Map<String, SkinImageData>.from(defaultImageData);

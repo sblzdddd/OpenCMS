@@ -32,7 +32,6 @@ class AdaptiveNotificationsLayout extends StatelessWidget {
       breakpoint: breakpoint,
       itemBuilder: (notification, isSelected) => _buildNotificationItem(notification, isSelected, context),
       detailBuilder: (notification) => _buildNotificationDetail(notification, context),
-      emptyState: _buildEmptyState(context),
     );
   }
 
@@ -190,42 +189,6 @@ class AdaptiveNotificationsLayout extends StatelessWidget {
           isWideScreen: true,
         );
       },
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(
-              Symbols.notifications_none_rounded,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No notifications available',
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Check back later for new notifications',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

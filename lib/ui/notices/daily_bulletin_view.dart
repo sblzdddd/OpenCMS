@@ -47,36 +47,7 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return ListView(
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.notifications_none_rounded,
-                size: 64,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'No daily bulletins available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Check back later for new daily bulletins',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  String get emptyTitle => 'No daily bulletins available';
 
   @override
   String get errorTitle => 'Error loading daily bulletins';

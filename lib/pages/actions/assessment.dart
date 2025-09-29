@@ -94,36 +94,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return ListView(
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.assessment_rounded,
-                size: 64,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'No assessments available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Select a different academic year or check back later',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  String get emptyTitle => 'No assessments available';
 
   @override
   String get errorTitle => 'Error loading assessments';

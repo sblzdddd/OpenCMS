@@ -4,8 +4,8 @@ import '../../../services/theme/theme_services.dart';
 import '../../../ui/shared/widgets/custom_app_bar.dart';
 import '../../../ui/shared/widgets/custom_scaffold.dart';
 export '../../../services/theme/theme_services.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import 'package:opencms/ui/shared/error/empty_placeholder.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
@@ -36,6 +36,9 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
 
   /// Override this to provide custom body background color
   Color? get bodyBackgroundColor => null;
+
+  /// Override this to provide custom empty title (optional)
+  String get emptyTitle => 'No data available';
 
   @override
   Widget build(BuildContext context) {
@@ -83,23 +86,10 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
     return ListView(
       physics: const BouncingScrollPhysics(),
       children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Symbols.inbox_rounded,
-                size: 64,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'No data available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-            ],
-          ),
+        SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+        EmptyPlaceholder(
+          title: emptyTitle,
+          onRetry: () => loadData(refresh: true),
         ),
       ],
     );

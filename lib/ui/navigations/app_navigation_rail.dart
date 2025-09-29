@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../services/theme/theme_services.dart';
 import 'nav_items.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import '../shared/widgets/skin_icon_widget.dart';
 
 class AppNavigationRail extends StatefulWidget {
   const AppNavigationRail({
@@ -73,7 +74,16 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
             leading: Container(
               height: 56,
               alignment: Alignment.center,
-              child: Icon(Symbols.school_rounded, fill: 1, size: 32),
+              child: SkinIcon(
+                imageKey: 'global.app_icon',
+                fallbackIcon: Symbols.school_rounded,
+                fallbackIconColor: Theme.of(context).colorScheme.primary,
+                fallbackIconBackgroundColor: Colors.transparent,
+                size: 40,
+                iconSize: 32,
+                fill: 1,
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
             selectedIndex: widget.selectedIndex,
             onDestinationSelected: widget.onTapCallback,

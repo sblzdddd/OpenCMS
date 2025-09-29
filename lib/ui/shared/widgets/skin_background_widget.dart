@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/skin/skin.dart';
 import '../../../data/models/skin/skin_image.dart';
 import '../../../data/models/skin/skin_image_type.dart';
@@ -124,7 +126,9 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
 
   /// Get opacity from SkinImageData or use provided fallback
   double _getOpacity(SkinImageData imageData) {
-    return widget.opacity ?? imageData.opacity;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final isDarkMode = themeNotifier.isDarkMode;
+    return widget.opacity ?? imageData.opacity * (isDarkMode ? 0.5 : 1.0);
   }
 
   @override
@@ -134,7 +138,17 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     if (imageData == null || imageData.imagePath == null) {
       // No background image available, use fallback color
       return Container(
-        color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
+        // If this is the login category, use the default login background asset
+        decoration: BoxDecoration(
+          color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
+          image: widget.category == 'login'
+            ? const DecorationImage(
+                image: AssetImage('assets/images/default-login-bg.jpg'),
+                fit: BoxFit.cover,
+                opacity: 0.2,
+              )
+            : null,
+        ),
         child: widget.child,
       );
     }
@@ -142,7 +156,17 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     // Check if image file exists
     if (!File(imageData.imagePath!).existsSync()) {
       return Container(
-        color: widget.fallbackColor ?? Colors.purpleAccent,
+        // If this is the login category, use the default login background asset
+        decoration: BoxDecoration(
+          color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
+          image: widget.category == 'login'
+            ? const DecorationImage(
+                image: AssetImage('assets/images/default-login-bg.jpg'),
+                fit: BoxFit.cover,
+                opacity: 0.2,
+              )
+            : null,
+        ),
         child: widget.child,
       );
     }

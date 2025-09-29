@@ -41,7 +41,6 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
         academicYear: selectedYear,
         isWideScreen: true,
       ),
-      emptyState: _buildEmptyState(context),
     );
   }
 
@@ -148,48 +147,6 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
             ),
             trailing: const Icon(Symbols.arrow_forward_ios_rounded, size: 16),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Align(
-      alignment: Alignment.topCenter,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(
-              Symbols.assessment_rounded,
-              size: 64,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No assessments available',
-              style: TextStyle(
-                fontSize: 18,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Select a different academic year or check back later',
-              style: TextStyle(
-                fontSize: 14,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
         ),
       ),
     );

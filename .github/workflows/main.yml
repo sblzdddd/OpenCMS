@@ -83,22 +83,10 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsecret-1-dev
           flutter pub get
       - name: Build APK
         run: flutter build apk --release --split-per-abi
-      - name: Build linux
-        run: flutter build linux --release
-      - name: Compress Archives and APK
-        run: |
-          cd build
-          tar -czf linux_build.tar.gz linux
-      - name: Upload Artifacts (Linux)
-        uses: actions/upload-artifact@v4
-        with:
-          name: Linux-Releases
-          path: |
-            build/linux_build.tar.gz
       - name: Upload Artifacts (Android-Armeabi-v7a)
         uses: actions/upload-artifact@v4
         with:
@@ -117,3 +105,15 @@ jobs:
           name: Android-X86_64-Release
           path: |
             build/app/outputs/flutter-apk/app-x86_64-release.apk
+      - name: Build linux
+        run: flutter build linux --release
+      - name: Compress Archives and APK
+        run: |
+          cd build
+          tar -czf linux_build.tar.gz linux
+      - name: Upload Artifacts (Linux)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Releases
+          path: |
+            build/linux_build.tar.gz

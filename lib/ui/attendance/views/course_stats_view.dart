@@ -58,32 +58,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
   }
 
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return ListView(
-      physics: const BouncingScrollPhysics(),
-      children: [
-        SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-        const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Symbols.school_rounded, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
-              Text(
-                'No course statistics available',
-                style: TextStyle(fontSize: 18, color: Colors.grey),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Try selecting a different academic year',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+  String get emptyTitle => 'No course statistics available';
 
   @override
   String get errorTitle => 'Failed to load course statistics';

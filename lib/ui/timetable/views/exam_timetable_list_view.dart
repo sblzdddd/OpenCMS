@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../data/models/timetable/exam_timetable_entry.dart';
 import '../../shared/timetable_card.dart';
+import '../../shared/error/empty_placeholder.dart';
 
 class ExamTimetableListView extends StatelessWidget {
   final List<ExamTimetableEntry> exams;
@@ -26,20 +26,10 @@ class ExamTimetableListView extends StatelessWidget {
       return ListView(
         physics: const BouncingScrollPhysics(),
         children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.3),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Symbols.event_busy_rounded,
-                  size: 48,
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
-                ),
-                const SizedBox(height: 8),
-                const Text('No exams scheduled for this month'),
-              ],
-            ),
+          SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+          EmptyPlaceholder(
+            title: 'No exams scheduled for this month',
+            onRetry: () => onExamTap(exams[0]),
           ),
         ],
       );

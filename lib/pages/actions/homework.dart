@@ -271,32 +271,5 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
 
   
   @override
-  Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          _buildFilters(themeNotifier),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Symbols.assignment_rounded, size: 64),
-                  const SizedBox(height: 16),
-                  Text('No homework found', style: Theme.of(context).textTheme.titleMedium),
-                  Text(
-                    'Try adjusting your filters or check back later',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  String get emptyTitle => 'No homework found';
 }

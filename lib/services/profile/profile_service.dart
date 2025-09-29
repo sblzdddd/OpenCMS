@@ -23,7 +23,7 @@ class ProfileService {
         refresh: refresh,
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 304) {
         return ProfileResponse.fromJson(response.data as Map<String, dynamic>);
       } else {
         throw Exception('Failed to fetch profile: ${response.statusCode}');

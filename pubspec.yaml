@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 0.10.0+2
+version: 0.9.0+1
 
 environment:
   sdk: ^3.8.1
@@ -31,9 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
   flutter_inappwebview: ^6.1.5
   flutter_secure_storage: ^9.2.4
   material_symbols_icons: ^4.2858.1
@@ -57,6 +54,8 @@ dependencies:
   image_picker: ^1.2.0
   path_provider: ^2.1.5
   syncfusion_flutter_core: ^30.2.7
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.0.2
 
 dev_dependencies:
   flutter_test:
@@ -72,9 +71,9 @@ dev_dependencies:
 
 msix_config:
   display_name: OpenCMS
-  publisher_display_name: DonovanLi
-  identity_name: Com.DonovanLi.OpenCMS
-  publisher: CN=DonovanLi
+  publisher_display_name: sblzdddd
+  identity_name: com.sblzdddd.OpenCMS
+  publisher: CN=sblzdddd
   # ... other configurations as needed
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -93,7 +92,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/default-login-bg.jpg
-    - assets/images/Naidesu.png
     - assets/static/
     - assets/icon/
 
