@@ -11,63 +11,38 @@ on:
       - test
       - main 
 
-jobs:  # Telling what jobs we need to happen
-  build-macos:      # Specify the building name and machine
-    name: Build & Release (macOS)  # you can name the build whatever you want
-    runs-on: macos-latest # here we selected macos-latest to be able to get ios build
+jobs:
+  build-macos:
+    name: Build & Release (IOS & MacOS)
+    runs-on: macos-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Set Up Java
-        uses: actions/setup-java@v3.12.0
-        with:
-          distribution: 'oracle'
-          java-version: '17'
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
       - name: Install Dependencies
         run: flutter pub get
-      - name: Build APK
-        run: flutter build apk --release
+      - name: Build MacOS
+        run: flutter build macos --release
       - name: Build IPA
         run: flutter build ipa --no-codesign
       - name: Compress Archives and IPAs
         run: |
           cd build
           tar -czf ios_build.tar.gz ios
+          tar -czf macos_build.tar.gz macos
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Releases
+          name: MacOS-Release
           path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/ios_build.tar.gz
-      - name: Extract version from pubspec.yaml
-        id: extract_version
-        run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r' | cut -d '+' -f 1)
-          echo "VERSION=$version" >> $GITHUB_ENV
-      - name: Check if Tag Exists
-        id: check_tag
-        run: |
-          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
-      - name: Modify Tag
-        if: env.TAG_EXISTS == 'true'
-        id: modify_tag
-        run: |
-          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
-          echo "VERSION=$new_version" >> $GITHUB_ENV
-
-      - name: Create Release
-        uses: ncipollo/release-action@v1
+            build/macos_build.tar.gz
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/ios_build.tar.gz"
-          tag: v${{ env.VERSION }}
-          token: ${{ secrets.TOKEN }}
+          name: iOS-Release
+          path: |
+            build/ios_build.tar.gz
 
   build-windows:      # Windows build job
     name: Build & Release (Windows)  # Windows build name
@@ -84,36 +59,58 @@ jobs:  # Telling what jobs we need to happen
       - name: Compress Windows Build
         run: |
           cd build
-          Compress-Archive -Path windows -DestinationPath windows_build.zip
+          Compress-Archive -Path windows/x64/runner/Release/ -DestinationPath windows_build.zip
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Windows-Releases
           path: |
             build/windows_build.zip
-      - name: Extract version from pubspec.yaml
-        id: extract_version
-        run: |
-          $version = (Get-Content pubspec.yaml | Select-String '^version: ').Line.Split(' ')[1].Trim().Split('+')[0]
-          echo "VERSION=$version" >> $env:GITHUB_ENV
-      - name: Check if Tag Exists
-        id: check_tag
-        run: |
-          try {
-            git rev-parse "v$env:VERSION" | Out-Null
-            echo "TAG_EXISTS=true" >> $env:GITHUB_ENV
-          } catch {
-            echo "TAG_EXISTS=false" >> $env:GITHUB_ENV
-          }
-      - name: Modify Tag
-        if: env.TAG_EXISTS == 'true'
-        id: modify_tag
-        run: |
-          $new_version = "$env:VERSION-build-$env:GITHUB_RUN_NUMBER"
-          echo "VERSION=$new_version" >> $env:GITHUB_ENV
-      - name: Create Windows Release
-        uses: ncipollo/release-action@v1
+
+  build-linux:
+    name: Build & Release (Linux & Android)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Set Up Java
+        uses: actions/setup-java@v3.12.0
         with:
-          artifacts: "build/windows_build.zip"
-          tag: v${{ env.VERSION }}
-          token: ${{ secrets.TOKEN }}
+          distribution: 'oracle'
+          java-version: '17'
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+      - name: Install Dependencies
+        run: flutter pub get
+      - name: Build APK
+        run: flutter build apk --release --split-per-abi
+      - name: Build linux
+        run: flutter build linux --release
+      - name: Compress Archives and APK
+        run: |
+          cd build
+          tar -czf linux_build.tar.gz linux
+      - name: Upload Artifacts (Linux)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Releases
+          path: |
+            build/linux_build.tar.gz
+      - name: Upload Artifacts (Android-Armeabi-v7a)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-Armeabi-v7a-Release
+          path: |
+            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
+      - name: Upload Artifacts (Android-Arm64-v8a)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-Arm64-v8a-Release
+          path: |
+            build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+      - name: Upload Artifacts (Android-X86_64)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-X86_64-Release
+          path: |
+            build/app/outputs/flutter-apk/app-x86_64-release.apk
