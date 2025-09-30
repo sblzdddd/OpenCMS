@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:zip_flutter/zip_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../data/constants/skin_constants.dart';
 import '../../data/models/skin/skin_image.dart';
 
@@ -12,7 +15,7 @@ class SkinFileManager {
 
   static Future<String> getSkinDirectoryPath(String skinId) async {
     final skinsDirectory = await getSkinsDirectory();
-    final skinDirectory = '${skinsDirectory.path}/$skinId';
+    final skinDirectory = '${skinsDirectory.path}${Platform.pathSeparator}$skinId';
     await ensureDirectoryExists(skinDirectory);
     return skinDirectory;
   }
@@ -31,8 +34,8 @@ class SkinFileManager {
     
     final sourceFile = File(sourcePath);
     final extension = sourcePath.split('.').last;
-    final fileName = '${skinId}_$key.$extension';
-    final destinationPath = '$skinsDirectory/$fileName';
+    final fileName = '$key.$extension';
+    final destinationPath = '$skinsDirectory${Platform.pathSeparator}$fileName';
     print(destinationPath);
     
     await sourceFile.copy(destinationPath);
@@ -44,6 +47,7 @@ class SkinFileManager {
       final skinsDirectory = await getSkinDirectoryPath(skinId);
       final file = File(path);
       if (file.existsSync() && _isPathWithinDirectory(file.path, skinsDirectory)) {
+        print('Deleting file: ${file.path}');
         file.deleteSync();
       }
     }
@@ -65,27 +69,147 @@ class SkinFileManager {
     }
   }
 
-  /// Check if a file path is within the specified directory
-  /// This method provides accurate path validation to prevent accidental deletion
-  /// of files outside the intended directory
+  static Future<File> getSkinJsonFile(String skinId) async {
+    final dir = await getSkinDirectoryPath(skinId);
+    return File('$dir${Platform.pathSeparator}skin.json');
+  }
+
+  static Future<Map<String, dynamic>?> readSkinJsonMap(String skinId) async {
+    final file = await getSkinJsonFile(skinId);
+    if (!file.existsSync()) return null;
+    try {
+      final content = await file.readAsString();
+      return jsonDecode(content) as Map<String, dynamic>;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Future<void> writeSkinJsonMap(String skinId, Map<String, dynamic> json) async {
+    final file = await getSkinJsonFile(skinId);
+    await file.writeAsString(jsonEncode(json));
+  }
+
+  static Future<void> deleteSkinDirectory(String skinId) async {
+    final dirPath = await getSkinDirectoryPath(skinId);
+    final dir = Directory(dirPath);
+    if (dir.existsSync()) {
+      await dir.delete(recursive: true);
+    }
+  }
+
+  static Future<String> exportSkinAsCmsk(String skinId) async {
+    final skinDirPath = await getSkinDirectoryPath(skinId);
+    final skinDir = Directory(skinDirPath);
+    if (!skinDir.existsSync()) {
+      throw Exception('Skin directory not found for id: $skinId');
+    }
+
+    final skinJson = await readSkinJsonMap(skinId);
+    if (skinJson == null) {
+      throw Exception('skin.json not found for id: $skinId');
+    }
+
+    final exportJson = Map<String, dynamic>.from(skinJson);
+    if (exportJson.containsKey('imageData')) {
+      final imageData = exportJson['imageData'] as Map<String, dynamic>;
+      for (final key in imageData.keys) {
+        if (imageData[key] is Map<String, dynamic> && 
+            imageData[key].containsKey('imagePath')) {
+          final imagePath = imageData[key]['imagePath'] as String;
+          if (imagePath.isNotEmpty) {
+            imageData[key]['imagePath'] = imagePath.split(Platform.pathSeparator).last;
+          }
+        }
+      }
+    }
+
+    final tempDir = await getTemporaryDirectory();
+    final outFilePath = '${tempDir.path}${Platform.pathSeparator}$skinId.cmsk';
+
+    var zip = ZipFile.open(outFilePath, level: 0);
+
+    final skinJsonFile = File('$skinDirPath${Platform.pathSeparator}skin.json');
+    await skinJsonFile.writeAsString(jsonEncode(exportJson));
+    zip.addFile('skin.json', skinJsonFile.path);
+
+    if (exportJson.containsKey('imageData')) {
+      final imageData = exportJson['imageData'] as Map<String, dynamic>;
+      for (final key in imageData.keys) {
+        if (imageData[key] is Map<String, dynamic> && 
+            imageData[key].containsKey('imagePath')) {
+          final fileName = imageData[key]['imagePath'] as String;
+          if (fileName.isNotEmpty) {
+            final imagePath = '$skinDirPath${Platform.pathSeparator}$fileName';
+            if (File(imagePath).existsSync()) {
+              zip.addFile(fileName, imagePath);
+            }
+          }
+        }
+      }
+    }
+
+    zip.close();
+
+    await skinJsonFile.writeAsString(jsonEncode(skinJson));
+
+    return outFilePath;
+  }
+
   static bool _isPathWithinDirectory(String filePath, String directoryPath) {
     try {
-      // Normalize paths to handle different separators and resolve any relative paths
-      final normalizedFilePath = File(filePath).absolute.path;
-      final normalizedDirPath = Directory(directoryPath).absolute.path;
+      final normalizedFilePath = File(filePath).absolute.path.replaceAll(Platform.pathSeparator, '/');
+      final normalizedDirPath = Directory(directoryPath).absolute.path.replaceAll(Platform.pathSeparator, '/');
       
-      // Ensure directory path ends with separator for accurate comparison
-      // final dirPathWithSeparator = normalizedDirPath.endsWith(Platform.pathSeparator) 
-      //     ? normalizedDirPath 
-      //     : '$normalizedDirPath${Platform.pathSeparator}';
-      
-      // Check if the file path starts with the directory path
-      print('isPathWithinDirectory: $normalizedFilePath starts with $normalizedDirPath: ${normalizedFilePath.startsWith(normalizedDirPath)}');
       return normalizedFilePath.startsWith(normalizedDirPath);
     } catch (e) {
-      // If there's any error in path processing, err on the side of caution
-      // and don't delete the file
       return false;
     }
+  }
+
+  static Future<String> importSkinFromCmsk(String cmskFilePath) async {
+    final file = File(cmskFilePath);
+    if (!file.existsSync()) {
+      throw Exception('Import file not found');
+    }
+
+    var zip = ZipFile.open(cmskFilePath, mode: ZipOpenMode.readonly, level: 0);
+    
+    var skinJsonEntry = zip.getEntryByName('skin.json');
+
+    final skinJsonContent = utf8.decode(skinJsonEntry.read());
+    final skinJson = jsonDecode(skinJsonContent) as Map<String, dynamic>;
+    
+    final newSkinId = DateTime.now().millisecondsSinceEpoch.toString();
+    final skinDirPath = await getSkinDirectoryPath(newSkinId);
+
+    var entries = zip.getAllEntries();
+    for (var entry in entries) {
+      if (!entry.isDir) {
+        final outPath = '$skinDirPath${Platform.pathSeparator}${entry.name}';
+        final outFile = File(outPath);
+        await outFile.parent.create(recursive: true);
+        await outFile.writeAsBytes(entry.read());
+      }
+    }
+
+    zip.close();
+
+    skinJson['id'] = newSkinId;
+    if (skinJson.containsKey('imageData')) {
+      final imageData = skinJson['imageData'] as Map<String, dynamic>;
+      for (final key in imageData.keys) {
+        if (imageData[key] is Map<String, dynamic> && 
+            imageData[key].containsKey('imagePath')) {
+          final fileName = imageData[key]['imagePath'] as String;
+          if (fileName.isNotEmpty) {
+            imageData[key]['imagePath'] = '$skinDirPath${Platform.pathSeparator}$fileName';
+          }
+        }
+      }
+    }
+    await writeSkinJsonMap(newSkinId, skinJson);
+
+    return newSkinId;
   }
 }

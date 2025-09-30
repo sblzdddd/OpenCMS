@@ -66,7 +66,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                               onChanged: (value) {
                                 themeNotifier.toggleTheme();
                               },
-                              activeColor: Theme.of(context).colorScheme.primary,
+                              activeThumbColor: Theme.of(context).colorScheme.primary,
                             ),
                           ],
                         ),
@@ -94,7 +94,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                               onChanged: (value) {
                                 // TODO: Implement 24H time format toggle
                               },
-                              activeColor: Theme.of(context).colorScheme.primary,
+                              activeThumbColor: Theme.of(context).colorScheme.primary,
                             ),
                           ],
                         ),

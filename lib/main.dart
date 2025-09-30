@@ -19,6 +19,8 @@ import 'services/update/update_checker.dart';
 import 'ui/shared/widgets/skin_icon_widget.dart';
 import 'utils/app_info.dart';
 
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+
 WebViewEnvironment? webViewEnvironment;
 AppWindow? globalAppWindow; // Global variable to store AppWindow instance
 AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
@@ -179,6 +181,7 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const LoginPage(),
               '/home': (context) => const HomePage(),
             },
+            navigatorObservers: [routeObserver],
             builder: (context, child) {
               return MediaQuery(
                   data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
@@ -293,6 +296,7 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
                 fallbackIconColor: Theme.of(context).colorScheme.primary,
                 fallbackIconBackgroundColor: Colors.transparent,
                 size: 96,
+                iconSize: 72,
                 borderRadius: BorderRadius.circular(4),
               ),
               const SizedBox(height: 24),

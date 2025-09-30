@@ -66,7 +66,7 @@ class Skin {
     );
   }
   /// Convert skin to JSON for storage
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool useRelativePaths = false}) {
     final json = <String, dynamic>{
       'id': id,
       'name': name,
@@ -105,7 +105,7 @@ class Skin {
     for (final entry in imageData.entries) {
       final defaultData = defaultImageData[entry.key];
       if (defaultData == null || entry.value != defaultData) {
-        final valueJson = entry.value.toJson();
+        final valueJson = entry.value.toJson(useRelativePath: useRelativePaths);
         if (valueJson.isNotEmpty) {
           diffImageData[entry.key] = valueJson;
         }
@@ -122,7 +122,6 @@ class Skin {
   factory Skin.fromJson(Map<String, dynamic> json) {
     Map<String, SkinImageData> imageData;
     if (json.containsKey('imageData') && json['imageData'] != null) {
-      print('Skin.fromJson: Using new imageData format');
       try {
         final Map<String, dynamic> raw = (json['imageData'] as Map<String, dynamic>);
         // Merge with defaults so that type and defaults come from defaultImageData
@@ -187,28 +186,26 @@ class Skin {
   Future<String> getSkinDirectoryPath() async {
     return SkinFileManager.getSkinDirectoryPath(id);
   }
-  
-  /// Copy image to skins directory
-  Future<String> copyImageToSkinsDirectory(String sourcePath, String key) async {
-    return SkinFileManager.copyImageToSkinsDirectory(sourcePath, id, key);
-  }
 
   Future<Skin?> setImagePath(String key, String? imagePath) async {
-    // if (imageData[key] == null) {
-    //   return null;
-    // }
     final oldPath = imageData[key]?.imagePath;
     await SkinFileManager.deleteFileIfExists(oldPath, id);
     
     if (imagePath != null) {
-      imagePath = await copyImageToSkinsDirectory(imagePath, key);
+      imagePath = await SkinFileManager.copyImageToSkinsDirectory(imagePath, id, key);
     }
     imageData[key] = imageData[key]!.copyWith(imagePath: imagePath);
+    updatedAt = DateTime.now();
+    await SkinFileManager.writeSkinJsonMap(id, toJson());
     return this;
   }
 
-  String? getImagePath(String key) {
-    return imageData[key]?.imagePath;
+  /// Update a specific image data entry and persist to skin.json
+  Future<Skin?> setImageData(String key, SkinImageData newData) async {
+    imageData[key] = newData;
+    updatedAt = DateTime.now();
+    await SkinFileManager.writeSkinJsonMap(id, toJson());
+    return this;
   }
 
   Future<void> onDelete() async {

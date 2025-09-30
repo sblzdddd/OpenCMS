@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../ui/reports/view/reports_list_view.dart';
-import '../../ui/reports/view/gpa_view.dart';
+import '../../ui/reports/views/reports_list_view.dart';
+import '../../ui/reports/views/gpa_view.dart';
 import '../../ui/shared/views/tabbed_page_base.dart';
 
 class ReportsPage extends StatelessWidget {

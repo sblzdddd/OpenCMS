@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'skin_image_type.dart';
 
@@ -43,14 +44,19 @@ class SkinImageData {
   }
 
   /// Convert to JSON
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool useRelativePath = true}) {
     final json = <String, dynamic>{};
     
     // Only serialize non-default values
     // Do not serialize `type`; it is derived from defaults
     
     if (imagePath != null && imagePath!.isNotEmpty) {
-      json['imagePath'] = imagePath;
+      if (useRelativePath) {
+        // Extract just the filename for export
+        json['imagePath'] = imagePath!.split(Platform.pathSeparator).last;
+      } else {
+        json['imagePath'] = imagePath;
+      }
     }
     
     if (scale != 1.0) {
@@ -74,29 +80,6 @@ class SkinImageData {
     }
     
     return json;
-  }
-
-  /// Create from JSON
-  factory SkinImageData.fromJson(Map<String, dynamic> json) {
-    final type = SkinImageType.values.firstWhere(
-      (type) => type.name == (json['type'] as String?),
-      orElse: () => SkinImageType.background,
-    );
-    return SkinImageData(
-      type: type,
-      imagePath: json['imagePath'] as String?,
-      scale: (json['scale'] as num?)?.toDouble() ?? 1.0,
-      opacity: (json['opacity'] as num?)?.toDouble() ?? (type == SkinImageType.icon ? 1.0 : 0.2),
-      inside: json['inside'] as bool? ?? true,
-      fillMode: SkinImageFillMode.values.firstWhere(
-        (mode) => mode.name == (json['fillMode'] as String?),
-        orElse: () => SkinImageFillMode.cover,
-      ),
-      position: SkinImagePosition.values.firstWhere(
-        (pos) => pos.name == (json['position'] as String?),
-        orElse: () => SkinImagePosition.br,
-      ),
-    );
   }
 
   /// Create from JSON using provided defaults (type and default values come from defaults)

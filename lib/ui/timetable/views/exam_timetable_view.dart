@@ -40,7 +40,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       setState(() {
         _selectedYear = widget.selectedYear.year;
       });
-      loadData(refresh: true);
+      loadData(refresh: false);
     }
   }
 
@@ -88,7 +88,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
     setState(() {
       _selectedMonth = newMonth;
     });
-    loadData(refresh: true);
+    loadData(refresh: false);
   }
 
   void _toggleView() {

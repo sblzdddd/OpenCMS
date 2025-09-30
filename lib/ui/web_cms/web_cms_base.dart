@@ -134,12 +134,14 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
         allowsInlineMediaPlayback: true,
         isInspectable: true,
       ),
-      onWebViewCreated: (controller) {
+      onWebViewCreated: (controller) async {
+        await _injectZeroBodyMarginCss();
         _webViewController = controller;
         _loadCmsIfReady();
         onWebViewCreated(controller);
       },
-      onLoadStart: (controller, url) {
+      onLoadStart: (controller, url) async {
+        await _injectZeroBodyMarginCss();
         if (mounted) {
           setState(() {
             _progress = 0.1;

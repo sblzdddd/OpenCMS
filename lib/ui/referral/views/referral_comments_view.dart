@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../data/constants/subject_icons.dart';
 import '../../../services/referral/referral_service.dart';
 import '../../../data/models/referral/referral_response.dart';
 import '../../shared/views/refreshable_page.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
-import 'package:opencms/ui/shared/widgets/skin_icon_widget.dart';
+import '../widgets/referral_stats.dart';
+import '../widgets/referral_comments_list.dart';
 
 class ReferralCommentsView extends StatefulWidget {
   const ReferralCommentsView({super.key});
@@ -19,6 +19,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
   ReferralResponse? _referralResponse;
   String _selectedFilter = 'All';
   String _selectedSort = 'Recent';
+  @override
   final String skinKey = 'comments';
 
   final List<String> _filters = [
@@ -137,12 +138,19 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
 
     final filteredComments = _getFilteredAndSortedComments();
 
-    return CustomChildScrollView(
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
         children: [
-          _buildStatistics(),
+          ReferralStatsWidget(
+            themeNotifier: themeNotifier,
+            comments: _referralResponse!.comments,
+          ),
           const SizedBox(height: 16),
-          _buildCommentsList(filteredComments),
+          ReferralCommentsList(
+            themeNotifier: themeNotifier,
+            comments: filteredComments,
+          ),
         ],
       ),
     );
@@ -203,401 +211,6 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
     }
 
     return comments;
-  }
-
-  Widget _buildStatistics() {
-    if (_referralResponse == null) return const SizedBox.shrink();
-
-    final comments = _referralResponse!.comments;
-    final total = comments.length;
-    final commendations = comments.where((c) => c.isCommendation).length;
-    final concerns = comments.where((c) => c.isAreaOfConcern).length;
-    final withReplies = comments.where((c) => c.hasReplies).length;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Comments Overview',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard('Total', total.toString(), Symbols.comment_rounded),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatCard(
-                  'Commendations',
-                  commendations.toString(),
-                  Symbols.thumb_up_rounded,
-                  Colors.green,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatCard(
-                  'Concerns',
-                  concerns.toString(),
-                  Symbols.warning_rounded,
-                  Colors.orange,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatCard(
-                  'Replies',
-                  withReplies.toString(),
-                  Symbols.reply_rounded,
-                  Colors.blue,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatCard(
-    String label,
-    String value,
-    IconData icon, [
-    Color? color,
-  ]) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-        : Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            color: color ?? Theme.of(context).colorScheme.primary,
-            size: 20,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color ?? Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCommentsList(List<ReferralComment> comments) {
-    if (comments.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(32.0),
-        child: Column(
-          children: [
-            Icon(Symbols.comment_rounded, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'No comments found',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: comments.map((comment) => _buildCommentCard(comment)).toList(),
-    );
-  }
-
-  Widget _buildCommentCard(ReferralComment comment) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-      color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-          ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-      : Theme.of(context).colorScheme.surfaceContainer,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildCommentHeader(comment),
-            const SizedBox(height: 12),
-            _buildCommentContent(comment),
-            if (comment.hasReplies) ...[
-              const SizedBox(height: 12),
-              _buildReplies(comment.replies),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCommentHeader(ReferralComment comment) {
-    return Row(
-      children: [
-        CircleAvatar(
-          radius: 20,
-          backgroundColor: Colors.transparent,
-          child: SkinIcon(
-            imageKey: 'subjectIcons.${SubjectIconConstants.getCategoryForSubject(subjectName: comment.subject ?? '', code: comment.subject ?? '')}',
-            fallbackIcon: Symbols.person_rounded,
-            fallbackIconColor: Theme.of(context).colorScheme.primary,
-            fallbackIconBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            size: 40,
-            iconSize: 20,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                comment.teacherName,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (comment.subject != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  comment.subject!,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              comment.formattedDate,
-              style: TextStyle(
-                fontSize: 12,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 4),
-            _buildKindChip(comment),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildKindChip(ReferralComment comment) {
-    Color chipColor;
-    if (comment.isCommendation) {
-      chipColor = Colors.green;
-    } else if (comment.isAreaOfConcern) {
-      chipColor = Colors.orange;
-    } else {
-      chipColor = Colors.blue;
-    }
-    final kinds = comment.kindName.split(',');
-    if (kinds.isEmpty) return const SizedBox.shrink();
-
-    return Wrap(
-      spacing: 4.0,
-      runSpacing: 2.0,
-      children: kinds.map((kind) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: chipColor.withValues(alpha: 0.1),
-            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-            border: Border.all(color: chipColor.withValues(alpha: 0.3)),
-          ),
-          child: Text(
-            kind,
-            style: TextStyle(
-              fontSize: 10,
-              color: chipColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildCommentContent(ReferralComment comment) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(
-          context,
-        ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            comment.comment,
-            style: const TextStyle(fontSize: 14, height: 1.4),
-          ),
-          if (comment.commentTranslation.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-                    ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-                : Theme.of(context).colorScheme.surfaceContainer,
-                borderRadius: themeNotifier.getBorderRadiusAll(0.375),
-                border: Border.all(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Text(
-                comment.commentTranslation,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.8),
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildReplies(List<ReferralReply> replies) {
-    return Column(
-      children: replies.map((reply) => _buildReplyCard(reply)).toList(),
-    );
-  }
-
-  Widget _buildReplyCard(ReferralReply reply) {
-    return Container(
-      margin: EdgeInsets.only(top: 2),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-        : Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.1),
-                child: Text(
-                  'FT',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  reply.teacherName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              Text(
-                reply.formattedDate,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            reply.comment,
-            style: const TextStyle(fontSize: 13, height: 1.3),
-          ),
-          if (reply.commentTranslation.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Text(
-              reply.commentTranslation,
-              style: TextStyle(
-                fontSize: 11,
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.7),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
   }
 
   @override

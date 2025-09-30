@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/constants/periods.dart';
 import '../../data/models/assessment/assessment_response.dart';
 import '../../services/assessment/assessment_service.dart';
 import '../../ui/shared/views/refreshable_view.dart';
 import '../../ui/shared/academic_year_dropdown.dart';
 import '../../services/theme/theme_services.dart';
-import '../../ui/assessments/subject_assessments_view.dart';
-import '../../ui/assessments/adaptive_assessment_layout.dart';
+import '../../ui/assessments/views/subject_assessments_view.dart';
+import '../../ui/assessments/layouts/adaptive_assessment_layout.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import '../../ui/shared/widgets/custom_scaffold.dart';
 

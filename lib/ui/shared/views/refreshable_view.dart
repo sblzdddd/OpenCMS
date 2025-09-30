@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 import '../error/error_placeholder.dart';
 import '../error/empty_placeholder.dart';
+import '../custom_snackbar/snackbar_utils.dart';
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
 abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
@@ -26,7 +27,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   /// Override this to provide custom loading widget (optional)
   Widget buildLoadingWidget(BuildContext context) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.4),
         const Center(
@@ -39,7 +40,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   /// Override this to provide custom empty state widget (optional)
   Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.2),
         EmptyPlaceholder(
@@ -85,6 +86,9 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
         setState(() {
           _isLoading = false;
         });
+        if(refresh) {
+          SnackbarUtils.showSuccess(context, 'Data refreshed successfully');
+        }
       }
     } catch (e) {
       debugPrint('RefreshableView: Error loading data: $e');
@@ -119,7 +123,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   Widget _buildPageContent() {
     if (_error != null) {
       return ListView(
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
           SizedBox(height: MediaQuery.of(context).size.height * 0.2),
           ErrorPlaceholder(

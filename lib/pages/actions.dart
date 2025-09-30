@@ -5,13 +5,13 @@ import 'actions/assessment.dart';
 import 'actions/homework.dart';
 import 'actions/web_cms.dart';
 import 'actions/free_classrooms.dart';
-import '../ui/navigations/app_navigation_controller.dart';
+import 'actions/school_calendar.dart';
+import 'actions/profile.dart';
 import 'actions/timetable.dart';
-import 'settings/settings_page.dart';
 import 'actions/reports.dart';
-import '../ui/referral/views/referral_comments_view.dart';
-import '../ui/calendar/calendar_ui.dart';
-import '../ui/profile/pages/profile_page.dart';
+import 'actions/referral_comments.dart';
+import '../ui/navigations/app_navigation_controller.dart';
+import 'settings/settings_page.dart';
 import '../services/auth/auth_service.dart';
 import '../data/constants/api_endpoints.dart';
 import '../ui/shared/widgets/custom_app_bar.dart';
@@ -85,9 +85,9 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
     case 'assessment':
       return const AssessmentPage();
     case 'comments':
-      return const ReferralCommentsView();
+      return const ReferralCommentsPage();
     case 'calendar':
-      return const CalendarPage();
+      return const SchoolCalendarPage();
     case 'notice':
       return const NoticesPage(initialTabIndex: 0);
     case 'bulletin':

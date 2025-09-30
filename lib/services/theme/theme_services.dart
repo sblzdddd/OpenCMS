@@ -17,7 +17,6 @@ enum ThemeColor {
   custom,
 }
 
-
 class ThemeNotifier with ChangeNotifier {
   // Singleton instance
   static ThemeNotifier? _instance;
@@ -128,7 +127,6 @@ class ThemeNotifier with ChangeNotifier {
     );
   }
   
-  
   void toggleTheme() {
     print('toggleTheme');
     _isDarkMode = !_isDarkMode;
@@ -157,13 +155,6 @@ class ThemeNotifier with ChangeNotifier {
     saveTheme();
     notifyListeners();
   }
-  
-  // Convenience methods for common border radius values
-  void setBorderRadiusSmall() => setBorderRadius(4.0);
-  void setBorderRadiusMedium() => setBorderRadius(8.0);
-  void setBorderRadiusLarge() => setBorderRadius(16.0);
-  void setBorderRadiusExtraLarge() => setBorderRadius(24.0);
-  void setBorderRadiusNone() => setBorderRadius(0.0);
   
   // Window effect methods - delegate to WindowEffectService
   void setWindowEffect(WindowEffectType effect) {

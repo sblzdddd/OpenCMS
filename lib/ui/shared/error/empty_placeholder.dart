@@ -31,9 +31,9 @@ class EmptyPlaceholder extends StatelessWidget {
             children: [
               SkinIcon(
                 imageKey: 'global.empty_icon',
-                fallbackIcon: Symbols.error_outline,
+                fallbackIcon: Symbols.playlist_remove_rounded,
                 size: 96,
-                iconSize: 96,
+                iconSize: 75,
                 fallbackIconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 fallbackIconBackgroundColor: Colors.transparent,
               ),

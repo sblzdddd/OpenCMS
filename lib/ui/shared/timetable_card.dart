@@ -93,23 +93,11 @@ class TimetableCard extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    // Container(
-                    //   padding: const EdgeInsets.all(8),
-                    //   decoration: BoxDecoration(
-                    //     color: theme.colorScheme.tertiaryContainer,
-                    //     borderRadius: themeNotifier.getBorderRadiusAll(0.875),
-                    //   ),
-                    //   child: Icon(
-                    //     iconData,
-                    //     size: 40,
-                    //     color: theme.colorScheme.onTertiaryContainer,
-                    //   ),
-                    // ),
                     SkinIcon(
                       imageKey: 'subjectIcons.$category',
                       fallbackIcon: iconData,
                       fallbackIconColor: theme.colorScheme.onTertiaryContainer,
-                      fallbackIconBackgroundColor: theme.colorScheme.tertiaryContainer,
+                      fallbackIconBackgroundColor: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.8),
                       size: 54,
                       iconSize: 40,
                     ),

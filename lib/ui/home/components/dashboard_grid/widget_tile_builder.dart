@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../services/theme/theme_services.dart';
-import '../banner_widget.dart';
-import '../homework_widget.dart';
-import '../latest_assessment_widget.dart';
-import '../next_class_widget.dart';
-import '../notices_widget.dart';
+import '../../widgets/banner_widget.dart';
+import '../../widgets/homework_widget.dart';
+import '../../widgets/latest_assessment_widget.dart';
+import '../../widgets/next_class_widget.dart';
+import '../../widgets/notices_widget.dart';
 import 'widget_size_manager.dart';
 
 /// Builder for dashboard widget tiles

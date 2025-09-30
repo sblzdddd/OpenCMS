@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../ui/shared/views/tabbed_page_base.dart';
-import '../../ui/notices/notifications_view.dart';
-import '../../ui/notices/daily_bulletin_view.dart';
-import '../../ui/notices/events_view.dart';
+import '../../ui/notices/views/notifications_view.dart';
+import '../../ui/notices/views/daily_bulletin_view.dart';
+import '../../ui/notices/views/events_view.dart';
 
 class NoticesPage extends StatelessWidget {
   const NoticesPage({super.key, this.initialTabIndex = 0});

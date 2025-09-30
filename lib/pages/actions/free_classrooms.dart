@@ -25,6 +25,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   StreamSubscription<AllPeriodsClassroomResponse>? _dataSubscription;
   bool _isLoading = false;
   String? _errorMessage;
+  @override
   final String skinKey = 'free_classrooms';
 
   @override
@@ -270,14 +271,15 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
               children: [
                 SfCalendarTheme(
                   data: SfCalendarThemeData(
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+                    backgroundColor: themeNotifier.needTransparentBG ? Colors.transparent : Theme.of(context).colorScheme.surface,
+                    headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
                     headerTextStyle: TextStyle(
-                      color: Colors.white,
+                      color: themeNotifier.needTransparentBG ? Colors.white : Theme.of(context).colorScheme.onSurface,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                     todayHighlightColor: Theme.of(context).colorScheme.primary,
+                    viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
                   ),
                   child: SfCalendar(
                     controller: _calendarController,
@@ -298,6 +300,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
                     ),
                     timeSlotViewSettings: TimeSlotViewSettings(
                       timeIntervalHeight: 40,
+                      timeIntervalWidth: -1,
                       minimumAppointmentDuration: const Duration(minutes: 30),
                       startHour: 8,
                       endHour: 17,

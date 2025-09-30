@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import 'package:opencms/ui/shared/custom_snackbar/snackbar_utils.dart';
 
 /// Reusable error dialog component with text copy functionality
 class ErrorDialog extends StatelessWidget {
@@ -63,9 +64,7 @@ class ErrorDialog extends StatelessWidget {
   void _copyDetails(BuildContext context, String details) {
     Clipboard.setData(ClipboardData(text: details));
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Error details copied')),
-    );
+    SnackbarUtils.showSuccess(context, 'Error details copied');
   }
 
   @override

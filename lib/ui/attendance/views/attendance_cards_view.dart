@@ -39,7 +39,7 @@ class AttendanceCardsView extends StatelessWidget {
     }
 
     return ListView.separated(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: visibleDayIndices.length,
       padding: EdgeInsets.zero,
       cacheExtent: 800,
@@ -111,7 +111,7 @@ class AttendanceCardsView extends StatelessWidget {
         extraInfo: startEntry.grade,
         timespan: timespan,
         periodText: periodText,
-        backgroundColor: (AttendanceConstants.kindBackgroundColor[startEntry.kind] ?? Colors.transparent).withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
+        backgroundColor: (AttendanceConstants.kindBackgroundColor[startEntry.kind] ?? Colors.transparent).withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 0.7),
         textColor: AttendanceConstants.kindTextColor[startEntry.kind],
         onTap: () {
           onEventTap(startEntry, day.date);

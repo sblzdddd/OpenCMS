@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/theme/theme_services.dart';
-import '../ui/auth/login_form.dart';
+import '../ui/auth/components/login_form.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/widgets/custom_scaffold.dart';
 import 'package:opencms/utils/app_info.dart';

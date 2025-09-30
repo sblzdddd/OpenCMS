@@ -83,7 +83,7 @@ class _SkinIconState extends State<SkinIcon> {
   @override
   Widget build(BuildContext context) {
     final imageData = _getSkinImageData();
-    
+
     // If no skin image available, show fallback icon
     if (imageData == null || !imageData.hasImage || imageData.imagePath == null) {
       return _buildFallbackIcon(context);
@@ -95,13 +95,9 @@ class _SkinIconState extends State<SkinIcon> {
     }
 
     // Show skin image
-    return Container(
+    return SizedBox(
       width: widget.size,
       height: widget.size,
-      // decoration: BoxDecoration(
-      //   color: widget.fallbackIconBackgroundColor,
-      //   borderRadius: BorderRadius.circular(widget.size * 0.2),
-      // ),
       child: ClipRRect(
         borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.size * 0.2),
         child: Opacity(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../../services/theme/theme_services.dart';
-import '../dynamic_gradient_banner.dart';
+import '../../widgets/dynamic_gradient_banner.dart';
 import 'widget_size_manager.dart';
 import '../quick_actions/action_item/quick_action_tile.dart';
 
@@ -141,7 +141,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
           // Available widgets and actions
           Expanded(
             child: ListView(
-              physics: const BouncingScrollPhysics(),
+              physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               children: [
                 if (addableWidgets.isNotEmpty) ...[
@@ -191,6 +191,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                             width: tileWidth,
                             icon: action['icon'] as IconData,
                             title: action['title'] as String,
+                            skinImageKey: 'actionIcons.${action['id']}',
                             onTap: () {
                               widget.onAddAction?.call(action);
                             },
@@ -236,7 +237,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
     final bool showWidgets = _filteredWidgets.isNotEmpty;
     if (showActions || showWidgets) {
       return ListView(
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           if (showWidgets) ...[

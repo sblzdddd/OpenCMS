@@ -9,6 +9,7 @@ import 'package:opencms/ui/shared/error/empty_placeholder.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
+  @override
   final bool isTransparent;
   final String skinKey;
   RefreshablePage({this.isTransparent = false, this.skinKey = 'global'});
@@ -38,6 +39,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   Color? get bodyBackgroundColor => null;
 
   /// Override this to provide custom empty title (optional)
+  @override
   String get emptyTitle => 'No data available';
 
   @override
@@ -71,7 +73,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   @override
   Widget buildLoadingWidget(BuildContext context) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.4),
         const Center(
@@ -84,7 +86,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
   @override
   Widget buildEmptyWidget(BuildContext context, ThemeNotifier themeNotifier) {
     return ListView(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.2),
         EmptyPlaceholder(

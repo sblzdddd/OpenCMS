@@ -46,7 +46,6 @@ class StudentUnstaffedEventsParser {
           if (titleLink != null) {
             title = titleLink.text.trim();
             final href = titleLink.attributes['href'] ?? '';
-            // Extract ID from URL like "/user/s22103/su_event/view/16/"
             final idMatch = RegExp(r'/su_event/view/(\d+)/').firstMatch(href);
             if (idMatch != null) {
               eventId = int.tryParse(idMatch.group(1) ?? '0') ?? 0;

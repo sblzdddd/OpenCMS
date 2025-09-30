@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:window_manager/window_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 
 /// A custom app bar that includes window controls for desktop platforms
 /// and allows other scaffolds to add their own actions
@@ -70,6 +72,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     // Check if we're on a desktop platform
     final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
 
@@ -121,7 +124,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
       child: AppBar(
         actions: allActions,
         title: widget.title,
-        backgroundColor: widget.backgroundColor,
+        backgroundColor: themeNotifier.hasActiveSkinBackgroundImage ? Colors.transparent : widget.backgroundColor,
         foregroundColor: widget.foregroundColor,
         elevation: widget.elevation,
         automaticallyImplyLeading: widget.automaticallyImplyLeading,
@@ -137,7 +140,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         primary: widget.primary,
         systemOverlayStyle: widget.systemOverlayStyle,
         forceMaterialTransparency: isDesktop ? true : widget.forceMaterialTransparency,
-        surfaceTintColor: isDesktop ? Colors.transparent : widget.surfaceTintColor,
+        surfaceTintColor: Colors.transparent,
       ),
     );
 

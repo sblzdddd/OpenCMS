@@ -39,7 +39,6 @@ class StudentLedEventsParser {
           if (titleLink != null) {
             title = titleLink.text.trim();
             final href = titleLink.attributes['href'] ?? '';
-            // Extract ID from URL like "/user/s22103/sl_event/view/313/"
             final idMatch = RegExp(r'/sl_event/view/(\d+)/').firstMatch(href);
             if (idMatch != null) {
               eventId = int.tryParse(idMatch.group(1) ?? '0') ?? 0;

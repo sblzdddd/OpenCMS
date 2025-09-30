@@ -32,7 +32,6 @@ class CalendarService {
         throw Exception('Missing username. Please login again.');
       }
 
-      // Extract psid from username (e.g., "s22103" from username)
       final psid = username;
 
       final response = await _httpService.postLegacy(

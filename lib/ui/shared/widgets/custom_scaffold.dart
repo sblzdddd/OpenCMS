@@ -80,7 +80,7 @@ class CustomScaffold extends StatelessWidget {
     if (!enableForeground) return null;
 
     // First try to get category-specific foreground
-    final categoryKey = '${skinKey}.foreground';
+    final categoryKey = '$skinKey.foreground';
     final categoryImageData = activeSkin.imageData[categoryKey];
     
     if (categoryImageData != null && categoryImageData.hasImage) {

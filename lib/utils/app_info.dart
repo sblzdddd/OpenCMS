@@ -6,16 +6,16 @@ class AppInfoUtil {
   static Future<String> getVersionText() async {
     try {
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      return 'OpenCMS v${packageInfo.version}+${packageInfo.buildNumber}';
+      return ' v${packageInfo.version}+${packageInfo.buildNumber}';
     } catch (_) {
-      return 'OpenCMS';
+      return '';
     }
   }
 
   static Future<String> getDeviceText() async {
     try {
       if (kIsWeb) {
-        final String platformName = describeEnum(defaultTargetPlatform);
+        final String platformName = defaultTargetPlatform.name;
         return 'Web • $platformName';
       }
       final String os = Platform.operatingSystem; // e.g., windows, macos, linux, android, ios
@@ -37,7 +37,7 @@ class AppInfoUtil {
   }
 
   static Future<String> getCombinedFooterText() async {
-    final String version = await getVersionText();
+    final String version = 'OpenCMS${await getVersionText()}';
     final String device = await getDeviceText();
     final List<String> parts = [];
     if (version.isNotEmpty) parts.add(version);

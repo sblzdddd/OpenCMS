@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../services/theme/theme_services.dart';
 import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
@@ -46,7 +45,7 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
         _buildYearSelector(),
         Expanded(
           child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(),
             itemCount: _courseStats!.length,
             itemBuilder: (context, index) {
               return _buildCourseCard(_courseStats![index]);

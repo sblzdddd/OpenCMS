@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:opencms/data/constants/api_endpoints.dart';
 import 'package:opencms/pages/actions/web_cms.dart';
 import '../../ui/shared/dialog/confirm_dialog.dart';
-import 'theme_settings_page.dart';
-import 'skin_settings_page.dart';
+import '../../ui/theme/pages/theme_settings_page.dart';
+import '../../ui/skin/pages/skin_settings_page.dart';
 import '../../services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../ui/shared/widgets/custom_scaffold.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import 'package:opencms/ui/shared/widgets/app_card.dart';
+import 'package:opencms/pages/settings/privacy_policy_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -129,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 themeNotifier.toggleTheme();
                                 // Window effect will be automatically reapplied in toggleTheme()
                               },
-                              activeColor: Theme.of(
+                              activeThumbColor: Theme.of(
                                 context,
                               ).colorScheme.primary,
                             ),
@@ -189,6 +191,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SkinSettingsPage(),
               ),
               const Divider(height: 2),
+
               // _buildSettingsTitle('Notifications'),
               // _buildSettingsItem(
               //   'Notification Settings',
@@ -196,12 +199,14 @@ class _SettingsPageState extends State<SettingsPage> {
               //   const ThemeSettingsPage(),
               // ),
               // const Divider(height: 2),
-
               _buildSettingsTitle('Account'),
               _buildSettingsItem(
                 'Change Password',
                 Symbols.password_rounded,
-                const WebCmsPage(initialUrl: '${ApiConstants.cmsReferer}/auth/change_password', windowTitle: 'Change Password'),
+                const WebCmsPage(
+                  initialUrl: '${ApiConstants.cmsReferer}/auth/change_password',
+                  windowTitle: 'Change Password',
+                ),
               ),
               const Divider(height: 2),
               _buildSettingsItem(
@@ -219,9 +224,13 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               const Divider(height: 2),
               _buildSettingsTitle("About This App"),
-              _buildSettingsItem('App Info', Symbols.info_rounded, null),
+              const AppCard(),
               const Divider(height: 2),
-              _buildSettingsItem('Privacy Policy', Symbols.privacy_tip_rounded, null),
+              _buildSettingsItem(
+                'Privacy & Legal',
+                Symbols.privacy_tip_rounded,
+                const PrivacyPolicyPage(),
+              ),
               const Divider(height: 2),
             ],
           ),

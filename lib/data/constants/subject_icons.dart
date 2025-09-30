@@ -36,7 +36,6 @@ class SubjectIconConstants {
 
     // Arts / PE
     'art': Symbols.palette_rounded,
-    'design': Symbols.draw_rounded,
     'music': Symbols.music_note_rounded,
     'pe': Symbols.sports_gymnastics_rounded,
 
@@ -45,7 +44,8 @@ class SubjectIconConstants {
     'pastoral': Symbols.volunteer_activism_rounded,
     'tutor': Symbols.co_present_rounded,
     'rpq': Symbols.emoji_objects_rounded,
-    'evening_study': Symbols.local_library_rounded
+    'evening_study': Symbols.local_library_rounded,
+    'mr': Symbols.school_rounded,
   };
 
   // Map of lowercase alias substring -> category key
@@ -84,7 +84,6 @@ class SubjectIconConstants {
 
     // Arts / PE
     'art': 'art',
-    'design': 'design',
     'music': 'music',
     'pe': 'pe',
     'physical education': 'pe',
@@ -95,7 +94,9 @@ class SubjectIconConstants {
     'pshe': 'pastoral',
     'tutor': 'tutor',
     'rpq': 'rpq',
-    'evening study': 'evening_study'
+    'evening study': 'evening_study',
+    'morning registration': 'mr',
+    'MR': 'mr',
   };
 
   // Map of uppercase code substring -> category key
@@ -138,7 +139,6 @@ class SubjectIconConstants {
 
     // Arts / PE
     'ART': 'art',
-    'DES': 'design',
     'MUS': 'music',
     'PE': 'pe',
 
@@ -147,7 +147,8 @@ class SubjectIconConstants {
     'TUTOR': 'tutor',
     'PSHE': 'pastoral',
     'RPQ': 'rpq',
-    'ES': 'evening_study'
+    'ES': 'evening_study',
+    'MR': 'mr',
   };
 
   static const IconData _defaultIcon = Symbols.school_rounded;

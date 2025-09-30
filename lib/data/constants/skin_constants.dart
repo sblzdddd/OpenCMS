@@ -3,13 +3,14 @@ import '../models/skin/skin_image_type.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-
+// the shared preferences key for the list of skins
 const String skinsKey = 'app_skins';
 const String activeSkinKey = 'active_skin_id';
 
+// the directory for the skins
 Future<Directory> getSkinsDirectory() async {
   final appDir = await getApplicationSupportDirectory();
-  return Directory('${appDir.path}/skins');
+  return Directory('${appDir.path}${Platform.pathSeparator}skins');
 }
 
 const defaultImageData = {
@@ -69,6 +70,7 @@ const defaultImageData = {
   'subjectIcons.tutor': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.rpq': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.evening_study': SkinImageData(type: SkinImageType.icon),
+  'subjectIcons.mr': SkinImageData(type: SkinImageType.icon),
 
   'login.background': SkinImageData(type: SkinImageType.background),
   'login.foreground': SkinImageData(type: SkinImageType.foreground),
@@ -79,20 +81,12 @@ const defaultImageData = {
   'home.bannerBackground': SkinImageData(type: SkinImageType.background),
   'home.bannerForeground': SkinImageData(type: SkinImageType.foreground),
 
-  'home.homeworksWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.homeworksWidgetForeground': SkinImageData(type: SkinImageType.foreground),
   'home.homeworksWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
-  'home.timetableWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.timetableWidgetForeground': SkinImageData(type: SkinImageType.foreground),
   'home.timetableWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
-  'home.noticeWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.noticeWidgetForeground': SkinImageData(type: SkinImageType.foreground),
   'home.noticeWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
-  'home.assessmentWidgetBackground': SkinImageData(type: SkinImageType.background),
-  'home.assessmentWidgetForeground': SkinImageData(type: SkinImageType.foreground),
   'home.assessmentWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
   'web_cms.background': SkinImageData(type: SkinImageType.background),

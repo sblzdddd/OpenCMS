@@ -25,6 +25,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   List<HomeworkItem> _filteredHomeworkItems = [];
   bool _showCompleted = false;
   Set<String> _completedKeys = {};
+  @override
   final String skinKey = 'homeworks';
   @override
   late bool isTransparent;
@@ -250,7 +251,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
 
   Widget _buildHomeworkList() {
     return ListView.builder(
-      physics: const BouncingScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: _filteredHomeworkItems.length,
       itemBuilder: (context, index) {

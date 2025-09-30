@@ -8,7 +8,6 @@ import 'storage_client.dart';
 // Global options
 final cacheOptions = CacheOptions(
   // A default store is required for interceptor.
-  // store: StorageClient.secureCacheStore,
   store: MemCacheStore(),
 
   // All subsequent fields are optional to get a standard behaviour.

@@ -64,10 +64,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
   Future<void> _loadActiveSkin() async {
     try {
       final response = await _skinService.getActiveSkin();
-      if (response.success && response.skin != null) {
-        print('SkinBackgroundWidget: Loaded active skin: ${response.skin!.name}');
-        // The listener will handle the state update
-      } else {
+      if (!(response.success && response.skin != null)) {
         print('SkinBackgroundWidget: Failed to load active skin: ${response.error}');
       }
     } catch (e) {
@@ -83,11 +80,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     final categoryKey = '${widget.category}.background';
     final categoryImageData = _activeSkin!.imageData[categoryKey];
     
-    print('SkinBackgroundWidget: Looking for category key: $categoryKey');
-    print('SkinBackgroundWidget: Category image data: ${categoryImageData?.hasImage}');
-    
     if (categoryImageData != null && categoryImageData.hasImage) {
-      print('SkinBackgroundWidget: Using category background: $categoryKey');
       return categoryImageData;
     }
 
@@ -95,11 +88,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     final globalKey = 'global.background';
     final globalImageData = _activeSkin!.imageData[globalKey];
     
-    print('SkinBackgroundWidget: Looking for global key: $globalKey');
-    print('SkinBackgroundWidget: Global image data: ${globalImageData?.hasImage}');
-    
     if (globalImageData != null && globalImageData.hasImage) {
-      print('SkinBackgroundWidget: Using global background: $globalKey');
       return globalImageData;
     }
 
