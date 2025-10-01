@@ -1,4 +1,4 @@
-package com.dnvli.opencms
+package com.sblzdddd.opencms
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-macos:
-    name: Build & Release (IOS & MacOS)
+    name: Build (IOS & MacOS)
     runs-on: macos-latest
     steps:
       - name: Checkout code
@@ -55,7 +55,7 @@ jobs:
           compression-level: 9
 
   build-windows:
-    name: Build & Release (Windows)
+    name: Build (Windows)
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -84,7 +84,7 @@ jobs:
           compression-level: 9
 
   build-linux:
-    name: Build & Release (Linux & Android)
+    name: Build (Linux & Android)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
