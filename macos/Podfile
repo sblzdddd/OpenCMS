@@ -33,8 +33,8 @@ target 'Runner' do
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
 end
 
-post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    flutter_macos_additional_macos_build_settings(target)
-  end
-end
+# post_install do |installer|
+#   installer.pods_project.targets.each do |target|
+#     flutter_macos_additional_macos_build_settings(target)
+#   end
+# end
