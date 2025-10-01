@@ -54,22 +54,9 @@ class UnknownActionPage extends StatelessWidget {
   }
 }
 
-Future<Widget> openMaintenancePage() async {
-  final username = await AuthService().fetchCurrentUsername();
-  return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/repairment/list/', windowTitle: 'Maintenance');
-}
-
-Future<Widget> buildEcaPage() async {
-  final username = await AuthService().fetchCurrentUsername();
-  return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/ecaclass/index/', windowTitle: 'ECA');
-}
-
-Future<Widget> buildLeaveRequestsPage() async {
-  final username = await AuthService().fetchCurrentUsername();
-  return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/studentleave/list/ps/', windowTitle: 'Leave Requests');
-}
-
 Future<Widget> buildActionPage(Map<String, dynamic> action) async {
+  final authService = AuthService();
+  final username = await authService.fetchCurrentUsername();
   final String id = action['id'] as String;
   switch (id) {
     case 'webcms':
@@ -90,7 +77,7 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
       return const SchoolCalendarPage();
     case 'notice':
       return const NoticesPage(initialTabIndex: 0);
-    case 'bulletin':
+    case 'daily_bulletin':
       return const NoticesPage(initialTabIndex: 1);
     case 'events':
       return const NoticesPage(initialTabIndex: 2);
@@ -101,15 +88,37 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
     case 'available_classrooms':
       return const FreeClassroomsPage();
     case 'maintenance':
-      return openMaintenancePage();
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/repairment/list/', windowTitle: 'Maintenance');
     case 'leave_requests':
-      return buildLeaveRequestsPage();
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/studentleave/list/ps/', windowTitle: 'Leave Requests');
     case 'student_profile':
       return const ProfilePage();
     case 'course_stats':
       return AttendancePage(initialTabIndex: 1);
     case 'eca':
-      return buildEcaPage();
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/ecaclass/index/', windowTitle: 'ECA');
+    case 'mentoring':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/mentoring/list/', windowTitle: 'Mentoring');
+    case 'global_citizenship':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/achievement/', windowTitle: 'Global Citizenship');
+    case 'surveys':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/survey/', windowTitle: 'Surveys');
+    case 'course_selection':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/course/select/', windowTitle: 'Course Selection');
+    case 'exam_entry':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/report/cie_statement_self/', windowTitle: 'Exam Entry');
+    case 'insurance':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/insurance/', windowTitle: 'Insurance');
+    case 'e_agreement':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/jump_into_internal/econtract:list/', windowTitle: 'E-Agreement');
+    case 'special_consideration':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/special_consideration/', windowTitle: 'Special Concern');
+    case 'id_card':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/student_idcard_upload/', windowTitle: 'ID Card');
+    case 'university_application':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/uniapp/', windowTitle: 'University Application');
+    case 'certifications':
+      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/certification/create/', windowTitle: 'Certifications');
     case 'settings':
       return const SettingsPage();
     default:

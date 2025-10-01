@@ -6,6 +6,7 @@ import '../../widgets/homework_widget.dart';
 import '../../widgets/latest_assessment_widget.dart';
 import '../../widgets/next_class_widget.dart';
 import '../../widgets/notices_widget.dart';
+import '../../widgets/calendar_widget.dart';
 import 'widget_size_manager.dart';
 
 /// Builder for dashboard widget tiles
@@ -92,6 +93,8 @@ class WidgetTileBuilder {
         );
       case 'next_class':
         return NextClassWidget(onRefresh: onRefresh, refreshTick: refreshTick);
+      case 'calendar':
+        return CalendarWidget(onRefresh: onRefresh, refreshTick: refreshTick, widgetSize: span);
       default:
         return Container(
           alignment: Alignment.center,

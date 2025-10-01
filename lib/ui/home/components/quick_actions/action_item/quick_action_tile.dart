@@ -78,7 +78,7 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
                 fallbackIconColor: resolvedIconColor,
                 fallbackIconBackgroundColor: resolvedIconBg,
                 size: 56,
-                iconSize: 30,
+                iconSize: 35,
               ),
               const SizedBox(height: 6),
               Text(

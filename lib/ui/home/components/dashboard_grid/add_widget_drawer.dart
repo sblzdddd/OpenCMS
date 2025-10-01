@@ -366,7 +366,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                   ),
                   if (widgetId != 'banner') ...[
                     const SizedBox(height: 16),
-                    if (widgetId == 'notices') ...[
+                    if (widgetId == 'notices' || widgetId == 'calendar') ...[
                       // Three size options for notices: 2x1, 4x1, 4x1.6
                       Column(
                         children: [

@@ -5,6 +5,7 @@ import '../shared/http_service.dart';
 import '../auth/auth_service.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/calendar/calendar.dart';
+import '../../data/models/calendar/calendar_today_item.dart';
 
 /// Service for handling calendar operations
 class CalendarService {
@@ -75,6 +76,49 @@ class CalendarService {
       return CalendarDetailResponse.fromJson(response.data);
     } catch (e) {
       throw Exception('Calendar detail service error: $e');
+    }
+  }
+
+  /// Get today's calendar (new CMS daily endpoint)
+  ///
+  /// This calls `/legacy/calendar/yyyy-mm-dd/` which returns a JSON array
+  /// of calendar items for the provided date. Only today's date is supported
+  /// by this convenience method.
+  Future<List<CalendarTodayItem>> getTodayCalendar({bool refresh = false}) async {
+    try {
+      final today = DateTime.now();
+      final yyyy = today.year.toString().padLeft(4, '0');
+      final mm = today.month.toString().padLeft(2, '0');
+      final dd = today.day.toString().padLeft(2, '0');
+      final dateStr = '$yyyy-$mm-$dd';
+      // final dateStr = '2025-09-17';
+
+      final response = await _httpService.get(
+        ApiConstants.calendarByDateUrl(dateStr),
+        refresh: refresh,
+      );
+
+      if (!(response.statusCode == 200 || response.statusCode == 304)) {
+        throw Exception('Failed to fetch today\'s calendar: ${response.statusCode}');
+      }
+
+      final data = response.data;
+      if (data is List) {
+        return data
+            .whereType<Map<String, dynamic>>()
+            .map((e) => CalendarTodayItem.fromJson(e))
+            .toList();
+      } else if (data is Map<String, dynamic> && data['results'] is List) {
+        final list = data['results'] as List;
+        return list
+            .whereType<Map<String, dynamic>>()
+            .map((e) => CalendarTodayItem.fromJson(e))
+            .toList();
+      }
+
+      throw Exception('Unexpected today calendar payload');
+    } catch (e) {
+      throw Exception('Today calendar service error: $e');
     }
   }
 

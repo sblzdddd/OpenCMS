@@ -3,7 +3,6 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../services/referral/referral_service.dart';
 import '../../../data/models/referral/referral_response.dart';
 import '../../shared/views/refreshable_page.dart';
-import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import '../widgets/referral_stats.dart';
 import '../widgets/referral_comments_list.dart';
 

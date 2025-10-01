@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/ui/shared/widgets/custom_app_bar.dart';
 import 'package:opencms/ui/shared/widgets/custom_scaffold.dart';

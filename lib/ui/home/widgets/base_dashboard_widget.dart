@@ -218,7 +218,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 13,
+                  fontSize: 14,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),

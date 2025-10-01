@@ -35,7 +35,7 @@ class _NoticeCardState extends State<NoticeCard>
   final DailyBulletinService _dailyBulletinService = DailyBulletinService();
   final EventsService _eventsService = EventsService();
 
-  notification_model.Notification? _latestNotice;
+  List<notification_model.Notification> _latestNotice = [];
   DailyBulletin? _latestBulletin;
   StudentEvent? _latestEvent;
 
@@ -87,7 +87,7 @@ class _NoticeCardState extends State<NoticeCard>
       final notifications = await _notificationService.getSortedNotifications(
         refresh: refresh,
       );
-      _latestNotice = notifications.isNotEmpty ? notifications.first : null;
+      _latestNotice = notifications.isNotEmpty ? notifications : [];
 
       // Fetch latest daily bulletin for today
       final today = DateTime.now();
@@ -127,12 +127,22 @@ class _NoticeCardState extends State<NoticeCard>
 
   @override
   String getWidgetSubtitle() {
+    String subtitle = '';
+    if (_latestNotice.isNotEmpty) {
+      subtitle = _latestNotice.first.title;
+      if (_latestNotice.length > 1) {
+        subtitle += '\n${_latestNotice[1].title}';
+      }
+      if (_latestNotice.length > 2) {
+        subtitle += '\n${_latestNotice[2].title}...';
+      }
+    }
     if (isWideMode) {
-      return _latestNotice?.title ?? 'No recent notices';
+      return subtitle;
     } else {
       // For compact mode, show only notice title
-      if (_latestNotice != null) {
-        return _latestNotice!.title;
+      if (_latestNotice.isNotEmpty) {
+        return subtitle;
       }
       return 'No recent notices';
     }
@@ -141,7 +151,7 @@ class _NoticeCardState extends State<NoticeCard>
   @override
   String? getRightSideText() {
     if (isWideMode) {
-      return _latestNotice?.addDate;
+      return _latestNotice.isNotEmpty ? _latestNotice.first.addDate : null;
     } else {
       return null;
     }
@@ -156,7 +166,7 @@ class _NoticeCardState extends State<NoticeCard>
             const Divider(),
             _buildTappableSection(
               context: context,
-              actionId: 'bulletin',
+              actionId: 'daily_bulletin',
               child: Column(
                 children: [
                   Row(
@@ -248,7 +258,7 @@ class _NoticeCardState extends State<NoticeCard>
             const Divider(height: 5),
             _buildTappableSection(
               context: context,
-              actionId: 'bulletin',
+              actionId: 'daily_bulletin',
               child: Row(
                 children: [
                   Expanded(

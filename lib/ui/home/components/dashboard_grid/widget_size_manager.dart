@@ -10,6 +10,7 @@ class WidgetSizeManager {
     'homework',
     'assessments',
     'next_class',
+    'calendar',
   ];
 
   // Available sizes for each widget type
@@ -34,6 +35,11 @@ class WidgetSizeManager {
       Size(2, 1),    // Compact
       Size(4, 1),    // Wide
     ],
+    'calendar': [
+      Size(2, 1),    // Compact
+      Size(4, 1),    // Wide
+      Size(4, 1.6),  // Extra Wide
+    ],
   };
 
   // Default span definitions in grid units (max 4 columns)
@@ -43,6 +49,7 @@ class WidgetSizeManager {
     'assessments': Size(2, 1),
     'banner': Size(4, 1.6),
     'next_class': Size(2, 1),
+    'calendar': Size(2, 1),
   };
 
   // Default layout
@@ -79,6 +86,8 @@ class WidgetSizeManager {
         return Symbols.assessment_rounded;
       case 'next_class':
         return Symbols.schedule_rounded;
+      case 'calendar':
+        return Symbols.calendar_today_rounded;
       default:
         return Symbols.widgets_rounded;
     }
@@ -95,6 +104,8 @@ class WidgetSizeManager {
         return 'Assessments';
       case 'next_class':
         return 'Next Class';
+      case 'calendar':
+        return 'Calendar';
       default:
         return widgetId;
     }
