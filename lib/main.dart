@@ -51,7 +51,7 @@ Future<void> initInAppWebview() async {
 
 Future<void> initWindowManager() async {
   // Return early if not Windows environment
-  if (kIsWeb || defaultTargetPlatform != TargetPlatform.windows) {
+  if (kIsWeb || !Platform.isWindows) {
     return;
   }
   
