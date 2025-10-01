@@ -27,10 +27,6 @@ jobs:
         run: |
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
           echo "VERSION=$version" >> $GITHUB_ENV
-      - name: Install CocoaPods dependencies
-        run: |
-          cd macos
-          pod install
       - name: Build MacOS
         run: flutter build macos --release
       - name: Rename MacOS Build

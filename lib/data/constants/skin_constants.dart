@@ -42,6 +42,7 @@ const defaultImageData = {
   'actionIcons.more': SkinImageData(type: SkinImageType.icon),
   'actionIcons.trash_can': SkinImageData(type: SkinImageType.icon),
 
+  'subjectIcons.unknown': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.physics': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.chemistry': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.biology': SkinImageData(type: SkinImageType.icon),
@@ -62,7 +63,6 @@ const defaultImageData = {
   'subjectIcons.psychology': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.sociology': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.art': SkinImageData(type: SkinImageType.icon),
-  'subjectIcons.design': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.music': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.pe': SkinImageData(type: SkinImageType.icon),
   'subjectIcons.form_time': SkinImageData(type: SkinImageType.icon),

@@ -37,6 +37,7 @@ class TimetableCard extends StatelessWidget {
       subjectName: subject,
       code: code,
     );
+    print('category: $category');
     final iconData = SubjectIconConstants.getIconForCategory(
       category: category,
     );

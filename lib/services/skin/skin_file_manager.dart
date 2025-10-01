@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:zip_flutter/zip_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../data/constants/skin_constants.dart';
 import '../../data/models/skin/skin_image.dart';
+import 'package:archive/archive_io.dart';
 
 /// Manages file I/O operations for skin customization
 class SkinFileManager {
@@ -127,11 +127,12 @@ class SkinFileManager {
     final tempDir = await getTemporaryDirectory();
     final outFilePath = '${tempDir.path}${Platform.pathSeparator}$skinId.cmsk';
 
-    var zip = ZipFile.open(outFilePath, level: 0);
+    final ZipFileEncoder zipEncoder = ZipFileEncoder();
+    zipEncoder.create(outFilePath);
 
     final skinJsonFile = File('$skinDirPath${Platform.pathSeparator}skin.json');
     await skinJsonFile.writeAsString(jsonEncode(exportJson));
-    zip.addFile('skin.json', skinJsonFile.path);
+    await zipEncoder.addFile(skinJsonFile);
 
     if (exportJson.containsKey('imageData')) {
       final imageData = exportJson['imageData'] as Map<String, dynamic>;
@@ -142,14 +143,15 @@ class SkinFileManager {
           if (fileName.isNotEmpty) {
             final imagePath = '$skinDirPath${Platform.pathSeparator}$fileName';
             if (File(imagePath).existsSync()) {
-              zip.addFile(fileName, imagePath);
+              // zip.addFile(fileName, imagePath);
+              await zipEncoder.addFile(File(imagePath));
             }
           }
         }
       }
     }
 
-    zip.close();
+    await zipEncoder.close();
 
     await skinJsonFile.writeAsString(jsonEncode(skinJson));
 
@@ -173,27 +175,28 @@ class SkinFileManager {
       throw Exception('Import file not found');
     }
 
-    var zip = ZipFile.open(cmskFilePath, mode: ZipOpenMode.readonly, level: 0);
+    final bytes = await file.readAsBytes();
+    final archive = ZipDecoder().decodeBytes(bytes);
     
-    var skinJsonEntry = zip.getEntryByName('skin.json');
+    final skinJsonEntry = archive.findFile('skin.json');
+    if (skinJsonEntry == null) {
+      throw Exception('skin.json not found in archive');
+    }
 
-    final skinJsonContent = utf8.decode(skinJsonEntry.read());
+    final skinJsonContent = utf8.decode(skinJsonEntry.content);
     final skinJson = jsonDecode(skinJsonContent) as Map<String, dynamic>;
     
     final newSkinId = DateTime.now().millisecondsSinceEpoch.toString();
     final skinDirPath = await getSkinDirectoryPath(newSkinId);
 
-    var entries = zip.getAllEntries();
-    for (var entry in entries) {
-      if (!entry.isDir) {
+    for (final entry in archive) {
+      if (entry.isFile) {
         final outPath = '$skinDirPath${Platform.pathSeparator}${entry.name}';
         final outFile = File(outPath);
         await outFile.parent.create(recursive: true);
-        await outFile.writeAsBytes(entry.read());
+        await outFile.writeAsBytes(entry.content);
       }
     }
-
-    zip.close();
 
     skinJson['id'] = newSkinId;
     if (skinJson.containsKey('imageData')) {
