@@ -27,6 +27,10 @@ jobs:
         run: |
           version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
           echo "VERSION=$version" >> $GITHUB_ENV
+      - name: Install CocoaPods dependencies
+        run: |
+          cd macos
+          pod install
       - name: Build MacOS
         run: flutter build macos --release
       - name: Rename MacOS Build
@@ -121,21 +125,21 @@ jobs:
         with:
           name: Android-Armeabi-v7a-${{ env.VERSION }}
           path: |
-            build/app/outputs/flutter-apk/OCMS-Android-${{ env.VERSION }}-armeabi-v7a.apk
+            build/app/outputs/flutter-apk/OCMS-Android-armeabi-v7a-${{ env.VERSION }}.apk
           compression-level: 9
       - name: Upload Artifacts (Android-Arm64-v8a)
         uses: actions/upload-artifact@v4
         with:
           name: Android-Arm64-v8a-${{ env.VERSION }}
           path: |
-            build/app/outputs/flutter-apk/OCMS-Android-${{ env.VERSION }}-arm64-v8a.apk
+            build/app/outputs/flutter-apk/OCMS-Android-arm64-v8a-${{ env.VERSION }}.apk
           compression-level: 9
       - name: Upload Artifacts (Android-X86_64)
         uses: actions/upload-artifact@v4
         with:
           name: Android-X86_64-${{ env.VERSION }}
           path: |
-            build/app/outputs/flutter-apk/OCMS-Android-${{ env.VERSION }}-x86_64.apk
+            build/app/outputs/flutter-apk/OCMS-Android-x86_64-${{ env.VERSION }}.apk
           compression-level: 9
       - name: Build linux
         run: flutter build linux --release
