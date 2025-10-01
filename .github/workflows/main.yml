@@ -32,25 +32,27 @@ jobs:
       - name: Rename MacOS Build
         run: |
           cd build/macos/Build/Products
-          mv Release OpenCMS-$VERSION-macOS
+          mv Release OCMS-MacOS-$VERSION
       - name: Upload Artifacts (MacOS)
         uses: actions/upload-artifact@v4
         with:
-          name: OpenCMS-${{ env.VERSION }}-macOS
+          name: MacOS-${{ env.VERSION }}
           path: |
-            build/macos/Build/Products/OpenCMS-${{ env.VERSION }}-macOS/
+            build/macos/Build/Products/OCMS-MacOS-${{ env.VERSION }}/
+          compression-level: 9
       - name: Build IPA
         run: flutter build ipa --no-codesign
       - name: Rename iOS Build
         run: |
           cd build
-          mv ios OpenCMS-$VERSION-iOS
+          mv ios OCMS-iOS-$VERSION
       - name: Upload Artifacts (iOS)
         uses: actions/upload-artifact@v4
         with:
-          name: OpenCMS-${{ env.VERSION }}-iOS
+          name: iOS-${{ env.VERSION }}
           path: |
-            build/OpenCMS-${{ env.VERSION }}-iOS/
+            build/OCMS-iOS-${{ env.VERSION }}/
+          compression-level: 9
 
   build-windows:
     name: Build & Release (Windows)
@@ -67,18 +69,19 @@ jobs:
       - name: Extract version from pubspec.yaml
         id: extract_version
         run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=$version" >> $GITHUB_ENV
+          $version = (Get-Content "pubspec.yaml" | Select-String "^version: ").Line.Split(" ")[1]
+          echo "VERSION=$version" >> $env:GITHUB_ENV
       - name: Rename Windows Build
         run: |
           cd build/windows/x64/runner
-          Rename-Item -Path "Release" -NewName "OpenCMS-$env:VERSION-Win64"
+          Rename-Item -Path "Release" -NewName "OCMS-Win64-$env:VERSION"
       - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: OpenCMS-$env:VERSION-Win64
+          name: Win64-${{ env.VERSION }}
           path: |
-            build/windows/x64/runner/OpenCMS-${{ env.VERSION }}-Win64/
+            build/windows/x64/runner/OCMS-Win64-${{ env.VERSION }}/
+          compression-level: 9
 
   build-linux:
     name: Build & Release (Linux & Android)
@@ -110,36 +113,40 @@ jobs:
       - name: Rename APK files
         run: |
           cd build/app/outputs/flutter-apk
-          mv app-armeabi-v7a-release.apk OpenCMS-$VERSION-armeabi-v7a.apk
-          mv app-arm64-v8a-release.apk OpenCMS-$VERSION-arm64-v8a.apk
-          mv app-x86_64-release.apk OpenCMS-$VERSION-x86_64.apk
+          mv app-armeabi-v7a-release.apk OCMS-Android-armeabi-v7a-$VERSION.apk
+          mv app-arm64-v8a-release.apk OCMS-Android-arm64-v8a-$VERSION.apk
+          mv app-x86_64-release.apk OCMS-Android-x86_64-$VERSION.apk
       - name: Upload Artifacts (Android-Armeabi-v7a)
         uses: actions/upload-artifact@v4
         with:
-          name: OpenCMS-${{ env.VERSION }}-armeabi-v7a
+          name: Android-Armeabi-v7a-${{ env.VERSION }}
           path: |
-            build/app/outputs/flutter-apk/OpenCMS-${{ env.VERSION }}-armeabi-v7a.apk
+            build/app/outputs/flutter-apk/OCMS-Android-${{ env.VERSION }}-armeabi-v7a.apk
+          compression-level: 9
       - name: Upload Artifacts (Android-Arm64-v8a)
         uses: actions/upload-artifact@v4
         with:
-          name: OpenCMS-${{ env.VERSION }}-arm64-v8a
+          name: Android-Arm64-v8a-${{ env.VERSION }}
           path: |
-            build/app/outputs/flutter-apk/OpenCMS-${{ env.VERSION }}-arm64-v8a.apk
+            build/app/outputs/flutter-apk/OCMS-Android-${{ env.VERSION }}-arm64-v8a.apk
+          compression-level: 9
       - name: Upload Artifacts (Android-X86_64)
         uses: actions/upload-artifact@v4
         with:
-          name: OpenCMS-${{ env.VERSION }}-x86_64
+          name: Android-X86_64-${{ env.VERSION }}
           path: |
-            build/app/outputs/flutter-apk/OpenCMS-${{ env.VERSION }}-x86_64.apk
+            build/app/outputs/flutter-apk/OCMS-Android-${{ env.VERSION }}-x86_64.apk
+          compression-level: 9
       - name: Build linux
         run: flutter build linux --release
-      - name: Compress Archives and APK
+      - name: Rename Linux Build
         run: |
-          cd build
-          tar -czf linux_build.tar.gz linux
+          cd build/linux/x64/release/
+          mv bundle OCMS-Linux-$VERSION
       - name: Upload Artifacts (Linux)
         uses: actions/upload-artifact@v4
         with:
-          name: Linux-Releases
+          name: OCMS-Linux-${{ env.VERSION }}
           path: |
-            build/linux_build.tar.gz
+            build/linux/x64/release/OCMS-Linux-${{ env.VERSION }}/
+          compression-level: 9
