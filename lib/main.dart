@@ -6,7 +6,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:system_tray/system_tray.dart';
+import 'package:tray_manager/tray_manager.dart';
 import 'dart:io';
 import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
@@ -22,7 +22,7 @@ import 'utils/app_info.dart';
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 WebViewEnvironment? webViewEnvironment;
-AppWindow? globalAppWindow; // Global variable to store AppWindow instance
+WindowManager? globalAppWindow; // Global variable to store window manager instance
 AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
 
 
@@ -74,39 +74,68 @@ Future<void> initSystemTray() async {
   if(!(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
     return;
   }
+  
   String path = 'assets/icon/app_icon.ico';
+  globalAppWindow = windowManager; // Store globally for access from other functions
 
-  final AppWindow appWindow = AppWindow();
-  globalAppWindow = appWindow; // Store globally for access from other functions
-  final SystemTray systemTray = SystemTray();
-
-  await systemTray.initSystemTray(
-    title: "OpenCMS",
-    iconPath: path,
+  // Initialize tray_manager
+  await trayManager.destroy(); // Clear any existing tray
+  await trayManager.setIcon(path);
+  await trayManager.setToolTip('OpenCMS');
+  
+  // Create context menu
+  final menu = Menu(
+    items: [
+      MenuItem(
+        key: 'show_window',
+        label: 'Show',
+      ),
+      MenuItem.separator(),
+      MenuItem(
+        key: 'exit_app',
+        label: 'Exit',
+      ),
+    ],
   );
+  
+  // Set the context menu
+  await trayManager.setContextMenu(menu);
 
-  // create context menu
-  final Menu menu = Menu();
-  await menu.buildFrom([
-    MenuItemLabel(label: 'Show', onClicked: (menuItem) => appWindow.show()),
-    MenuItemLabel(label: 'Exit', onClicked: (menuItem) async {
-      // Allow closing then exit
-      await windowManager.setPreventClose(false);
-      await appWindow.close();
-    }),
-  ]);
+  // Add tray listener to handle events
+  trayManager.addListener(_TrayListener());
+}
 
-  // set context menu
-  await systemTray.setContextMenu(menu);
-
-  // handle system tray event
-  systemTray.registerSystemTrayEventHandler((eventName) {
-    if (eventName == kSystemTrayEventClick) {
-       Platform.isWindows ? appWindow.show() : systemTray.popUpContextMenu();
-    } else if (eventName == kSystemTrayEventRightClick) {
-       Platform.isWindows ? systemTray.popUpContextMenu() : appWindow.show();
+class _TrayListener with TrayListener {
+  @override
+  void onTrayIconMouseDown() {
+    if (Platform.isWindows) {
+      windowManager.show();
+    } else {
+      trayManager.popUpContextMenu();
     }
-  });
+  }
+
+  @override
+  void onTrayIconRightMouseDown() {
+    if (Platform.isWindows) {
+      trayManager.popUpContextMenu();
+    } else {
+      windowManager.show();
+    }
+  }
+
+  @override
+  void onTrayMenuItemClick(MenuItem menuItem) async {
+    switch (menuItem.key) {
+      case 'show_window':
+        windowManager.show();
+        break;
+      case 'exit_app':
+        await windowManager.setPreventClose(false);
+        await windowManager.close();
+        break;
+    }
+  }
 }
 
 Future<void> initFlutterAcrylic() async {

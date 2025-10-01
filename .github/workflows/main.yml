@@ -83,7 +83,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsecret-1-dev
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libsecret-1-dev appindicator3-0.1 libappindicator3-dev
           flutter pub get
       - name: Build APK
         run: flutter build apk --release --split-per-abi

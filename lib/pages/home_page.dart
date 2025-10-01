@@ -130,6 +130,7 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CustomAppBar(
+                    backgroundColor: Colors.transparent,
                     padding: EdgeInsets.symmetric(
                       horizontal: isWideScreen ? 20 : 5,
                       vertical: 10,

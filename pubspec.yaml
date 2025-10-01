@@ -36,7 +36,8 @@ dependencies:
   material_symbols_icons: ^4.2858.1
   html: ^0.15.6
   window_manager: ^0.5.1
-  system_tray: ^2.0.3
+  app_links: ^6.3.3
+  tray_manager: ^0.5.1
   dio: ^5.9.0
   dio_cookie_manager: ^3.3.0
   cookie_jar: ^4.0.8
@@ -96,6 +97,7 @@ flutter:
   assets:
     - assets/images/default-login-bg.jpg
     - assets/icon/Full/OCMS_ICON_256.png
+    - assets/icon/
     - LICENSE
 
   shaders:

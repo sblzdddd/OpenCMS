@@ -3,13 +3,14 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  app_links
   file_selector_windows
   flutter_acrylic
   flutter_inappwebview_windows
   flutter_secure_storage_windows
   screen_retriever_windows
   share_plus
-  system_tray
+  tray_manager
   url_launcher_windows
   window_manager
 )

@@ -166,6 +166,8 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
               timeIntervalHeight: 60,
               timeRulerSize: 50,
               minimumAppointmentDuration: Duration(minutes: 30),
+              startHour: 0,
+              endHour: 8,
             ),
             appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
               final SchoolCalendarAppointment event = details.appointments.first as SchoolCalendarAppointment;
