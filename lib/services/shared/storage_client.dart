@@ -2,9 +2,6 @@ import 'package:cookie_jar/cookie_jar.dart' show PersistCookieJar, Storage;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cookie_jar/cookie_jar.dart' show Cookie;
 
-
-
-
 /// Storage Client
 ///
 /// Provides a single configured instance of [FlutterSecureStorage]
@@ -33,11 +30,7 @@ class StorageClient {
     ),
   );
 
-  // Legacy API kept for compatibility during refactor
-  // static const FlutterSecureStorage storage = instance;
-
   /// Cookie-jar compatible storage backed by [FlutterSecureStorage].
-  /// Useful if you want to construct your own `PersistCookieJar`.
   static final Storage cookieStorage = _SecureStorageBase(instance, 'cj4');
 
   /// Cache storage backed by [FlutterSecureStorage].

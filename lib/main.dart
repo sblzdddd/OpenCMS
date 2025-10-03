@@ -183,6 +183,7 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.dark,
           );
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'OpenCMS',
             theme: ThemeData(
               colorScheme: lightColorScheme,
