@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/data/constants/sfcalendar_theme_data.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -154,17 +155,7 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
           const LinearProgressIndicator(minHeight: 2),
         Expanded(
           child: SfCalendarTheme(
-            data: SfCalendarThemeData(
-              backgroundColor: themeNotifier.needTransparentBG ? Colors.transparent : Theme.of(context).colorScheme.surface,
-              headerBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
-              headerTextStyle: TextStyle(
-                color: themeNotifier.needTransparentBG ? Colors.white : Theme.of(context).colorScheme.onSurface,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-              todayHighlightColor: Theme.of(context).colorScheme.primary,
-              viewHeaderBackgroundColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1),
-            ),
+            data: themeData(context),
             child: SfCalendar(
               controller: _calendarController,
               allowedViews: [

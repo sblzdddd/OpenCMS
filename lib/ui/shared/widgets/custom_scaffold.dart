@@ -208,6 +208,8 @@ class CustomScaffold extends StatelessWidget {
 
     if (isHomePage && themeNotifier.hasTransparentWindowEffect) {
       fallbackColor = fallbackColor.withValues(alpha: 0);
+    } else if (themeNotifier.hasTransparentWindowEffect) {
+      fallbackColor = fallbackColor.withValues(alpha: themeNotifier.isDarkMode? 0.8:0.5);
     }
 
     // If skinKey is provided, wrap with SkinBackgroundWidget

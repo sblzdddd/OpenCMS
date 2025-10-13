@@ -91,9 +91,6 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     if (globalImageData != null && globalImageData.hasImage) {
       return globalImageData;
     }
-
-    print('SkinBackgroundWidget: No background image found');
-    print(_activeSkin?.imageData);
     return null;
   }
 
