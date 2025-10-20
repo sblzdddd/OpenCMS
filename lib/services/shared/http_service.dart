@@ -1,8 +1,49 @@
 import '../../data/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
+import 'package:dio/browser.dart';
 import 'storage_client.dart';
+
+String convertToProxyUrl(String url) {
+  if (!kIsWeb) return url;
+  
+  final uri = Uri.parse(url);
+  final domain = uri.host;
+  
+  if (ApiConstants.domainMapping.containsKey(domain)) {
+    final proxyDomain = ApiConstants.domainMapping[domain]!;
+    final path = uri.path;
+    final query = uri.query.isNotEmpty ? '?${uri.query}' : '';
+    return '${ApiConstants.proxyBaseUrl}/proxy/$proxyDomain$path$query';
+  }
+  
+  return url;
+}
+
+/// Interceptor that redirects URLs to proxy when running on web
+class WebProxyInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    if (kIsWeb) {
+      // Convert the URL to use proxy
+      final originalUrl = options.uri.toString();
+      final proxyUrl = convertToProxyUrl(originalUrl);
+      
+      if (proxyUrl != originalUrl) {
+        options.path = proxyUrl;
+        options.baseUrl = '';
+        
+        // Update headers for proxy
+        options.headers['X-Original-Host'] = options.uri.host;
+        options.headers['X-Proxy-Request'] = 'true';
+      }
+    }
+    
+    handler.next(options);
+  }
+}
 
 
 // Global options
@@ -39,16 +80,25 @@ final cacheOptions = CacheOptions(
 class HttpService {
   static final HttpService _instance = HttpService._internal();
   factory HttpService() => _instance;
-  HttpService._internal();
 
-  final Dio _dio = Dio()
-    ..interceptors.add(CookieManager(StorageClient.cookieJar))
-    ..interceptors.add(DioCacheInterceptor(options: cacheOptions))
-    ..options.connectTimeout = ApiConstants.connectTimeout
-    ..options.receiveTimeout = ApiConstants.defaultTimeout
-    ..options.headers = ApiConstants.defaultHeaders
-    ..options.validateStatus =
-        (status) => status != null && status >= 200 && status < 400;
+  late final Dio _dio;
+
+  HttpService._internal() {
+    _dio = Dio()
+      ..interceptors.add(WebProxyInterceptor()) // Add proxy interceptor first
+      ..interceptors.add(DioCacheInterceptor(options: cacheOptions))
+      ..options.connectTimeout = ApiConstants.connectTimeout
+      ..options.receiveTimeout = ApiConstants.defaultTimeout
+      ..options.headers = ApiConstants.defaultHeaders
+      ..options.validateStatus =
+          (status) => status != null && status >= 200 && status < 400;
+
+    if (!kIsWeb) {
+      _dio.interceptors.add(CookieManager(StorageClient.cookieJar));
+    } else {
+      (_dio.httpClientAdapter as BrowserHttpClientAdapter).withCredentials = true;
+    }
+  }
   
   /// Make a POST request with automatic token refresh on 401
   Future<Response<dynamic>> post(
@@ -64,12 +114,16 @@ class HttpService {
     options.headers = {
       ..._dio.options.headers,
       ...headers,
-      'Referer': ApiConstants.cmsReferer,
     };
+    
+    String url;
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-      return _dio.post(endpoint, data: body, options: options);
+      url = endpoint;
+    } else {
+      url = kIsWeb ? convertToProxyUrl('${ApiConstants.baseApiUrl}$endpoint') : '${ApiConstants.baseApiUrl}$endpoint';
     }
-    return _dio.post('${ApiConstants.baseApiUrl}$endpoint', data: body, options: options);
+    
+    return _dio.post(url, data: body, options: options);
   }
   
   /// Make a GET request with automatic token refresh on 401
@@ -85,12 +139,16 @@ class HttpService {
     options.headers = {
       ..._dio.options.headers,
       ...headers,
-      'Referer': ApiConstants.cmsReferer,
     };
+    
+    String url;
     if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-      return _dio.get(endpoint, options: options);
+      url = endpoint;
+    } else {
+      url = kIsWeb ? convertToProxyUrl('${ApiConstants.baseApiUrl}$endpoint') : '${ApiConstants.baseApiUrl}$endpoint';
     }
-    return _dio.get('${ApiConstants.baseApiUrl}$endpoint', options: options);
+    
+    return _dio.get(url, options: options);
   }
 
   /// Make a POST request with automatic token refresh on 401
@@ -108,10 +166,11 @@ class HttpService {
     options.headers = {
       ..._dio.options.headers,
       ...headers,
-      'Referer': ApiConstants.legacyCMSReferer,
+      if(!kIsWeb) 'Referer': ApiConstants.legacyCMSReferer,
     };
     options.followRedirects = followRedirects;
-    final url = '${ApiConstants.legacyCMSBaseUrl}$endpoint';
+    
+    final url = kIsWeb ? convertToProxyUrl('${ApiConstants.legacyCMSBaseUrl}$endpoint') : '${ApiConstants.legacyCMSBaseUrl}$endpoint';
     return _dio.post(url, data: body, options: options);
   }
   
@@ -129,10 +188,12 @@ class HttpService {
     options.headers = {
       ..._dio.options.headers,
       ...headers,
-      'Referer': ApiConstants.legacyCMSReferer,
+      if(!kIsWeb) 'Referer': ApiConstants.legacyCMSReferer,
     };
     options.followRedirects = followRedirects;
-    return _dio.get('${ApiConstants.legacyCMSBaseUrl}$endpoint', options: options);
+    
+    final url = kIsWeb ? convertToProxyUrl('${ApiConstants.legacyCMSBaseUrl}$endpoint') : '${ApiConstants.legacyCMSBaseUrl}$endpoint';
+    return _dio.get(url, options: options);
   }
 
   /// Make a POST request with automatic token refresh on 401

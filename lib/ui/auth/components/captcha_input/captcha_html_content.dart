@@ -60,11 +60,31 @@ String captchaHtmlContent (bool enableDarkMode) {
     if (res.ret === 0) {
       // 复制结果至剪切板
         if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+            // Mobile platforms: use callHandler
             window.flutter_inappwebview.callHandler('captchaComplete', 'success', res);
+        } else {
+            // Web platform: use postMessage
+            window.parent.postMessage({
+                type: 'captchaResult',
+                payload: {
+                    result: 'success',
+                    data: res
+                }
+            }, '*');
         }
     } else {
         if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+            // Mobile platforms: use callHandler
             window.flutter_inappwebview.callHandler('captchaComplete', 'error', res);
+        } else {
+            // Web platform: use postMessage
+            window.parent.postMessage({
+                type: 'captchaResult',
+                payload: {
+                    result: 'error',
+                    data: res
+                }
+            }, '*');
         }
     }
   }

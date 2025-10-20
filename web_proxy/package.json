@@ -1,0 +1,21 @@
+{
+  "name": "opencms-web-proxy",
+  "version": "1.0.0",
+  "description": "Reverse proxy for OpenCMS web application",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "fastify": "^4.24.3",
+    "undici": "^6.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

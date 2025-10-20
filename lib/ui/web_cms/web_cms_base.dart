@@ -85,9 +85,10 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
   void _loadCmsIfReady() {
     if (_cookiesPrepared && _webViewController != null) {
       debugPrint('WebCmsBase: Loading CMS with URL: ${widget.initialUrl}');
+      String url = widget.initialUrl ?? ApiConstants.cmsReferer;
       _webViewController!.loadUrl(
         urlRequest: iaw.URLRequest(
-          url: iaw.WebUri(widget.initialUrl ?? ApiConstants.cmsReferer),
+          url: iaw.WebUri(url),
         ),
       );
     }

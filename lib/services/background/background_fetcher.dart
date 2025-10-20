@@ -24,7 +24,7 @@ class BackgroundFetcher {
 
   /// Start background service
   Future<void> start() async {
-    if (isRunning) return;
+    if (isRunning || kIsWeb) return;
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isAndroid) {
       _startDesktopTimer();
@@ -39,7 +39,7 @@ class BackgroundFetcher {
 
   /// Stop background service
   Future<void> stop() async {
-    if (!isRunning) return;
+    if (!isRunning || kIsWeb) return;
 
     if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
       _timer?.cancel();
