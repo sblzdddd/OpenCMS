@@ -91,7 +91,6 @@ class CalendarService {
       final mm = today.month.toString().padLeft(2, '0');
       final dd = today.day.toString().padLeft(2, '0');
       final dateStr = '$yyyy-$mm-$dd';
-      // final dateStr = '2025-09-17';
 
       final response = await _httpService.get(
         ApiConstants.calendarByDateUrl(dateStr),

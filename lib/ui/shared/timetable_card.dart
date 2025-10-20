@@ -76,9 +76,11 @@ class TimetableCard extends StatelessWidget {
           background: (inkWell) => Material(
             color:
                 backgroundColor ??
-                (themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
+                (themeNotifier.needTransparentBG ?
+                (!themeNotifier.isDarkMode
                     ? theme.colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : theme.colorScheme.surfaceContainer.withValues(alpha: 0.8)),
+                    : theme.colorScheme.surfaceContainer.withValues(alpha: 0.8)):
+                    theme.colorScheme.surfaceContainer),
             borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             child: inkWell,
           ),
@@ -126,7 +128,7 @@ class TimetableCard extends StatelessWidget {
                                             textColor ??
                                             theme.colorScheme.onSurface,
                                       ),
-                                      maxLines: 2,
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 4),

@@ -39,6 +39,12 @@ class PeriodConstants {
     PeriodInfo(name: 'ES', startTime: '16:30', endTime: '17:30'),
   ];
 
+  /// Special periods that always exist in the timetable
+  static const List<PeriodInfo> specialPeriods = [
+    PeriodInfo(name: 'Form Time', startTime: '07:50', endTime: '08:00'),
+    PeriodInfo(name: 'Lunch',     startTime: '12:40', endTime: '13:10'),
+    PeriodInfo(name: 'Pastoral',  startTime: '13:10', endTime: '13:30'),
+  ];
 
   static const List<String> monthNames = [
     'January',
@@ -117,7 +123,24 @@ class PeriodConstants {
     }
   }
 
+  /// Check if a period name is a special period
+  static bool isSpecialPeriod(String periodName) {
+    return specialPeriods.any((period) => period.name == periodName);
+  }
 
+  /// Get all special period names
+  static List<String> getSpecialPeriodNames() {
+    return specialPeriods.map((period) => period.name).toList();
+  }
+
+  /// Get special period info by name
+  static PeriodInfo? getSpecialPeriod(String periodName) {
+    try {
+      return specialPeriods.firstWhere((period) => period.name == periodName);
+    } catch (e) {
+      return null;
+    }
+  }
 
   /// Get period info by index
   static PeriodInfo? getPeriodInfo(int index) {
@@ -142,10 +165,10 @@ class PeriodConstants {
   /// Generate academic years from 2019-2020 to 2025-2026
   static List<AcademicYear> getAcademicYears() {
     final List<AcademicYear> years = [];
-    for (int year = 2025; year >= 2019; year--) {
+    for (int year = DateTime.now().year; year >= 2019; year--) {
       years.add(AcademicYear(
         year: year,
-        displayName: '$year-${year + 1}',
+        displayName: '$year-${(year + 1).toString().substring(2)}',
       ));
     }
     return years;

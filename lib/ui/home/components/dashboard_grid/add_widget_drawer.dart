@@ -154,51 +154,63 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                       ),
                     ),
                   ),
-                  ...addableWidgets
-                      .map(
-                        (widgetId) => _buildAddWidgetOption(context, widgetId),
-                      )
-                      ,
+                  ...addableWidgets.map(
+                    (widgetId) => _buildAddWidgetOption(context, widgetId),
+                  ),
                   const SizedBox(height: 8),
                 ],
                 if (addableActions.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      'Quick Actions',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                  Card(
+                    margin: EdgeInsets.zero,
+                    elevation: 0,
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'Quick Actions',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                          ),
+                          const SizedBox(height: 12),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              const double spacing = 16.0;
+                              const double minTileWidth = 100.0;
+                              final double availableWidth =
+                                  constraints.maxWidth;
+                              final int columns =
+                                  (((availableWidth + spacing) /
+                                              (minTileWidth + spacing))
+                                          .floor())
+                                      .clamp(1, 6);
+                              final double tileWidth =
+                                  (availableWidth - (columns - 1) * spacing) /
+                                  columns;
+                              return Wrap(
+                                spacing: spacing,
+                                runSpacing: spacing,
+                                children: addableActions.map((action) {
+                                  return QuickActionTile(
+                                    width: tileWidth,
+                                    icon: action['icon'] as IconData,
+                                    title: action['title'] as String,
+                                    skinImageKey: 'actionIcons.${action['id']}',
+                                    onTap: () {
+                                      widget.onAddAction?.call(action);
+                                    },
+                                  );
+                                }).toList(),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      const double spacing = 16.0;
-                      const double minTileWidth = 100.0;
-                      final double availableWidth = constraints.maxWidth;
-                      final int columns =
-                          (((availableWidth + spacing) /
-                                      (minTileWidth + spacing))
-                                  .floor())
-                              .clamp(1, 6);
-                      final double tileWidth =
-                          (availableWidth - (columns - 1) * spacing) / columns;
-                      return Wrap(
-                        spacing: spacing,
-                        runSpacing: spacing,
-                        children: addableActions.map((action) {
-                          return QuickActionTile(
-                            width: tileWidth,
-                            icon: action['icon'] as IconData,
-                            title: action['title'] as String,
-                            skinImageKey: 'actionIcons.${action['id']}',
-                            onTap: () {
-                              widget.onAddAction?.call(action);
-                            },
-                          );
-                        }).toList(),
-                      );
-                    },
                   ),
                 ],
                 if (addableWidgets.isEmpty && addableActions.isEmpty)
@@ -250,9 +262,9 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            ..._filteredWidgets
-                .map((widgetId) => _buildAddWidgetOption(context, widgetId))
-                ,
+            ..._filteredWidgets.map(
+              (widgetId) => _buildAddWidgetOption(context, widgetId),
+            ),
           ],
           if (showActions) ...[
             const SizedBox(height: 16),

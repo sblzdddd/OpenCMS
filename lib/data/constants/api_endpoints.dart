@@ -31,6 +31,8 @@ class ApiConstants {
   // Course Timetable endpoint
   // parameters: year (academic year), date (today's date in yyyy-mm-dd e.g. 2025-08-14)
   static const String courseTimetableUrl = '/legacy/students/my/timetable/';
+  // Assembly Info endpoint
+  static const String assemblyInfoUrl = '/legacy/students/my/assembly/';
   // Course Stats endpoint
   // parameters: year (academic year)
   static const String courseStatsUrl = '/legacy/students/my/course_stats/';

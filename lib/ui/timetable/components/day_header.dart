@@ -44,8 +44,8 @@ class DayHeader extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 6,
-            height: 20,
+            width: 4,
+            height: 28,
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
               color: leadingColor,

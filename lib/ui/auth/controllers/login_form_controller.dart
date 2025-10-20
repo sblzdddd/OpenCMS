@@ -16,7 +16,7 @@ class LoginFormController extends ChangeNotifier {
   AuthController get authController => _authController;
 
   /// Combined loading state from all managers
-  bool get isLoading => _authController.isLoading;
+  bool get isLoading => _authController.isLoading || _captchaManager.isAutoSolving;
   bool get isLoadingCredentials => _credentialsManager.isLoadingCredentials;
 
   /// Initialize all managers and set up listeners
@@ -62,6 +62,11 @@ class LoginFormController extends ChangeNotifier {
     SnackbarUtils.showSuccess(context, 'Form cleared');
   }
 
+  /// Manually trigger auto-captcha solving
+  Future<bool> solveAutoCaptcha() async {
+    return await _captchaManager.autoSolveCaptcha();
+  }
+
   /// Perform the complete login flow
   Future<void> performLogin(
     BuildContext context, {
@@ -78,22 +83,28 @@ class LoginFormController extends ChangeNotifier {
     final username = usernameController.text.trim();
     final password = passwordController.text;
 
+    // Try to auto-solve captcha first if not already verified
     if (!_captchaManager.isCaptchaVerified || _captchaManager.captchaData == null) {
-      // Try manual captcha as fallback
-      _captchaManager.triggerManualVerification(
-        captchaKey,
-        onSuccess: (data) {
-          // Retry login after manual captcha
-          performLogin(
-            context,
-            formKey: formKey,
-            usernameController: usernameController,
-            passwordController: passwordController,
-            captchaKey: captchaKey,
-          );
-        },
-      );
-      return;
+      debugPrint('LoginFormController: Attempting auto captcha solve');
+      final autoSolveSuccess = await _captchaManager.autoSolveCaptcha();
+      
+      if (!autoSolveSuccess) {
+        // Fallback to manual captcha if auto-solve fails
+        _captchaManager.triggerManualVerification(
+          captchaKey,
+          onSuccess: (data) {
+            // Retry login after manual captcha
+            performLogin(
+              context,
+              formKey: formKey,
+              usernameController: usernameController,
+              passwordController: passwordController,
+              captchaKey: captchaKey,
+            );
+          },
+        );
+        return;
+      }
     }
 
     // Check if captcha is verified

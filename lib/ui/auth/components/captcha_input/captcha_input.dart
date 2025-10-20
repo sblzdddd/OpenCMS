@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
 import '../../../../data/constants/api_endpoints.dart';
 import 'captcha_dialog.dart';
 import '../../../../ui/shared/custom_snackbar/snackbar_utils.dart';
@@ -162,38 +160,6 @@ class _CaptchaInputState extends State<CaptchaInput> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: (_isVerifying || !widget.enabled || _isCaptchaVerified) ? null : () => _performCaptchaVerification(null),
-        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            border: Border.all(color: Theme.of(context).colorScheme.outline),
-            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-          ),
-          child: Row(
-            children: [
-              Checkbox(
-                value: _isCaptchaVerified,
-                fillColor: (_isCaptchaVerified ? WidgetStateProperty.all(Colors.green) : WidgetStateProperty.all(Colors.transparent)),
-                onChanged: null, // Disabled, controlled by captcha
-              ),
-              Expanded(
-                child: Text(
-                  _isVerifying ? 'Verifying...' : 'I am not a robot',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return SizedBox(width: 0, height: 0);
   }
 }

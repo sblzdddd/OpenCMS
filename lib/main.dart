@@ -51,7 +51,7 @@ Future<void> initInAppWebview() async {
 
 Future<void> initWindowManager() async {
   // Return early if not Windows environment
-  if (kIsWeb || !Platform.isWindows) {
+  if (kIsWeb || (!Platform.isWindows && !Platform.isMacOS && !Platform.isLinux)) {
     return;
   }
   
@@ -174,10 +174,23 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           Color seedColor = themeNotifier.currentColor;
-          ColorScheme lightColorScheme = ColorScheme.fromSeed(
+          
+          // Create custom light color scheme with darker background and pure white containers
+          ColorScheme baseLightColorScheme = ColorScheme.fromSeed(
             seedColor: seedColor,
             brightness: Brightness.light,
           );
+          
+          ColorScheme lightColorScheme = baseLightColorScheme.copyWith(
+            surface: Color.lerp(const Color.fromARGB(248, 252, 252, 252), seedColor, 0.04)!,
+            surfaceContainer: Color.lerp(Colors.white, seedColor, 0.01)!,
+            surfaceContainerHigh: Color.lerp(Colors.white, seedColor, 0.005)!,
+            surfaceContainerHighest: Color.lerp(Colors.white, seedColor, 0.02)!,
+            surfaceContainerLow: Color.lerp(const Color(0xF8F8F8F8), seedColor, 0.02)!,
+            surfaceContainerLowest: Color.lerp(const Color(0xF6F6F6F6), seedColor, 0.04)!,
+            surfaceBright: Color.lerp(Colors.white, seedColor, 0.02)!,
+          );
+          
           ColorScheme darkColorScheme = ColorScheme.fromSeed(
             seedColor: seedColor,
             brightness: Brightness.dark,

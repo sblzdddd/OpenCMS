@@ -17,7 +17,7 @@ class CourseMergedEvent {
   /// Static method to merge consecutive periods with the same event for a given day
   static List<CourseMergedEvent> mergeEventsForDay(WeekDay weekday) {
     final List<CourseMergedEvent> mergedEvents = [];
-    
+
     int i = 0;
     while (i < weekday.periods.length) {
       final period = weekday.periods[i];
