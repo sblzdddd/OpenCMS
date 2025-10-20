@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'dart:io';
@@ -39,6 +40,7 @@ class WindowEffectService with ChangeNotifier {
   
   // Platform-specific window effects
   static List<WindowEffectType> get availableWindowEffects {
+    if(kIsWeb) return [WindowEffectType.disabled];
     if (Platform.isWindows) {
       return [
         WindowEffectType.disabled,

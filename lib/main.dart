@@ -71,7 +71,7 @@ Future<void> initWindowManager() async {
 }
 
 Future<void> initSystemTray() async {
-  if(!(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
+  if(kIsWeb || !(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
     return;
   }
   
@@ -108,18 +108,18 @@ Future<void> initSystemTray() async {
 class _TrayListener with TrayListener {
   @override
   void onTrayIconMouseDown() {
-    if (Platform.isWindows) {
+    if (!kIsWeb && Platform.isWindows) {
       windowManager.show();
-    } else {
+    } else if (!kIsWeb) {
       trayManager.popUpContextMenu();
     }
   }
 
   @override
   void onTrayIconRightMouseDown() {
-    if (Platform.isWindows) {
+    if (!kIsWeb && Platform.isWindows) {
       trayManager.popUpContextMenu();
-    } else {
+    } else if (!kIsWeb) {
       windowManager.show();
     }
   }
@@ -139,7 +139,7 @@ class _TrayListener with TrayListener {
 }
 
 Future<void> initFlutterAcrylic() async {
-  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     await Window.initialize();
   }
 }

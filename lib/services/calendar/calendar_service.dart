@@ -5,7 +5,6 @@ import '../shared/http_service.dart';
 import '../auth/auth_service.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/calendar/calendar.dart';
-import '../../data/models/calendar/calendar_today_item.dart';
 
 /// Service for handling calendar operations
 class CalendarService {

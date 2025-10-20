@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
@@ -260,7 +261,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                 ),
 
                 // Only show window effects on desktop platforms
-                if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) ...[
+                if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) ...[
                   const SizedBox(height: 32),
                   
                   Text(
