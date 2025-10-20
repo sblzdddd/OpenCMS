@@ -259,7 +259,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         ),
         const SizedBox(height: 8),
         ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: _currentSubject.assessments.length,
           itemBuilder: (context, index) {

@@ -99,6 +99,7 @@ class AssessmentChartWidget extends StatelessWidget {
                 series: <CartesianSeries>[
                   SplineSeries<AssessmentData, String>(
                     name: 'Your Score',
+                    splineType: SplineType.cardinal,
                     dataSource: _prepareChartData(validAssessments),
                     xValueMapper: (AssessmentData data, _) => data.label,
                     yValueMapper: (AssessmentData data, _) => data.percentage,
@@ -123,6 +124,7 @@ class AssessmentChartWidget extends StatelessWidget {
                   if (_hasClassAverage(validAssessments))
                     SplineSeries<AssessmentData, String>(
                       name: 'Class Average',
+                      splineType: SplineType.cardinal,
                       dataSource: _prepareClassAverageData(validAssessments),
                       xValueMapper: (AssessmentData data, _) => data.label,
                       yValueMapper: (AssessmentData data, _) => data.percentage,

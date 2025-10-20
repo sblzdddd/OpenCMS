@@ -4,6 +4,7 @@ library;
 import 'package:intl/intl.dart';
 import '../../constants/periods.dart';
 import 'course_merged_event.dart';
+import '../assembly/assembly_event.dart';
 
 class TimetableResponse {
   final String weekType;
@@ -26,7 +27,29 @@ class TimetableResponse {
     required this.weekdays,
   });
 
-  factory TimetableResponse.fromJson(Map<String, dynamic> json) {
+  factory TimetableResponse.fromJson(Map<String, dynamic> json, int academicYear, {dynamic assemblyJson}) {
+    // Parse weekdays first
+    final weekdays = (json['weekdays'] as List<dynamic>?)
+        ?.map((item) => WeekDay.fromJson(item))
+        .toList() ?? [];
+
+    if (academicYear == DateTime.now().year && assemblyJson != null) {
+      // Handle both List and Map formats
+      List<Map<String, dynamic>> assemblyList = [];
+      if (assemblyJson is List) {
+        assemblyList = assemblyJson.cast<Map<String, dynamic>>();
+      } else if (assemblyJson is Map && assemblyJson.containsKey('events')) {
+        final events = assemblyJson['events'];
+        if (events is List) {
+          assemblyList = events.cast<Map<String, dynamic>>();
+        }
+      }
+      
+      if (assemblyList.isNotEmpty) {
+        _addAssemblyEvents(weekdays, assemblyList);
+      }
+    }
+
     return TimetableResponse(
       weekType: json['week_type'] ?? '',
       weekNum: json['week_num'] ?? 0,
@@ -35,10 +58,46 @@ class TimetableResponse {
       weekBPeriods: json['week_b_periods'] ?? 0,
       dutyPeriods: json['duty_periods'] ?? 0,
       contractPeriods: json['contract_periods'] ?? 0,
-      weekdays: (json['weekdays'] as List<dynamic>?)
-          ?.map((item) => WeekDay.fromJson(item))
-          .toList() ?? [],
+      weekdays: weekdays,
     );
+  }
+
+  /// Add assembly events to appropriate weekday periods
+  static void _addAssemblyEvents(List<WeekDay> weekdays, List<Map<String, dynamic>> assemblyData) {
+    // Parse assembly events
+    final assemblyEvents = assemblyData
+        .map((json) => AssemblyEvent.fromJson(json))
+        .where((event) => event.isValidFormTimeEvent)
+        .toList();
+
+    for (final event in assemblyEvents) {
+      final weekdayIndex = event.weekday!;
+      final periodIndex = event.periodIndex!;
+
+      // Ensure we have enough weekdays and periods
+      if (weekdayIndex < weekdays.length) {
+        final weekday = weekdays[weekdayIndex];
+        
+        // Ensure we have enough periods
+        while (weekday.periods.length <= periodIndex) {
+          weekday.periods.add(Period(events: []));
+        }
+
+        // Create a timetable event for the assembly
+        final assemblyTimetableEvent = TimetableEvent(
+          type: 3, // Special type for assembly events
+          id: event.hashCode, // Use hash as ID since no ID is provided
+          name: event.title,
+          room: event.room,
+          teacher: event.classes,
+          weekType: '',
+          newRoom: '',
+        );
+
+        // Add to the appropriate period
+        weekday.periods[periodIndex].events.add(assemblyTimetableEvent);
+      }
+    }
   }
 
   /// Get current and next class for today

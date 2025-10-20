@@ -74,7 +74,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     // Check if we're on a desktop platform
-    final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
+    final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux);
 
     // Create the list of actions, adding window controls for desktop
     List<Widget> allActions = widget.actions ?? <Widget>[];

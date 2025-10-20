@@ -286,7 +286,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       builder: (context, constraints) {
         return Column(
           children: [
-            if (_viewMode == _TimetableViewMode.mobile)
+            if (_viewMode == _TimetableViewMode.mobile && constraints.maxWidth < 800)
               DayTabs(
                 controller: _dayTabController,
                 onTap: _scrollToDay,

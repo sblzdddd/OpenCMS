@@ -66,6 +66,9 @@ class HttpService {
       ...headers,
       'Referer': ApiConstants.cmsReferer,
     };
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+      return _dio.post(endpoint, data: body, options: options);
+    }
     return _dio.post('${ApiConstants.baseApiUrl}$endpoint', data: body, options: options);
   }
   
@@ -84,6 +87,9 @@ class HttpService {
       ...headers,
       'Referer': ApiConstants.cmsReferer,
     };
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+      return _dio.get(endpoint, options: options);
+    }
     return _dio.get('${ApiConstants.baseApiUrl}$endpoint', options: options);
   }
 

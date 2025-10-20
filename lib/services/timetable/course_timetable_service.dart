@@ -31,9 +31,15 @@ class CourseTimetableService {
         refresh: refresh,
       );
 
+      final assemblyResponse = await _httpService.get(
+        ApiConstants.assemblyInfoUrl,
+        refresh: refresh,
+      );
+
       final data = response.data;
+      final assemblyData = assemblyResponse.data;
       if (data != null) {
-        return TimetableResponse.fromJson(data);
+        return TimetableResponse.fromJson(data, year, assemblyJson: assemblyData);
       } else {
         throw Exception('Invalid response format: null data');
       }

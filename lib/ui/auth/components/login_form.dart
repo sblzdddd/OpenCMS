@@ -128,7 +128,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 26),
 
                       // Username field
                       UsernameInput(
@@ -155,7 +155,6 @@ class _LoginFormState extends State<LoginForm> {
                             _controller.captchaManager.isCaptchaVerified,
                         enabled: !isLoading,
                       ),
-                      const SizedBox(height: 4),
 
                       // Remember me checkbox
                       CheckboxListTile(
