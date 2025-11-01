@@ -3,8 +3,9 @@ import '../../../services/auth/credentials_storage_service.dart';
 
 /// Component responsible for managing credential loading and saving
 class CredentialsManager extends ChangeNotifier {
-  final CredentialsStorageService _secureStorageService = CredentialsStorageService();
-  
+  final CredentialsStorageService _secureStorageService =
+      CredentialsStorageService();
+
   bool _isLoadingCredentials = true;
   bool _rememberMe = false;
 
@@ -29,7 +30,9 @@ class CredentialsManager extends ChangeNotifier {
         usernameController.text = savedCredentials.username;
         passwordController.text = savedCredentials.password;
         _rememberMe = savedCredentials.remember;
-        debugPrint('CredentialsManager: Loaded saved credentials for user: ${savedCredentials.username}');
+        debugPrint(
+          'CredentialsManager: Loaded saved credentials for user: ${savedCredentials.username}',
+        );
       }
     } catch (e) {
       debugPrint('CredentialsManager: Error loading saved credentials: $e');

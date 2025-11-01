@@ -16,7 +16,8 @@ class LoginFormController extends ChangeNotifier {
   AuthController get authController => _authController;
 
   /// Combined loading state from all managers
-  bool get isLoading => _authController.isLoading || _captchaManager.isAutoSolving;
+  bool get isLoading =>
+      _authController.isLoading || _captchaManager.isAutoSolving;
   bool get isLoadingCredentials => _credentialsManager.isLoadingCredentials;
 
   /// Initialize all managers and set up listeners
@@ -58,7 +59,7 @@ class LoginFormController extends ChangeNotifier {
     _captchaManager.resetCaptcha();
     _captchaManager.resetCaptchaUI(captchaKey);
     _credentialsManager.clearRememberMe();
-    
+
     SnackbarUtils.showSuccess(context, 'Form cleared');
   }
 
@@ -84,10 +85,11 @@ class LoginFormController extends ChangeNotifier {
     final password = passwordController.text;
 
     // Try to auto-solve captcha first if not already verified
-    if (!_captchaManager.isCaptchaVerified || _captchaManager.captchaData == null) {
+    if (!_captchaManager.isCaptchaVerified ||
+        _captchaManager.captchaData == null) {
       debugPrint('LoginFormController: Attempting auto captcha solve');
       final autoSolveSuccess = await _captchaManager.autoSolveCaptcha();
-      
+
       if (!autoSolveSuccess) {
         // Fallback to manual captcha if auto-solve fails
         _captchaManager.triggerManualVerification(
@@ -108,8 +110,9 @@ class LoginFormController extends ChangeNotifier {
     }
 
     // Check if captcha is verified
-    if (!_captchaManager.isCaptchaVerified || _captchaManager.captchaData == null) {
-      if(!context.mounted) {
+    if (!_captchaManager.isCaptchaVerified ||
+        _captchaManager.captchaData == null) {
+      if (!context.mounted) {
         debugPrint('LoginFormController: Context is not mounted');
         return;
       }
@@ -119,7 +122,7 @@ class LoginFormController extends ChangeNotifier {
       );
       return;
     }
-    if(!context.mounted) {
+    if (!context.mounted) {
       debugPrint('LoginFormController: Context is not mounted');
       return;
     }
@@ -149,7 +152,7 @@ class LoginFormController extends ChangeNotifier {
     _credentialsManager.removeListener(_notifyListeners);
     _captchaManager.removeListener(_notifyListeners);
     _authController.removeListener(_notifyListeners);
-    
+
     _credentialsManager.dispose();
     _captchaManager.dispose();
     _authController.dispose();

@@ -32,17 +32,15 @@ class SkinResponse {
 
   /// Create an error response
   factory SkinResponse.error(String error) {
-    return SkinResponse(
-      success: false,
-      error: error,
-    );
+    return SkinResponse(success: false, error: error);
   }
 
   /// Check if response has data
   bool get hasData => skin != null || (skins != null && skins!.isNotEmpty);
 
   /// Get the first skin if available
-  Skin? get firstSkin => skin ?? (skins?.isNotEmpty == true ? skins!.first : null);
+  Skin? get firstSkin =>
+      skin ?? (skins?.isNotEmpty == true ? skins!.first : null);
 
   @override
   String toString() {

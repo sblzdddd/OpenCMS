@@ -1,5 +1,6 @@
 /// Handles user authentication state, session validation, and user information
 library;
+
 import 'package:flutter/foundation.dart';
 
 /// User information data model
@@ -85,7 +86,9 @@ class UserInfo {
         other.enName == enName &&
         other.language == language &&
         other.permissions.length == permissions.length &&
-        other.permissions.every((permission) => permissions.contains(permission));
+        other.permissions.every(
+          (permission) => permissions.contains(permission),
+        );
   }
 
   @override
@@ -107,13 +110,13 @@ class AuthState {
 
   /// Check if user is currently authenticated
   bool get isAuthenticated => _isAuthenticated;
-  
+
   /// Get current user information
   UserInfo? get userInfo => _userInfo;
-  
+
   /// Get login time
   DateTime? get loginTime => _loginTime;
-  
+
   /// Get session duration since login
   Duration? get sessionDuration {
     if (_loginTime == null) return null;
@@ -121,20 +124,16 @@ class AuthState {
   }
 
   /// Set authenticated state with user information
-  void setAuthenticated({
-    required UserInfo userInfo,
-  }) {
+  void setAuthenticated({required UserInfo userInfo}) {
     _isAuthenticated = true;
     _loginTime = DateTime.now();
     _userInfo = userInfo;
-    
+
     debugPrint('AuthState: User authenticated - ${userInfo.username}');
   }
 
   /// Set authenticated state with JSON user information
-  void setAuthenticatedFromJson({
-    required Map<String, dynamic> userInfoJson,
-  }) {
+  void setAuthenticatedFromJson({required Map<String, dynamic> userInfoJson}) {
     final userInfo = UserInfo.fromJson(userInfoJson);
     setAuthenticated(userInfo: userInfo);
   }
@@ -144,7 +143,7 @@ class AuthState {
     _isAuthenticated = false;
     _userInfo = null;
     _loginTime = null;
-    
+
     debugPrint('AuthState: Authentication cleared');
   }
 

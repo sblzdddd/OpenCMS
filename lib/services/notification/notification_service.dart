@@ -13,19 +13,26 @@ class NotificationService {
   final AuthService _authService = AuthService();
 
   /// Get a list of all notifications
-  /// 
+  ///
   /// Returns a list of [Notification] objects
-  Future<List<Notification>> getNotificationsList({bool refresh = false}) async {
+  Future<List<Notification>> getNotificationsList({
+    bool refresh = false,
+  }) async {
     try {
-      final response = await _httpService.get(ApiConstants.notificationUrl, refresh: refresh);
-      
+      final response = await _httpService.get(
+        ApiConstants.notificationUrl,
+        refresh: refresh,
+      );
+
       if (response.data != null) {
         final List<dynamic> notificationsJson = response.data as List<dynamic>;
         return notificationsJson
             .map((json) => Notification.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
-        throw Exception('Failed to fetch notifications: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch notifications: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching notifications: $e');
@@ -45,17 +52,19 @@ class NotificationService {
   }
 
   /// Get notifications sorted by priority (pinned first) and date
-  /// 
+  ///
   /// Returns a sorted list of [Notification] objects
-  Future<List<Notification>> getSortedNotifications({bool refresh = false}) async {
+  Future<List<Notification>> getSortedNotifications({
+    bool refresh = false,
+  }) async {
     final notifications = await getNotificationsList(refresh: refresh);
-    
+
     // Sort by pinned status first, then by date (newest first)
     notifications.sort((a, b) {
       // First sort by pinned status
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
-      
+
       // Then sort by date (newest first)
       try {
         final dateA = DateTime.parse(a.addDate);
@@ -66,7 +75,7 @@ class NotificationService {
         return 0;
       }
     });
-    
+
     return notifications;
   }
 }

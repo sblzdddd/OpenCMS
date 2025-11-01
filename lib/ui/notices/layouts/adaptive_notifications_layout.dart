@@ -1,9 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/notification/notification_response.dart' as cms;
 import '../../../services/theme/theme_services.dart';
 import '../../../services/notification/notification_service.dart';
-import '../../shared/scaled_ink_well.dart';
+import '../../shared/selectable_item_wrapper.dart';
 import '../../shared/views/adaptive_list_detail_layout.dart';
 import '../../web_cms/web_cms_content.dart';
 import '../../../pages/actions/web_cms.dart';
@@ -30,13 +31,20 @@ class AdaptiveNotificationsLayout extends StatelessWidget {
       selectedItem: selectedNotification,
       onItemSelected: onNotificationSelected,
       breakpoint: breakpoint,
-      itemBuilder: (notification, isSelected) => _buildNotificationItem(notification, isSelected, context),
-      detailBuilder: (notification) => _buildNotificationDetail(notification, context),
+      itemBuilder: (notification, isSelected) =>
+          _buildNotificationItem(notification, isSelected, context),
+      detailBuilder: (notification) =>
+          _buildNotificationDetail(notification, context),
     );
   }
 
-  Future<void> _navigateToNotificationDetail(cms.Notification notification, BuildContext context) async {
-    final contentUrl = await NotificationService().getNotificationContentUrl(notification.id);
+  Future<void> _navigateToNotificationDetail(
+    cms.Notification notification,
+    BuildContext context,
+  ) async {
+    final contentUrl = await NotificationService().getNotificationContentUrl(
+      notification.id,
+    );
     if (context.mounted) {
       Navigator.push(
         context,
@@ -50,107 +58,97 @@ class AdaptiveNotificationsLayout extends StatelessWidget {
     }
   }
 
-  Widget _buildNotificationItem(cms.Notification notification, bool isSelected, BuildContext context) {
+  Widget _buildNotificationItem(
+    cms.Notification notification,
+    bool isSelected,
+    BuildContext context,
+  ) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    
-    return Material(
-      color: Colors.transparent,
-      child: ScaledInkWell(
-        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        background: (inkWell) => Material(
-          color: isSelected
-              ? Theme.of(
-                  context,
-                ).colorScheme.primaryContainer.withValues(alpha: 0.3)
-              : themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8),
-          borderRadius: themeNotifier.getBorderRadiusAll(1),
-          child: inkWell,
-        ),
-        onTap: () {
-          onNotificationSelected(notification);
-          // In mobile mode, navigate to detail page
-          if (MediaQuery.of(context).size.width < breakpoint) {
-            _navigateToNotificationDetail(notification, context);
-          }
-        },
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: themeNotifier.getBorderRadiusAll(1),
-            border: Border.all(
-              color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5) : Theme.of(context).colorScheme.outline.withValues(alpha: 0),
-              width: 1,
-            ),
+
+    return SelectableItemWrapper(
+      isSelected: isSelected,
+      onTap: () {
+        onNotificationSelected(notification);
+        if (MediaQuery.of(context).size.width < breakpoint || kIsWeb) {
+          _navigateToNotificationDetail(notification, context);
+        }
+      },
+      child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
+        title: Text(
+          notification.title,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
           ),
-          child: ListTile(
-            mouseCursor: SystemMouseCursors.click,
-            title: Text(
-              notification.title,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: isSelected 
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Row(
               children: [
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    if (notification.isPinned)
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.2),
-                          borderRadius: themeNotifier.getBorderRadiusAll(999),
-                        ),
-                        child: const Text(
-                          'PINNED',
-                          style: TextStyle(
-                            fontSize: 12, 
-                            color: Colors.orange,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    if (notification.isPinned) const SizedBox(width: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                        borderRadius: themeNotifier.getBorderRadiusAll(999),
-                      ),
-                      child: Text(
-                        notification.addDate,
-                        style: TextStyle(
-                          fontSize: 12, 
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                if (notification.isPinned)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withValues(alpha: 0.2),
+                      borderRadius: themeNotifier.getBorderRadiusAll(999),
+                    ),
+                    child: const Text(
+                      'PINNED',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                  ],
+                  ),
+                if (notification.isPinned) const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
+                  ),
+                  child: Text(
+                    notification.addDate,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
                 ),
               ],
             ),
-            trailing: const Icon(Symbols.arrow_forward_ios_rounded, size: 16),
-          ),
+          ],
         ),
+        trailing: const Icon(Symbols.arrow_forward_ios_rounded, size: 16),
       ),
     );
   }
 
-  Widget _buildNotificationDetail(cms.Notification notification, BuildContext context) {
+  Widget _buildNotificationDetail(
+    cms.Notification notification,
+    BuildContext context,
+  ) {
     return FutureBuilder<String>(
       future: NotificationService().getNotificationContentUrl(notification.id),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (snapshot.hasError || !snapshot.hasData) {
           return Center(
             child: Padding(
@@ -161,14 +159,18 @@ class AdaptiveNotificationsLayout extends StatelessWidget {
                   Icon(
                     Symbols.error_outline_rounded,
                     size: 64,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Failed to load notification content',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ],

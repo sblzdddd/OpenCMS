@@ -19,7 +19,9 @@ class CaptchaManager extends ChangeNotifier {
     _captchaData = data;
     notifyListeners();
 
-    debugPrint('Captcha state changed - Verified: $isVerified, Data: ${data?.runtimeType}');
+    debugPrint(
+      'Captcha state changed - Verified: $isVerified, Data: ${data?.runtimeType}',
+    );
   }
 
   /// Reset captcha verification state
@@ -32,18 +34,20 @@ class CaptchaManager extends ChangeNotifier {
   /// Automatically solve captcha using the auto captcha service
   Future<bool> autoSolveCaptcha() async {
     if (_isAutoSolving) return false;
-    
+
     _isAutoSolving = true;
     notifyListeners();
-    
+
     try {
       debugPrint('CaptchaManager: Attempting to auto-solve captcha');
       final captchaResult = await getTicket(_authService);
-      
+
       if (captchaResult != false) {
         _isCaptchaVerified = true;
         _captchaData = captchaResult;
-        debugPrint('CaptchaManager: Auto-solve successful, ticket: $captchaResult');
+        debugPrint(
+          'CaptchaManager: Auto-solve successful, ticket: $captchaResult',
+        );
         _isAutoSolving = false;
         notifyListeners();
         return true;

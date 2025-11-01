@@ -13,7 +13,7 @@ class ProfileService {
   final HttpService _httpService = HttpService();
 
   /// Get user profile information
-  /// 
+  ///
   /// Returns a [ProfileResponse] containing the user's profile data
   /// including general info, basic info, and optional more info and relatives
   Future<ProfileResponse> getProfile({bool refresh = false}) async {
@@ -34,7 +34,7 @@ class ProfileService {
   }
 
   /// Get user profile with error handling
-  /// 
+  ///
   /// Returns a [ProfileResult] containing either the profile data or error information
   Future<ProfileResult> getProfileSafe({bool refresh = false}) async {
     try {
@@ -120,23 +120,13 @@ class ProfileResult {
   final ProfileResponse? profile;
   final String? error;
 
-  ProfileResult._({
-    required this.isSuccess,
-    this.profile,
-    this.error,
-  });
+  ProfileResult._({required this.isSuccess, this.profile, this.error});
 
   factory ProfileResult.success(ProfileResponse profile) {
-    return ProfileResult._(
-      isSuccess: true,
-      profile: profile,
-    );
+    return ProfileResult._(isSuccess: true, profile: profile);
   }
 
   factory ProfileResult.error(String error) {
-    return ProfileResult._(
-      isSuccess: false,
-      error: error,
-    );
+    return ProfileResult._(isSuccess: false, error: error);
   }
 }

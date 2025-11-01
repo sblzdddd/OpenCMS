@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/data/models/referral/referral_response.dart';
+import 'package:opencms/ui/referral/widgets/referral_comments_list.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../services/referral/referral_service.dart';
-import '../../../data/models/referral/referral_response.dart';
-import '../../shared/views/refreshable_page.dart';
-import '../widgets/referral_stats.dart';
-import '../widgets/referral_comments_list.dart';
+import 'package:opencms/services/referral/referral_service.dart';
+import 'package:opencms/ui/shared/views/refreshable_page.dart';
+import 'package:opencms/ui/referral/widgets/referral_stats.dart';
 
 class ReferralCommentsView extends StatefulWidget {
   const ReferralCommentsView({super.key});
@@ -19,7 +19,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
   String _selectedFilter = 'All';
   String _selectedSort = 'Recent';
   @override
-  final String skinKey = 'comments';
+  String get skinKey => 'comments';
 
   final List<String> _filters = [
     'All',
@@ -50,10 +50,15 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-            : Theme.of(context).colorScheme.surfaceContainer,
+            color: themeNotifier.needTransparentBG
+                ? (!themeNotifier.isDarkMode
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                      : Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(
@@ -98,10 +103,15 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         child: Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-            : Theme.of(context).colorScheme.surfaceContainer,
+            color: themeNotifier.needTransparentBG
+                ? (!themeNotifier.isDarkMode
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                      : Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                : Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(

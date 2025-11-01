@@ -35,7 +35,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
   void _onExamSelected(Exam exam) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth >= 800.0;
-    
+
     if (isWideScreen) {
       setState(() {
         _selectedExam = exam;
@@ -43,9 +43,7 @@ class _ReportsListViewState extends RefreshableView<ReportsListView> {
     } else {
       Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (context) => ReportDetailView(exam: exam),
-        ),
+        MaterialPageRoute(builder: (context) => ReportDetailView(exam: exam)),
       );
     }
   }

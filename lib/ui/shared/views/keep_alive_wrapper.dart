@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Wrapper widget that keeps child widgets alive when not visible
 class KeepAliveWrapper extends StatefulWidget {
   final Widget child;
-  
+
   const KeepAliveWrapper({super.key, required this.child});
 
   @override

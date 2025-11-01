@@ -72,16 +72,15 @@ class _TabbedPageBaseState extends State<TabbedPageBase>
         bottom: TabBar(
           controller: _tabController,
           tabs: widget.tabs,
-          labelStyle: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          labelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           splashFactory: NoSplash.splashFactory,
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: widget.tabViews.map((view) => KeepAliveWrapper(child: view)).toList(),
+        children: widget.tabViews
+            .map((view) => KeepAliveWrapper(child: view))
+            .toList(),
       ),
     );
   }

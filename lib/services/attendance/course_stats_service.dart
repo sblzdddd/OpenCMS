@@ -11,17 +11,17 @@ class CourseStatsService {
   final HttpService _httpService = HttpService();
 
   /// Fetch course info and attendance statistics for a specific academic year
-  /// 
+  ///
   /// [year] - Academic year (e.g., 2025 for 2025-2026)
   Future<List<CourseStats>> fetchCourseStats({
     required int year,
     bool refresh = false,
   }) async {
     try {
-      debugPrint('CourseTimetableService: Fetching course stats for year $year');
-      
+      debugPrint('[CourseStatsService] Fetching course stats for year $year');
+
       final url = '${ApiConstants.courseStatsUrl}?year=$year';
-      
+
       final response = await _httpService.get(url, refresh: refresh);
 
       try {
@@ -39,7 +39,7 @@ class CourseStatsService {
         throw Exception('Failed to parse JSON response: $e');
       }
     } catch (e) {
-      debugPrint('CourseTimetableService: Error fetching course stats: $e');
+      debugPrint('[CourseStatsService] Error fetching course stats: $e');
       rethrow;
     }
   }

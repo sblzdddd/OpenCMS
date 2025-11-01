@@ -29,7 +29,9 @@ class _MoreActionsDialogState extends BaseActionDialogState<MoreActionsDialog> {
 
   @override
   List<Map<String, dynamic>> getAvailableActions() {
-    return QuickActionsConstants.getAvailableActionsToAdd(widget.currentActionIds);
+    return QuickActionsConstants.getAvailableActionsToAdd(
+      widget.currentActionIds,
+    );
   }
 
   @override
@@ -42,18 +44,12 @@ class _MoreActionsDialogState extends BaseActionDialogState<MoreActionsDialog> {
     if (handleActionNavigation(context, action)) {
       return;
     }
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final page = await buildActionPage(action);
       if (mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => page,
-          ),
-        );
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
       }
     });
   }
 }
-
-

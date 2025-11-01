@@ -7,7 +7,8 @@ import '../shared/http_service.dart';
 
 /// Service for fetching free classroom information
 class FreeClassroomService {
-  static final FreeClassroomService _instance = FreeClassroomService._internal();
+  static final FreeClassroomService _instance =
+      FreeClassroomService._internal();
   factory FreeClassroomService() => _instance;
   FreeClassroomService._internal();
 
@@ -15,7 +16,7 @@ class FreeClassroomService {
   final AuthService _authService = AuthService();
 
   /// Fetch free classrooms for a specific date and period
-  /// 
+  ///
   /// [date] - Date in yyyy-mm-dd format (e.g., 2025-09-03)
   /// [period] - Period range like W1 (period 1-10), W2 (period 11-14), etc.
   /// [refresh] - Whether to bypass cache
@@ -25,14 +26,14 @@ class FreeClassroomService {
     bool refresh = false,
   }) async {
     try {
-      debugPrint('FreeClassroomService: Fetching free classrooms');
+      debugPrint('[FreeClassroomService] Fetching free classrooms');
       final username = await _authService.fetchCurrentUsername();
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
 
       final endpoint = '/$username${ApiConstants.freeClassroomsUrl}';
-      
+
       // Prepare form data
       final body = 'b=$date&w=$period&c=${ApiConstants.classroomsList}';
 
@@ -44,20 +45,24 @@ class FreeClassroomService {
 
       // Accept both 200 and 304 status codes (304 means cached response)
       if (response.statusCode != 200 && response.statusCode != 304) {
-        throw Exception('Failed to fetch free classrooms: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch free classrooms: ${response.statusCode}',
+        );
       }
 
       // The response is JSON with status, info, and rooms fields
       final Map<String, dynamic> jsonData = response.data;
-      
+
       // Check if the response status is OK
       if (jsonData['status'] != 'OK') {
-        throw Exception('API returned error status: ${jsonData['status']} - ${jsonData['info']}');
+        throw Exception(
+          'API returned error status: ${jsonData['status']} - ${jsonData['info']}',
+        );
       }
-      
+
       return FreeClassroomResponse.fromJson(jsonData);
     } catch (e) {
-      debugPrint('FreeClassroomService: Error fetching free classrooms: $e');
+      debugPrint('[FreeClassroomService] Error fetching free classrooms: $e');
       return FreeClassroomResponse.empty();
     }
   }
@@ -78,12 +83,13 @@ class FreeClassroomService {
     required String date,
     bool refresh = false,
   }) async* {
-    AllPeriodsClassroomResponse currentResponse = AllPeriodsClassroomResponse.empty(date);
+    AllPeriodsClassroomResponse currentResponse =
+        AllPeriodsClassroomResponse.empty(date);
     yield currentResponse;
 
     // Start loading all periods
     final futures = <int, Future<FreeClassroomResponse>>{};
-    
+
     for (int period = 1; period <= 10; period++) {
       // Mark period as loading
       currentResponse = currentResponse.copyWith(
@@ -103,21 +109,28 @@ class FreeClassroomService {
     for (final entry in futures.entries) {
       final period = entry.key;
       final future = entry.value;
-      
+
       try {
         final response = await future;
-        debugPrint('FreeClassroomService: Period $period completed successfully');
+        debugPrint(
+          '[FreeClassroomService] Period $period completed successfully',
+        );
         currentResponse = currentResponse.copyWith(
           periodData: Map.from(currentResponse.periodData)..[period] = response,
-          loadingStates: Map.from(currentResponse.loadingStates)..[period] = false,
+          loadingStates: Map.from(currentResponse.loadingStates)
+            ..[period] = false,
           errorStates: Map.from(currentResponse.errorStates)..[period] = null,
         );
         yield currentResponse;
       } catch (e) {
-        debugPrint('FreeClassroomService: Period $period failed with error: $e');
+        debugPrint(
+          '[FreeClassroomService] Period $period failed with error: $e',
+        );
         currentResponse = currentResponse.copyWith(
-          loadingStates: Map.from(currentResponse.loadingStates)..[period] = false,
-          errorStates: Map.from(currentResponse.errorStates)..[period] = e.toString(),
+          loadingStates: Map.from(currentResponse.loadingStates)
+            ..[period] = false,
+          errorStates: Map.from(currentResponse.errorStates)
+            ..[period] = e.toString(),
         );
         yield currentResponse;
       }

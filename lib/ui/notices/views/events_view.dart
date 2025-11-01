@@ -21,9 +21,13 @@ class _EventsViewState extends RefreshableView<EventsView> {
   @override
   Future<void> fetchData({bool refresh = false}) async {
     try {
-      final ledEvents = await _eventsService.fetchStudentLedEvents(refresh: refresh);
-      final unstaffedEvents = await _eventsService.fetchStudentUnstaffedEvents(refresh: refresh);
-      
+      final ledEvents = await _eventsService.fetchStudentLedEvents(
+        refresh: refresh,
+      );
+      final unstaffedEvents = await _eventsService.fetchStudentUnstaffedEvents(
+        refresh: refresh,
+      );
+
       setState(() {
         _studentLedEvents = ledEvents;
         _studentUnstaffedEvents = unstaffedEvents;
@@ -34,13 +38,12 @@ class _EventsViewState extends RefreshableView<EventsView> {
     }
   }
 
-
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_studentLedEvents == null || _studentUnstaffedEvents == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     return AdaptiveEventsLayout(
       studentLedEvents: _studentLedEvents!,
       studentUnstaffedEvents: _studentUnstaffedEvents!,
@@ -60,7 +63,7 @@ class _EventsViewState extends RefreshableView<EventsView> {
   String get errorTitle => 'Error loading events';
 
   @override
-  bool get isEmpty => 
+  bool get isEmpty =>
       (_studentLedEvents == null || _studentLedEvents!.isEmpty) &&
       (_studentUnstaffedEvents == null || _studentUnstaffedEvents!.isEmpty);
 }

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';  
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 
 /// Reusable password input field component with customizable label
 class PasswordInput extends StatefulWidget {
   /// Text editing controller for the password field
   final TextEditingController controller;
-  
+
   /// Label text to display for the field
   final String labelText;
-  
+
   /// Optional validator function
   final String? Function(String?)? validator;
-  
+
   /// Whether the field is enabled
   final bool enabled;
-  
+
   /// Optional prefix icon (defaults to lock icon)
   final IconData? prefixIcon;
 
@@ -57,13 +57,17 @@ class _PasswordInputState extends State<PasswordInput> {
           padding: const EdgeInsets.only(right: 8.0),
           child: IconButton(
             icon: Icon(
-              _obscureText ? Symbols.visibility_rounded : Symbols.visibility_off_rounded,
+              _obscureText
+                  ? Symbols.visibility_rounded
+                  : Symbols.visibility_off_rounded,
             ),
             onPressed: _togglePasswordVisibility,
             tooltip: _obscureText ? 'Show password' : 'Hide password',
           ),
         ),
-        border: OutlineInputBorder(borderRadius: themeNotifier.getBorderRadiusAll(0.75)),
+        border: OutlineInputBorder(
+          borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+        ),
       ),
       validator: widget.validator ?? _defaultValidator,
     );

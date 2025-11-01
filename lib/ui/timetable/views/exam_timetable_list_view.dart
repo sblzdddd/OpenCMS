@@ -50,10 +50,7 @@ class ExamTimetableListView extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 6.0),
               child: Text(
                 date,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
             for (final exam in items)
@@ -64,7 +61,8 @@ class ExamTimetableListView extends StatelessWidget {
                       : (exam.code.isNotEmpty ? exam.code : 'Exam'),
                   code: exam.code.isNotEmpty ? exam.code : '',
                   room: exam.room.isNotEmpty ? exam.room : 'TBA',
-                  extraInfo: 'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+                  extraInfo:
+                      'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
                   timespan: '${exam.startTime} - ${exam.endTime}',
                   periodText: '',
                   onTap: () => onExamTap(exam),

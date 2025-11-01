@@ -8,9 +8,7 @@ class AssessmentResponse {
 
   factory AssessmentResponse.fromJson(List<dynamic> json) {
     return AssessmentResponse(
-      subjects: (json)
-          .map((item) => SubjectAssessment.fromJson(item))
-          .toList(),
+      subjects: (json).map((item) => SubjectAssessment.fromJson(item)).toList(),
     );
   }
 }
@@ -33,9 +31,11 @@ class SubjectAssessment {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       subject: json['subject'] ?? '',
-      assessments: (json['assessments'] as List<dynamic>?)
-          ?.map((item) => Assessment.fromJson(item))
-          .toList() ?? [],
+      assessments:
+          (json['assessments'] as List<dynamic>?)
+              ?.map((item) => Assessment.fromJson(item))
+              .toList() ??
+          [],
     );
   }
 }
@@ -107,7 +107,7 @@ class Assessment {
   double? get percentageScore {
     final markValue = numericMark;
     final outOfValue = numericOutOf;
-    
+
     if (markValue != null && outOfValue != null && outOfValue > 0) {
       return (markValue / outOfValue) * 100;
     }
@@ -115,8 +115,9 @@ class Assessment {
   }
 
   /// Check if this is a test/exam
-  bool get isTestOrExam => kind.toLowerCase().contains('test') || 
-                           kind.toLowerCase().contains('exam');
+  bool get isTestOrExam =>
+      kind.toLowerCase().contains('test') ||
+      kind.toLowerCase().contains('exam');
 
   /// Check if this is a project
   bool get isProject => kind.toLowerCase().contains('project');

@@ -1,3 +1,5 @@
+import 'package:flutter/rendering.dart';
+
 import 'skin_image.dart';
 import '../../constants/skin_constants.dart';
 import '../../../services/skin/skin_file_manager.dart';
@@ -5,7 +7,6 @@ import 'skin_image_type.dart';
 
 /// Configuration for skin customization elements
 class Skin {
-  
   String id;
   String name;
   String description;
@@ -33,7 +34,8 @@ class Skin {
     Map<String, SkinImageData>? imageData,
     this.isDefault = false,
     this.isActive = false,
-  }) : imageData = imageData ?? Map<String, SkinImageData>.from(defaultImageData);
+  }) : imageData =
+           imageData ?? Map<String, SkinImageData>.from(defaultImageData);
 
   /// Create a copy of this skin with updated fields
   Skin copyWith({
@@ -65,6 +67,7 @@ class Skin {
       isActive: isActive ?? this.isActive,
     );
   }
+
   /// Convert skin to JSON for storage
   Map<String, dynamic> toJson({bool useRelativePaths = false}) {
     final json = <String, dynamic>{
@@ -74,32 +77,32 @@ class Skin {
       'updatedAt': updatedAt.millisecondsSinceEpoch,
       'author': author,
     };
-    
+
     // Only serialize non-default values
     if (description.isNotEmpty) {
       json['description'] = description;
     }
-    
+
     if (homepage.isNotEmpty) {
       json['homepage'] = homepage;
     }
-    
+
     if (version != '1.0') {
       json['version'] = version;
     }
-    
+
     if (skinVersion != '1.0') {
       json['skinVersion'] = skinVersion;
     }
-    
+
     if (isDefault) {
       json['isDefault'] = isDefault;
     }
-    
+
     if (isActive) {
       json['isActive'] = isActive;
     }
-    
+
     // Serialize only entries that differ from defaults
     final Map<String, dynamic> diffImageData = {};
     for (final entry in imageData.entries) {
@@ -114,7 +117,7 @@ class Skin {
     if (diffImageData.isNotEmpty) {
       json['imageData'] = diffImageData;
     }
-    
+
     return json;
   }
 
@@ -123,7 +126,8 @@ class Skin {
     Map<String, SkinImageData> imageData;
     if (json.containsKey('imageData') && json['imageData'] != null) {
       try {
-        final Map<String, dynamic> raw = (json['imageData'] as Map<String, dynamic>);
+        final Map<String, dynamic> raw =
+            (json['imageData'] as Map<String, dynamic>);
         // Merge with defaults so that type and defaults come from defaultImageData
         imageData = Map<String, SkinImageData>.fromEntries(
           defaultImageData.entries.map((defaultEntry) {
@@ -131,34 +135,45 @@ class Skin {
             final defaults = defaultEntry.value;
             final valueJson = raw[key];
             if (valueJson is Map<String, dynamic>) {
-              return MapEntry(key, SkinImageData.fromJsonWithDefaults(valueJson, defaults));
+              return MapEntry(
+                key,
+                SkinImageData.fromJsonWithDefaults(valueJson, defaults),
+              );
             }
             return MapEntry(key, defaults);
-          })
+          }),
         );
         // Preserve any unknown keys by parsing them with background type as fallback
         for (final extra in raw.entries) {
-          if (!imageData.containsKey(extra.key) && extra.value is Map<String, dynamic>) {
+          if (!imageData.containsKey(extra.key) &&
+              extra.value is Map<String, dynamic>) {
             final defaults = const SkinImageData();
-            imageData[extra.key] = SkinImageData.fromJsonWithDefaults(extra.value as Map<String, dynamic>, defaults);
+            imageData[extra.key] = SkinImageData.fromJsonWithDefaults(
+              extra.value as Map<String, dynamic>,
+              defaults,
+            );
           }
         }
       } catch (e) {
-        print('Skin.fromJson: Error parsing imageData: $e');
+        debugPrint('[Skin] Error parsing imageData: $e');
         imageData = Map<String, SkinImageData>.from(defaultImageData);
       }
     } else {
-      print('Skin.fromJson: No image data found, using default');
+      debugPrint('[Skin] No image data found, using default');
       imageData = Map<String, SkinImageData>.from(defaultImageData);
     }
-    
+
     return Skin(
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
       imageData: imageData,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(json['createdAt'] as int? ?? DateTime.now().millisecondsSinceEpoch),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(json['updatedAt'] as int? ?? DateTime.now().millisecondsSinceEpoch),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        json['createdAt'] as int? ?? DateTime.now().millisecondsSinceEpoch,
+      ),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(
+        json['updatedAt'] as int? ?? DateTime.now().millisecondsSinceEpoch,
+      ),
       author: json['author'] as String? ?? '',
       homepage: json['homepage'] as String? ?? '',
       version: json['version'] as String? ?? '1.0',
@@ -167,14 +182,16 @@ class Skin {
       isActive: false,
     );
   }
-  
+
   /// Check if skin has an image of the specified type
   bool hasImage(String key) {
     return imageData[key]?.hasImage ?? false;
   }
 
   bool hasAnyBGImage() {
-    return imageData.values.any((image) => image.type == SkinImageType.background && image.hasImage);
+    return imageData.values.any(
+      (image) => image.type == SkinImageType.background && image.hasImage,
+    );
   }
 
   /// Check if image file exists for the specified type
@@ -190,9 +207,13 @@ class Skin {
   Future<Skin?> setImagePath(String key, String? imagePath) async {
     final oldPath = imageData[key]?.imagePath;
     await SkinFileManager.deleteFileIfExists(oldPath, id);
-    
+
     if (imagePath != null) {
-      imagePath = await SkinFileManager.copyImageToSkinsDirectory(imagePath, id, key);
+      imagePath = await SkinFileManager.copyImageToSkinsDirectory(
+        imagePath,
+        id,
+        key,
+      );
     }
     imageData[key] = imageData[key]!.copyWith(imagePath: imagePath);
     updatedAt = DateTime.now();
@@ -225,5 +246,4 @@ class Skin {
 
   @override
   int get hashCode => id.hashCode;
-
 }

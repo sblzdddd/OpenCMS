@@ -34,11 +34,33 @@ const TARGET_DOMAINS = {
 
 // Utility functions
 const rewriteCookies = (cookies) => cookies && (Array.isArray(cookies) ? cookies : [cookies])
-  .map(cookie => cookie
-    .replace(/domain=([^;]+)/gi, `domain=${PROXY_HOST}`)
-    .replace(/;\s*secure/gi, '')
-    .replace(/samesite=none/gi, 'samesite=lax')
-  );
+  .map(cookie => {
+    let updated = cookie
+      .replace(/domain=([^;]+)/gi, `domain=${PROXY_HOST}`)
+      .replace(/;\s*secure/gi, '');
+    // Remove any existing SameSite attribute and enforce SameSite=None
+    updated = updated.replace(/;\s*samesite=[^;]*/gi, '');
+    updated += '; SameSite=None';
+    return updated;
+  });
+
+// Remove proxy-related forwarding headers that can confuse upstream (e.g., Django) over HTTPS
+const sanitizeForwardHeaders = (headers) => {
+  const cleaned = { ...headers };
+  Object.keys(cleaned).forEach((k) => {
+    const key = k.toLowerCase();
+    if (
+      key === 'forwarded' ||
+      key.startsWith('x-forwarded-') ||
+      key === 'via' ||
+      key === 'x-real-ip' ||
+      key === 'x-scheme'
+    ) {
+      delete cleaned[k];
+    }
+  });
+  return cleaned;
+};
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -60,6 +82,48 @@ fastify.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOS
 
 // Main proxy route
 fastify.register(async function (fastify) {
+  // Return ONLY the raw redirect Location header for a given target URL, without any rewriting
+  fastify.get('/redirect-location/:domain/*', async (req, reply) => {
+    const { domain } = req.params;
+    const path = req.params['*'];
+
+    if (!TARGET_DOMAINS[domain]) return reply.code(400).send('');
+    if (req.method === 'OPTIONS') return reply.headers(corsHeaders).code(200).send('');
+
+    const targetUrl = `${TARGET_DOMAINS[domain]}/${path}`;
+    const fullUrl = req.query && Object.keys(req.query).length ?
+      `${targetUrl}?${new URLSearchParams(req.query)}` : targetUrl;
+
+    try {
+      const { host, origin, 'x-forwarded-for': xff, 'x-forwarded-proto': xfp,
+        'content-type': ct, 'content-length': cl, ...restHeaders } = req.headers;
+      const upstreamHeaders = sanitizeForwardHeaders(restHeaders);
+      upstreamHeaders.referer = TARGET_DOMAINS[domain] + '/cms';
+
+      // Make request without following redirects to capture Location
+      const response = await request(fullUrl, {
+        method: 'GET',
+        headers: upstreamHeaders,
+        maxRedirections: 0
+      });
+
+      console.log(response.statusCode, response.headers);
+      const location = response.headers['location'] || '';
+      return reply
+        .headers({ ...corsHeaders, 'Access-Control-Allow-Origin': req.headers.origin || '*' })
+        .type('text/plain')
+        .code(200)
+        .send(Array.isArray(location) ? location[0] : location);
+    } catch (error) {
+      fastify.log.error(`Redirect-location error for ${fullUrl}:`, error);
+      return reply
+        .headers({ ...corsHeaders, 'Access-Control-Allow-Origin': req.headers.origin || '*' })
+        .type('text/plain')
+        .code(500)
+        .send('');
+    }
+  });
+
   fastify.all('/proxy/:domain/*', async (req, reply) => {
     const { domain } = req.params;
     const path = req.params['*'];
@@ -74,7 +138,8 @@ fastify.register(async function (fastify) {
     try {
       // Prepare headers and body
       const { host, origin, 'x-forwarded-for': xff, 'x-forwarded-proto': xfp, 
-              'content-type': ct, 'content-length': cl, ...upstreamHeaders } = req.headers;
+        'content-type': ct, 'content-length': cl, ...restHeaders } = req.headers;
+      const upstreamHeaders = sanitizeForwardHeaders(restHeaders);
       upstreamHeaders.referer = TARGET_DOMAINS[domain] + '/cms';
       
       let requestBody;
@@ -87,7 +152,8 @@ fastify.register(async function (fastify) {
         }
       }
       
-      const response = await request(fullUrl, { method: req.method, headers: upstreamHeaders, body: requestBody });
+      // Do NOT auto-follow redirects; we need to surface 3xx and rewrite Location to go through the proxy
+      const response = await request(fullUrl, { method: req.method, headers: upstreamHeaders, body: requestBody, maxRedirections: 0 });
       
       // Process response headers
       const responseHeaders = {};
@@ -98,12 +164,41 @@ fastify.register(async function (fastify) {
         if (lowerKey === 'set-cookie') {
           responseHeaders[key] = rewriteCookies(value);
         } else if (lowerKey === 'location') {
-          let location = value;
-          Object.entries(TARGET_DOMAINS).forEach(([targetDomain, targetUrl]) => {
-            location = location.replace(new RegExp(targetUrl.replace('https://', 'https?://'), 'g'),
-              `${PROXY_BASE_URL}/proxy/${targetDomain}`);
-          });
-          responseHeaders[key] = location;
+          // Normalize to string in case of array (undici typically provides string)
+          let location = Array.isArray(value) ? value[0] : value;
+
+          // Helper to map absolute URLs (http/https) that match our TARGET_DOMAINS
+          const mapAbsoluteToProxy = (loc) => {
+            let out = loc;
+            Object.entries(TARGET_DOMAINS).forEach(([targetDomain, targetUrl]) => {
+              out = out.replace(new RegExp(targetUrl.replace('https://', 'https?://'), 'g'),
+                `${PROXY_BASE_URL}/proxy/${targetDomain}`);
+            });
+            return out;
+          };
+
+          // Rewrite logic for Location header
+          if (/^https?:\/\//i.test(location)) {
+            // Absolute URL: map if it points to a known target domain
+            responseHeaders[key] = mapAbsoluteToProxy(location);
+          } else if (/^\/\//.test(location)) {
+            // Protocol-relative URL: only rewrite if it matches a known target domain
+            const withoutProto = location.replace(/^\/\//, '');
+            const host = withoutProto.split('/')[0].toLowerCase();
+            const pathRemainder = withoutProto.slice(host.length);
+            if (host in TARGET_DOMAINS) {
+              responseHeaders[key] = `${PROXY_BASE_URL}/proxy/${host}${pathRemainder}`;
+            } else {
+              // Leave as-is if not targeting a known host
+              responseHeaders[key] = location;
+            }
+          } else if (location.startsWith('/')) {
+            // Root-relative: send through current target domain
+            responseHeaders[key] = `${PROXY_BASE_URL}/proxy/${domain}${location}`;
+          } else {
+            // Relative (e.g., 'login'): join with current proxy base/domain
+            responseHeaders[key] = `${PROXY_BASE_URL}/proxy/${domain}/${location}`;
+          }
         } else if (!['transfer-encoding', 'content-length'].includes(lowerKey)) {
           responseHeaders[key] = value;
         }

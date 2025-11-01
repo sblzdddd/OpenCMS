@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../data/constants/subject_icons.dart';
 import '../../attendance/widgets/course_stats_card_content.dart';
@@ -42,16 +42,18 @@ class CourseDetailDialog extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final theme = Theme.of(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    
+
     // Extract course name and code from title for icon determination
     // Assuming title format is "Subject Name (CODE)" or just "Subject Name"
-    final courseName = title.contains('(') 
+    final courseName = title.contains('(')
         ? title.substring(0, title.lastIndexOf('(')).trim()
         : title;
     final courseCode = title.contains('(') && title.contains(')')
-        ? title.substring(title.lastIndexOf('(') + 1, title.lastIndexOf(')')).trim()
+        ? title
+              .substring(title.lastIndexOf('(') + 1, title.lastIndexOf(')'))
+              .trim()
         : '';
-    
+
     final category = SubjectIconConstants.getCategoryForSubject(
       subjectName: courseName,
       code: courseCode,
@@ -59,15 +61,15 @@ class CourseDetailDialog extends StatelessWidget {
     final iconData = SubjectIconConstants.getIconForCategory(
       category: category,
     );
-    
+
     return FutureBuilder<({CourseStats stats, String subtitle})>(
       future: future,
       builder: (context, snapshot) {
         // Use dynamic subtitle if data is loaded, otherwise use initial subtitle
-        final currentSubtitle = snapshot.hasData 
-            ? snapshot.data!.subtitle 
+        final currentSubtitle = snapshot.hasData
+            ? snapshot.data!.subtitle
             : initialSubtitle;
-            
+
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: themeNotifier.getBorderRadiusAll(1.5),
@@ -142,9 +144,7 @@ class CourseDetailDialog extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Visual summary using the extracted component
-                      CourseStatsCardContent(
-                        stats: data.stats,
-                      ),
+                      CourseStatsCardContent(stats: data.stats),
                     ],
                   ),
                 ],

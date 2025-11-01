@@ -8,17 +8,19 @@ import 'package:flutter/foundation.dart';
 Future<bool> refreshCookies(AuthServiceBase authService) async {
   try {
     debugPrint('TokenFunctions: Attempting to refresh token');
-    
+
     final response = await authService.httpService.post(
       ApiConstants.tokenRefreshEndpoint,
       refresh: true,
     );
-    
+
     if (response.statusCode == 200) {
       debugPrint('TokenFunctions: Token refresh successful');
       return true;
     } else {
-      debugPrint('TokenFunctions: Token refresh failed with status: ${response.statusCode}');
+      debugPrint(
+        'TokenFunctions: Token refresh failed with status: ${response.statusCode}',
+      );
       debugPrint('TokenFunctions: Token refresh response: ${response.data}');
       return false;
     }
@@ -35,15 +37,13 @@ Future<bool> refreshCookiesIfNeeded(AuthServiceBase authService) async {
   if (!authService.authState.isAuthenticated) {
     return false;
   }
-  
+
   // Always try refreshing when we have cookies but uncertain about expiration
   // This is safer than trying to predict expiration times
   final currentCookies = await StorageClient.currentCookies;
   if (currentCookies.isNotEmpty) {
     return await refreshCookies(authService);
   }
-  
+
   return false;
 }
-
-

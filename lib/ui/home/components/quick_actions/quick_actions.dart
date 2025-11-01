@@ -26,7 +26,9 @@ class QuickActionsController extends ChangeNotifier {
     }
     // Fallback: write default actions directly to storage
     final QuickActionsStorageService storage = QuickActionsStorageService();
-    final List<String> defaults = List<String>.from(QuickActionsConstants.defaultActionIds);
+    final List<String> defaults = List<String>.from(
+      QuickActionsConstants.defaultActionIds,
+    );
     await storage.saveQuickActionsPreferences(defaults);
     notifyListeners();
   }
@@ -37,7 +39,9 @@ class QuickActionsController extends ChangeNotifier {
       return handler();
     }
     // Fallback: compute from defaults when state not bound yet
-    final currentIds = List<String>.from(QuickActionsConstants.defaultActionIds);
+    final currentIds = List<String>.from(
+      QuickActionsConstants.defaultActionIds,
+    );
     return QuickActionsConstants.getAvailableActionsToAdd(currentIds);
   }
 }
@@ -54,7 +58,8 @@ class _QuickActionsState extends State<QuickActions> {
   bool _isEditMode = false;
   bool _isLoading = true;
   List<Map<String, dynamic>> actions = [];
-  final QuickActionsStorageService _storageService = QuickActionsStorageService();
+  final QuickActionsStorageService _storageService =
+      QuickActionsStorageService();
 
   @override
   void initState() {
@@ -85,8 +90,9 @@ class _QuickActionsState extends State<QuickActions> {
   /// Load user's quick actions preferences from secure storage
   Future<void> _loadQuickActionsPreferences() async {
     try {
-      final savedActionIds = await _storageService.loadQuickActionsPreferences();
-      
+      final savedActionIds = await _storageService
+          .loadQuickActionsPreferences();
+
       if (savedActionIds != null && savedActionIds.isNotEmpty) {
         // Load actions from saved preferences
         actions = QuickActionsConstants.getActionsFromIds(savedActionIds);
@@ -99,7 +105,9 @@ class _QuickActionsState extends State<QuickActions> {
         await _saveQuickActionsPreferences();
       }
       // Ensure persistent More... action exists
-      final hasMore = actions.any((a) => a['id'] == QuickActionsConstants.moreAction['id']);
+      final hasMore = actions.any(
+        (a) => a['id'] == QuickActionsConstants.moreAction['id'],
+      );
       if (!hasMore) {
         actions.add(QuickActionsConstants.moreAction);
       }
@@ -110,7 +118,9 @@ class _QuickActionsState extends State<QuickActions> {
         QuickActionsConstants.defaultActionIds,
       );
       // Ensure persistent More... action exists
-      final hasMore = actions.any((a) => a['id'] == QuickActionsConstants.moreAction['id']);
+      final hasMore = actions.any(
+        (a) => a['id'] == QuickActionsConstants.moreAction['id'],
+      );
       if (!hasMore) {
         actions.add(QuickActionsConstants.moreAction);
       }
@@ -162,12 +172,10 @@ class _QuickActionsState extends State<QuickActions> {
       context: context,
       builder: (context) => MoreActionsDialog(
         currentActionIds: currentActionIds,
-        onActionChosen: (action) {
-        },
+        onActionChosen: (action) {},
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -179,28 +187,27 @@ class _QuickActionsState extends State<QuickActions> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 12),
+              padding: const EdgeInsets.only(
+                left: 12,
+                right: 12,
+                bottom: 12,
+                top: 12,
+              ),
               decoration: BoxDecoration(
-                color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-                    ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-                : Theme.of(context).colorScheme.surfaceContainer,
+                color: themeNotifier.needTransparentBG
+                    ? (!themeNotifier.isDarkMode
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                          : Theme.of(context).colorScheme.surfaceContainer
+                                .withValues(alpha: 0.8))
+                    : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(1.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 10, left: 2, right: 2),
-                    child: Text(
-                      'Categories',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  _isLoading 
+                  _isLoading
                       ? SizedBox(
                           height: 110,
                           child: Center(
@@ -211,74 +218,91 @@ class _QuickActionsState extends State<QuickActions> {
                           ),
                         )
                       : LayoutBuilder(
-                        builder: (context, constraints) {
-                          const double spacing = 10.0;
-                          const double minTileWidth = 100.0;
-                          // Item height is determined by each tile
+                          builder: (context, constraints) {
+                            const double spacing = 10.0;
+                            const double minTileWidth = 100.0;
+                            // Item height is determined by each tile
 
-                          final double availableWidth = constraints.maxWidth;
-                          // Determine number of columns based on available width and minimum tile width
-                          final int columns = (((availableWidth + spacing) /
-                                      (minTileWidth + spacing))
-                                  .floor())
-                              .clamp(1, 8);
-                          final double tileWidth =
-                              (availableWidth - (columns - 1) * spacing) / columns;
+                            final double availableWidth = constraints.maxWidth;
+                            // Determine number of columns based on available width and minimum tile width
+                            final int columns =
+                                (((availableWidth + spacing) /
+                                            (minTileWidth + spacing))
+                                        .floor())
+                                    .clamp(1, 8);
+                            final double tileWidth =
+                                (availableWidth - (columns - 1) * spacing) /
+                                columns;
 
-                          // Build draggable action items with stable keys
-                          final List<Widget> displayChildren = actions
-                              .map<Widget>((action) => ActionItem(
+                            // Build draggable action items with stable keys
+                            final List<Widget> displayChildren = actions
+                                .map<Widget>(
+                                  (action) => ActionItem(
                                     key: ValueKey('action_${action['id']}'),
                                     action: action,
                                     isEditMode: _isEditMode,
-                                    onTap: action['id'] == QuickActionsConstants.moreAction['id']
+                                    onTap:
+                                        action['id'] ==
+                                            QuickActionsConstants
+                                                .moreAction['id']
                                         ? _onShowMoreActions
                                         : null,
                                     tileWidth: tileWidth,
-                                    onDelete: action['id'] == QuickActionsConstants.moreAction['id']
+                                    onDelete:
+                                        action['id'] ==
+                                            QuickActionsConstants
+                                                .moreAction['id']
                                         ? null
                                         : () {
-                                            final String id = action['id'] as String;
-                                            final int currentIndex = actions.indexWhere((a) => a['id'] == id);
+                                            final String id =
+                                                action['id'] as String;
+                                            final int currentIndex = actions
+                                                .indexWhere(
+                                                  (a) => a['id'] == id,
+                                                );
                                             if (currentIndex != -1) {
                                               _onRemove(currentIndex);
                                             }
                                           },
-                                  ))
-                              .toList();
+                                  ),
+                                )
+                                .toList();
 
-                          if (_isEditMode) {
-                            // Full-width trash can row
-                            displayChildren.add(SizedBox(
-                              key: const ValueKey('trash_can'),
-                              width: availableWidth,
-                              child: TrashCanItem(
-                                tileWidth: availableWidth,
-                              ),
-                            ));
-                          }
-                          return ReorderableWrap(
-                            spacing: spacing,
-                            runSpacing: spacing,
-                            alignment: WrapAlignment.start,
-                            isEditMode: _isEditMode,
-                            wrapId: 'quick_actions', // Unique identifier for this wrap
-                            onReorderStart: () {
-                              setState(() {
-                                _isEditMode = true;
-                              });
-                            },
-                            onReorderEnd: () {
-                              if (mounted) {
-                                setState(() => _isEditMode = false);
-                              }
-                            },
-                            onReorder: _onReorder,
-                            onRemove: _onRemove,
-                            children: displayChildren,
-                          );
-                        },
-                      ),
+                            if (_isEditMode) {
+                              // Full-width trash can row
+                              displayChildren.add(
+                                SizedBox(
+                                  key: const ValueKey('trash_can'),
+                                  width: availableWidth,
+                                  child: TrashCanItem(
+                                    tileWidth: availableWidth,
+                                  ),
+                                ),
+                              );
+                            }
+                            return ReorderableWrap(
+                              spacing: spacing,
+                              runSpacing: spacing,
+                              alignment: WrapAlignment.start,
+                              isEditMode: _isEditMode,
+                              wrapId:
+                                  'quick_actions', // Unique identifier for this wrap
+                              onReorderStart: () {
+                                setState(() {
+                                  _isEditMode = true;
+                                });
+                              },
+                              onReorderEnd: () {
+                                if (mounted) {
+                                  setState(() => _isEditMode = false);
+                                }
+                              },
+                              onReorder: _onReorder,
+                              onRemove: _onRemove,
+                              children: displayChildren,
+                            );
+                          },
+                        ),
                 ],
               ),
             ),

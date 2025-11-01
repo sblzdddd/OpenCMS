@@ -15,7 +15,7 @@ class CustomSnackbar extends StatefulWidget {
   final int Function() getPosition;
   final double Function()? getTopOffset;
   final void Function(CustomSnackbarState)? onStateCreated;
-  
+
   const CustomSnackbar({
     super.key,
     required this.id,
@@ -44,7 +44,8 @@ class CustomSnackbarState extends State<CustomSnackbar>
   late AnimationController _fadeController;
   late Animation<double> _slideAnimation;
   late Animation<double> _fadeAnimation;
-  static const double _snackbarHeight = 60.0; // Approximate height including spacing
+  static const double _snackbarHeight =
+      60.0; // Approximate height including spacing
   bool _isDismissing = false;
 
   @override
@@ -60,26 +61,18 @@ class CustomSnackbarState extends State<CustomSnackbar>
       vsync: this,
     );
 
-    _slideAnimation = Tween<double>(
-      begin: -1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeInOutQuint,
-    ));
+    _slideAnimation = Tween<double>(begin: -1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _slideController, curve: Curves.easeInOutQuint),
+    );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
 
     // Play both animations when showing
     _slideController.forward();
     _fadeController.forward();
-    
+
     // Notify parent about state creation
     widget.onStateCreated?.call(this);
   }
@@ -100,16 +93,16 @@ class CustomSnackbarState extends State<CustomSnackbar>
     // Prevent multiple dismissals
     if (_isDismissing) return;
     _isDismissing = true;
-    
+
     // Ensure no slide-out on dismiss
     if (_slideController.isAnimating) {
       _slideController.stop();
     }
     _slideController.value = 1.0;
-    
+
     // Only fade out when dismissing
     await _fadeController.reverse();
-    
+
     // Call onDismiss after animation completes
     if (mounted) {
       await widget.onDismiss();
@@ -147,14 +140,19 @@ class CustomSnackbarState extends State<CustomSnackbar>
                     elevation: widget.elevation,
                     borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                     color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    shadowColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15),
+                    shadowColor: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.15),
                     child: Container(
                       key: _contentKey,
                       constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width * 0.8,
                         minWidth: 200,
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Add spacing between snackbars
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ), // Add spacing between snackbars
                       child: IntrinsicWidth(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -173,7 +171,9 @@ class CustomSnackbarState extends State<CustomSnackbar>
                                   Text(
                                     widget.title,
                                     style: TextStyle(
-                                      color: Theme.of(context).colorScheme.onSurface,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -183,7 +183,9 @@ class CustomSnackbarState extends State<CustomSnackbar>
                                     Text(
                                       widget.message!,
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.onSurface,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                         fontSize: 12,
                                       ),
                                     ),

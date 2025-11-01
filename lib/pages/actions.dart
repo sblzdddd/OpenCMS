@@ -11,7 +11,7 @@ import 'actions/timetable.dart';
 import 'actions/reports.dart';
 import 'actions/referral_comments.dart';
 import '../ui/navigations/app_navigation_controller.dart';
-import 'settings/settings_page.dart';
+import 'settings/settings.dart';
 import '../services/auth/auth_service.dart';
 import '../data/constants/api_endpoints.dart';
 import '../ui/shared/widgets/custom_app_bar.dart';
@@ -84,41 +84,95 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
     case 'homeworks':
       return const HomeworkPage();
     case 'documents':
-      return const WebCmsPage(initialUrl: '${ApiConstants.legacyBaseUrl}/file/list/student/', windowTitle: 'Documents');
+      return const WebCmsPage(
+        initialUrl: '${ApiConstants.legacyBaseUrl}/file/list/student/',
+        windowTitle: 'Documents',
+      );
     case 'available_classrooms':
       return const FreeClassroomsPage();
     case 'maintenance':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/repairment/list/', windowTitle: 'Maintenance');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/repairment/list/',
+        windowTitle: 'Maintenance',
+      );
     case 'leave_requests':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/studentleave/list/ps/', windowTitle: 'Leave Requests');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/studentleave/list/ps/',
+        windowTitle: 'Leave Requests',
+      );
     case 'student_profile':
       return const ProfilePage();
     case 'course_stats':
       return AttendancePage(initialTabIndex: 1);
     case 'eca':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/ecaclass/index/', windowTitle: 'ECA');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/ecaclass/index/',
+        windowTitle: 'ECA',
+      );
     case 'mentoring':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/mentoring/list/', windowTitle: 'Mentoring');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/mentoring/list/',
+        windowTitle: 'Mentoring',
+      );
     case 'global_citizenship':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/achievement/', windowTitle: 'Global Citizenship');
+      return WebCmsPage(
+        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/achievement/',
+        windowTitle: 'Global Citizenship',
+      );
     case 'surveys':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/survey/', windowTitle: 'Surveys');
+      return WebCmsPage(
+        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/survey/',
+        windowTitle: 'Surveys',
+      );
     case 'course_selection':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/course/select/', windowTitle: 'Course Selection');
+      return WebCmsPage(
+        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/course/select/',
+        windowTitle: 'Course Selection',
+      );
     case 'exam_entry':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/report/cie_statement_self/', windowTitle: 'Exam Entry');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/report/cie_statement_self/',
+        windowTitle: 'Exam Entry',
+      );
     case 'insurance':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/insurance/', windowTitle: 'Insurance');
+      return WebCmsPage(
+        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/insurance/',
+        windowTitle: 'Insurance',
+      );
     case 'e_agreement':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/jump_into_internal/econtract:list/', windowTitle: 'E-Agreement');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/jump_into_internal/econtract:list/',
+        windowTitle: 'E-Agreement',
+      );
     case 'special_consideration':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/special_consideration/', windowTitle: 'Special Concern');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/special_consideration/',
+        windowTitle: 'Special Concern',
+      );
     case 'id_card':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/student_idcard_upload/', windowTitle: 'ID Card');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/student_idcard_upload/',
+        windowTitle: 'ID Card',
+      );
     case 'university_application':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/uniapp/', windowTitle: 'University Application');
+      return WebCmsPage(
+        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/uniapp/',
+        windowTitle: 'University Application',
+      );
     case 'certifications':
-      return WebCmsPage(initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/certification/create/', windowTitle: 'Certifications');
+      return WebCmsPage(
+        initialUrl:
+            '${ApiConstants.legacyCMSBaseUrl}/$username/certification/create/',
+        windowTitle: 'Certifications',
+      );
     case 'settings':
       return const SettingsPage();
     default:
@@ -128,5 +182,3 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
       );
   }
 }
-
-

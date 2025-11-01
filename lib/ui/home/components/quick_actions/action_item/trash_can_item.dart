@@ -6,11 +6,8 @@ class TrashCanItem extends StatelessWidget {
   final bool isHighlighted;
   final double? tileWidth;
 
-  const TrashCanItem({
-    Key? key,
-    this.isHighlighted = false,
-    this.tileWidth,
-  }) : super(key: key ?? const ValueKey('trash_can'));
+  const TrashCanItem({Key? key, this.isHighlighted = false, this.tileWidth})
+    : super(key: key ?? const ValueKey('trash_can'));
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +18,9 @@ class TrashCanItem extends StatelessWidget {
       title: 'Remove',
       iconColor: Colors.red,
       iconBackgroundColor: Colors.red.withValues(alpha: 0.1),
-      titleStyle: const TextStyle(
-        fontSize: 11,
-        color: Colors.red,
-      ),
-      skinImageKey: 'actionIcons.trash_can', // Trash can doesn't have a specific skin icon
+      titleStyle: const TextStyle(fontSize: 11, color: Colors.red),
+      skinImageKey:
+          'actionIcons.trash_can', // Trash can doesn't have a specific skin icon
     );
 
     if (isHighlighted) {

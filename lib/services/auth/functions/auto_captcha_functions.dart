@@ -7,17 +7,16 @@ Future<dynamic> getTicket(AuthServiceBase authService) async {
   try {
     return false;
     debugPrint('AutoCaptchaFunctions: Attempting to get captcha ticket');
-    
-    final response = await authService.httpService.get(
-      "",
-      refresh: true,
-    );
-    
+
+    final response = await authService.httpService.get("", refresh: true);
+
     if (response.statusCode == 200) {
       debugPrint('AutoCaptchaFunctions: Get ticket successful');
       return response.data['data'];
     } else {
-      debugPrint('AutoCaptchaFunctions: Get ticket failed with status: ${response.statusCode}');
+      debugPrint(
+        'AutoCaptchaFunctions: Get ticket failed with status: ${response.statusCode}',
+      );
       debugPrint('AutoCaptchaFunctions: Get ticket response: ${response.data}');
       return false;
     }
@@ -26,5 +25,3 @@ Future<dynamic> getTicket(AuthServiceBase authService) async {
     return false;
   }
 }
-
-

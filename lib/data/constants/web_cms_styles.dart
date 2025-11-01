@@ -15,18 +15,31 @@ String zeroBodyMarginStyle() {
 }
 
 String convertColorToCss(Color color) {
-  return 'rgba(${color.r*255}, ${color.g*255}, ${color.b*255}, ${color.a})';
+  return 'rgba(${color.r * 255}, ${color.g * 255}, ${color.b * 255}, ${color.a})';
 }
 
 String webCmsStyle(BuildContext context) {
-  final darkCardColorCss = convertColorToCss(Theme.of(context).colorScheme.surfaceContainerLow);
-  final primaryColorCssTransparent = convertColorToCss(Theme.of(context).colorScheme.primary.withValues(alpha: 0.1));
-  final cardHeadColorCss = convertColorToCss(Theme.of(context).colorScheme.surfaceContainerHigh);
-  final primaryColorCss = convertColorToCss(Theme.of(context).colorScheme.primary);
-  final onSurfaceCss = convertColorToCss(Theme.of(context).colorScheme.onSurface);
-  final surfaceColorCss = convertColorToCss(Theme.of(context).colorScheme.surface);
-  final isDarkMode = Theme.of(context).colorScheme.brightness == Brightness.dark;
-return '''
+  final darkCardColorCss = convertColorToCss(
+    Theme.of(context).colorScheme.surfaceContainerLow,
+  );
+  final primaryColorCssTransparent = convertColorToCss(
+    Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+  );
+  final cardHeadColorCss = convertColorToCss(
+    Theme.of(context).colorScheme.surfaceContainerHigh,
+  );
+  final primaryColorCss = convertColorToCss(
+    Theme.of(context).colorScheme.primary,
+  );
+  final onSurfaceCss = convertColorToCss(
+    Theme.of(context).colorScheme.onSurface,
+  );
+  final surfaceColorCss = convertColorToCss(
+    Theme.of(context).colorScheme.surface,
+  );
+  final isDarkMode =
+      Theme.of(context).colorScheme.brightness == Brightness.dark;
+  return '''
 // Inject critical CSS immediately to prevent flickering
 (function() {
   if(document.querySelector('#ocms-css-inject')) return;

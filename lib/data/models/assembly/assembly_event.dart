@@ -39,19 +39,19 @@ class AssemblyEvent {
   /// Form Time events should be period 0, Pastoral events should be period 8
   int? get periodIndex {
     final lowerTitle = title.toLowerCase();
-    
+
     // Check for Form Time - should be period 0
-    if (lowerTitle.contains('form time 1') || 
+    if (lowerTitle.contains('form time 1') ||
         (lowerTitle.contains('form time') && lowerTitle.contains('07:50'))) {
       return 0; // Form Time period
     }
-    
-    // Check for Pastoral (Form Time 2) - should be period 8  
-    if (lowerTitle.contains('form time 2') || 
+
+    // Check for Pastoral (Form Time 2) - should be period 8
+    if (lowerTitle.contains('form time 2') ||
         (lowerTitle.contains('form time') && lowerTitle.contains('13:20'))) {
       return 8; // Pastoral period
     }
-    
+
     return null;
   }
 
@@ -64,7 +64,10 @@ class AssemblyEvent {
 
   /// Check if this is a valid form time assembly event
   bool get isValidFormTimeEvent {
-    return periodIndex != null && weekday != null && weekday! >= 0 && weekday! < 5;
+    return periodIndex != null &&
+        weekday != null &&
+        weekday! >= 0 &&
+        weekday! < 5;
   }
 
   @override

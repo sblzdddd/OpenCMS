@@ -10,7 +10,8 @@ class AttendanceResponse {
   });
 
   factory AttendanceResponse.fromJson(Map<String, dynamic> json) {
-    final List<dynamic> daysJson = json['record_of_days'] as List<dynamic>? ?? [];
+    final List<dynamic> daysJson =
+        json['record_of_days'] as List<dynamic>? ?? [];
     return AttendanceResponse(
       recordOfDays: daysJson
           .map((e) => RecordOfDay.fromJson(e as Map<String, dynamic>))
@@ -71,13 +72,17 @@ class AttendanceEntry {
     );
   }
 
-  String get subjectName => courseName == ''? '/': (courseName == 'ES' ? 'Evening Study' : courseName);
-  
+  String get subjectName => courseName == ''
+      ? '/'
+      : (courseName == 'ES' ? 'Evening Study' : courseName);
+
   String getSubjectNameWithIndex(int index) {
     if (index == 0) {
       return 'MR';
     }
-    return courseName == ''? '/': (courseName == 'ES' ? 'Evening Study' : courseName);
+    return courseName == ''
+        ? '/'
+        : (courseName == 'ES' ? 'Evening Study' : courseName);
   }
 
   String get kindText => AttendanceConstants.kindText[kind] ?? 'Unknown';
@@ -87,10 +92,7 @@ class Student {
   final int id;
   final String name;
 
-  Student({
-    required this.id,
-    required this.name,
-  });
+  Student({required this.id, required this.name});
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
@@ -99,5 +101,3 @@ class Student {
     );
   }
 }
-
-

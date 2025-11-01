@@ -7,7 +7,12 @@ import '../../../services/theme/theme_services.dart';
 import '../../../services/shared/storage_client.dart';
 import '../../navigations/app_navigation_controller.dart';
 
-void showConfirmationDialog(BuildContext context, String title, String message, Future<void> Function(BuildContext) onConfirm) {
+void showConfirmationDialog(
+  BuildContext context,
+  String title,
+  String message,
+  Future<void> Function(BuildContext) onConfirm,
+) {
   final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
   showDialog(
     context: context,
@@ -42,40 +47,50 @@ void showConfirmationDialog(BuildContext context, String title, String message, 
 }
 
 void showLogoutDialog(BuildContext context) {
-  showConfirmationDialog(context, 'Logout', 'Are you sure you want to logout?', (dialogContext) async {
-    Navigator.of(dialogContext).pop();
-    await AuthService().logout();
-    if (context.mounted) {
-      // Ensure global navigation state is cleared and remove all routes
-      AppNavigationController.reset();
-      
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil('/login', (route) => false);
-    }
-  });
+  showConfirmationDialog(
+    context,
+    'Logout',
+    'Are you sure you want to logout?',
+    (dialogContext) async {
+      Navigator.of(dialogContext).pop();
+      await AuthService().logout();
+      if (context.mounted) {
+        // Ensure global navigation state is cleared and remove all routes
+        AppNavigationController.reset();
+
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
+      }
+    },
+  );
 }
 
 void showClearDataDialog(BuildContext context) {
-  showConfirmationDialog(context, 'Clear Data', 'Are you sure you want to clear all user data?\nThis action cannot be undone and will delete ALL your data.', (dialogContext) async {
-    Navigator.of(dialogContext).pop();
-    await AuthService().logout();
-    StorageClient.instance.deleteAll();
-    if (context.mounted) {
-      // Ensure global navigation state is cleared and remove all routes
-      AppNavigationController.reset();
-      
-      // Ensure window close prevention is maintained after logout
-      if (defaultTargetPlatform == TargetPlatform.windows) {
-        await windowManager.setPreventClose(true);
+  showConfirmationDialog(
+    context,
+    'Clear Data',
+    'Are you sure you want to clear all user data?\nThis action cannot be undone and will delete ALL your data.',
+    (dialogContext) async {
+      Navigator.of(dialogContext).pop();
+      await AuthService().logout();
+      StorageClient.instance.deleteAll();
+      if (context.mounted) {
+        // Ensure global navigation state is cleared and remove all routes
+        AppNavigationController.reset();
+
+        // Ensure window close prevention is maintained after logout
+        if (defaultTargetPlatform == TargetPlatform.windows) {
+          await windowManager.setPreventClose(true);
+        }
+        if (!context.mounted) {
+          debugPrint('ClearDataDialog: Context is not mounted');
+          return;
+        }
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/login', (route) => false);
       }
-      if(!context.mounted) {
-        debugPrint('ClearDataDialog: Context is not mounted');
-        return;
-      }
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil('/login', (route) => false);
-    }
-  });
+    },
+  );
 }

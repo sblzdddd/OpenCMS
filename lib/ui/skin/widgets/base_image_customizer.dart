@@ -48,9 +48,10 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
   void didUpdateWidget(BaseImageCustomizer oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Force rebuild when skin changes
-    if (mounted && (oldWidget.skin != widget.skin || 
-        oldWidget.skin.updatedAt != widget.skin.updatedAt ||
-        oldWidget.imageKey != widget.imageKey)) {
+    if (mounted &&
+        (oldWidget.skin != widget.skin ||
+            oldWidget.skin.updatedAt != widget.skin.updatedAt ||
+            oldWidget.imageKey != widget.imageKey)) {
       setState(() {});
     }
   }
@@ -78,7 +79,10 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
         debugPrint('${widget.imageKey} image set successfully');
       } else {
         if (mounted) {
-          SnackbarUtils.showError(context, 'Error setting image: ${response.error ?? 'Failed to set image'}');
+          SnackbarUtils.showError(
+            context,
+            'Error setting image: ${response.error ?? 'Failed to set image'}',
+          );
         }
       }
     } catch (e) {
@@ -111,7 +115,10 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
         debugPrint('${widget.imageKey} image removed');
       } else {
         if (mounted) {
-          SnackbarUtils.showError(context, 'Error removing image: ${response.error ?? 'Failed to remove image'}');
+          SnackbarUtils.showError(
+            context,
+            'Error removing image: ${response.error ?? 'Failed to remove image'}',
+          );
         }
       }
     } catch (e) {
@@ -141,7 +148,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
       debugPrint('${widget.imageKey}: No image path found');
       return false;
     }
-    
+
     final file = File(path);
     final exists = file.existsSync();
     return exists;
@@ -158,7 +165,11 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     BorderRadius? borderRadius,
   }) {
     if (!hasCurrentImage) {
-      return _buildImagePlaceholder(height: height, width: width, borderRadius: borderRadius);
+      return _buildImagePlaceholder(
+        height: height,
+        width: width,
+        borderRadius: borderRadius,
+      );
     }
 
     final imageData = currentImageData!;
@@ -186,7 +197,11 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
                   File(currentImagePath!),
                   fit: effectiveFit,
                   errorBuilder: (context, error, stackTrace) {
-                    return _buildImagePlaceholder(height: height, width: width, borderRadius: borderRadius);
+                    return _buildImagePlaceholder(
+                      height: height,
+                      width: width,
+                      borderRadius: borderRadius,
+                    );
                   },
                 ),
               ),
@@ -197,7 +212,10 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(4),
@@ -218,7 +236,10 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
                 top: 8,
                 left: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(4),
@@ -249,7 +270,9 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
       width: width ?? 100,
       decoration: BoxDecoration(
         borderRadius: borderRadius ?? BorderRadius.circular(8),
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
         ),
@@ -260,13 +283,17 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
           Icon(
             _getPlaceholderIcon(),
             size: 32,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           ),
           const SizedBox(height: 4),
           Text(
             imageType.displayName,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ),
         ],
@@ -322,7 +349,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
               side: const BorderSide(color: Colors.red),
             ),
           ),
-        ]
+        ],
       ],
     );
   }
@@ -332,9 +359,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
 
     final result = await showDialog<SkinImageData>(
       context: context,
-      builder: (context) => ImageSettingsDialog(
-        imageData: currentImageData!,
-      ),
+      builder: (context) => ImageSettingsDialog(imageData: currentImageData!),
     );
 
     if (result != null && mounted) {
@@ -344,14 +369,14 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
 
   Future<void> _updateImageDataInSkin(SkinImageData updatedData) async {
     if (!mounted) return;
-    
+
     try {
       final response = await _skinService.updateSkinImageData(
         skinId: widget.skin.id,
         imageKey: widget.imageKey,
         updatedImageData: updatedData,
       );
-      
+
       if (response.success && response.skin != null) {
         if (mounted) {
           setState(() {
@@ -368,10 +393,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
       }
     } catch (e) {
       if (mounted) {
-        SnackbarUtils.showError(
-          context,
-          'Failed to update image data: $e',
-        );
+        SnackbarUtils.showError(context, 'Failed to update image data: $e');
       }
     }
   }
@@ -405,10 +427,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     return SizedBox(
       width: widget.width ?? 150,
       child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: content,
-        ),
+        child: Padding(padding: const EdgeInsets.all(12), child: content),
       ),
     );
   }

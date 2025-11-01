@@ -9,7 +9,8 @@ class MyGpaView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = AuthService();
-    final url = '${ApiConstants.legacyCMSBaseUrl}/${authService.userInfo!.username}/gpa/';
+    final url =
+        '${ApiConstants.legacyCMSBaseUrl}/${authService.userInfo!.username}/gpa/';
     return WebCmsContent(initialUrl: url);
   }
 }

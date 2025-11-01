@@ -21,7 +21,7 @@ class CourseMergedEvent {
     int i = 0;
     while (i < weekday.periods.length) {
       final period = weekday.periods[i];
-      
+
       if (period.events.isEmpty) {
         i++;
         continue;
@@ -29,22 +29,19 @@ class CourseMergedEvent {
 
       final event = period.events.first;
       int endPeriod = i;
-      
+
       // Find consecutive periods with the same event
       while (endPeriod + 1 < weekday.periods.length) {
         final nextPeriod = weekday.periods[endPeriod + 1];
-        if (nextPeriod.events.isEmpty || 
-            nextPeriod.events.first != event) {
+        if (nextPeriod.events.isEmpty || nextPeriod.events.first != event) {
           break;
         }
         endPeriod++;
       }
 
-      mergedEvents.add(CourseMergedEvent(
-        event: event,
-        startPeriod: i,
-        endPeriod: endPeriod,
-      ));
+      mergedEvents.add(
+        CourseMergedEvent(event: event, startPeriod: i, endPeriod: endPeriod),
+      );
 
       i = endPeriod + 1;
     }
@@ -66,7 +63,7 @@ class CourseMergedEvent {
   /// Get the end period name
   String get endPeriodName {
     if (!(startPeriod == 0 || startPeriod == 7 || startPeriod == 8)) {
-      return (endPeriod > 8? endPeriod-2: endPeriod).toString();
+      return (endPeriod > 8 ? endPeriod - 2 : endPeriod).toString();
     }
     final periodInfo = PeriodConstants.getPeriodInfo(endPeriod);
     return periodInfo?.name ?? 'Period ${endPeriod + 1}';
@@ -88,19 +85,25 @@ class CourseMergedEvent {
   /// Calculate the progress of the current class (0.0 to 1.0)
   double getClassProgress() {
     final now = DateTime.now();
-    final startTime = _parseTime(PeriodConstants.getPeriodInfo(startPeriod)?.startTime ?? '');
-    final endTime = _parseTime(PeriodConstants.getPeriodInfo(endPeriod)?.endTime ?? '');
-    
+    final startTime = _parseTime(
+      PeriodConstants.getPeriodInfo(startPeriod)?.startTime ?? '',
+    );
+    final endTime = _parseTime(
+      PeriodConstants.getPeriodInfo(endPeriod)?.endTime ?? '',
+    );
+
     if (startTime == null || endTime == null) return 0.0;
-    
-    final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+
+    final currentTime = _parseTime(
+      '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+    );
     if (currentTime == null) return 0.0;
-    
+
     final totalDuration = endTime.difference(startTime).inMinutes;
     final elapsedDuration = currentTime.difference(startTime).inMinutes;
-    
+
     if (totalDuration <= 0) return 0.0;
-    
+
     final progress = elapsedDuration / totalDuration;
     return progress.clamp(0.0, 1.0);
   }
@@ -108,18 +111,26 @@ class CourseMergedEvent {
   /// Get time until this class starts (e.g., "in 2h 30m" or "in 45m")
   String getTimeUntilClass() {
     final now = DateTime.now();
-    final startTime = _parseTime(PeriodConstants.getPeriodInfo(startPeriod)?.startTime ?? '');
-    
+    final startTime = _parseTime(
+      PeriodConstants.getPeriodInfo(startPeriod)?.startTime ?? '',
+    );
+
     if (startTime == null) return '';
-    
-    final classTime = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
+
+    final classTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      startTime.hour,
+      startTime.minute,
+    );
     final difference = classTime.difference(now);
-    
+
     if (difference.isNegative) return '';
-    
+
     final hours = difference.inHours;
     final minutes = difference.inMinutes % 60;
-    
+
     if (hours > 0) {
       return 'in ${hours}h ${minutes}m';
     } else {

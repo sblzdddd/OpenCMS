@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:opencms/utils/device_info.dart';
 
 class BackgroundFetcher {
   Timer? _timer;
@@ -24,26 +24,19 @@ class BackgroundFetcher {
 
   /// Start background service
   Future<void> start() async {
-    if (isRunning || kIsWeb) return;
+    if (isRunning || !isDesktopEnvironment) return;
 
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux || Platform.isAndroid) {
-      _startDesktopTimer();
-      debugPrint('BackgroundFetcher: $name started (desktop)');
-    } else if (Platform.isAndroid || Platform.isIOS) {
-      await _startMobileTask();
-      debugPrint('BackgroundFetcher: $name started (mobile)');
-    }
+    _startDesktopTimer();
+    debugPrint('BackgroundFetcher: $name started (desktop)');
 
     isRunning = true;
   }
 
   /// Stop background service
   Future<void> stop() async {
-    if (!isRunning || kIsWeb) return;
+    if (!isRunning || !isDesktopEnvironment) return;
 
-    if (Platform.isWindows || Platform.isMacOS || Platform.isLinux) {
-      _timer?.cancel();
-    }
+    _timer?.cancel();
 
     isRunning = false;
     debugPrint('BackgroundFetcher: $name stopped');
@@ -68,12 +61,8 @@ class BackgroundFetcher {
     });
   }
 
-  /// Internal: start periodic task for mobile
-  Future<void> _startMobileTask() async {
-  }
-  
   Future<void> check(String task) async {
-    if(task == taskId) {
+    if (task == taskId) {
       await onUpdate();
     }
   }

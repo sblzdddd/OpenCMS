@@ -8,37 +8,20 @@ import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/error/empty_placeholder.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
-abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView<T> {
-  @override
-  final bool isTransparent;
+abstract class RefreshablePage<T extends StatefulWidget>
+    extends RefreshableView<T> {
   final String skinKey;
-  RefreshablePage({this.isTransparent = false, this.skinKey = 'global'});
+  RefreshablePage({super.isTransparent = false, this.skinKey = 'global'});
 
-  /// Override this to provide a custom app bar title
   String get appBarTitle => 'Page';
-
-  /// Override this to provide custom app bar actions
   List<Widget>? get appBarActions => null;
-
-  /// Override this to provide custom app bar leading widget
   Widget? get appBarLeading => null;
-
-  /// Override this to provide custom app bar background color
   Color? get appBarBackgroundColor => null;
-
-  /// Override this to provide custom app bar foreground color
   Color? get appBarForegroundColor => null;
-
-  /// Override this to provide custom app bar elevation
   double? get appBarElevation => null;
-
-  /// Override this to provide custom body padding
   EdgeInsets get bodyPadding => const EdgeInsets.all(8);
-
-  /// Override this to provide custom body background color
   Color? get bodyBackgroundColor => null;
 
-  /// Override this to provide custom empty title (optional)
   @override
   String get emptyTitle => 'No data available';
 
@@ -76,9 +59,7 @@ abstract class RefreshablePage<T extends StatefulWidget> extends RefreshableView
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.4),
-        const Center(
-          child: CircularProgressIndicator(),
-        ),
+        const Center(child: CircularProgressIndicator()),
       ],
     );
   }

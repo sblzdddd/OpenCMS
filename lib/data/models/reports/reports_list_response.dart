@@ -24,7 +24,8 @@ class GradeGroup {
   factory GradeGroup.fromJson(Map<String, dynamic> json) {
     return GradeGroup(
       grade: json['grade'] ?? '',
-      exams: (json['exams'] as List<dynamic>?)
+      exams:
+          (json['exams'] as List<dynamic>?)
               ?.map((item) => Exam.fromJson(item as Map<String, dynamic>))
               .toList() ??
           [],
@@ -90,5 +91,6 @@ class Exam {
   }
 
   /// Check if exam has detailed data
-  bool get hasDetails => courseMark.isNotEmpty || pSat.isNotEmpty || markComponent.isNotEmpty;
+  bool get hasDetails =>
+      courseMark.isNotEmpty || pSat.isNotEmpty || markComponent.isNotEmpty;
 }

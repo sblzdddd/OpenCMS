@@ -37,16 +37,21 @@ class ReportDetail {
       semester: json['semester'] ?? 0,
       month: json['month'] ?? '',
       kind: json['kind'] ?? 0,
-      courseMark: (json['course_mark'] as List<dynamic>?)
+      courseMark:
+          (json['course_mark'] as List<dynamic>?)
               ?.map((item) => CourseMark.fromJson(item as Map<String, dynamic>))
               .toList() ??
           [],
-      pSat: (json['p_sat'] as List<dynamic>?)
+      pSat:
+          (json['p_sat'] as List<dynamic>?)
               ?.map((item) => PSat.fromJson(item as Map<String, dynamic>))
               .toList() ??
           [],
-      markComponent: (json['mark_component'] as List<dynamic>?)
-              ?.map((item) => MarkComponent.fromJson(item as Map<String, dynamic>))
+      markComponent:
+          (json['mark_component'] as List<dynamic>?)
+              ?.map(
+                (item) => MarkComponent.fromJson(item as Map<String, dynamic>),
+              )
               .toList() ??
           [],
       subjectComment: json['subject_comment'] ?? [],
@@ -134,11 +139,7 @@ class PSat {
   final int math;
   final int rw;
 
-  PSat({
-    required this.total,
-    required this.math,
-    required this.rw,
-  });
+  PSat({required this.total, required this.math, required this.rw});
 
   factory PSat.fromJson(Map<String, dynamic> json) {
     return PSat(

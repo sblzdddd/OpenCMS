@@ -258,9 +258,16 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
           final response = await _skinService.importSkinFromCmsk(file.path!);
           if (response.success && mounted) {
             await _loadSkins();
-            SnackbarUtils.showSuccess(context, response.message ?? 'Skin imported successfully');
+            if (!mounted) return;
+            SnackbarUtils.showSuccess(
+              context,
+              response.message ?? 'Skin imported successfully',
+            );
           } else if (!response.success && mounted) {
-            SnackbarUtils.showError(context, response.error ?? 'Failed to import skin');
+            SnackbarUtils.showError(
+              context,
+              response.error ?? 'Failed to import skin',
+            );
           }
         }
       }
@@ -281,7 +288,9 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
     return SkinCard(
       skin: skin,
       isSelected: skin.isActive,
-      onTap: skin.isDefault ? () => _setDefaultSkin() : () => _setActiveSkin(skin),
+      onTap: skin.isDefault
+          ? () => _setDefaultSkin()
+          : () => _setActiveSkin(skin),
       onEdit: skin.isDefault ? null : () => _editSkin(skin),
       onDelete: skin.isDefault ? null : () => _deleteSkin(skin),
     );
@@ -328,24 +337,26 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
                   },
                 ),
                 child: ListView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(16),
-                itemCount: _skins.length + 1, // +1 for default skin card
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    // Create default skin with proper active state
-                    final defaultSkin = _skinService.createDefaultSkin();
-                    final activeDefaultSkin = defaultSkin.copyWith(isActive: _isDefaultSkinActive());
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _skins.length + 1, // +1 for default skin card
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      // Create default skin with proper active state
+                      final defaultSkin = _skinService.createDefaultSkin();
+                      final activeDefaultSkin = defaultSkin.copyWith(
+                        isActive: _isDefaultSkinActive(),
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: _buildSkinCard(activeDefaultSkin),
+                      );
+                    }
+                    final skin = _skins[index - 1];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
-                      child: _buildSkinCard(activeDefaultSkin),
+                      child: _buildSkinCard(skin),
                     );
-                  }
-                  final skin = _skins[index - 1];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: _buildSkinCard(skin),
-                  );
                   },
                 ),
               ),

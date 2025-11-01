@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../widgets/attendance_proportion_chart.dart';
 
 class CourseStatsCardContent extends StatelessWidget {
   final CourseStats stats;
 
-  const CourseStatsCardContent({
-    super.key,
-    required this.stats,
-  });
+  const CourseStatsCardContent({super.key, required this.stats});
 
   double _computeAbsentRatePercent(CourseStats stats) {
     if (stats.lessons == 0) return 0.0;
@@ -53,10 +50,7 @@ class CourseStatsCardContent extends StatelessWidget {
           AttendanceProportionChart(stats: stats),
           const Divider(height: 16),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 4,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: absentRate >= 10
                   ? Theme.of(context).colorScheme.errorContainer
@@ -112,7 +106,9 @@ class CourseStatsCardContent extends StatelessWidget {
           size: 16,
           color:
               color ??
-              Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              Theme.of(
+                context,
+              ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
         ),
         const SizedBox(width: 4),
         Text(
@@ -120,7 +116,9 @@ class CourseStatsCardContent extends StatelessWidget {
           style: theme.textTheme.bodySmall?.copyWith(
             color:
                 color ??
-                Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
           ),
         ),
         Text(

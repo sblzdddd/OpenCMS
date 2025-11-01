@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import '../shared/storage_client.dart';
 import '../../data/models/auth/saved_credentials.dart';
 
-
 /// Handles secure storage operations for credentials and related flags.
 class CredentialsStorageService {
-  static final CredentialsStorageService _instance = CredentialsStorageService._internal();
+  static final CredentialsStorageService _instance =
+      CredentialsStorageService._internal();
   factory CredentialsStorageService() => _instance;
   CredentialsStorageService._internal();
 
@@ -25,16 +25,18 @@ class CredentialsStorageService {
   }) async {
     try {
       if (remember) {
-          await _storage.write(key: _usernameKey, value: username);
-          await _storage.write(key: _passwordKey, value: password);
-          await _storage.write(key: _rememberCredentialsKey, value: 'true');
-        debugPrint('CredentialsStorageService: Credentials saved successfully');
+        await _storage.write(key: _usernameKey, value: username);
+        await _storage.write(key: _passwordKey, value: password);
+        await _storage.write(key: _rememberCredentialsKey, value: 'true');
+        debugPrint(
+          '[CredentialsStorageService] Credentials saved successfully',
+        );
       } else {
         await clearCredentials();
       }
       return true;
     } catch (e) {
-      debugPrint('CredentialsStorageService: Error saving credentials: $e');
+      debugPrint('[CredentialsStorageService] Error saving credentials: $e');
       return false;
     }
   }
@@ -48,7 +50,9 @@ class CredentialsStorageService {
       final remember = rememberStr == 'true';
 
       if (remember && username != null && password != null) {
-        debugPrint('CredentialsStorageService: Credentials loaded successfully');
+        debugPrint(
+          '[CredentialsStorageService] Credentials loaded successfully',
+        );
         return SavedCredentials(
           username: username,
           password: password,
@@ -56,10 +60,10 @@ class CredentialsStorageService {
           hasCredentials: true,
         );
       }
-      debugPrint('CredentialsStorageService: No saved credentials found');
+      debugPrint('[CredentialsStorageService] No saved credentials found');
       return SavedCredentials.empty();
     } catch (e) {
-      debugPrint('CredentialsStorageService: Error loading credentials: $e');
+      debugPrint('[CredentialsStorageService] Error loading credentials: $e');
       return SavedCredentials.empty();
     }
   }
@@ -70,10 +74,12 @@ class CredentialsStorageService {
       await _storage.delete(key: _usernameKey);
       await _storage.delete(key: _passwordKey);
       await _storage.delete(key: _rememberCredentialsKey);
-      debugPrint('CredentialsStorageService: Credentials cleared successfully');
+      debugPrint(
+        '[CredentialsStorageService] Credentials cleared successfully',
+      );
       return true;
     } catch (e) {
-      debugPrint('CredentialsStorageService: Error clearing credentials: $e');
+      debugPrint('[CredentialsStorageService] Error clearing credentials: $e');
       return false;
     }
   }
@@ -84,7 +90,7 @@ class CredentialsStorageService {
       final remember = await _storage.read(key: _rememberCredentialsKey);
       return remember == 'true';
     } catch (e) {
-      debugPrint('CredentialsStorageService: Error checking credentials: $e');
+      debugPrint('[CredentialsStorageService] Error checking credentials: $e');
       return false;
     }
   }
@@ -94,7 +100,9 @@ class CredentialsStorageService {
     try {
       final bool hasUsername = await _storage.containsKey(key: _usernameKey);
       final bool hasPassword = await _storage.containsKey(key: _passwordKey);
-      final String? remember = await _storage.read(key: _rememberCredentialsKey);
+      final String? remember = await _storage.read(
+        key: _rememberCredentialsKey,
+      );
 
       return {
         'hasUsername': hasUsername,
@@ -103,12 +111,7 @@ class CredentialsStorageService {
         'storageAvailable': true,
       };
     } catch (e) {
-      return {
-        'error': e.toString(),
-        'storageAvailable': false,
-      };
+      return {'error': e.toString(), 'storageAvailable': false};
     }
   }
 }
-
-

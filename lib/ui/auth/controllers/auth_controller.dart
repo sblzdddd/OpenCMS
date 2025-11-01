@@ -25,13 +25,13 @@ class AuthController extends ChangeNotifier {
         password: password,
         captchaData: captchaData,
       );
-      
+
       _isLoading = false;
       notifyListeners();
 
       if (loginResult.isSuccess) {
         debugPrint('AuthController: Successfully logged in as $username');
-        if(!context.mounted) {
+        if (!context.mounted) {
           debugPrint('AuthController: Context is not mounted');
           return false;
         }
@@ -41,7 +41,7 @@ class AuthController extends ChangeNotifier {
           context,
           'Successfully logged in as $username!',
         );
-        
+
         // Ensure user info is fetched so Home can display en_name immediately
         try {
           await _authService.fetchAndSetCurrentUserInfo();
@@ -51,7 +51,7 @@ class AuthController extends ChangeNotifier {
         if (context.mounted) {
           Navigator.pushReplacementNamed(context, '/home');
         }
-        
+
         return true;
       } else {
         debugPrint('AuthController: Login failed: ${loginResult.message}');
@@ -76,7 +76,7 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
 
       debugPrint('AuthController: Login exception: $e');
-      if(!context.mounted) {
+      if (!context.mounted) {
         debugPrint('AuthController: Context is not mounted');
         return false;
       }

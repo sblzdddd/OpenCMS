@@ -52,7 +52,8 @@ class CalendarDetailResponse {
       title: json['title']?.toString() ?? '',
       whoAdd: json['whoadd']?.toString() ?? '',
       ctype: json['ctype']?.toString() ?? '',
-      invisibleToParentsStudent: json['invisible_to_parents_student']?.toString() ?? '',
+      invisibleToParentsStudent:
+          json['invisible_to_parents_student']?.toString() ?? '',
     );
   }
 
@@ -69,7 +70,7 @@ class CalendarDetailResponse {
   String get formattedDate {
     final date = dateTime;
     if (date == null) return whichDay;
-    
+
     return '${date.day}/${date.month}/${date.year}';
   }
 

@@ -74,7 +74,10 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
         children: [
           AcademicYearDropdown(
             selectedYear: _selectedYear,
-            onChanged: (year) => {setState(() => _selectedYear = year!), fetchData(refresh: true)},
+            onChanged: (year) => {
+              setState(() => _selectedYear = year!),
+              fetchData(refresh: true),
+            },
           ),
           const Spacer(),
         ],
@@ -86,10 +89,15 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
     final theme = Theme.of(context);
     return Card(
       elevation: 0,
-      color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-          ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-      : Theme.of(context).colorScheme.surfaceContainer,
+      color: themeNotifier.needTransparentBG
+          ? (!themeNotifier.isDarkMode
+                ? Theme.of(
+                    context,
+                  ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                : Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+          : Theme.of(context).colorScheme.surfaceContainer,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(1),

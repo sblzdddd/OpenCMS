@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
@@ -28,7 +29,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth >= breakpoint;
 
-    if (isWideScreen) {
+    if (isWideScreen && !kIsWeb) {
       return _buildWideScreenLayout(context);
     } else {
       return _buildMobileLayout(context);
@@ -45,7 +46,9 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 right: BorderSide(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -53,9 +56,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
             child: Column(
               children: [
                 if (header != null) header!,
-                Expanded(
-                  child: _buildList(context),
-                ),
+                Expanded(child: _buildList(context)),
               ],
             ),
           ),
@@ -78,15 +79,12 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
     return Column(
       children: [
         if (header != null) header!,
-        Expanded(
-          child: _buildList(context),
-        ),
+        Expanded(child: _buildList(context)),
       ],
     );
   }
 
   Widget _buildList(BuildContext context) {
-
     return ListView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -110,14 +108,18 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
             Icon(
               Symbols.touch_app_rounded,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
               'Select an item',
               style: TextStyle(
                 fontSize: 18,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 8),
@@ -125,7 +127,9 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
               'Choose an item from the list to view details',
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               textAlign: TextAlign.center,
             ),

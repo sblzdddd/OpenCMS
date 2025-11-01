@@ -18,12 +18,14 @@ class SubjectAssessmentsView extends StatefulWidget {
   State<SubjectAssessmentsView> createState() => _SubjectAssessmentsViewState();
 }
 
-class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsView> {
+class _SubjectAssessmentsViewState
+    extends RefreshablePage<SubjectAssessmentsView> {
   @override
-  final String skinKey = 'assessments';
+  String get skinKey => 'assessments';
 
   @override
-  String get appBarTitle => 'Assessments - ${widget.subject.name.split('.')[0]} ${widget.subject.subject}';
+  String get appBarTitle =>
+      'Assessments - ${widget.subject.name.split('.')[0]} ${widget.subject.subject}';
 
   @override
   Future<void> fetchData({bool refresh = false}) async {
@@ -44,5 +46,4 @@ class _SubjectAssessmentsViewState extends RefreshablePage<SubjectAssessmentsVie
 
   @override
   String get errorTitle => 'Error loading assessments';
-
 }

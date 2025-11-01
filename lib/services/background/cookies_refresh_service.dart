@@ -3,14 +3,16 @@ import '../auth/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
 class CookiesRefreshService extends BackgroundFetcher {
-  static final CookiesRefreshService _instance = CookiesRefreshService._internal();
+  static final CookiesRefreshService _instance =
+      CookiesRefreshService._internal();
   factory CookiesRefreshService() => _instance;
-  CookiesRefreshService._internal() : super(
-    name: "cookiesRefresh", 
-    taskId: "cookiesRefresh", 
-    interval: const Duration(minutes: 10),
-    storageKey: "cookiesRefresh"
-  );
+  CookiesRefreshService._internal()
+    : super(
+        name: "cookiesRefresh",
+        taskId: "cookiesRefresh",
+        interval: const Duration(minutes: 10),
+        storageKey: "cookiesRefresh",
+      );
 
   @override
   Future<void> start() async {

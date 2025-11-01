@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../services/theme/theme_services.dart';
@@ -35,7 +36,8 @@ class QuickActionTile extends StatefulWidget {
   State<QuickActionTile> createState() => _QuickActionTileState();
 }
 
-class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
+class _QuickActionTileState extends State<QuickActionTile>
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -43,10 +45,18 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
-    final Color resolvedIconBg = widget.iconBackgroundColor ?? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
-    final Color resolvedIconColor = widget.iconColor ?? Theme.of(context).colorScheme.primary;
-    final TextStyle resolvedTitleStyle = widget.titleStyle ?? Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 10, fontWeight: FontWeight.w500);
+
+    final Color resolvedIconBg =
+        widget.iconBackgroundColor ??
+        Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
+    final Color resolvedIconColor =
+        widget.iconColor ?? Theme.of(context).colorScheme.primary;
+    final TextStyle resolvedTitleStyle =
+        widget.titleStyle ??
+        Theme.of(context).textTheme.bodyMedium!.copyWith(
+          fontSize: (context.locale == Locale('zh', 'CN') ? 12 : 10),
+          fontWeight: FontWeight.w500,
+        );
 
     return SizedBox(
       width: widget.width,
@@ -56,10 +66,15 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
         onTap: widget.onTap,
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         background: (inkWell) => Material(
-          color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.7)
-              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.4))
-          : Theme.of(context).colorScheme.surfaceContainerLow,
+          color: themeNotifier.needTransparentBG
+              ? (!themeNotifier.isDarkMode
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surface.withValues(alpha: 0.7)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surface.withValues(alpha: 0.4))
+              : Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
         ),
@@ -95,5 +110,3 @@ class _QuickActionTileState extends State<QuickActionTile> with AutomaticKeepAli
     );
   }
 }
-
-

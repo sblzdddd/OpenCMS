@@ -34,10 +34,12 @@ class ReferralCommentsList extends StatelessWidget {
 
     return Column(
       children: comments
-          .map((comment) => ReferralCommentCard(
-                themeNotifier: themeNotifier,
-                comment: comment,
-              ))
+          .map(
+            (comment) => ReferralCommentCard(
+              themeNotifier: themeNotifier,
+              comment: comment,
+            ),
+          )
           .toList(),
     );
   }

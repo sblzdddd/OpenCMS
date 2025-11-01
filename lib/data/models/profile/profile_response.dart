@@ -22,15 +22,17 @@ class ProfileResponse {
     return ProfileResponse(
       hasMoreInfo: json['has_more_info'] ?? false,
       hasIdInfo: json['has_id_info'] ?? false,
-      generalInfo: GeneralInfo.fromJson(json['general_info'] as Map<String, dynamic>),
+      generalInfo: GeneralInfo.fromJson(
+        json['general_info'] as Map<String, dynamic>,
+      ),
       basicInfo: BasicInfo.fromJson(json['basic_info'] as Map<String, dynamic>),
-      moreInfo: json['more_info'] != null 
+      moreInfo: json['more_info'] != null
           ? MoreInfo.fromJson(json['more_info'] as Map<String, dynamic>)
           : null,
       relatives: json['relatives'] != null
           ? (json['relatives'] as List<dynamic>)
-              .map((item) => Relative.fromJson(item as Map<String, dynamic>))
-              .toList()
+                .map((item) => Relative.fromJson(item as Map<String, dynamic>))
+                .toList()
           : null,
     );
   }

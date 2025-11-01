@@ -24,7 +24,8 @@ class SubjectAssessmentsContent extends StatefulWidget {
   });
 
   @override
-  State<SubjectAssessmentsContent> createState() => _SubjectAssessmentsContentState();
+  State<SubjectAssessmentsContent> createState() =>
+      _SubjectAssessmentsContentState();
 }
 
 class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
@@ -48,7 +49,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
 
   Future<void> _refreshData() async {
     if (_isLoading) return;
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -59,7 +60,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         subjectName: _currentSubject.subject,
         refresh: true,
       );
-      
+
       setState(() {
         _currentSubject = SubjectAssessment(
           id: _currentSubject.id,
@@ -78,7 +79,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    
+
     final content = CustomChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,65 +97,76 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     if (widget.isWideScreen) {
       return content;
     } else {
-      return RefreshIndicator(
-        onRefresh: _refreshData,
-        child: content,
-      );
+      return RefreshIndicator(onRefresh: _refreshData, child: content);
     }
   }
 
   Widget _buildHeader(ThemeNotifier themeNotifier) {
-    return Padding(padding: const EdgeInsets.all(6), child: Container(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 16),
-      decoration: BoxDecoration(
-        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-        : Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${_currentSubject.name.split('.')[0]} ${_currentSubject.subject}',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontSize: 28,
+    return Padding(
+      padding: const EdgeInsets.all(6),
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 12,
+          bottom: 16,
+        ),
+        decoration: BoxDecoration(
+          color: themeNotifier.needTransparentBG
+              ? (!themeNotifier.isDarkMode
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+              : Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${_currentSubject.name.split('.')[0]} ${_currentSubject.subject}',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 28,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Icon(Symbols.school_rounded, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                _currentSubject.name,
-                style: const TextStyle(fontSize: 12),
-              ),
-              const SizedBox(width: 8),
-              Icon(Symbols.calendar_month_rounded, size: 16),
-              const SizedBox(width: 4),
-              Text(
-                '${widget.academicYear.year}-${widget.academicYear.year + 1}',
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          AssessmentTypeCountsWidget(
-            assessments: _currentSubject.assessments,
-            themeNotifier: themeNotifier,
-          ),
-        ],
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Symbols.school_rounded, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  _currentSubject.name,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                const SizedBox(width: 8),
+                Icon(Symbols.calendar_month_rounded, size: 16),
+                const SizedBox(width: 4),
+                Text(
+                  '${widget.academicYear.year}-${widget.academicYear.year + 1}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            AssessmentTypeCountsWidget(
+              assessments: _currentSubject.assessments,
+              themeNotifier: themeNotifier,
+            ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
   Widget _buildPerformanceSummary(ThemeNotifier themeNotifier) {
-    final validAssessments = _currentSubject.assessments.where((a) => a.percentageScore != null).toList();
-    
+    final validAssessments = _currentSubject.assessments
+        .where((a) => a.percentageScore != null)
+        .toList();
+
     if (validAssessments.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -181,15 +193,30 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         Row(
           children: [
             Expanded(
-              child: _buildSummaryCard('Average', '${averageScore.toStringAsFixed(1)}%', _getScoreColor(averageScore), themeNotifier),
+              child: _buildSummaryCard(
+                'Average',
+                '${averageScore.toStringAsFixed(1)}%',
+                _getScoreColor(averageScore),
+                themeNotifier,
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: _buildSummaryCard('Highest', '${highestScore.toStringAsFixed(1)}%', _getScoreColor(highestScore), themeNotifier),
+              child: _buildSummaryCard(
+                'Highest',
+                '${highestScore.toStringAsFixed(1)}%',
+                _getScoreColor(highestScore),
+                themeNotifier,
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: _buildSummaryCard('Lowest', '${lowestScore.toStringAsFixed(1)}%', _getScoreColor(lowestScore), themeNotifier),
+              child: _buildSummaryCard(
+                'Lowest',
+                '${lowestScore.toStringAsFixed(1)}%',
+                _getScoreColor(lowestScore),
+                themeNotifier,
+              ),
             ),
           ],
         ),
@@ -197,7 +224,12 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     );
   }
 
-  Widget _buildSummaryCard(String label, String value, Color color, ThemeNotifier themeNotifier) {
+  Widget _buildSummaryCard(
+    String label,
+    String value,
+    Color color,
+    ThemeNotifier themeNotifier,
+  ) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -213,7 +245,9 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
               label,
               style: TextStyle(
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 4),
@@ -263,7 +297,8 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
           shrinkWrap: true,
           itemCount: _currentSubject.assessments.length,
           itemBuilder: (context, index) {
-            final assessment = _currentSubject.assessments.reversed.toList()[index];
+            final assessment = _currentSubject.assessments.reversed
+                .toList()[index];
             return _buildAssessmentItem(assessment, themeNotifier);
           },
         ),
@@ -271,16 +306,26 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     );
   }
 
-  Widget _buildAssessmentItem(Assessment assessment, ThemeNotifier themeNotifier) {
+  Widget _buildAssessmentItem(
+    Assessment assessment,
+    ThemeNotifier themeNotifier,
+  ) {
     final hasValidScore = assessment.percentageScore != null;
-    final scoreColor = hasValidScore ? _getScoreColor(assessment.percentageScore!) : Colors.grey;
+    final scoreColor = hasValidScore
+        ? _getScoreColor(assessment.percentageScore!)
+        : Colors.grey;
     final gradeColor = _getGradeColor(assessment.mark);
 
     return Card(
-      color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-          ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-          : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-      : Theme.of(context).colorScheme.surfaceContainer,
+      color: themeNotifier.needTransparentBG
+          ? (!themeNotifier.isDarkMode
+                ? Theme.of(
+                    context,
+                  ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                : Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+          : Theme.of(context).colorScheme.surfaceContainer,
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -307,9 +352,14 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: _getAssessmentTypeColor(assessment.kind).withValues(alpha: 0.2),
+                          color: _getAssessmentTypeColor(
+                            assessment.kind,
+                          ).withValues(alpha: 0.2),
                           borderRadius: themeNotifier.getBorderRadiusAll(999),
                         ),
                         child: Text(
@@ -323,9 +373,15 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                       const SizedBox(width: 8),
                       if (assessment.teacher.isNotEmpty)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer
+                                .withValues(alpha: 0.3),
                             borderRadius: themeNotifier.getBorderRadiusAll(999),
                           ),
                           child: Text(
@@ -341,14 +397,18 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                       Icon(
                         Symbols.calendar_today_rounded,
                         size: 16,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         assessment.date,
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       if (assessment.average.isNotEmpty) ...[
@@ -356,14 +416,18 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                         Icon(
                           Symbols.people_rounded,
                           size: 16,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Class Avg: ${assessment.average}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                         ),
                       ],
@@ -384,12 +448,14 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                     height: 80,
                     width: 80,
                     child: CircularProgressIndicator(
-                      value: hasValidScore ? assessment.percentageScore! / 100 : 0,
+                      value: hasValidScore
+                          ? assessment.percentageScore! / 100
+                          : 0,
                       strokeWidth: 8,
                       backgroundColor: Colors.grey.withValues(alpha: 0.2),
                       valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
                       trackGap: 10,
-                    )
+                    ),
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -408,7 +474,9 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                           'Out of ${assessment.outOf}',
                           style: TextStyle(
                             fontSize: 10,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -438,13 +506,17 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     if (upperGrade == 'B') return Colors.blue;
     if (upperGrade == 'C') return Colors.orange;
     if (upperGrade == 'D') return Colors.yellow.shade700;
-    if (upperGrade == 'E' || upperGrade == 'F' || upperGrade == 'U') return Colors.red;
+    if (upperGrade == 'E' || upperGrade == 'F' || upperGrade == 'U') {
+      return Colors.red;
+    }
     return Colors.grey;
   }
 
   Color _getAssessmentTypeColor(String type) {
     final lowerType = type.toLowerCase();
-    if (lowerType.contains('test') || lowerType.contains('exam')) return Colors.red;
+    if (lowerType.contains('test') || lowerType.contains('exam')) {
+      return Colors.red;
+    }
     if (lowerType.contains('project')) return Colors.blue;
     if (lowerType.contains('homework')) return Colors.green;
     if (lowerType.contains('practical')) return Colors.orange;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/notification/notification_response.dart'
     as notification_model;
 import '../../../data/models/notification/daily_bulletin_response.dart';
@@ -314,9 +314,7 @@ class _NoticeCardState extends State<NoticeCard>
 
   @override
   bool hasWidgetData() {
-    return _latestNotice != null ||
-        _latestBulletin != null ||
-        _latestEvent != null;
+    return _latestBulletin != null || _latestEvent != null;
   }
 
   @override

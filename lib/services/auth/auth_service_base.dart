@@ -6,14 +6,14 @@ import '../../data/models/auth/auth_state.dart';
 class AuthServiceBase {
   final HttpService _httpService = HttpService();
   final AuthState _authState = AuthState();
-  
+
   // Getters to provide controlled access to internal services
   HttpService get httpService => _httpService;
   AuthState get authState => _authState;
-  
+
   /// Check if user is currently authenticated
   bool get isAuthenticated => _authState.isAuthenticated;
-  
+
   /// Get current user information
   UserInfo? get userInfo => _authState.userInfo;
 }

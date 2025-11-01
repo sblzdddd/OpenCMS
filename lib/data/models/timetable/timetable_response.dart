@@ -27,11 +27,17 @@ class TimetableResponse {
     required this.weekdays,
   });
 
-  factory TimetableResponse.fromJson(Map<String, dynamic> json, int academicYear, {dynamic assemblyJson}) {
+  factory TimetableResponse.fromJson(
+    Map<String, dynamic> json,
+    int academicYear, {
+    dynamic assemblyJson,
+  }) {
     // Parse weekdays first
-    final weekdays = (json['weekdays'] as List<dynamic>?)
-        ?.map((item) => WeekDay.fromJson(item))
-        .toList() ?? [];
+    final weekdays =
+        (json['weekdays'] as List<dynamic>?)
+            ?.map((item) => WeekDay.fromJson(item))
+            .toList() ??
+        [];
 
     if (academicYear == DateTime.now().year && assemblyJson != null) {
       // Handle both List and Map formats
@@ -44,7 +50,7 @@ class TimetableResponse {
           assemblyList = events.cast<Map<String, dynamic>>();
         }
       }
-      
+
       if (assemblyList.isNotEmpty) {
         _addAssemblyEvents(weekdays, assemblyList);
       }
@@ -63,7 +69,10 @@ class TimetableResponse {
   }
 
   /// Add assembly events to appropriate weekday periods
-  static void _addAssemblyEvents(List<WeekDay> weekdays, List<Map<String, dynamic>> assemblyData) {
+  static void _addAssemblyEvents(
+    List<WeekDay> weekdays,
+    List<Map<String, dynamic>> assemblyData,
+  ) {
     // Parse assembly events
     final assemblyEvents = assemblyData
         .map((json) => AssemblyEvent.fromJson(json))
@@ -77,7 +86,7 @@ class TimetableResponse {
       // Ensure we have enough weekdays and periods
       if (weekdayIndex < weekdays.length) {
         final weekday = weekdays[weekdayIndex];
-        
+
         // Ensure we have enough periods
         while (weekday.periods.length <= periodIndex) {
           weekday.periods.add(Period(events: []));
@@ -106,7 +115,7 @@ class TimetableResponse {
 
     final now = DateTime.now();
     final today = now.weekday - 1; // Convert to 0-based index (Monday = 0)
-    
+
     // Only show for weekdays (Monday = 1 to Friday = 5)
     if (today < 0 || today >= 5) {
       return {'current': null, 'next': null};
@@ -114,19 +123,25 @@ class TimetableResponse {
 
     final weekday = weekdays[today];
     final mergedEvents = CourseMergedEvent.mergeEventsForDay(weekday);
-    
+
     CourseMergedEvent? currentClass;
     CourseMergedEvent? nextClass;
-    
+
     for (final event in mergedEvents) {
-      final startTime = _parseTime(PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '');
-      final endTime = _parseTime(PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '');
-      
+      final startTime = _parseTime(
+        PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '',
+      );
+      final endTime = _parseTime(
+        PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '',
+      );
+
       if (startTime == null || endTime == null) continue;
-      
-      final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+
+      final currentTime = _parseTime(
+        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+      );
       if (currentTime == null) continue;
-      
+
       if (_isTimeInRange(currentTime, startTime, endTime)) {
         // Currently in this class
         currentClass = event;
@@ -137,15 +152,21 @@ class TimetableResponse {
         break;
       }
     }
-    
+
     // If no current class and no next class found, look for next class in remaining events
     if (currentClass == null && nextClass == null) {
       for (final event in mergedEvents) {
-        final startTime = _parseTime(PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '');
-        final endTime = _parseTime(PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '');
-        
+        final startTime = _parseTime(
+          PeriodConstants.getPeriodInfo(event.startPeriod)?.startTime ?? '',
+        );
+        final endTime = _parseTime(
+          PeriodConstants.getPeriodInfo(event.endPeriod)?.endTime ?? '',
+        );
+
         if (startTime != null && endTime != null) {
-          final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+          final currentTime = _parseTime(
+            '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+          );
           if (currentTime != null && _isTimeBefore(currentTime, startTime)) {
             // Only show as next class if it hasn't started yet (future class)
             nextClass = event;
@@ -188,9 +209,11 @@ class WeekDay {
 
   factory WeekDay.fromJson(Map<String, dynamic> json) {
     return WeekDay(
-      periods: (json['periods'] as List<dynamic>?)
-          ?.map((item) => Period.fromJson(item))
-          .toList() ?? [],
+      periods:
+          (json['periods'] as List<dynamic>?)
+              ?.map((item) => Period.fromJson(item))
+              .toList() ??
+          [],
     );
   }
 }
@@ -202,9 +225,11 @@ class Period {
 
   factory Period.fromJson(Map<String, dynamic> json) {
     return Period(
-      events: (json['events'] as List<dynamic>?)
-          ?.map((item) => TimetableEvent.fromJson(item))
-          .toList() ?? [],
+      events:
+          (json['events'] as List<dynamic>?)
+              ?.map((item) => TimetableEvent.fromJson(item))
+              .toList() ??
+          [],
     );
   }
 }
@@ -251,6 +276,9 @@ class TimetableEvent {
   }
 
   String get subject {
+    if (name.contains('Form')) {
+      return name;
+    }
     if (name.contains('-')) {
       return name.split('-').first.trim();
     }
@@ -258,6 +286,9 @@ class TimetableEvent {
   }
 
   String get code {
+    if (name.contains('Form')) {
+      return '';
+    }
     if (name.contains('-')) {
       return name.split('-')[1].trim();
     }

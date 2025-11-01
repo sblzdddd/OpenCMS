@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/constants/periods.dart';
 import '../../../data/models/timetable/timetable_response.dart';
 import '../../../data/models/timetable/course_merged_event.dart';
@@ -15,23 +15,22 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 class NextClassWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final int? refreshTick;
-  
+
   const NextClassWidget({super.key, this.onRefresh, this.refreshTick});
 
   @override
   State<NextClassWidget> createState() => _NextClassWidgetState();
 }
 
-class _NextClassWidgetState extends State<NextClassWidget> 
+class _NextClassWidgetState extends State<NextClassWidget>
     with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
-  
   @override
   bool get wantKeepAlive => true;
-  
+
   TimetableResponse? _timetableData;
   CourseMergedEvent? _currentClass;
   CourseMergedEvent? _nextClass;
-  
+
   final CourseTimetableService _timetableService = CourseTimetableService();
 
   @override
@@ -44,8 +43,11 @@ class _NextClassWidgetState extends State<NextClassWidget>
   @override
   void didUpdateWidget(covariant NextClassWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null && widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint('NextClassWidget: refreshTick changed -> refreshing with refresh=true');
+    if (widget.refreshTick != null &&
+        widget.refreshTick != oldWidget.refreshTick) {
+      debugPrint(
+        'NextClassWidget: refreshTick changed -> refreshing with refresh=true',
+      );
       refresh();
     }
   }
@@ -81,7 +83,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
 
       final today = DateTime.now();
       final dateString = DateFormat('yyyy-MM-dd').format(today);
-      
+
       final timetable = await _timetableService.fetchCourseTimetable(
         year: PeriodConstants.getAcademicYears().first.year,
         date: dateString,
@@ -106,12 +108,12 @@ class _NextClassWidgetState extends State<NextClassWidget>
 
   void _updateClassStatus() {
     if (_timetableData == null) return;
-    
+
     final classInfo = _timetableData!.getCurrentAndNextClass();
     _currentClass = classInfo['current'];
     _nextClass = classInfo['next'];
   }
-  
+
   DateTime? _parseTime(String timeString) {
     try {
       return DateFormat('HH:mm').parse(timeString);
@@ -122,41 +124,56 @@ class _NextClassWidgetState extends State<NextClassWidget>
 
   double _getClassProgress() {
     if (_currentClass == null) return 0.0;
-    
+
     final now = DateTime.now();
-    final startTime = _parseTime(PeriodConstants.getPeriodInfo(_currentClass!.startPeriod)?.startTime ?? '');
-    final endTime = _parseTime(PeriodConstants.getPeriodInfo(_currentClass!.endPeriod)?.endTime ?? '');
-    
+    final startTime = _parseTime(
+      PeriodConstants.getPeriodInfo(_currentClass!.startPeriod)?.startTime ??
+          '',
+    );
+    final endTime = _parseTime(
+      PeriodConstants.getPeriodInfo(_currentClass!.endPeriod)?.endTime ?? '',
+    );
+
     if (startTime == null || endTime == null) return 0.0;
-    
-    final currentTime = _parseTime('${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}');
+
+    final currentTime = _parseTime(
+      '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
+    );
     if (currentTime == null) return 0.0;
-    
+
     final totalDuration = endTime.difference(startTime).inMinutes;
     final elapsedDuration = currentTime.difference(startTime).inMinutes;
-    
+
     if (totalDuration <= 0) return 0.0;
-    
+
     final progress = elapsedDuration / totalDuration;
     return progress.clamp(0.0, 1.0);
   }
 
   String _getTimeUntilNextClass() {
     if (_nextClass == null) return '';
-    
+
     final now = DateTime.now();
-    final startTime = _parseTime(PeriodConstants.getPeriodInfo(_nextClass!.startPeriod)?.startTime ?? '');
-    
+    final startTime = _parseTime(
+      PeriodConstants.getPeriodInfo(_nextClass!.startPeriod)?.startTime ?? '',
+    );
+
     if (startTime == null) return '';
-    
-    final nextClassTime = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
+
+    final nextClassTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      startTime.hour,
+      startTime.minute,
+    );
     final difference = nextClassTime.difference(now);
-    
+
     if (difference.isNegative) return '';
-    
+
     final hours = difference.inHours;
     final minutes = difference.inMinutes % 60;
-    
+
     if (hours > 0) {
       return 'in ${hours}h ${minutes}m';
     } else {
@@ -167,19 +184,19 @@ class _NextClassWidgetState extends State<NextClassWidget>
   String _getTitleText() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
-    
+
     if (event == null) return 'Next Class';
-    
+
     return '${event.event.subject}-${event.event.code}';
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+
     // Update class status before building to ensure latest data
     _updateClassStatus();
-    
+
     // Use the base layout
     return buildCommonLayout();
   }
@@ -189,7 +206,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bool hasCurrentClass = _currentClass != null;
     if (!hasCurrentClass) return null;
-    
+
     return LinearProgressIndicator(
       value: _getClassProgress(),
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -207,19 +224,19 @@ class _NextClassWidgetState extends State<NextClassWidget>
   String getRightSideText() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
-    
+
     if (event == null) return '';
-    
+
     return event.timeSpan;
   }
-  
+
   @override
   String getWidgetSubtitle() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
-    
+
     if (event == null) return '';
-    
+
     return '${event.periodText} (${event.periodCount} periods)\n';
   }
 
@@ -227,8 +244,10 @@ class _NextClassWidgetState extends State<NextClassWidget>
   String getBottomText() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
-    
-    return event != null && hasWidgetData() ? event.event.teacher : 'Enjoy your free time!';
+
+    return event != null && hasWidgetData()
+        ? event.event.teacher
+        : 'Enjoy your free time!';
   }
 
   @override
@@ -236,16 +255,16 @@ class _NextClassWidgetState extends State<NextClassWidget>
     final bool hasCurrentClass = _currentClass != null;
     final bool hasNextClass = _nextClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
-    
+
     if (event == null) return null;
-    
-    return hasCurrentClass 
+
+    return hasCurrentClass
         ? event.event.room
-        : hasNextClass 
-            ? _getTimeUntilNextClass().isNotEmpty 
-                ? '${_getTimeUntilNextClass()}, ${event.event.room}'
-                : event.event.room
-            : null;
+        : hasNextClass
+        ? _getTimeUntilNextClass().isNotEmpty
+              ? '${_getTimeUntilNextClass()}, ${event.event.room}'
+              : event.event.room
+        : null;
   }
 
   @override

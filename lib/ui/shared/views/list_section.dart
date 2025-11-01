@@ -42,12 +42,12 @@ class ListSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Section Content
-        ...children.map((child) => Padding(
-          padding: const EdgeInsets.only(bottom: 6),
-          child: child,
-        )),
+        ...children.map(
+          (child) =>
+              Padding(padding: const EdgeInsets.only(bottom: 6), child: child),
+        ),
       ],
     );
   }

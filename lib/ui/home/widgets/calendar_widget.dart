@@ -12,7 +12,12 @@ class CalendarWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final int? refreshTick;
 
-  const CalendarWidget({super.key, this.widgetSize, this.onRefresh, this.refreshTick});
+  const CalendarWidget({
+    super.key,
+    this.widgetSize,
+    this.onRefresh,
+    this.refreshTick,
+  });
 
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
@@ -36,8 +41,11 @@ class _CalendarWidgetState extends State<CalendarWidget>
   @override
   void didUpdateWidget(covariant CalendarWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null && widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint('CalendarWidget: refreshTick changed -> refreshing with refresh=true');
+    if (widget.refreshTick != null &&
+        widget.refreshTick != oldWidget.refreshTick) {
+      debugPrint(
+        'CalendarWidget: refreshTick changed -> refreshing with refresh=true',
+      );
       refresh();
     }
   }
@@ -114,7 +122,9 @@ class _CalendarWidgetState extends State<CalendarWidget>
   @override
   Widget? getExtraContent(BuildContext context) {
     if (_items.length <= 1) return null;
-    final color = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75);
+    final color = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.75);
 
     // Show up to two more items below the subtitle
     final extras = _items.skip(1).take(isWideMode ? 6 : 2).toList();
@@ -179,5 +189,3 @@ class _CalendarWidgetState extends State<CalendarWidget>
     return buildCommonLayout();
   }
 }
-
-

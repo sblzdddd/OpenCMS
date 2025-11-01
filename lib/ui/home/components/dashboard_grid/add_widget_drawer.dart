@@ -177,37 +177,6 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                                 ),
                           ),
                           const SizedBox(height: 12),
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              const double spacing = 16.0;
-                              const double minTileWidth = 100.0;
-                              final double availableWidth =
-                                  constraints.maxWidth;
-                              final int columns =
-                                  (((availableWidth + spacing) /
-                                              (minTileWidth + spacing))
-                                          .floor())
-                                      .clamp(1, 6);
-                              final double tileWidth =
-                                  (availableWidth - (columns - 1) * spacing) /
-                                  columns;
-                              return Wrap(
-                                spacing: spacing,
-                                runSpacing: spacing,
-                                children: addableActions.map((action) {
-                                  return QuickActionTile(
-                                    width: tileWidth,
-                                    icon: action['icon'] as IconData,
-                                    title: action['title'] as String,
-                                    skinImageKey: 'actionIcons.${action['id']}',
-                                    onTap: () {
-                                      widget.onAddAction?.call(action);
-                                    },
-                                  );
-                                }).toList(),
-                              );
-                            },
-                          ),
                         ],
                       ),
                     ),

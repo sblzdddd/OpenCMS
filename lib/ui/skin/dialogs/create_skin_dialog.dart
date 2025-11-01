@@ -7,10 +7,7 @@ import '../../shared/custom_snackbar/snackbar_utils.dart';
 class CreateSkinDialog extends StatefulWidget {
   final Function(Skin)? onSkinCreated;
 
-  const CreateSkinDialog({
-    super.key,
-    this.onSkinCreated,
-  });
+  const CreateSkinDialog({super.key, this.onSkinCreated});
 
   @override
   State<CreateSkinDialog> createState() => _CreateSkinDialogState();
@@ -60,7 +57,10 @@ class _CreateSkinDialogState extends State<CreateSkinDialog> {
         }
       } else {
         if (mounted) {
-          SnackbarUtils.showError(context, response.error ?? 'Failed to create skin');
+          SnackbarUtils.showError(
+            context,
+            response.error ?? 'Failed to create skin',
+          );
         }
       }
     } catch (e) {

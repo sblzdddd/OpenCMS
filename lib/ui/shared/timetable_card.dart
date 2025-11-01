@@ -41,6 +41,11 @@ class TimetableCard extends StatelessWidget {
       category: category,
     );
 
+    // Get translated subject name if category is known, otherwise use original
+    final displaySubject = category != 'unknown'
+        ? SubjectIconConstants.getTranslatedName(category: category)
+        : subject;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -76,11 +81,15 @@ class TimetableCard extends StatelessWidget {
           background: (inkWell) => Material(
             color:
                 backgroundColor ??
-                (themeNotifier.needTransparentBG ?
-                (!themeNotifier.isDarkMode
-                    ? theme.colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : theme.colorScheme.surfaceContainer.withValues(alpha: 0.8)):
-                    theme.colorScheme.surfaceContainer),
+                (themeNotifier.needTransparentBG
+                    ? (!themeNotifier.isDarkMode
+                          ? theme.colorScheme.surfaceBright.withValues(
+                              alpha: 0.5,
+                            )
+                          : theme.colorScheme.surfaceContainer.withValues(
+                              alpha: 0.8,
+                            ))
+                    : theme.colorScheme.surfaceContainer),
             borderRadius: themeNotifier.getBorderRadiusAll(1.5),
             child: inkWell,
           ),
@@ -99,7 +108,10 @@ class TimetableCard extends StatelessWidget {
                       imageKey: 'subjectIcons.$category',
                       fallbackIcon: iconData,
                       fallbackIconColor: theme.colorScheme.onTertiaryContainer,
-                      fallbackIconBackgroundColor: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.8),
+                      fallbackIconBackgroundColor: theme
+                          .colorScheme
+                          .tertiaryContainer
+                          .withValues(alpha: 0.8),
                       size: 54,
                       iconSize: 40,
                     ),
@@ -120,7 +132,7 @@ class TimetableCard extends StatelessWidget {
                                   children: [
                                     // Subject Name - Large
                                     Text(
-                                      subject,
+                                      displaySubject,
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w500,

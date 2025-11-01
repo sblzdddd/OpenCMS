@@ -14,11 +14,11 @@ class AttendanceService {
   Future<AttendanceResponse> fetchAttendance({
     DateTime? startDate,
     DateTime? endDate,
-    bool refresh=false,
+    bool refresh = false,
   }) async {
     final DateTime today = DateTime.now();
     DateTime start = startDate ?? DateTime(today.year - 1, 8, 1);
-    if(today.month >= 8 && today.day >= 1) {
+    if (today.month >= 8 && today.day >= 1) {
       start = DateTime(today.year, 8, 1);
     }
     final DateTime end = endDate ?? today;
@@ -26,12 +26,10 @@ class AttendanceService {
     final String startStr = _fmt(start);
     final String endStr = _fmt(end);
 
-    final String url = '${ApiConstants.attendanceUrl}?start_date=$startStr&end_date=$endStr';
+    final String url =
+        '${ApiConstants.attendanceUrl}?start_date=$startStr&end_date=$endStr';
 
-    final response = await _httpService.get(
-      url,
-      refresh: refresh,
-    );
+    final response = await _httpService.get(url, refresh: refresh);
 
     final Map<String, dynamic> jsonData = response.data as Map<String, dynamic>;
     return AttendanceResponse.fromJson(jsonData);
@@ -43,5 +41,3 @@ class AttendanceService {
     return '${d.year}-$mm-$dd';
   }
 }
-
-

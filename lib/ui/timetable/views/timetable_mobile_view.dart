@@ -6,7 +6,6 @@ import '../../../data/models/timetable/course_merged_event.dart';
 import '../../shared/timetable_card.dart';
 import '../components/day_header.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
-import '../../shared/widgets/staggered_animation_item.dart';
 
 class TimetableMobileView extends StatefulWidget {
   final ScrollController scrollController;
@@ -32,29 +31,22 @@ class TimetableMobileView extends StatefulWidget {
   State<TimetableMobileView> createState() => _TimetableMobileViewState();
 }
 
-class _TimetableMobileViewState extends State<TimetableMobileView> with TickerProviderStateMixin, WidgetsBindingObserver {
-  late AnimationController _animationController;
-  
+class _TimetableMobileViewState extends State<TimetableMobileView>
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 600),
-      vsync: this,
-    );
-    _animationController.forward();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
-  void didChangeDependencies() {  
+  void didChangeDependencies() {
     super.didChangeDependencies();
   }
 
@@ -67,9 +59,14 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with TickerPr
       // Calculate column width with minimum constraint
       const double minColumnWidth = 300.0; // Minimum width for each column
       const double columnSpacing = 24.0;
-      final double availableWidth = screenWidth - 32; // Account for horizontal padding
-      final double calculatedWidth = (availableWidth - (4 * columnSpacing)) / 5; // 4 spacings between 5 columns
-      final double columnWidth = calculatedWidth > minColumnWidth ? calculatedWidth : minColumnWidth;
+      final double availableWidth =
+          screenWidth - 32; // Account for horizontal padding
+      final double calculatedWidth =
+          (availableWidth - (4 * columnSpacing)) /
+          5; // 4 spacings between 5 columns
+      final double columnWidth = calculatedWidth > minColumnWidth
+          ? calculatedWidth
+          : minColumnWidth;
 
       return CustomChildScrollView(
         controller: widget.scrollController,
@@ -87,9 +84,10 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with TickerPr
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       DayHeader(
-                        key: widget.dayKeys[dayIndex],
                         title: PeriodConstants.weekdayNames[dayIndex],
-                        dateText: (widget.dayDates.isNotEmpty && dayIndex < widget.dayDates.length)
+                        dateText:
+                            (widget.dayDates.isNotEmpty &&
+                                dayIndex < widget.dayDates.length)
                             ? _formatYmd(widget.dayDates[dayIndex])
                             : '',
                         isActive: dayIndex == widget.todayIndex,
@@ -120,7 +118,9 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with TickerPr
             DayHeader(
               key: widget.dayKeys[dayIndex],
               title: PeriodConstants.weekdayNames[dayIndex],
-              dateText: (widget.dayDates.isNotEmpty && dayIndex < widget.dayDates.length)
+              dateText:
+                  (widget.dayDates.isNotEmpty &&
+                      dayIndex < widget.dayDates.length)
                   ? _formatYmd(widget.dayDates[dayIndex])
                   : '',
               isActive: dayIndex == widget.selectedDayIndex,
@@ -146,7 +146,7 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with TickerPr
   }
 
   List<CourseMergedEvent> _getCourseMergedEventsForDay(int dayIndex) {
-    if (widget.timetableData == null || 
+    if (widget.timetableData == null ||
         dayIndex >= widget.timetableData!.weekdays.length) {
       return [];
     }
@@ -167,7 +167,9 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with TickerPr
                 Icon(
                   Symbols.calendar_today_rounded,
                   size: 18,
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.5),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -177,30 +179,32 @@ class _TimetableMobileViewState extends State<TimetableMobileView> with TickerPr
               ],
             );
           },
-        )
+        ),
       ];
     }
     return [
-      for (int eventIndex = 0; eventIndex < mergedEvents.length; eventIndex++) ...[
-        StaggeredAnimationItem(
-          animationController: _animationController,
-          index: (dayIndex * 2) + eventIndex,
-          delayMultiplier: 0.06,
-          animationFraction: 0.5,
-          child: TimetableCard(
-            subject: mergedEvents[eventIndex].event.subject,
-            code: mergedEvents[eventIndex].event.code,
-            room: mergedEvents[eventIndex].event.room.isNotEmpty ? mergedEvents[eventIndex].event.room : 'TBA',
-            extraInfo: mergedEvents[eventIndex].event.teacher.isNotEmpty ? mergedEvents[eventIndex].event.teacher : '',
-            timespan: mergedEvents[eventIndex].timeSpan,
-            periodText: mergedEvents[eventIndex].periodText,
-            onTap: () {
-              widget.onEventTap(mergedEvents[eventIndex].event);
-            },
-          ),
+      for (
+        int eventIndex = 0;
+        eventIndex < mergedEvents.length;
+        eventIndex++
+      ) ...[
+        TimetableCard(
+          subject: mergedEvents[eventIndex].event.subject,
+          code: mergedEvents[eventIndex].event.code,
+          room: mergedEvents[eventIndex].event.room.isNotEmpty
+              ? mergedEvents[eventIndex].event.room
+              : 'TBA',
+          extraInfo: mergedEvents[eventIndex].event.teacher.isNotEmpty
+              ? mergedEvents[eventIndex].event.teacher
+              : '',
+          timespan: mergedEvents[eventIndex].timeSpan,
+          periodText: mergedEvents[eventIndex].periodText,
+          onTap: () {
+            widget.onEventTap(mergedEvents[eventIndex].event);
+          },
         ),
         const SizedBox(height: 20),
-      ]
+      ],
     ];
   }
 }

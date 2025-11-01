@@ -1,10 +1,7 @@
 /// Data model for student-led events
 library;
 
-enum StudentEventType {
-  led,
-  unstaffed,
-}
+enum StudentEventType { led, unstaffed }
 
 class StudentEvent {
   final int id;
@@ -37,8 +34,9 @@ class StudentEvent {
     required String approvalStatus,
   }) {
     // Extract applicant ID from applicant string
-    final applicantId = RegExp(r'\((\d+)\)').firstMatch(applicant)?.group(1) ?? '';
-    
+    final applicantId =
+        RegExp(r'\((\d+)\)').firstMatch(applicant)?.group(1) ?? '';
+
     return StudentEvent(
       id: id,
       type: type,

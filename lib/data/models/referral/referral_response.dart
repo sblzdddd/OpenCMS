@@ -48,9 +48,13 @@ class ReferralComment {
       commentTranslation: json['comment_translation'] as String? ?? '',
       kind: json['kind'] as String? ?? '',
       kindName: json['kind_name'] as String? ?? '',
-      replies: (json['replies'] as List<dynamic>?)
-          ?.map((item) => ReferralReply.fromJson(item as Map<String, dynamic>))
-          .toList() ?? [],
+      replies:
+          (json['replies'] as List<dynamic>?)
+              ?.map(
+                (item) => ReferralReply.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
@@ -85,10 +89,10 @@ class ReferralComment {
   String get formattedDate {
     final date = dateTime;
     if (date == null) return time;
-    
+
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       return 'Today';
     } else if (difference.inDays == 1) {
@@ -163,10 +167,10 @@ class ReferralReply {
   String get formattedDate {
     final date = dateTime;
     if (date == null) return time;
-    
+
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       return 'Today';
     } else if (difference.inDays == 1) {

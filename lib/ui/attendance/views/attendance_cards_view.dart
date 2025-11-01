@@ -68,18 +68,25 @@ class AttendanceCardsView extends StatelessWidget {
     return '${d.year}-$mm-$dd';
   }
 
-  Widget _buildDaySection(BuildContext context, RecordOfDay day, Set<int> selectedCourseIds) {
+  Widget _buildDaySection(
+    BuildContext context,
+    RecordOfDay day,
+    Set<int> selectedCourseIds,
+  ) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final periods = PeriodConstants.attendancePeriods;
     final atts = day.attendances;
-    final int count = atts.length < periods.length ? atts.length : periods.length;
+    final int count = atts.length < periods.length
+        ? atts.length
+        : periods.length;
 
     final List<Widget> cards = [];
     int i = 0;
     while (i < count) {
       final startEntry = atts[i];
       if (startEntry.kind == 0 ||
-          (selectedCourseIds.isNotEmpty && !selectedCourseIds.contains(startEntry.courseId))) {
+          (selectedCourseIds.isNotEmpty &&
+              !selectedCourseIds.contains(startEntry.courseId))) {
         i++;
         continue;
       }
@@ -92,7 +99,8 @@ class AttendanceCardsView extends StatelessWidget {
             nextEntry.kind == startEntry.kind &&
             nextEntry.reason == startEntry.reason &&
             nextEntry.grade == startEntry.grade &&
-            (selectedCourseIds.isEmpty || selectedCourseIds.contains(nextEntry.courseId))) {
+            (selectedCourseIds.isEmpty ||
+                selectedCourseIds.contains(nextEntry.courseId))) {
           endIndex++;
           continue;
         }
@@ -102,21 +110,30 @@ class AttendanceCardsView extends StatelessWidget {
       final startP = periods[i];
       final endP = periods[endIndex];
       final String timespan = '${startP.startTime} - ${endP.endTime}';
-      final String periodText = startP.name == endP.name ? startP.name : '${startP.name} - ${endP.name}';
+      final String periodText = startP.name == endP.name
+          ? startP.name
+          : '${startP.name} - ${endP.name}';
 
-      cards.add(TimetableCard(
-        subject: startEntry.getSubjectNameWithIndex(i),
-        code: startEntry.reason,
-        room: startEntry.kindText,
-        extraInfo: startEntry.grade,
-        timespan: timespan,
-        periodText: periodText,
-        backgroundColor: (AttendanceConstants.kindBackgroundColor[startEntry.kind] ?? Colors.transparent).withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 0.7),
-        textColor: AttendanceConstants.kindTextColor[startEntry.kind],
-        onTap: () {
-          onEventTap(startEntry, day.date);
-        },
-      ));
+      cards.add(
+        TimetableCard(
+          subject: startEntry.getSubjectNameWithIndex(i),
+          code: startEntry.reason,
+          room: startEntry.kindText,
+          extraInfo: startEntry.grade,
+          timespan: timespan,
+          periodText: periodText,
+          backgroundColor:
+              (AttendanceConstants.kindBackgroundColor[startEntry.kind] ??
+                      Colors.transparent)
+                  .withValues(
+                    alpha: themeNotifier.needTransparentBG ? 0.5 : 0.7,
+                  ),
+          textColor: AttendanceConstants.kindTextColor[startEntry.kind],
+          onTap: () {
+            onEventTap(startEntry, day.date);
+          },
+        ),
+      );
       cards.add(const SizedBox(height: 12));
 
       i = endIndex + 1;
@@ -126,9 +143,7 @@ class AttendanceCardsView extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_formatDate(day.date), style: TextStyle(
-            fontSize: 16,
-          )),
+          Text(_formatDate(day.date), style: TextStyle(fontSize: 16)),
           const SizedBox(height: 8),
           Text('No attendance issues'),
         ],
@@ -140,10 +155,10 @@ class AttendanceCardsView extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(_formatDate(day.date), style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            )),
+            Text(
+              _formatDate(day.date),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const Spacer(),
             Text('${day.absentCount.toStringAsFixed(1)} day'),
           ],

@@ -17,11 +17,7 @@ class ReportsPage extends StatelessWidget {
         Tab(text: 'Reports'),
         Tab(text: 'GPA'),
       ],
-      tabViews: const [
-        ReportsListView(),
-        MyGpaView(),
-      ],
+      tabViews: const [ReportsListView(), MyGpaView()],
     );
   }
 }
-

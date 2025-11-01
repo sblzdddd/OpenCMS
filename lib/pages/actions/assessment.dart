@@ -13,7 +13,11 @@ import '../../ui/shared/widgets/custom_scaffold.dart';
 class AssessmentPage extends StatefulWidget {
   final int initialTabIndex;
   final bool isTransparent;
-  const AssessmentPage({super.key, this.initialTabIndex = 0, this.isTransparent = false});
+  const AssessmentPage({
+    super.key,
+    this.initialTabIndex = 0,
+    this.isTransparent = false,
+  });
 
   @override
   State<AssessmentPage> createState() => _AssessmentPageState();
@@ -27,7 +31,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
 
   @override
   bool get isTransparent => widget.isTransparent;
-  
+
   @override
   void initState() {
     _selectedYear =
@@ -59,21 +63,21 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   void _onSubjectSelected(SubjectAssessment subject) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isWideScreen = screenWidth >= 800.0;
-    
+
     if (isWideScreen) {
       setState(() {
         _selectedSubject = subject;
       });
     } else {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SubjectAssessmentsView(
-          subject: subject,
-          academicYear: _selectedYear,
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SubjectAssessmentsView(
+            subject: subject,
+            academicYear: _selectedYear,
+          ),
         ),
-      ),
-    );
+      );
     }
   }
 
@@ -82,7 +86,7 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
     if (_assessmentData == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     return AdaptiveAssessmentLayout(
       subjects: _assessmentData!.subjects,
       selectedYear: _selectedYear,
@@ -99,11 +103,11 @@ class _AssessmentPageState extends RefreshableView<AssessmentPage> {
   String get errorTitle => 'Error loading assessments';
 
   @override
-  bool get isEmpty => _assessmentData == null || _assessmentData!.subjects.isEmpty;
+  bool get isEmpty =>
+      _assessmentData == null || _assessmentData!.subjects.isEmpty;
 
   @override
   Widget build(BuildContext context) {
-    
     return CustomScaffold(
       isTransparent: widget.isTransparent,
       skinKey: 'assessment',

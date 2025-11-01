@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../pages/actions.dart';
 import 'dart:async';
 import '../../shared/scaled_ink_well.dart';
@@ -126,7 +126,9 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return ScaledInkWell(
       borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-      splashFactory: hasMultipleTapAreas() ? NoSplash.splashFactory : InkSplash.splashFactory,
+      splashFactory: hasMultipleTapAreas()
+          ? NoSplash.splashFactory
+          : InkSplash.splashFactory,
       onTap: () async {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           final page = await buildActionPage({'id': getActionId()});
@@ -136,10 +138,15 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
         });
       },
       background: (inkWell) => Material(
-        color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-            ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.6)
-            : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-        : Theme.of(context).colorScheme.surfaceContainer,
+        color: themeNotifier.needTransparentBG
+            ? (!themeNotifier.isDarkMode
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.surfaceBright.withValues(alpha: 0.6)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+            : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         child: inkWell,
       ),
@@ -152,7 +159,9 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             child: SkinIcon(
               imageKey: 'home.${getActionId()}WidgetIcon',
               fallbackIcon: getWidgetIcon(),
-              fallbackIconColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+              fallbackIconColor: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.1),
               fallbackIconBackgroundColor: Colors.transparent,
               size: 64,
               iconSize: 64,

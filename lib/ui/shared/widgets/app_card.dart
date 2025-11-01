@@ -20,9 +20,11 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScaledInkWell(
       borderRadius: BorderRadius.circular(12),
-      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal:6.0),
+      margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
       background: (inkWell) => Material(
-        color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.7),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainer.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(12),
         child: inkWell,
       ),
@@ -83,7 +85,8 @@ class AppCard extends StatelessWidget {
                   FutureBuilder<String>(
                     future: AppInfoUtil.getDeviceText(),
                     builder: (context, snapshot) {
-                      final String deviceText = 'running on ${snapshot.data ?? 'Unknown Device'}';
+                      final String deviceText =
+                          'running on ${snapshot.data ?? 'Unknown Device'}';
                       return Text(
                         deviceText.isNotEmpty ? deviceText : 'Unknown Device',
                         style: Theme.of(context).textTheme.bodySmall,

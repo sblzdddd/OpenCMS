@@ -26,19 +26,21 @@ class SkinCard extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return Card(
       elevation: 0,
-      color: isSelected 
+      color: isSelected
           ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-          : themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.6)
-              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+          : themeNotifier.needTransparentBG
+          ? (!themeNotifier.isDarkMode
+                ? Theme.of(
+                    context,
+                  ).colorScheme.surfaceBright.withValues(alpha: 0.6)
+                : Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
           : Theme.of(context).colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: isSelected
-            ? BorderSide(
-                color: Theme.of(context).colorScheme.primary,
-                width: 2,
-              )
+            ? BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)
             : BorderSide.none,
       ),
       child: InkWell(
@@ -100,18 +102,20 @@ class SkinCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              
+
               // Description
               Text(
                 skin.description,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 12),
-              
+
               // Action buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,7 +123,9 @@ class SkinCard extends StatelessWidget {
                   Text(
                     'Updated: ${_formatDate(skin.updatedAt)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                   Row(
@@ -130,7 +136,10 @@ class SkinCard extends StatelessWidget {
                           icon: const Icon(Symbols.edit_rounded, size: 16),
                           label: const Text('Edit'),
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             textStyle: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -141,7 +150,10 @@ class SkinCard extends StatelessWidget {
                           icon: const Icon(Symbols.delete_rounded, size: 16),
                           label: const Text('Delete'),
                           style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
                             textStyle: const TextStyle(fontSize: 12),
                             foregroundColor: Colors.red,
                             side: const BorderSide(color: Colors.red),
@@ -162,7 +174,7 @@ class SkinCard extends StatelessWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       return 'Today';
     } else if (difference.inDays == 1) {
