@@ -16,11 +16,12 @@ class AppInteractionTheme extends ThemeExtension<AppInteractionTheme> {
 
   @override
   AppInteractionTheme lerp(
-      ThemeExtension<AppInteractionTheme>? other, double t) {
+    ThemeExtension<AppInteractionTheme>? other,
+    double t,
+  ) {
     if (other is! AppInteractionTheme) return this;
     return AppInteractionTheme(
-      scaleDownFactor:
-          lerpDouble(scaleDownFactor, other.scaleDownFactor, t)!,
+      scaleDownFactor: lerpDouble(scaleDownFactor, other.scaleDownFactor, t)!,
     );
   }
 }

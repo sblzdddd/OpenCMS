@@ -23,7 +23,9 @@ class ReferralStatsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.5),
         borderRadius: themeNotifier.getBorderRadiusAll(0.75),
       ),
       child: Column(
@@ -105,8 +107,12 @@ class ReferralStatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: themeNotifier.needTransparentBG
             ? (!themeNotifier.isDarkMode
-                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
             : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
@@ -135,7 +141,9 @@ class ReferralStatCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 12,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],

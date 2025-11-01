@@ -12,22 +12,15 @@ class StorageClient {
   /// Shared [FlutterSecureStorage] instance with platform-specific options
   static const FlutterSecureStorage instance = FlutterSecureStorage(
     aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
       keyCipherAlgorithm: KeyCipherAlgorithm.RSA_ECB_PKCS1Padding,
       storageCipherAlgorithm: StorageCipherAlgorithm.AES_GCM_NoPadding,
     ),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),
-    lOptions: LinuxOptions(
-      
-    ),
-    wOptions: WindowsOptions(
-      
-    ),
-    mOptions: MacOsOptions(
-      
-    ),
+    lOptions: LinuxOptions(),
+    wOptions: WindowsOptions(),
+    mOptions: MacOsOptions(),
   );
 
   /// Cookie-jar compatible storage backed by [FlutterSecureStorage].
@@ -43,11 +36,11 @@ class StorageClient {
     storage: cookieStorage,
   );
 
-  static Future<List<Cookie>>get currentCookies async {
+  static Future<List<Cookie>> get currentCookies async {
     await StorageClient.cookieJar.forceInit();
-    
+
     final allCookies = <Cookie>[];
-    
+
     // Get all domain cookies (cookies with domain attribute)
     for (final domainEntry in StorageClient.cookieJar.domainCookies.entries) {
       for (final pathEntry in domainEntry.value.entries) {
@@ -56,7 +49,7 @@ class StorageClient {
         }
       }
     }
-    
+
     // Get all host cookies (cookies without domain attribute)
     for (final hostEntry in StorageClient.cookieJar.hostCookies.entries) {
       for (final pathEntry in hostEntry.value.entries) {
@@ -65,13 +58,16 @@ class StorageClient {
         }
       }
     }
-    
+
     return allCookies;
   }
 
   static Future<void> setCookies(List<Cookie> cookies) async {
     for (final cookie in cookies) {
-      await StorageClient.cookieJar.saveFromResponse(Uri.parse(cookie.domain ?? ''), [cookie]);
+      await StorageClient.cookieJar.saveFromResponse(
+        Uri.parse(cookie.domain ?? ''),
+        [cookie],
+      );
     }
   }
 
@@ -93,7 +89,8 @@ class _SecureStorageBase implements Storage {
   @override
   Future<void> init(bool persistSession, bool ignoreExpires) async {
     // Match FileStorage path scheme logically so different configs don't clash
-    _prefix = '${_prefixId}_ie${ignoreExpires ? 1 : 0}_ps${persistSession ? 1 : 0}_';
+    _prefix =
+        '${_prefixId}_ie${ignoreExpires ? 1 : 0}_ps${persistSession ? 1 : 0}_';
     _initialized = true;
   }
 

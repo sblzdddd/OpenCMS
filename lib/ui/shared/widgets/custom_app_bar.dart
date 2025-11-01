@@ -103,16 +103,27 @@ class _CustomAppBarState extends State<CustomAppBar> {
             }
             isMaximized = !isMaximized;
           },
-          icon: Icon(Symbols.crop_square_rounded, size: 16, color: isMaximized ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface),
+          icon: Icon(
+            Symbols.crop_square_rounded,
+            size: 16,
+            color: isMaximized
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
+          ),
           tooltip: isMaximized ? 'Restore' : 'Maximize',
         ),
         IconButton(
           padding: const EdgeInsets.all(0),
           visualDensity: VisualDensity.compact,
           onPressed: () async {
-            await windowManager.close();
+            await windowManager.hide();
           },
-          icon: Icon(Symbols.close_rounded, weight: 500, size: 20, color: Theme.of(context).colorScheme.primary),
+          icon: Icon(
+            Symbols.close_rounded,
+            weight: 500,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           tooltip: 'Close',
         ),
         const SizedBox(width: 8),
@@ -124,7 +135,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
       child: AppBar(
         actions: allActions,
         title: widget.title,
-        backgroundColor: themeNotifier.hasActiveSkinBackgroundImage ? Colors.transparent : widget.backgroundColor,
+        backgroundColor: themeNotifier.hasActiveSkinBackgroundImage
+            ? Colors.transparent
+            : widget.backgroundColor,
         foregroundColor: widget.foregroundColor,
         elevation: widget.elevation,
         automaticallyImplyLeading: widget.automaticallyImplyLeading,
@@ -139,7 +152,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
         actionsIconTheme: widget.actionsIconTheme,
         primary: widget.primary,
         systemOverlayStyle: widget.systemOverlayStyle,
-        forceMaterialTransparency: isDesktop ? true : widget.forceMaterialTransparency,
+        forceMaterialTransparency: isDesktop
+            ? true
+            : widget.forceMaterialTransparency,
         surfaceTintColor: Colors.transparent,
       ),
     );

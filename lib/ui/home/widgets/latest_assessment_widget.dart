@@ -12,19 +12,18 @@ import 'base_dashboard_widget.dart';
 class LatestAssessmentWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final int? refreshTick;
-  
+
   const LatestAssessmentWidget({super.key, this.onRefresh, this.refreshTick});
 
   @override
   State<LatestAssessmentWidget> createState() => _LatestAssessmentWidgetState();
 }
 
-class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget> 
+class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
     with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
-  
   @override
   bool get wantKeepAlive => true;
-  
+
   AssessmentResponse? _assessmentData;
   final AssessmentService _assessmentService = AssessmentService();
 
@@ -119,7 +118,7 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
           return 0;
         }
       });
-    
+
     return sortedAssessments.first;
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/attendance/course_stats_response.dart';
 import '../../../data/constants/attendance_types.dart';
 
@@ -8,10 +8,7 @@ import '../../../data/constants/attendance_types.dart';
 class AttendanceProportionChart extends StatelessWidget {
   final CourseStats stats;
 
-  const AttendanceProportionChart({
-    super.key,
-    required this.stats,
-  });
+  const AttendanceProportionChart({super.key, required this.stats});
 
   @override
   Widget build(BuildContext context) {
@@ -26,32 +23,38 @@ class AttendanceProportionChart extends StatelessWidget {
 
     // Create segments for available data
     final segments = <_AttendanceSegment>[];
-    
+
     if (presentCount > 0) {
-      segments.add(_AttendanceSegment(
-        count: presentCount,
-        percentage: (presentCount / totalLessons) * 100,
-        color: AttendanceConstants.kindBackgroundColor[0]!,
-        label: 'Present',
-      ));
+      segments.add(
+        _AttendanceSegment(
+          count: presentCount,
+          percentage: (presentCount / totalLessons) * 100,
+          color: AttendanceConstants.kindBackgroundColor[0]!,
+          label: 'Present',
+        ),
+      );
     }
-    
+
     if (unapprovedCount > 0) {
-      segments.add(_AttendanceSegment(
-        count: unapprovedCount,
-        percentage: (unapprovedCount / totalLessons) * 100,
-        color: AttendanceConstants.kindBackgroundColor[2]!,
-        label: 'Unapproved',
-      ));
+      segments.add(
+        _AttendanceSegment(
+          count: unapprovedCount,
+          percentage: (unapprovedCount / totalLessons) * 100,
+          color: AttendanceConstants.kindBackgroundColor[2]!,
+          label: 'Unapproved',
+        ),
+      );
     }
-    
+
     if (lateCount > 0) {
-      segments.add(_AttendanceSegment(
-        count: lateCount,
-        percentage: (lateCount / totalLessons) * 100,
-        color: AttendanceConstants.kindBackgroundColor[1]!,
-        label: 'Late',
-      ));
+      segments.add(
+        _AttendanceSegment(
+          count: lateCount,
+          percentage: (lateCount / totalLessons) * 100,
+          color: AttendanceConstants.kindBackgroundColor[1]!,
+          label: 'Late',
+        ),
+      );
     }
 
     if (segments.isEmpty) return const SizedBox.shrink();
@@ -80,9 +83,9 @@ class AttendanceProportionChart extends StatelessWidget {
             }).toList(),
           ),
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Legend
         Wrap(
           spacing: 12,

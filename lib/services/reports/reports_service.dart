@@ -15,13 +15,16 @@ class ReportsService {
   final HttpService _httpService = HttpService();
 
   /// Fetch all reports grouped by grade level
-  /// 
+  ///
   /// Returns a list of grade groups, each containing exams for that grade
-  Future<ReportsListResponse> fetchReportsList({bool refresh=false}) async {
+  Future<ReportsListResponse> fetchReportsList({bool refresh = false}) async {
     try {
-      debugPrint('ReportsService: Fetching reports list');
-      
-      final response = await _httpService.get(ApiConstants.reportsListUrl, refresh: refresh);
+      debugPrint('[ReportsService] Fetching reports list');
+
+      final response = await _httpService.get(
+        ApiConstants.reportsListUrl,
+        refresh: refresh,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 304) {
         final jsonData = response.data;
@@ -34,20 +37,26 @@ class ReportsService {
         throw Exception('Failed to fetch reports list: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('ReportsService: Error fetching reports list: $e');
+      debugPrint('[ReportsService] Error fetching reports list: $e');
       rethrow;
     }
   }
 
   /// Fetch detailed report for a specific exam
-  /// 
+  ///
   /// [examId] - ID of the exam to fetch details for
   /// Returns detailed report data based on the exam type
-  Future<ReportDetail> fetchReportDetail(int examId, {bool refresh = false}) async {
+  Future<ReportDetail> fetchReportDetail(
+    int examId, {
+    bool refresh = false,
+  }) async {
     try {
-      debugPrint('ReportsService: Fetching report detail for exam $examId');
-      
-      final response = await _httpService.get(ApiConstants.reportsDetailUrl(examId), refresh: refresh);
+      debugPrint('[ReportsService] Fetching report detail for exam $examId');
+
+      final response = await _httpService.get(
+        ApiConstants.reportsDetailUrl(examId),
+        refresh: refresh,
+      );
 
       if (response.statusCode == 200 || response.statusCode == 304) {
         final jsonData = response.data;
@@ -57,16 +66,20 @@ class ReportsService {
           throw Exception('Invalid response format: expected Map');
         }
       } else {
-        throw Exception('Failed to fetch report detail: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch report detail: ${response.statusCode}',
+        );
       }
     } catch (e) {
-      debugPrint('ReportsService: Error fetching report detail for exam $examId: $e');
+      debugPrint(
+        '[ReportsService] Error fetching report detail for exam $examId: $e',
+      );
       rethrow;
     }
   }
 
   /// Fetch reports for a specific grade level
-  /// 
+  ///
   /// [grade] - Grade level to filter by (e.g., "A1", "G2", "G1")
   /// Returns filtered list of grade groups
   Future<List<GradeGroup>> fetchReportsByGrade(String grade) async {
@@ -76,20 +89,20 @@ class ReportsService {
           .where((group) => group.grade == grade)
           .toList();
     } catch (e) {
-      debugPrint('ReportsService: Error fetching reports by grade $grade: $e');
+      debugPrint('[ReportsService] Error fetching reports by grade $grade: $e');
       rethrow;
     }
   }
 
   /// Fetch reports for a specific academic year
-  /// 
+  ///
   /// [year] - Academic year to filter by (e.g., 2024 for 2024-2025)
   /// Returns filtered list of exams across all grades
   Future<List<Exam>> fetchReportsByYear(int year) async {
     try {
       final allReports = await fetchReportsList();
       final List<Exam> exams = [];
-      
+
       for (final group in allReports.gradeGroups) {
         for (final exam in group.exams) {
           if (exam.year == year) {
@@ -97,16 +110,16 @@ class ReportsService {
           }
         }
       }
-      
+
       return exams;
     } catch (e) {
-      debugPrint('ReportsService: Error fetching reports by year $year: $e');
+      debugPrint('[ReportsService] Error fetching reports by year $year: $e');
       rethrow;
     }
   }
 
   /// Fetch reports for a specific semester
-  /// 
+  ///
   /// [year] - Academic year
   /// [semester] - Semester number (1 or 2)
   /// Returns filtered list of exams for the specified semester
@@ -114,7 +127,7 @@ class ReportsService {
     try {
       final allReports = await fetchReportsList();
       final List<Exam> exams = [];
-      
+
       for (final group in allReports.gradeGroups) {
         for (final exam in group.exams) {
           if (exam.year == year && exam.semester == semester) {
@@ -122,26 +135,28 @@ class ReportsService {
           }
         }
       }
-      
+
       return exams;
     } catch (e) {
-      debugPrint('ReportsService: Error fetching reports by semester $year-$semester: $e');
+      debugPrint(
+        '[ReportsService] Error fetching reports by semester $year-$semester: $e',
+      );
       rethrow;
     }
   }
 
   /// Get the most recent exam for a specific grade
-  /// 
+  ///
   /// [grade] - Grade level to filter by
   /// Returns the most recent exam based on month field, or null if none found
   Future<Exam?> getMostRecentExam(String grade) async {
     try {
       final gradeReports = await fetchReportsByGrade(grade);
       if (gradeReports.isEmpty) return null;
-      
+
       Exam? mostRecent;
       DateTime? mostRecentDate;
-      
+
       for (final group in gradeReports) {
         for (final exam in group.exams) {
           // Parse month field (format: "2025.08")
@@ -149,7 +164,7 @@ class ReportsService {
           if (monthParts.length == 2) {
             final year = int.tryParse(monthParts[0]);
             final month = int.tryParse(monthParts[1]);
-            
+
             if (year != null && month != null) {
               final examDate = DateTime(year, month);
               if (mostRecentDate == null || examDate.isAfter(mostRecentDate)) {
@@ -160,16 +175,18 @@ class ReportsService {
           }
         }
       }
-      
+
       return mostRecent;
     } catch (e) {
-      debugPrint('ReportsService: Error getting most recent exam for grade $grade: $e');
+      debugPrint(
+        '[ReportsService] Error getting most recent exam for grade $grade: $e',
+      );
       return null;
     }
   }
 
   /// Get exam statistics for a specific grade
-  /// 
+  ///
   /// [grade] - Grade level to analyze
   /// Returns statistics about exams for the grade
   Future<Map<String, dynamic>> getGradeStatistics(String grade) async {
@@ -183,19 +200,19 @@ class ReportsService {
           'semesterDistribution': {},
         };
       }
-      
+
       final List<Exam> allExams = [];
       for (final group in gradeReports) {
         allExams.addAll(group.exams);
       }
-      
+
       // Count exam types
       final Map<String, int> examTypes = {};
       for (final exam in allExams) {
         final type = exam.examType;
         examTypes[type] = (examTypes[type] ?? 0) + 1;
       }
-      
+
       // Get year range
       int? minYear;
       int? maxYear;
@@ -203,21 +220,26 @@ class ReportsService {
         if (minYear == null || exam.year < minYear) minYear = exam.year;
         if (maxYear == null || exam.year > maxYear) maxYear = exam.year;
       }
-      
+
       // Count semester distribution
       final Map<int, int> semesterDistribution = {};
       for (final exam in allExams) {
-        semesterDistribution[exam.semester] = (semesterDistribution[exam.semester] ?? 0) + 1;
+        semesterDistribution[exam.semester] =
+            (semesterDistribution[exam.semester] ?? 0) + 1;
       }
-      
+
       return {
         'totalExams': allExams.length,
         'examTypes': examTypes,
-        'yearRange': minYear != null && maxYear != null ? '$minYear-$maxYear' : null,
+        'yearRange': minYear != null && maxYear != null
+            ? '$minYear-$maxYear'
+            : null,
         'semesterDistribution': semesterDistribution,
       };
     } catch (e) {
-      debugPrint('ReportsService: Error getting grade statistics for $grade: $e');
+      debugPrint(
+        '[ReportsService] Error getting grade statistics for $grade: $e',
+      );
       return {
         'error': e.toString(),
         'totalExams': 0,

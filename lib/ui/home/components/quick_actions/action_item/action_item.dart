@@ -71,11 +71,7 @@ class _ActionItemState extends State<ActionItem>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final page = await buildActionPage(widget.action);
       if (mounted && context.mounted) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => page,
-          ),
-        );
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
       }
     });
   }

@@ -1,4 +1,3 @@
-
 /// Data class for saved credentials
 class SavedCredentials {
   final String username;

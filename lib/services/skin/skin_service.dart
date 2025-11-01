@@ -11,27 +11,26 @@ import 'skin_file_manager.dart';
 class SkinService extends ChangeNotifier {
   static const String _skinsKey = skinsKey; // store only IDs
   static const String _activeSkinKey = activeSkinKey; // active skin id only
-  
+
   final ImagePicker _imagePicker = ImagePicker();
-  
+
   /// Current active skin
   Skin? _activeSkin;
-  
+
   /// Singleton instance
   static final SkinService _instance = SkinService._internal();
-  
+
   /// Private constructor
   SkinService._internal();
-  
+
   /// Get the singleton instance
   static SkinService get instance => _instance;
-  
+
   /// Get the current active skin
   Skin? get activeSkin => _activeSkin;
 
   /// Initialize the skin service
-  Future<void> initialize() async {
-  }
+  Future<void> initialize() async {}
 
   /// Get a skin by its ID
   Future<SkinResponse> getSkinById(String skinId) async {
@@ -97,7 +96,7 @@ class SkinService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final activeSkinId = prefs.getString(_activeSkinKey);
-      
+
       if (activeSkinId == null || activeSkinId == 'default') {
         // Return default skin if no active skin is set or default is selected
         final defaultSkin = createDefaultSkin();
@@ -160,7 +159,10 @@ class SkinService extends ChangeNotifier {
   Future<SkinResponse> updateSkin(Skin skin) async {
     try {
       final updatedSkin = skin.copyWith(updatedAt: DateTime.now());
-      await SkinFileManager.writeSkinJsonMap(updatedSkin.id, updatedSkin.toJson());
+      await SkinFileManager.writeSkinJsonMap(
+        updatedSkin.id,
+        updatedSkin.toJson(),
+      );
       return SkinResponse.success(skin: updatedSkin);
     } catch (e) {
       return SkinResponse.error('Failed to update skin: $e');
@@ -256,7 +258,11 @@ class SkinService extends ChangeNotifier {
         return SkinResponse.error('No image selected');
       }
 
-      return await setSkinImage(skinId: skinId, key: key, imagePath: pickedFile.path);
+      return await setSkinImage(
+        skinId: skinId,
+        key: key,
+        imagePath: pickedFile.path,
+      );
     } catch (e) {
       return SkinResponse.error('Failed to pick image: $e');
     }
@@ -302,7 +308,9 @@ class SkinService extends ChangeNotifier {
       final skin = Skin.fromJson(map);
 
       final updatedSkin = await skin.setImagePath(key, null);
-      if (updatedSkin == null) return SkinResponse.error('Failed to remove image');
+      if (updatedSkin == null) {
+        return SkinResponse.error('Failed to remove image');
+      }
 
       // Update cached active skin if this is the active skin
       if (_activeSkin?.id == skinId) {
@@ -331,7 +339,9 @@ class SkinService extends ChangeNotifier {
       final skin = Skin.fromJson(map);
 
       final updatedSkin = await skin.setImageData(imageKey, updatedImageData);
-      if (updatedSkin == null) return SkinResponse.error('Failed to update image data');
+      if (updatedSkin == null) {
+        return SkinResponse.error('Failed to update image data');
+      }
 
       // Update cached active skin if this is the active skin
       if (_activeSkin?.id == skinId) {
@@ -397,7 +407,7 @@ class SkinService extends ChangeNotifier {
         skin: skin,
       );
     } catch (e) {
-      print('Failed to import skin: $e');
+      print('[SkinService] Failed to import skin: $e');
       return SkinResponse.error('Failed to import skin: $e');
     }
   }

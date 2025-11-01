@@ -48,7 +48,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
 
   void _initializeControllers() {
     _nameController = TextEditingController(text: widget.skin.name);
-    _descriptionController = TextEditingController(text: widget.skin.description);
+    _descriptionController = TextEditingController(
+      text: widget.skin.description,
+    );
     _versionController = TextEditingController(text: widget.skin.version);
   }
 
@@ -86,12 +88,15 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
     );
 
     widget.onSkinUpdated(updatedSkin);
-    
+
     if (mounted) {
       setState(() {
         _isEditing = false;
       });
-      SnackbarUtils.showSuccess(context, 'Skin information updated successfully');
+      SnackbarUtils.showSuccess(
+        context,
+        'Skin information updated successfully',
+      );
     }
   }
 
@@ -102,12 +107,14 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
     });
     try {
       final path = await SkinService.instance.exportSkinToCmsk(widget.skin.id);
-      
+
       // Use Share.shareXFiles for mobile and web platforms
-      await SharePlus.instance.share(ShareParams(
-        files: [XFile(path, name: '${widget.skin.name}.cmsk')],
-        text: '"${widget.skin.name}" OpenCMS skin',
-      ));
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(path, name: '${widget.skin.name}.cmsk')],
+          text: '"${widget.skin.name}" OpenCMS skin',
+        ),
+      );
     } catch (e) {
       if (mounted) {
         SnackbarUtils.showError(context, 'Export failed: $e');
@@ -135,12 +142,13 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
         allowedExtensions: ['cmsk'],
       );
 
-      if (outputPath != null) {
-        // Copy the exported file to the selected location
-        await File(path).copy(outputPath);
-        if (mounted) {
-          SnackbarUtils.showSuccess(context, 'Skin package saved successfully');
-        }
+      if (outputPath == null) {
+        throw 'File save cancelled';
+      }
+      // Copy the exported file to the selected location
+      await File(path).copy(outputPath);
+      if (mounted) {
+        SnackbarUtils.showSuccess(context, 'Skin package saved successfully');
       }
     } catch (e) {
       if (mounted) {
@@ -187,19 +195,19 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
                         tooltip: 'Export and Save',
                       ),
                       if (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
-                      IconButton(
-                        onPressed: _isExporting ? null : _exportAndShare,
-                        icon: _isExporting
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Symbols.share_rounded),
-                        tooltip: 'Export and Share',
-                      ),
+                        IconButton(
+                          onPressed: _isExporting ? null : _exportAndShare,
+                          icon: _isExporting
+                              ? SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Symbols.share_rounded),
+                          tooltip: 'Export and Share',
+                        ),
                       IconButton(
                         onPressed: _toggleEdit,
                         icon: const Icon(Symbols.edit_rounded),
@@ -247,9 +255,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
             border: OutlineInputBorder(),
             isDense: true,
           ),
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
@@ -277,7 +285,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
           Text(
             'Author: ${widget.skin.author}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -285,7 +295,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
         Text(
           'Updated: ${widget.skin.updatedAt.toLocal().toString()}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
       ],
@@ -312,7 +324,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
                   Text(
                     widget.skin.description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   if (widget.skin.author.isNotEmpty) ...[
@@ -320,7 +334,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
                     Text(
                       'by ${widget.skin.author}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ),
                   ],
@@ -351,7 +367,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
         Text(
           'Updated: ${widget.skin.updatedAt.toLocal().toString()}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
           ),
         ),
         if (widget.skin.version.isNotEmpty) ...[
@@ -359,7 +377,9 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
           Text(
             'Version: ${widget.skin.version}',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],

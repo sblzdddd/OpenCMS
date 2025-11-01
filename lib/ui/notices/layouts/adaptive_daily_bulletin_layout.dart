@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/notification/daily_bulletin_response.dart' as cms;
 import '../../../services/theme/theme_services.dart';
 import '../../../services/notification/daily_bulletin_service.dart';
-import '../../shared/scaled_ink_well.dart';
+import '../../shared/selectable_item_wrapper.dart';
 import '../../shared/views/adaptive_list_detail_layout.dart';
 import '../../web_cms/web_cms_content.dart';
 import '../../../pages/actions/web_cms.dart';
@@ -30,13 +31,20 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
       selectedItem: selectedDailyBulletin,
       onItemSelected: onDailyBulletinSelected,
       breakpoint: breakpoint,
-      itemBuilder: (dailyBulletin, isSelected) => _buildDailyBulletinItem(dailyBulletin, isSelected, context),
-      detailBuilder: (dailyBulletin) => _buildDailyBulletinDetail(dailyBulletin, context),
+      itemBuilder: (dailyBulletin, isSelected) =>
+          _buildDailyBulletinItem(dailyBulletin, isSelected, context),
+      detailBuilder: (dailyBulletin) =>
+          _buildDailyBulletinDetail(dailyBulletin, context),
     );
   }
 
-  Future<void> _navigateToDailyBulletinDetail(cms.DailyBulletin dailyBulletin, BuildContext context) async {
-    final contentUrl = await DailyBulletinService().getDailyBulletinContentUrl(dailyBulletin.id);
+  Future<void> _navigateToDailyBulletinDetail(
+    cms.DailyBulletin dailyBulletin,
+    BuildContext context,
+  ) async {
+    final contentUrl = await DailyBulletinService().getDailyBulletinContentUrl(
+      dailyBulletin.id,
+    );
     if (context.mounted) {
       Navigator.push(
         context,
@@ -50,90 +58,79 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
     }
   }
 
-  Widget _buildDailyBulletinItem(cms.DailyBulletin dailyBulletin, bool isSelected, BuildContext context) {
+  Widget _buildDailyBulletinItem(
+    cms.DailyBulletin dailyBulletin,
+    bool isSelected,
+    BuildContext context,
+  ) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    
-    return Material(
-      color: Colors.transparent,
-      child: ScaledInkWell(
-        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        background: (inkWell) => Material(
-          color: isSelected
-              ? Theme.of(
-                  context,
-                ).colorScheme.primaryContainer.withValues(alpha: 0.3)
-              : themeNotifier.needTransparentBG && !themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8),
-          borderRadius: themeNotifier.getBorderRadiusAll(1),
-          child: inkWell,
-        ),
-        onTap: () {
-          onDailyBulletinSelected(dailyBulletin);
-          // In mobile mode, navigate to detail page
-          if (MediaQuery.of(context).size.width < breakpoint) {
-            _navigateToDailyBulletinDetail(dailyBulletin, context);
-          }
-        },
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: themeNotifier.getBorderRadiusAll(1),
-            border: Border.all(
-              color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5) : Theme.of(context).colorScheme.outline.withValues(alpha: 0),
-              width: 1,
-            ),
+
+    return SelectableItemWrapper(
+      isSelected: isSelected,
+      onTap: () {
+        onDailyBulletinSelected(dailyBulletin);
+        if (MediaQuery.of(context).size.width < breakpoint || kIsWeb) {
+          _navigateToDailyBulletinDetail(dailyBulletin, context);
+        }
+      },
+      child: ListTile(
+        mouseCursor: SystemMouseCursors.click,
+        title: Text(
+          dailyBulletin.title,
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
           ),
-          child: ListTile(
-            mouseCursor: SystemMouseCursors.click,
-            title: Text(
-              dailyBulletin.title,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: isSelected 
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            Row(
               children: [
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
-                        borderRadius: themeNotifier.getBorderRadiusAll(999),
-                      ),
-                      child: Text(
-                        dailyBulletin.department,
-                        style: TextStyle(
-                          fontSize: 12, 
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
+                    borderRadius: themeNotifier.getBorderRadiusAll(999),
+                  ),
+                  child: Text(
+                    dailyBulletin.department,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
-            trailing: const Icon(Symbols.arrow_forward_ios_rounded, size: 16),
-          ),
+          ],
         ),
+        trailing: const Icon(Symbols.arrow_forward_ios_rounded, size: 16),
       ),
     );
   }
 
-  Widget _buildDailyBulletinDetail(cms.DailyBulletin dailyBulletin, BuildContext context) {
+  Widget _buildDailyBulletinDetail(
+    cms.DailyBulletin dailyBulletin,
+    BuildContext context,
+  ) {
     return FutureBuilder<String>(
-      future: DailyBulletinService().getDailyBulletinContentUrl(dailyBulletin.id),
+      future: DailyBulletinService().getDailyBulletinContentUrl(
+        dailyBulletin.id,
+      ),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        
+
         if (snapshot.hasError || !snapshot.hasData) {
           return Center(
             child: Padding(
@@ -144,14 +141,18 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
                   Icon(
                     Symbols.error_outline_rounded,
                     size: 64,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Failed to load daily bulletin content',
                     style: TextStyle(
                       fontSize: 18,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -174,5 +175,4 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
       },
     );
   }
-
 }

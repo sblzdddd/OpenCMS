@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/data/constants/sfcalendar_theme_data.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import '../../../services/calendar/calendar_service.dart';
@@ -22,17 +22,17 @@ class SchoolCalendarView extends StatefulWidget {
 class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   final CalendarService _calendarService = CalendarService();
   late CalendarController _calendarController;
-  
+
   CalendarResponse? _currentCalendar;
   bool _isLoading = false;
   String? _errorMessage;
   int? _loadedYear;
   int? _loadedMonth;
-  
+
   // Track unique event types and their assigned colors
   final Map<String, Color> _eventColors = {};
   int _nextColorIndex = 0;
-  
+
   // Calendar configuration
   final bool _showLeadingAndTrailingDates = true;
   final bool _showWeekNumber = false;
@@ -65,7 +65,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         month: date.month,
         refresh: refresh,
       );
-      
+
       if (!mounted) return;
       setState(() {
         _currentCalendar = calendar;
@@ -107,7 +107,10 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         actions: [
           IconButton(
             icon: const Icon(Symbols.refresh_rounded),
-            onPressed: () => _loadCalendar(_calendarController.displayDate ?? DateTime.now(), refresh: true),
+            onPressed: () => _loadCalendar(
+              _calendarController.displayDate ?? DateTime.now(),
+              refresh: true,
+            ),
           ),
         ],
       ),
@@ -160,39 +163,46 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
               startHour: 0,
               endHour: 8,
             ),
-            appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-              final SchoolCalendarAppointment event = details.appointments.first as SchoolCalendarAppointment;
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: event.color,
-                  borderRadius: themeNotifier.getBorderRadiusAll(0.25),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      event.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+            appointmentBuilder:
+                (BuildContext context, CalendarAppointmentDetails details) {
+                  final SchoolCalendarAppointment event =
+                      details.appointments.first as SchoolCalendarAppointment;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
                     ),
-                  ],
-                ),
-              );
-            },
+                    decoration: BoxDecoration(
+                      color: event.color,
+                      borderRadius: themeNotifier.getBorderRadiusAll(0.25),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          event.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  );
+                },
             onTap: (details) {
               if (details.targetElement == CalendarElement.appointment &&
                   details.appointments != null &&
                   details.appointments!.isNotEmpty) {
-                final SchoolCalendarAppointment tapped = details.appointments!.first as SchoolCalendarAppointment;
+                final SchoolCalendarAppointment tapped =
+                    details.appointments!.first as SchoolCalendarAppointment;
                 _showEventDetailDialog(tapped);
-              } else if (details.targetElement == CalendarElement.calendarCell) {
+              } else if (details.targetElement ==
+                  CalendarElement.calendarCell) {
                 // Navigate to day view when tapping on a month cell
                 final DateTime tappedDate = details.date!;
                 _calendarController.view = CalendarView.week;
@@ -213,12 +223,14 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
   }
 
   List<SchoolCalendarAppointment> _buildCalendarEvents() {
-    final List<SchoolCalendarAppointment> events = <SchoolCalendarAppointment>[];
-    
+    final List<SchoolCalendarAppointment> events =
+        <SchoolCalendarAppointment>[];
+
     if (_currentCalendar == null) return events;
 
     // Group source events by day to assign pseudo time slots
-    final Map<DateTime, List<MapEntry<CalendarDay, CalendarEvent>>> eventsByDay = {};
+    final Map<DateTime, List<MapEntry<CalendarDay, CalendarEvent>>>
+    eventsByDay = {};
 
     for (final dayEntry in _currentCalendar!.calendarDays.values) {
       if (!dayEntry.hasEvents) continue;
@@ -256,7 +268,13 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
       for (int i = 0; i < dayEvents.length; i++) {
         final CalendarEvent event = dayEvents[i].value;
         final CalendarDay srcDay = dayEvents[i].key;
-        final DateTime from = DateTime(day.year, day.month, day.day, startHour + i, 0);
+        final DateTime from = DateTime(
+          day.year,
+          day.month,
+          day.day,
+          startHour + i,
+          0,
+        );
         final DateTime to = from.add(const Duration(minutes: slotMinutes));
         final Color color = _getColorForEvent(event);
 
@@ -279,7 +297,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
 
   Color _getColorForEvent(CalendarEvent event) {
     final String eventKey = event.kind;
-    
+
     if (!_eventColors.containsKey(eventKey)) {
       final List<Color> palette = <Color>[
         Colors.blue,
@@ -288,9 +306,11 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         Colors.pink,
         Colors.purple,
       ];
-      
+
       if (_nextColorIndex < palette.length) {
-        _eventColors[eventKey] = palette[_nextColorIndex].withValues(alpha: 0.5);
+        _eventColors[eventKey] = palette[_nextColorIndex].withValues(
+          alpha: 0.5,
+        );
         _nextColorIndex++;
       } else {
         final int colorIndex = _nextColorIndex % palette.length;
@@ -298,21 +318,23 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
         _nextColorIndex++;
       }
     }
-    
+
     return _eventColors[eventKey]!;
   }
 
-  Future<void> _showEventDetailDialog(SchoolCalendarAppointment appointment) async {
+  Future<void> _showEventDetailDialog(
+    SchoolCalendarAppointment appointment,
+  ) async {
     final event = appointment.sourceEvent;
 
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     // Try to fetch detailed information
     CalendarDetailResponse? detail;
     String? comment;
-    
+
     try {
       detail = await _calendarService.getCalendarDetail(eventId: event.id);
-      
+
       // Try to get comment based on event kind
       String commentKind = '';
       switch (event.kind) {
@@ -332,7 +354,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
           commentKind = 'sue_title';
           break;
       }
-      
+
       if (commentKind.isNotEmpty) {
         final commentResponse = await _calendarService.getCalendarComment(
           eventId: event.id,
@@ -361,7 +383,10 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
             children: [
               _buildDetailRow('Type', event.eventType),
               _buildDetailRow('Category', event.cat),
-              _buildDetailRow('Date', appointment.from.toString().split(' ')[0]),
+              _buildDetailRow(
+                'Date',
+                appointment.from.toString().split(' ')[0],
+              ),
               if (event.isPostponed) ...[
                 const SizedBox(height: 8),
                 Container(
@@ -372,7 +397,11 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Symbols.schedule_rounded, color: Colors.orange, size: 16),
+                      Icon(
+                        Symbols.schedule_rounded,
+                        color: Colors.orange,
+                        size: 16,
+                      ),
                       SizedBox(width: 8),
                       Text(
                         'This event has been postponed',
@@ -438,9 +467,7 @@ class _SchoolCalendarViewState extends State<SchoolCalendarView> {
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );

@@ -38,7 +38,10 @@ class CalendarResponse {
     for (final key in json.keys) {
       if (!key.endsWith('date')) continue;
 
-      final String base = key.substring(0, key.length - 4); // strip trailing 'date'
+      final String base = key.substring(
+        0,
+        key.length - 4,
+      ); // strip trailing 'date'
       final RegExp pageSuffixRegex = RegExp(r'_page_\d+$');
       final String root = base.replaceAll(pageSuffixRegex, ''); // e.g., Sat06
       final String? pageSuffix = pageSuffixRegex.hasMatch(base)
@@ -145,14 +148,16 @@ class CalendarResponse {
 
       final parts = eventString.split('|');
       if (parts.length >= 6) {
-        events.add(CalendarEvent(
-          id: parts[0],
-          ctype: parts[1],
-          title: parts[2],
-          kind: parts[3],
-          cat: parts[4],
-          postponeStatus: parts[5],
-        ));
+        events.add(
+          CalendarEvent(
+            id: parts[0],
+            ctype: parts[1],
+            title: parts[2],
+            kind: parts[3],
+            cat: parts[4],
+            postponeStatus: parts[5],
+          ),
+        );
       }
     }
 
@@ -241,7 +246,9 @@ class CalendarEvent {
       return 'cal_color_$cat';
     } else if (kind == 'examtimetable') {
       return 'cal_color_$kind';
-    } else if (kind == 'fieldtrip' || kind == 'fixture' || kind == 'visit_event') {
+    } else if (kind == 'fieldtrip' ||
+        kind == 'fixture' ||
+        kind == 'visit_event') {
       return 'cal_color_4';
     } else if (kind == 'sl_event' || kind == 'su_event') {
       return 'cal_color_4_sl';

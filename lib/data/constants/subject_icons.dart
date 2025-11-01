@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 /// Provides icon lookup for subjects based on name aliases first, then code.
 class SubjectIconConstants {
@@ -122,7 +123,7 @@ class SubjectIconConstants {
     'CHI': 'chinese',
     'JAP': 'japanese',
     'SPA': 'spanish',
-    
+
     // Technology
     'CPU': 'computer_science',
     'CS': 'computer_science',
@@ -154,23 +155,26 @@ class SubjectIconConstants {
   static const IconData _defaultIcon = Symbols.school_rounded;
 
   /// Returns an icon for the given subject.
-  /// Priority: subject name/aliases (exact match, case-insensitive) -> code (exact match, case-insensitive) -> 
+  /// Priority: subject name/aliases (exact match, case-insensitive) -> code (exact match, case-insensitive) ->
   /// subject name/aliases (substring match, case-insensitive) -> code (substring match, case-insensitive) -> default.
-  static String getCategoryForSubject({required String subjectName, required String code}) {
+  static String getCategoryForSubject({
+    required String subjectName,
+    required String code,
+  }) {
     final name = subjectName.toLowerCase();
     final upperCode = code.toUpperCase();
-    
+
     // Try exact matches first
     if (_aliasToCategory.containsKey(name)) {
       final category = _aliasToCategory[name]!;
       return category;
     }
-    
+
     if (_codeToCategory.containsKey(upperCode)) {
       final category = _codeToCategory[upperCode]!;
       return category;
     }
-    
+
     // Try substring matches
     for (final entry in _aliasToCategory.entries) {
       if (name.contains(entry.key)) {
@@ -178,14 +182,14 @@ class SubjectIconConstants {
         return category;
       }
     }
-    
+
     for (final entry in _codeToCategory.entries) {
       if (upperCode.contains(entry.key)) {
         final category = entry.value;
         return category;
       }
     }
-    
+
     // Try code as lowercase for alias matching
     final codeName = code.toLowerCase();
     for (final entry in _aliasToCategory.entries) {
@@ -194,7 +198,7 @@ class SubjectIconConstants {
         return category;
       }
     }
-    
+
     // Try subject name as uppercase for code matching
     final nameCode = subjectName.toUpperCase();
     for (final entry in _codeToCategory.entries) {
@@ -210,6 +214,9 @@ class SubjectIconConstants {
   static IconData getIconForCategory({required String category}) {
     return _categoryToIcon[category] ?? _defaultIcon;
   }
+
+  /// Get translated subject name for a category
+  static String getTranslatedName({required String category}) {
+    return 'subjects.$category'.tr();
+  }
 }
-
-

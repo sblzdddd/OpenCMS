@@ -4,19 +4,20 @@ import 'captcha_dialog.dart';
 import '../../../../ui/shared/custom_snackbar/snackbar_utils.dart';
 
 /// Callback function signature for captcha state changes
-typedef CaptchaStateCallback = void Function(bool isVerified, Object? captchaData);
+typedef CaptchaStateCallback =
+    void Function(bool isVerified, Object? captchaData);
 
 /// Self-contained captcha input component that manages its own state
 class CaptchaInput extends StatefulWidget {
   /// Callback function called when captcha verification state changes
   final CaptchaStateCallback? onCaptchaStateChanged;
-  
+
   /// Optional initial verification state
   final bool initiallyVerified;
-  
+
   /// Optional app ID for captcha service
   final String? appId;
-  
+
   /// Optional business state for captcha context
   final String? bizState;
 
@@ -39,13 +40,13 @@ class CaptchaInput extends StatefulWidget {
 class _CaptchaInputState extends State<CaptchaInput> {
   /// Internal state: whether captcha is verified
   bool _isCaptchaVerified = false;
-  
+
   /// Internal state: captcha data from verification
   Object? _captchaData;
-  
+
   /// Internal state: whether captcha verification is in progress
   bool _isVerifying = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +60,9 @@ class _CaptchaInputState extends State<CaptchaInput> {
       // Use provided appId or default for development
       final appId = widget.appId ?? ApiConstants.tencentCaptchaAppId;
       TencentCaptchaDialog.init(appId);
-      debugPrint('CaptchaInput: Tencent Captcha initialized with appId: $appId');
+      debugPrint(
+        'CaptchaInput: Tencent Captcha initialized with appId: $appId',
+      );
     } catch (e) {
       debugPrint('CaptchaInput: Error initializing Tencent Captcha: $e');
     }
@@ -68,13 +71,13 @@ class _CaptchaInputState extends State<CaptchaInput> {
   /// Perform captcha verification
   void _performCaptchaVerification(Function(Object?)? onSuccess) async {
     if (_isVerifying) return; // Prevent multiple simultaneous verifications
-    
+
     setState(() {
       _isVerifying = true;
     });
-    
+
     debugPrint('CaptchaInput: Starting Tencent Captcha verification...');
-    
+
     try {
       final config = TencentCaptchaDialogConfig(
         bizState: widget.bizState ?? '',
@@ -94,11 +97,10 @@ class _CaptchaInputState extends State<CaptchaInput> {
             _captchaData = data;
             _isVerifying = false;
           });
-          
+
           // Notify parent of state change
           widget.onCaptchaStateChanged?.call(_isCaptchaVerified, _captchaData);
           onSuccess?.call(data);
-
         },
         onFail: (dynamic data) {
           debugPrint('CaptchaInput: Captcha onFail: $data');
@@ -107,13 +109,16 @@ class _CaptchaInputState extends State<CaptchaInput> {
             _captchaData = null;
             _isVerifying = false;
           });
-          
+
           // Notify parent of state change
           widget.onCaptchaStateChanged?.call(_isCaptchaVerified, _captchaData);
-          
+
           // Show failure feedback
           if (mounted) {
-            SnackbarUtils.showError(context, 'CaptchaInput: Captcha verification failed! Try again.');
+            SnackbarUtils.showError(
+              context,
+              'CaptchaInput: Captcha verification failed! Try again.',
+            );
           }
         },
       );
@@ -124,17 +129,17 @@ class _CaptchaInputState extends State<CaptchaInput> {
         _captchaData = null;
         _isVerifying = false;
       });
-      
+
       // Notify parent of state change
       widget.onCaptchaStateChanged?.call(_isCaptchaVerified, _captchaData);
-      
+
       // Show error feedback
       if (mounted) {
         SnackbarUtils.showError(context, 'CaptchaInput: Captcha error: $e');
       }
     }
   }
-  
+
   /// Reset captcha verification state
   void resetVerification() {
     setState(() {
@@ -142,17 +147,17 @@ class _CaptchaInputState extends State<CaptchaInput> {
       _captchaData = null;
       _isVerifying = false;
     });
-    
+
     // Notify parent of state change
     widget.onCaptchaStateChanged?.call(_isCaptchaVerified, _captchaData);
   }
-  
+
   /// Public getter for verification state (for external access if needed)
   bool get isVerified => _isCaptchaVerified;
-  
+
   /// Public getter for captcha data (for external access if needed)
   Object? get captchaData => _captchaData;
-  
+
   /// Manually trigger captcha verification (for fallback scenarios)
   void triggerManualVerification({Function(Object?)? onSuccess}) {
     _performCaptchaVerification(onSuccess);

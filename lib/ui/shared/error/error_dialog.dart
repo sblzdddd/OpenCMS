@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/custom_snackbar/snackbar_utils.dart';
 
@@ -10,13 +10,13 @@ import 'package:opencms/ui/shared/custom_snackbar/snackbar_utils.dart';
 class ErrorDialog extends StatelessWidget {
   /// Title of the dialog
   final String title;
-  
+
   /// Error message to display
   final String message;
-  
+
   /// Optional additional data to include in details
   final Map<String, dynamic>? additionalData;
-  
+
   /// Whether to show the copy button
   final bool showCopyButton;
 
@@ -79,9 +79,7 @@ class ErrorDialog extends StatelessWidget {
       title: Text(title),
       content: SizedBox(
         width: double.maxFinite,
-        child: CustomChildScrollView(
-          child: SelectableText(details),
-        ),
+        child: CustomChildScrollView(child: SelectableText(details)),
       ),
       actions: [
         if (showCopyButton)

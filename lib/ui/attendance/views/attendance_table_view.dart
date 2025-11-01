@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/constants/periods.dart';
 import '../../../data/models/attendance/attendance_response.dart';
 import '../../../data/constants/attendance_types.dart';

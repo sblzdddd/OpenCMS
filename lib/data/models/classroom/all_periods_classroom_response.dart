@@ -19,13 +19,13 @@ class AllPeriodsClassroomResponse {
   factory AllPeriodsClassroomResponse.empty(String date) {
     final Map<int, bool> loadingStates = {};
     final Map<int, String?> errorStates = {};
-    
+
     // Initialize loading states for periods 1-10
     for (int i = 1; i <= 10; i++) {
       loadingStates[i] = false;
       errorStates[i] = null;
     }
-    
+
     return AllPeriodsClassroomResponse(
       periodData: {},
       date: date,

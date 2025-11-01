@@ -5,26 +5,32 @@ import '../auth_service_base.dart';
 import 'package:flutter/foundation.dart';
 
 /// Fetch current user info and merge into auth state. Returns true on success.
-Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo(AuthServiceBase authService) async {
+Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo(
+  AuthServiceBase authService,
+) async {
   try {
-    final response = await authService.httpService.get(ApiConstants.accountUserUrl);
+    final response = await authService.httpService.get(
+      ApiConstants.accountUserUrl,
+    );
     final data = response.data ?? {};
     if ((data['en_name'] ?? '').toString().isNotEmpty) {
       authService.authState.updateUserInfo(UserInfo.fromJson(data));
       authService.authState.setAuthenticated(userInfo: UserInfo.fromJson(data));
     } else {
-      debugPrint('AuthService: Failed to fetch user info: No username found');
+      debugPrint('[AuthService] Failed to fetch user info: No username found');
       throw Exception('No username found');
     }
     return data;
   } catch (e) {
-    debugPrint('AuthService: Failed to fetch user info: $e');
+    debugPrint('[AuthService] Failed to fetch user info: $e');
     rethrow;
   }
 }
 
 Future<String> fetchCurrentUsername(AuthServiceBase authService) async {
-  final response = await authService.httpService.get(ApiConstants.accountUserUrl);
+  final response = await authService.httpService.get(
+    ApiConstants.accountUserUrl,
+  );
   if (response.statusCode == 200 || response.statusCode == 304) {
     final data = response.data ?? {};
     return (data['username'] ?? '').toString();
@@ -35,29 +41,29 @@ Future<String> fetchCurrentUsername(AuthServiceBase authService) async {
 
 /// Logout user and clear session
 Future<void> performLogout(AuthServiceBase authService) async {
-  debugPrint('AuthService: Logging out user');
-  
+  debugPrint('[AuthService] Logging out user');
+
   authService.authState.clearAuthentication();
   await StorageClient.clearCookies();
-  
-  debugPrint('AuthService: Logout completed');
+
+  debugPrint('[AuthService] Logout completed');
 }
 
 /// Check if current session is still valid
 Future<bool> isSessionValid(AuthServiceBase authService) async {
   final currentCookies = await StorageClient.currentCookies;
-  return authService.authState.isAuthenticated && 
-         currentCookies.isNotEmpty &&
-         !authService.authState.isSessionExpired();
+  return authService.authState.isAuthenticated &&
+      currentCookies.isNotEmpty &&
+      !authService.authState.isSessionExpired();
 }
 
 /// Get debug information about current session
-Future<Map<String, dynamic>> getSessionDebugInfo(AuthServiceBase authService) async {
+Future<Map<String, dynamic>> getSessionDebugInfo(
+  AuthServiceBase authService,
+) async {
   return {
     'authState': authService.authState.getDebugInfo(),
     'cookies': await StorageClient.currentCookies,
     'sessionValid': await isSessionValid(authService),
   };
 }
-
-

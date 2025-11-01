@@ -1,19 +1,10 @@
 import 'package:flutter/material.dart';
 
 /// Enum representing different types of skin elements
-enum SkinImageType {
-  background,
-  foreground,
-  icon,
-}
+enum SkinImageType { background, foreground, icon }
 
 /// Enum for background image positioning
-enum SkinImageFillMode {
-  contain,
-  stretch,
-  cover,
-  fit,
-}
+enum SkinImageFillMode { contain, stretch, cover, fit }
 
 /// Enum for foreground image positioning
 enum SkinImagePosition {
@@ -93,6 +84,7 @@ extension SkinImagePositionExtension on SkinImagePosition {
         return 'Bottom Right';
     }
   }
+
   Alignment get alignment {
     switch (this) {
       case SkinImagePosition.tl:

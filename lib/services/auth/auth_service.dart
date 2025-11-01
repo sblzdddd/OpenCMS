@@ -18,19 +18,19 @@ import '../../data/models/auth/login_result.dart';
 /// - User login with captcha verification
 /// - Session management
 /// - Authentication state
-/// 
+///
 /// This class acts as a facade over the separated function modules.
 class AuthService extends AuthServiceBase {
   static final AuthService _instance = AuthService._internal();
   factory AuthService() => _instance;
-  
+
   AuthService._internal() {
     // Background token refresh is now handled by TokenRefresherService
     // No need to set up callbacks that create circular dependencies
   }
 
   /// Login with username, password and captcha verification
-  /// 
+  ///
   /// Returns [LoginResult] with success status and relevant data
   /// Handles multiple response scenarios:
   /// - Success: {"detail": "Successfully logged in!"}
@@ -49,6 +49,7 @@ class AuthService extends AuthServiceBase {
       captchaData: captchaData,
     );
   }
+
   /// Fetch current user info and merge into auth state. Returns true on success.
   Future<Map<String, dynamic>> fetchAndSetCurrentUserInfo() async {
     return await session_funcs.fetchAndSetCurrentUserInfo(this);
@@ -58,12 +59,12 @@ class AuthService extends AuthServiceBase {
   Future<String> fetchCurrentUsername() async {
     return await session_funcs.fetchCurrentUsername(this);
   }
-  
+
   /// Logout user and clear session
   Future<void> logout() async {
     return await session_funcs.performLogout(this);
   }
-  
+
   /// Refresh authentication token using the refresh endpoint
   /// Returns true if refresh was successful, false otherwise
   Future<bool> refreshCookies() async {
@@ -74,7 +75,7 @@ class AuthService extends AuthServiceBase {
   Future<bool> isSessionValid() async {
     return await session_funcs.isSessionValid(this);
   }
-  
+
   /// Proactively refresh token if session is getting close to expiration
   /// Call this periodically or before important operations
   Future<bool> refreshCookiesIfNeeded() async {
@@ -90,5 +91,9 @@ class AuthService extends AuthServiceBase {
   /// Returns true on success, false otherwise.
   Future<bool> refreshLegacyCookies() async {
     return await legacy_funcs.refreshLegacyCookies(this);
+  }
+
+  Future<String> getJumpUrlToLegacy({String path = ""}) async {
+    return await legacy_funcs.getJumpUrlToLegacy(this, initialUrl: path);
   }
 }

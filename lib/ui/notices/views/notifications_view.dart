@@ -19,19 +19,20 @@ class _NotificationsViewState extends RefreshableView<NotificationsView> {
 
   @override
   Future<void> fetchData({bool refresh = false}) async {
-    final notifications = await _notificationService.getSortedNotifications(refresh: refresh);
+    final notifications = await _notificationService.getSortedNotifications(
+      refresh: refresh,
+    );
     setState(() {
       _notifications = notifications;
     });
   }
-
 
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_notifications == null) {
       return const Center(child: CircularProgressIndicator());
     }
-      
+
     return AdaptiveNotificationsLayout(
       notifications: _notifications!,
       selectedNotification: _selectedNotification,

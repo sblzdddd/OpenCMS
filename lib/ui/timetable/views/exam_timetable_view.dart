@@ -96,9 +96,9 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       _isCalendarView = !_isCalendarView;
     });
   }
-  
+
   void _showExamOptionsMenu(BuildContext context, ExamTimetableEntry exam) {
-    if(!(Platform.isAndroid || Platform.isIOS)) {
+    if (!(Platform.isAndroid || Platform.isIOS)) {
       // TODO: Add schedule support for desktop platforms
       return;
     }
@@ -146,8 +146,10 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
     final dateParts = exam.date.split('-');
     final timeParts = exam.startTime.split(':');
     final endTimeParts = exam.endTime.split(':');
-    
-    if (dateParts.length == 3 && timeParts.length == 2 && endTimeParts.length == 2) {
+
+    if (dateParts.length == 3 &&
+        timeParts.length == 2 &&
+        endTimeParts.length == 2) {
       final year = int.parse(dateParts[0]);
       final month = int.parse(dateParts[1]);
       final day = int.parse(dateParts[2]);
@@ -155,22 +157,21 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       final startMinute = int.parse(timeParts[1]);
       final endHour = int.parse(endTimeParts[0]);
       final endMinute = int.parse(endTimeParts[1]);
-      
+
       final startDate = DateTime(year, month, day, startHour, startMinute);
       final endDate = DateTime(year, month, day, endHour, endMinute);
 
       final Event event = Event(
-        title: exam.subject.isNotEmpty ? '${exam.subject} (${exam.code})' : (exam.code.isNotEmpty ? exam.code : 'Exam'),
-        description: '${exam.code.isNotEmpty ? 'Code: ${exam.code}\n' : ''}Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+        title: exam.subject.isNotEmpty
+            ? '${exam.subject} (${exam.code})'
+            : (exam.code.isNotEmpty ? exam.code : 'Exam'),
+        description:
+            '${exam.code.isNotEmpty ? 'Code: ${exam.code}\n' : ''}Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
         location: exam.room.isNotEmpty ? exam.room : 'TBA',
         startDate: startDate,
         endDate: endDate,
-        iosParams: IOSParams(
-          reminder: Duration(hours: 1),
-        ),
-        androidParams: AndroidParams(
-          emailInvites: [],
-        ),
+        iosParams: IOSParams(reminder: Duration(hours: 1)),
+        androidParams: AndroidParams(emailInvites: []),
       );
       Add2Calendar.addEvent2Cal(event);
     } else {
@@ -181,7 +182,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
   @override
   Widget build(BuildContext context) {
     final months = List<int>.generate(12, (i) => i + 1);
-    
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Column(
@@ -236,7 +237,11 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
           FloatingActionButton(
             onPressed: _toggleView,
             heroTag: 'toggle_view',
-            child: Icon(_isCalendarView ? Symbols.list_rounded : Symbols.calendar_month_rounded),
+            child: Icon(
+              _isCalendarView
+                  ? Symbols.list_rounded
+                  : Symbols.calendar_month_rounded,
+            ),
           ),
         ],
       ),

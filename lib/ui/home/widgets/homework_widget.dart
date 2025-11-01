@@ -12,19 +12,18 @@ import 'base_dashboard_widget.dart';
 class HomeworkCard extends StatefulWidget {
   final VoidCallback? onRefresh;
   final int? refreshTick;
-  
+
   const HomeworkCard({super.key, this.onRefresh, this.refreshTick});
 
   @override
   State<HomeworkCard> createState() => _HomeworkCardState();
 }
 
-class _HomeworkCardState extends State<HomeworkCard> 
+class _HomeworkCardState extends State<HomeworkCard>
     with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
-  
   @override
   bool get wantKeepAlive => true;
-  
+
   HomeworkResponse? _homeworkData;
   final HomeworkService _homeworkService = HomeworkService();
 
@@ -38,8 +37,11 @@ class _HomeworkCardState extends State<HomeworkCard>
   @override
   void didUpdateWidget(covariant HomeworkCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null && widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint('HomeworkCard: refreshTick changed -> refreshing with refresh=true');
+    if (widget.refreshTick != null &&
+        widget.refreshTick != oldWidget.refreshTick) {
+      debugPrint(
+        'HomeworkCard: refreshTick changed -> refreshing with refresh=true',
+      );
       refresh();
     }
   }
@@ -101,7 +103,7 @@ class _HomeworkCardState extends State<HomeworkCard>
     // Sort by due date (latest first) and take up to 3 items
     final sortedHomework = List<HomeworkItem>.from(_homeworkData!.homeworkItems)
       ..sort((a, b) => a.dueDate.compareTo(b.dueDate));
-    
+
     return sortedHomework.reversed.first;
   }
 
@@ -109,9 +111,9 @@ class _HomeworkCardState extends State<HomeworkCard>
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final dueDay = DateTime(dueDate.year, dueDate.month, dueDate.day);
-    
+
     final difference = dueDay.difference(today).inDays;
-    
+
     if (difference < 0) {
       return 'Overdue';
     } else if (difference == 0) {

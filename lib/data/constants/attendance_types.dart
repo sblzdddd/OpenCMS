@@ -36,5 +36,3 @@ class AttendanceConstants {
     7: Colors.white, // on dark grey
   };
 }
-
-

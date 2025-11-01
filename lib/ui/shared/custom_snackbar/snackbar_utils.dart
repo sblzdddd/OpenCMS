@@ -24,6 +24,7 @@ class SnackbarUtils {
   static int _nextId = 0;
   static const double _estimatedHeight = 60.0;
   static const double _gap = 8.0;
+
   /// Show a general information snackbar (blue theme)
   static void showInfo(
     BuildContext context,
@@ -136,9 +137,9 @@ class SnackbarUtils {
   }) {
     late OverlayEntry overlayEntry;
     final int snackbarId = _nextId++;
-    
+
     late SnackbarInfo snackbarInfo;
-    
+
     overlayEntry = OverlayEntry(
       builder: (context) => CustomSnackbar(
         id: snackbarId,
@@ -158,10 +159,7 @@ class SnackbarUtils {
       ),
     );
 
-    snackbarInfo = SnackbarInfo(
-      id: snackbarId,
-      overlayEntry: overlayEntry,
-    );
+    snackbarInfo = SnackbarInfo(id: snackbarId, overlayEntry: overlayEntry);
 
     _activeSnackbars.insert(0, snackbarInfo);
     Overlay.of(context).insert(overlayEntry);
@@ -172,7 +170,8 @@ class SnackbarUtils {
       bool updated = false;
       for (final info in _activeSnackbars) {
         final h = info.snackbarState?.height;
-        if (h != null && (info.measuredHeight == null || info.measuredHeight != h)) {
+        if (h != null &&
+            (info.measuredHeight == null || info.measuredHeight != h)) {
           info.measuredHeight = h;
           updated = true;
         }
@@ -197,10 +196,10 @@ class SnackbarUtils {
     if (index == -1) return;
 
     final snackbarInfo = _activeSnackbars[index];
-    
+
     // Remove from active list
     _activeSnackbars.removeAt(index);
-    
+
     // Remove the overlay entry
     if (snackbarInfo.overlayEntry.mounted) {
       snackbarInfo.overlayEntry.remove();

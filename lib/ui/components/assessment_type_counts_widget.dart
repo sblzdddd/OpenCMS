@@ -45,11 +45,16 @@ class AssessmentTypeCountsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTypeChip(BuildContext context, String type, int count, String displayName) {
+  Widget _buildTypeChip(
+    BuildContext context,
+    String type,
+    int count,
+    String displayName,
+  ) {
     final color = _getAssessmentTypeColor(type);
     final isPlural = count > 1;
     final suffix = isPlural ? 's' : '';
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -65,7 +70,9 @@ class AssessmentTypeCountsWidget extends StatelessWidget {
 
   Color _getAssessmentTypeColor(String type) {
     final lowerType = type.toLowerCase();
-    if (lowerType.contains('test') || lowerType.contains('exam')) return Colors.red;
+    if (lowerType.contains('test') || lowerType.contains('exam')) {
+      return Colors.red;
+    }
     if (lowerType.contains('project')) return Colors.blue;
     if (lowerType.contains('homework')) return Colors.green;
     if (lowerType.contains('practical')) return Colors.orange;

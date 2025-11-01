@@ -3,7 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/profile/profile.dart';
 import '../../../services/profile/profile_service.dart';
 import '../widgets/profile_info_card.dart';

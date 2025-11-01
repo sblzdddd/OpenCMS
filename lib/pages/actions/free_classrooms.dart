@@ -20,14 +20,15 @@ class FreeClassroomsPage extends StatefulWidget {
 class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   final FreeClassroomService _freeClassroomService = FreeClassroomService();
   late CalendarController _calendarController;
-  
+
   DateTime _selectedDate = DateTime.now();
   AllPeriodsClassroomResponse? _allPeriodsData;
   StreamSubscription<AllPeriodsClassroomResponse>? _dataSubscription;
   bool _isLoading = false;
   String? _errorMessage;
+
   @override
-  final String skinKey = 'free_classrooms';
+  String get skinKey => 'free_classrooms';
 
   @override
   String get appBarTitle => 'Free Classrooms';
@@ -63,34 +64,36 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     });
 
     final dateString = FreeClassroomService.formatDate(_selectedDate);
-    
+
     // Cancel previous subscription
     _dataSubscription?.cancel();
-    
+
     // Start new stream subscription
-    _dataSubscription = _freeClassroomService.fetchAllPeriodsClassrooms(
-      date: dateString,
-      refresh: refresh,
-    ).listen((response) {
-      if (mounted) {
-        setState(() {
-          _allPeriodsData = response;
-          _isLoading = false;
-        });
-      }
-    }, onError: (error) {
-      if (mounted) {
-        setState(() {
-          _errorMessage = error.toString();
-          _isLoading = false;
-        });
-      }
-    });
+    _dataSubscription = _freeClassroomService
+        .fetchAllPeriodsClassrooms(date: dateString, refresh: refresh)
+        .listen(
+          (response) {
+            if (mounted) {
+              setState(() {
+                _allPeriodsData = response;
+                _isLoading = false;
+              });
+            }
+          },
+          onError: (error) {
+            if (mounted) {
+              setState(() {
+                _errorMessage = error.toString();
+                _isLoading = false;
+              });
+            }
+          },
+        );
   }
 
   List<CalendarResource> _buildCalendarResources() {
     if (_allPeriodsData == null) return [];
-    
+
     // Get all unique classrooms across all periods
     final Set<String> allClassrooms = {};
     for (int period = 1; period <= 10; period++) {
@@ -98,7 +101,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
         allClassrooms.addAll(_allPeriodsData!.getClassroomsForPeriod(period));
       }
     }
-    
+
     // Create resources for each classroom
     return allClassrooms.map((classroom) {
       return CalendarResource(
@@ -123,30 +126,34 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
       Colors.cyan,
       Colors.lime,
     ];
-    
+
     final hash = int.parse(classroom.replaceAll('(', '').substring(1, 2));
     return colors[hash.abs() % colors.length].withValues(alpha: 0.7);
   }
 
   List<ClassroomAppointment> _buildCalendarAppointments() {
     final List<ClassroomAppointment> appointments = [];
-    
+
     if (_allPeriodsData == null) return appointments;
-    
+
     for (int period = 1; period <= 10; period++) {
       if (!_allPeriodsData!.hasData(period)) continue;
-      
+
       final classrooms = _allPeriodsData!.getClassroomsForPeriod(period);
       if (classrooms.isEmpty) continue;
-      
+
       final periodInfo = PeriodConstants.periods.firstWhere(
         (p) => p.name == 'Period $period',
-        orElse: () => const PeriodInfo(name: 'Period 1', startTime: '08:10', endTime: '08:50'),
+        orElse: () => const PeriodInfo(
+          name: 'Period 1',
+          startTime: '08:10',
+          endTime: '08:50',
+        ),
       );
-      
+
       final startTime = _parseTime(periodInfo.startTime);
       final endTime = _parseTime(periodInfo.endTime);
-      
+
       final appointmentDate = DateTime(
         _selectedDate.year,
         _selectedDate.month,
@@ -154,7 +161,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
         startTime.hour,
         startTime.minute,
       );
-      
+
       final endDate = DateTime(
         _selectedDate.year,
         _selectedDate.month,
@@ -162,20 +169,22 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
         endTime.hour,
         endTime.minute,
       );
-      
+
       for (final classroom in classrooms) {
-        appointments.add(ClassroomAppointment(
-          subject: 'Period $period',
-          startTime: appointmentDate,
-          endTime: endDate,
-          resourceIds: [classroom],
-          color: _getClassroomColor(classroom),
-          classroom: classroom,
-          period: period,
-        ));
+        appointments.add(
+          ClassroomAppointment(
+            subject: 'Period $period',
+            startTime: appointmentDate,
+            endTime: endDate,
+            resourceIds: [classroom],
+            color: _getClassroomColor(classroom),
+            classroom: classroom,
+            period: period,
+          ),
+        );
       }
     }
-    
+
     return appointments;
   }
 
@@ -191,8 +200,8 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
         : DateTime.now();
 
     // Check if the date has actually changed
-    if (_selectedDate.year == newDate.year && 
-        _selectedDate.month == newDate.month && 
+    if (_selectedDate.year == newDate.year &&
+        _selectedDate.month == newDate.month &&
         _selectedDate.day == newDate.day) {
       return; // No change needed
     }
@@ -200,11 +209,11 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     // Defer the state update until after the current build is complete
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      
+
       setState(() {
         _selectedDate = newDate;
       });
-      
+
       await loadData(refresh: true);
     });
   }
@@ -252,9 +261,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     }
 
     if (_allPeriodsData == null && !_isLoading) {
-      return const Center(
-        child: Text('No classroom data available'),
-      );
+      return const Center(child: Text('No classroom data available'));
     }
 
     final resources = _buildCalendarResources();
@@ -264,7 +271,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
       builder: (context, constraints) {
         final screenWidth = constraints.maxWidth;
         final calendarWidth = screenWidth > 800 ? screenWidth : 800.0;
-        
+
         return Center(
           child: SizedBox(
             width: calendarWidth,
@@ -296,20 +303,30 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
                       startHour: 8,
                       endHour: 17,
                     ),
-                    appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-                      final ClassroomAppointment appointment = details.appointments.first as ClassroomAppointment;
-                      return Container(
-                        decoration: BoxDecoration(
-                          color: appointment.color,
-                          borderRadius: themeNotifier.getBorderRadiusAll(0.25),
-                        ),
-                      );
-                    },
+                    appointmentBuilder:
+                        (
+                          BuildContext context,
+                          CalendarAppointmentDetails details,
+                        ) {
+                          final ClassroomAppointment appointment =
+                              details.appointments.first
+                                  as ClassroomAppointment;
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: appointment.color,
+                              borderRadius: themeNotifier.getBorderRadiusAll(
+                                0.25,
+                              ),
+                            ),
+                          );
+                        },
                     onTap: (details) {
-                      if (details.targetElement == CalendarElement.appointment &&
+                      if (details.targetElement ==
+                              CalendarElement.appointment &&
                           details.appointments != null &&
                           details.appointments!.isNotEmpty) {
-                        final ClassroomAppointment tapped = details.appointments!.first as ClassroomAppointment;
+                        final ClassroomAppointment tapped =
+                            details.appointments!.first as ClassroomAppointment;
                         _showClassroomDetailDialog(tapped, themeNotifier);
                       }
                     },
@@ -330,7 +347,10 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     );
   }
 
-  Future<void> _showClassroomDetailDialog(ClassroomAppointment appointment, ThemeNotifier themeNotifier) async {
+  Future<void> _showClassroomDetailDialog(
+    ClassroomAppointment appointment,
+    ThemeNotifier themeNotifier,
+  ) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -345,8 +365,14 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
           children: [
             _buildDetailRow('Classroom', appointment.classroom),
             _buildDetailRow('Period', 'Period ${appointment.period}'),
-            _buildDetailRow('Time', '${DateFormat('HH:mm').format(appointment.startTime)} - ${DateFormat('HH:mm').format(appointment.endTime)}'),
-            _buildDetailRow('Date', DateFormat('MMM dd, yyyy').format(appointment.startTime)),
+            _buildDetailRow(
+              'Time',
+              '${DateFormat('HH:mm').format(appointment.startTime)} - ${DateFormat('HH:mm').format(appointment.endTime)}',
+            ),
+            _buildDetailRow(
+              'Date',
+              DateFormat('MMM dd, yyyy').format(appointment.startTime),
+            ),
           ],
         ),
         actions: [
@@ -372,9 +398,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );
@@ -383,19 +407,19 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   @override
   bool get isEmpty {
     if (_allPeriodsData == null) return true;
-    
+
     // Don't show empty state if we're still loading any period
     if (_allPeriodsData!.isAnyLoading) return false;
-    
+
     // Don't show empty state if there are any errors
     for (int period = 1; period <= 10; period++) {
       if (_allPeriodsData!.hasError(period)) return false;
     }
-    
+
     // Show empty state only if all periods have data but no classrooms
     bool allPeriodsHaveData = true;
     bool allPeriodsEmpty = true;
-    
+
     for (int period = 1; period <= 10; period++) {
       if (!_allPeriodsData!.hasData(period)) {
         allPeriodsHaveData = false;
@@ -405,7 +429,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
         allPeriodsEmpty = false;
       }
     }
-    
+
     return allPeriodsHaveData && allPeriodsEmpty;
   }
 
@@ -437,13 +461,17 @@ class ClassroomAppointment {
 }
 
 class _ClassroomDataSource extends CalendarDataSource {
-  _ClassroomDataSource(List<ClassroomAppointment> source, List<CalendarResource> resourceColl) {
+  _ClassroomDataSource(
+    List<ClassroomAppointment> source,
+    List<CalendarResource> resourceColl,
+  ) {
     appointments = source;
     resources = resourceColl;
   }
 
   @override
-  DateTime getStartTime(int index) => appointments![index].startTime as DateTime;
+  DateTime getStartTime(int index) =>
+      appointments![index].startTime as DateTime;
 
   @override
   DateTime getEndTime(int index) => appointments![index].endTime as DateTime;
@@ -455,5 +483,6 @@ class _ClassroomDataSource extends CalendarDataSource {
   Color getColor(int index) => appointments![index].color as Color;
 
   @override
-  List<Object> getResourceIds(int index) => appointments![index].resourceIds as List<Object>;
+  List<Object> getResourceIds(int index) =>
+      appointments![index].resourceIds as List<Object>;
 }

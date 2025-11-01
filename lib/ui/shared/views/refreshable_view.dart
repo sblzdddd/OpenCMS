@@ -8,16 +8,18 @@ import '../custom_snackbar/snackbar_utils.dart';
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
 abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
-  final bool isTransparent;
+  bool isTransparent = false;
   bool _isLoading = true;
   String? _error;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
 
   RefreshableView({this.isTransparent = false});
 
   /// Get the theme notifier from Provider
-  ThemeNotifier get themeNotifier => Provider.of<ThemeNotifier>(context, listen: true);
-  
+  ThemeNotifier get themeNotifier =>
+      Provider.of<ThemeNotifier>(context, listen: true);
+
   /// Override this to provide the main data fetching logic
   Future<void> fetchData({bool refresh = false});
 
@@ -30,9 +32,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
       physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.4),
-        const Center(
-          child: CircularProgressIndicator(),
-        ),
+        const Center(child: CircularProgressIndicator()),
       ],
     );
   }
@@ -81,12 +81,12 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
       });
 
       await fetchData(refresh: refresh);
-      
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        if(refresh) {
+        if (refresh) {
           SnackbarUtils.showSuccess(context, 'Data refreshed successfully');
         }
       }

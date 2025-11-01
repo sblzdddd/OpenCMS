@@ -1,235 +1,80 @@
 import 'package:flutter/material.dart';
-import 'pages/login_page.dart';
-import 'pages/home_page.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:opencms/pages/splash.dart';
+import 'package:opencms/services/system/desktop_tray/tray_service.dart';
+import 'package:opencms/services/system/desktop_window/window_service.dart';
+import 'package:opencms/services/system/webview/webview_service.dart';
+import 'package:opencms/utils/color_themes.dart';
+import 'pages/login.dart';
+import 'pages/home.dart';
 import 'services/services.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter/foundation.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:tray_manager/tray_manager.dart';
-import 'dart:io';
 import 'services/background/cookies_refresh_service.dart';
 import 'services/theme/theme_services.dart';
 import 'package:provider/provider.dart';
-import 'utils/text_theme_util.dart';
-import 'utils/global_press_scale.dart';
-import 'ui/shared/widgets/custom_app_bar.dart';
-import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'services/update/update_checker.dart';
-import 'ui/shared/widgets/skin_icon_widget.dart';
-import 'utils/app_info.dart';
+import 'services/system/update/update_checker_service.dart';
 
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
-
-WebViewEnvironment? webViewEnvironment;
-WindowManager? globalAppWindow; // Global variable to store window manager instance
-AuthWrapperState? globalAuthWrapper; // Global variable to access auth wrapper
-
-
-// Function to handle window close event - hide instead of close
-Future<void> handleWindowClose() async {
-  if (globalAppWindow != null) {
-    await globalAppWindow!.hide();
-  } else {
-    debugPrint('Main: globalAppWindow is null');
-  }
-}
-
-Future<void> initInAppWebview() async {
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.windows) {
-    final availableVersion = await WebViewEnvironment.getAvailableVersion();
-    assert(availableVersion != null,
-        'Failed to find an installed WebView2 Runtime or non-stable Microsoft Edge installation.');
-    webViewEnvironment = await WebViewEnvironment.create();
-  }
-
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-    await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
-  }
-  PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
-}
-
-Future<void> initWindowManager() async {
-  // Return early if not Windows environment
-  if (kIsWeb || (!Platform.isWindows && !Platform.isMacOS && !Platform.isLinux)) {
-    return;
-  }
-  
-  await windowManager.ensureInitialized();
-
-  WindowOptions windowOptions = WindowOptions(
-    minimumSize: Size(400, 400),
-    titleBarStyle: TitleBarStyle.hidden,
-  );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-  });
-
-  // Prevent the default close behavior and handle it manually
-  await windowManager.setPreventClose(true);
-}
-
-Future<void> initSystemTray() async {
-  if(kIsWeb || !(Platform.isWindows || Platform.isMacOS || Platform.isLinux)) {
-    return;
-  }
-  
-  String path = 'assets/icon/app_icon.ico';
-  globalAppWindow = windowManager; // Store globally for access from other functions
-
-  // Initialize tray_manager
-  await trayManager.destroy(); // Clear any existing tray
-  await trayManager.setIcon(path);
-  await trayManager.setToolTip('OpenCMS');
-  
-  // Create context menu
-  final menu = Menu(
-    items: [
-      MenuItem(
-        key: 'show_window',
-        label: 'Show',
-      ),
-      MenuItem.separator(),
-      MenuItem(
-        key: 'exit_app',
-        label: 'Exit',
-      ),
-    ],
-  );
-  
-  // Set the context menu
-  await trayManager.setContextMenu(menu);
-
-  // Add tray listener to handle events
-  trayManager.addListener(_TrayListener());
-}
-
-class _TrayListener with TrayListener {
-  @override
-  void onTrayIconMouseDown() {
-    if (!kIsWeb && Platform.isWindows) {
-      windowManager.show();
-    } else if (!kIsWeb) {
-      trayManager.popUpContextMenu();
-    }
-  }
-
-  @override
-  void onTrayIconRightMouseDown() {
-    if (!kIsWeb && Platform.isWindows) {
-      trayManager.popUpContextMenu();
-    } else if (!kIsWeb) {
-      windowManager.show();
-    }
-  }
-
-  @override
-  void onTrayMenuItemClick(MenuItem menuItem) async {
-    switch (menuItem.key) {
-      case 'show_window':
-        windowManager.show();
-        break;
-      case 'exit_app':
-        await windowManager.setPreventClose(false);
-        await windowManager.close();
-        break;
-    }
-  }
-}
-
-Future<void> initFlutterAcrylic() async {
-  if (!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    await Window.initialize();
-  }
-}
-
-
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initFlutterAcrylic();
-  await initInAppWebview();
-  await initWindowManager();
-  await initSystemTray();
+  await EasyLocalization.ensureInitialized();
+  await WebviewService.initWebview();
+  // init window manager and effects
+  await OCMSWindowService.initWindowManager();
+  await OCMSTrayService.initSystemTray();
   await CookiesRefreshService().start();
-  
   // Initialize ThemeNotifier singleton
   await ThemeNotifier.initialize();
-  
-  runApp(const MyApp());
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en', 'US'), Locale('zh', 'CN')],
+      path: 'assets/langs',
+      fallbackLocale: const Locale('en', 'US'),
+      child: const OCMSApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class OCMSApp extends StatelessWidget {
+  const OCMSApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = createTextTheme(context, "Roboto", "EB Garamond");
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: ThemeNotifier.instance),
-      ],
+      providers: [ChangeNotifierProvider.value(value: ThemeNotifier.instance)],
       child: Consumer<ThemeNotifier>(
         builder: (context, themeNotifier, child) {
           Color seedColor = themeNotifier.currentColor;
-          
-          // Create custom light color scheme with darker background and pure white containers
-          ColorScheme baseLightColorScheme = ColorScheme.fromSeed(
-            seedColor: seedColor,
-            brightness: Brightness.light,
-          );
-          
-          ColorScheme lightColorScheme = baseLightColorScheme.copyWith(
-            surface: Color.lerp(const Color.fromARGB(248, 252, 252, 252), seedColor, 0.04)!,
-            surfaceContainer: Color.lerp(Colors.white, seedColor, 0.01)!,
-            surfaceContainerHigh: Color.lerp(Colors.white, seedColor, 0.005)!,
-            surfaceContainerHighest: Color.lerp(Colors.white, seedColor, 0.02)!,
-            surfaceContainerLow: Color.lerp(const Color(0xF8F8F8F8), seedColor, 0.02)!,
-            surfaceContainerLowest: Color.lerp(const Color(0xF6F6F6F6), seedColor, 0.04)!,
-            surfaceBright: Color.lerp(Colors.white, seedColor, 0.02)!,
-          );
-          
-          ColorScheme darkColorScheme = ColorScheme.fromSeed(
-            seedColor: seedColor,
-            brightness: Brightness.dark,
-          );
+          OCMSColorThemes colorThemes = OCMSColorThemes(context);
+
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: 'OpenCMS',
-            theme: ThemeData(
-              colorScheme: lightColorScheme,
-              textTheme: textTheme.apply(
-                bodyColor: lightColorScheme.onSurface,
-                displayColor: lightColorScheme.onSurface,
-              ),
-              extensions: <ThemeExtension<dynamic>>[
-                const AppInteractionTheme(scaleDownFactor: 0.9),
-              ],
-            ),
-            darkTheme: ThemeData(
-              colorScheme: darkColorScheme,
-              textTheme: textTheme.apply(
-                bodyColor: darkColorScheme.onSurface,
-                displayColor: darkColorScheme.onSurface,
-              ),
-              extensions: <ThemeExtension<dynamic>>[
-                const AppInteractionTheme(scaleDownFactor: 0.9),
-              ],
-            ),
-            themeMode: themeNotifier.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            title: tr('app.title'),
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
+            theme: colorThemes.buildLightTheme(seedColor),
+            darkTheme: colorThemes.buildDarkTheme(seedColor),
+            themeMode: themeNotifier.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
             home: const AuthWrapper(),
             routes: {
               '/login': (context) => const LoginPage(),
               '/home': (context) => const HomePage(),
             },
             navigatorObservers: [routeObserver],
+            // preserve text dpi scale
             builder: (context, child) {
               return MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
-                  child: child!,
-                );
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: TextScaler.linear(1.0)),
+                child: child!,
+              );
             },
           );
         },
@@ -249,62 +94,27 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   final AuthService _authService = AuthService();
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
-  String _versionInfoText = '';
-  String _deviceInfoText = '';
 
   @override
   void initState() {
     super.initState();
     windowManager.addListener(this);
-    
-    // Set global reference for access from other parts of the app
-    globalAuthWrapper = this;
-    
     _checkAuthenticationStatus();
-    _initVersionAndDeviceInfo();
-
-    // Non-blocking update check after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        UpdateChecker.checkForUpdates(context);
-      }
-    });
-  }
-
-  Future<void> _initVersionAndDeviceInfo() async {
-    try {
-      final String versionText = await AppInfoUtil.getVersionText();
-      final String deviceText = await AppInfoUtil.getDeviceText();
-      if (!mounted) return;
-      setState(() {
-        _versionInfoText = versionText;
-        _deviceInfoText = deviceText;
-      });
-    } catch (_) {
-      // No-op on failure; footer will simply be hidden
-    }
+    UpdateCheckerService.scheduleUpdateCheck(context);
   }
 
   @override
   void dispose() {
     windowManager.removeListener(this);
-    
-    // Clear global reference
-    if (globalAuthWrapper == this) {
-      globalAuthWrapper = null;
-    }
-
     super.dispose();
   }
 
   @override
   Future<void> onWindowClose() async {
-    // Hide instead of closing
-    await handleWindowClose();
+    await windowManager.hide();
   }
 
   void _checkAuthenticationStatus() async {
-    // Add a small delay to show loading state
     await Future.delayed(const Duration(milliseconds: 500));
 
     bool isAuthenticated = false;
@@ -327,54 +137,8 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   @override
   Widget build(BuildContext context) {
     if (_isCheckingAuth) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SkinIcon(
-                imageKey: 'global.app_icon',
-                fallbackIcon: Symbols.school_rounded,
-                fallbackIconColor: Theme.of(context).colorScheme.primary,
-                fallbackIconBackgroundColor: Colors.transparent,
-                size: 96,
-                iconSize: 72,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              const SizedBox(height: 24),
-              const CircularProgressIndicator(),
-            ],
-          ),
-        ),
-        
-        appBar: PreferredSize(
-          preferredSize: const Size(double.maxFinite, 50),
-          child: CustomAppBar(),
-        ),
-        bottomNavigationBar: (_versionInfoText.isNotEmpty || _deviceInfoText.isNotEmpty)
-            ? SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  child: Text(
-                    [
-                      if (_versionInfoText.isNotEmpty) _versionInfoText,
-                      if (_deviceInfoText.isNotEmpty) _deviceInfoText,
-                    ].join(' • '),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ),
-              )
-            : null,
-      );
+      return const SplashScreen();
     }
-
     return _isAuthenticated ? const HomePage() : const LoginPage();
   }
 }
-
-

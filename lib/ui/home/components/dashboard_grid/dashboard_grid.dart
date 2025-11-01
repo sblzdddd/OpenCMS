@@ -28,8 +28,11 @@ class DashboardGridController extends ChangeNotifier {
       return;
     }
     // Fallback: persist default layout immediately so the grid picks it up on mount
-    final DashboardLayoutStorageService storage = DashboardLayoutStorageService();
-    storage.saveLayout(List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout));
+    final DashboardLayoutStorageService storage =
+        DashboardLayoutStorageService();
+    storage.saveLayout(
+      List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout),
+    );
   }
 
   /// Query which widgets are available to add right now
@@ -48,7 +51,7 @@ class DashboardGridController extends ChangeNotifier {
 class DashboardGrid extends StatefulWidget {
   final VoidCallback? onRefresh;
   final DashboardGridController? controller;
-  
+
   const DashboardGrid({super.key, this.onRefresh, this.controller});
 
   @override
@@ -56,7 +59,8 @@ class DashboardGrid extends StatefulWidget {
 }
 
 class _DashboardGridState extends State<DashboardGrid> {
-  final DashboardLayoutStorageService _storage = DashboardLayoutStorageService();
+  final DashboardLayoutStorageService _storage =
+      DashboardLayoutStorageService();
   bool _isLoading = true;
   bool _isEditMode = false;
   int _refreshTick = 0; // Increments to force child widget subtree rebuild
@@ -75,7 +79,9 @@ class _DashboardGridState extends State<DashboardGrid> {
     widget.controller?._resetLayoutHandler = () {
       setState(() {
         _isEditMode = true; // briefly enter edit to show changes
-        _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
+        _widgetOrder = List<MapEntry<String, Size>>.from(
+          WidgetSizeManager.defaultLayout,
+        );
       });
       _saveLayout();
       // Exit edit mode immediately since add button is persistent now
@@ -121,7 +127,9 @@ class _DashboardGridState extends State<DashboardGrid> {
         setState(() {
           if (saved == null || saved.isEmpty) {
             // Only use default layout if no saved layout exists
-            _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
+            _widgetOrder = List<MapEntry<String, Size>>.from(
+              WidgetSizeManager.defaultLayout,
+            );
           } else {
             // Use the saved layout directly since it now includes sizes
             _widgetOrder = List<MapEntry<String, Size>>.from(saved);
@@ -134,7 +142,9 @@ class _DashboardGridState extends State<DashboardGrid> {
       if (mounted) {
         setState(() {
           // On error, try to load the saved layout again, but if that fails, use default
-          _widgetOrder = List<MapEntry<String, Size>>.from(WidgetSizeManager.defaultLayout);
+          _widgetOrder = List<MapEntry<String, Size>>.from(
+            WidgetSizeManager.defaultLayout,
+          );
           _isLoading = false;
         });
       }
@@ -185,43 +195,23 @@ class _DashboardGridState extends State<DashboardGrid> {
     _saveLayout();
   }
 
-  /// Change widget size
-  void _changeWidgetSize(String widgetId, Size newSize) {
-    final currentIndex = _widgetOrder.indexWhere((e) => e.key == widgetId);
-    if (currentIndex == -1) return;
-
-    setState(() {
-      final widgetId = _widgetOrder[currentIndex].key;
-      _widgetOrder[currentIndex] = MapEntry(widgetId, newSize);
-    });
-    _saveLayout();
-  }
-
-  /// Handle widget size change
-  void _handleSizeChange(String widgetId) {
-    final currentIndex = _widgetOrder.indexWhere((e) => e.key == widgetId);
-    if (currentIndex == -1) return;
-
-    final currentSize = _widgetOrder[currentIndex].value;
-    WidgetTileBuilder.showSizeChangeDialog(
-      context,
-      widgetId,
-      currentSize,
-      (newSize) => _changeWidgetSize(widgetId, newSize),
-    );
-  }
-
-  Widget _buildTile(MapEntry<String, Size> entry, double baseTileWidth, double spacing, BuildContext context) {
+  Widget _buildTile(
+    MapEntry<String, Size> entry,
+    double baseTileWidth,
+    double spacing,
+    BuildContext context,
+  ) {
     return WidgetTileBuilder.buildTile(
       entry,
       baseTileWidth,
       spacing,
       _isEditMode,
-      _handleSizeChange,
       context,
-      isEditModeParam: _isEditMode, // Pass edit mode to make widgets non-clickable
-      onRefresh: widget.onRefresh, // Pass refresh callback to widgets
-      refreshTick: _refreshTick, // Key child content by refresh tick
+      // Make widgets non-clickable
+      isEditModeParam: _isEditMode,
+      // Refresh callback to widgets
+      onRefresh: widget.onRefresh,
+      refreshTick: _refreshTick,
     );
   }
 
@@ -241,26 +231,28 @@ class _DashboardGridState extends State<DashboardGrid> {
             const double spacing = 16.0;
             const int maxColumns = 4;
             const double minColWidth = 60.0;
-            final int columns = ((constraints.maxWidth + spacing) / (minColWidth + spacing))
-                .floor()
-                .clamp(1, maxColumns);
-            final double baseTileWidth = (constraints.maxWidth - (columns - 1) * spacing) / columns;
+            final int columns =
+                ((constraints.maxWidth + spacing) / (minColWidth + spacing))
+                    .floor()
+                    .clamp(1, maxColumns);
+            final double baseTileWidth =
+                (constraints.maxWidth - (columns - 1) * spacing) / columns;
 
             final List<Widget> tiles = _widgetOrder
-                .map((entry) => _buildTile(entry, baseTileWidth, spacing, context))
+                .map(
+                  (entry) => _buildTile(entry, baseTileWidth, spacing, context),
+                )
                 .toList();
-            
-            if (_isEditMode) {
-              // Force next line for the trash can row
 
+            if (_isEditMode) {
               // Full-width trash can row
-              tiles.add(SizedBox(
-                key: const ValueKey('trash_can'),
-                width: constraints.maxWidth,
-                child: TrashCanItem(
-                  tileWidth: constraints.maxWidth,
+              tiles.add(
+                SizedBox(
+                  key: const ValueKey('trash_can'),
+                  width: constraints.maxWidth,
+                  child: TrashCanItem(tileWidth: constraints.maxWidth),
                 ),
-              ));
+              );
             }
 
             return ReorderableWrap(
@@ -289,5 +281,3 @@ class _DashboardGridState extends State<DashboardGrid> {
     );
   }
 }
-
-

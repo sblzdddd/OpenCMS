@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:opencms/utils/device_info.dart';
 import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'dart:io';
-import '../../../services/theme/window_effect_service.dart';
+import '../../../services/system/desktop_window/window_effect_service.dart';
 import '../../shared/widgets/custom_scaffold.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -44,7 +45,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         ),
         clipBehavior: Clip.antiAlias,
-        title: const Text('Pick a custom color'),
+        title: Text(tr('themeSettings.pickCustomColor')),
         content: CustomChildScrollView(
           child: Column(
             children: [
@@ -52,7 +53,6 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                 pickerColor: currentColor,
                 onColorChanged: (Color color) {
                   currentColor = color;
-                  _hexController.text = '#${color.toHex().substring(1).toUpperCase()}';
                 },
                 colorPickerWidth: 300,
                 pickerAreaHeightPercent: 0.7,
@@ -71,16 +71,18 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: TextField(
                   controller: _hexController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     prefixIcon: Icon(Symbols.tag_rounded),
-                    labelText: 'Hex Color',
+                    labelText: tr('themeSettings.hexColor'),
                     border: OutlineInputBorder(),
                   ),
                   maxLength: 9,
                   onChanged: (value) {
                     if (value.startsWith('#') && value.length == 7) {
                       try {
-                        currentColor = Color(int.parse(value.substring(1), radix: 16) + 0xFF000000);
+                        currentColor = Color(
+                          int.parse(value.substring(1), radix: 16) + 0xFF000000,
+                        );
                       } catch (e) {
                         // Invalid hex color
                       }
@@ -94,24 +96,28 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(tr('themeSettings.cancel')),
           ),
           ElevatedButton(
             onPressed: () {
               themeNotifier.setCustomColor(currentColor);
               Navigator.of(context).pop();
             },
-            child: const Text('Apply'),
+            child: Text(tr('themeSettings.apply')),
           ),
         ],
       ),
     );
   }
 
-
-  Widget _buildColorButton(ThemeColor color, String label, Color colorValue, ThemeNotifier themeNotifier) {
+  Widget _buildColorButton(
+    ThemeColor color,
+    String label,
+    Color colorValue,
+    ThemeNotifier themeNotifier,
+  ) {
     bool isSelected = themeNotifier.selectedColor == color;
-    
+
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -127,15 +133,15 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                 color: isSelected ? Colors.white : Colors.transparent,
                 width: 3,
               ),
-                      boxShadow: isSelected
-                          ? [
-                              BoxShadow(
-                                color: colorValue.withValues(alpha: 0.5),
-                                blurRadius: 8,
-                                spreadRadius: 2,
-                              ),
-                            ]
-                          : null,
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: colorValue.withValues(alpha: 0.5),
+                        blurRadius: 8,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : null,
             ),
             child: Center(
               child: Text(
@@ -161,145 +167,183 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScaffold(
-      skinKey: 'settings',
-      appBar: CustomAppBar(
-        leading: IconButton(
-          icon: const Icon(Symbols.arrow_back_rounded),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text('Theme Settings'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Consumer<ThemeNotifier>(
-        builder: (context, themeNotifier, child) {
-          return CustomChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Theme Color',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Predefined color buttons
-                Row(
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        // Update system color in theme notifier
+        final themeNotifier = Provider.of<ThemeNotifier>(
+          context,
+          listen: false,
+        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final systemColor = themeNotifier.isDarkMode
+              ? darkDynamic?.primary
+              : lightDynamic?.primary;
+          themeNotifier.setSystemColor(systemColor);
+        });
+
+        return CustomScaffold(
+          skinKey: 'settings',
+          appBar: CustomAppBar(
+            leading: IconButton(
+              icon: const Icon(Symbols.arrow_back_rounded),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            title: Text(tr('themeSettings.title')),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+          ),
+          body: Consumer<ThemeNotifier>(
+            builder: (context, themeNotifier, child) {
+              final systemColor = themeNotifier.isDarkMode
+                  ? darkDynamic?.primary
+                  : lightDynamic?.primary;
+
+              return CustomChildScrollView(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildColorButton(
-                      ThemeColor.red,
-                      'Fire',
-                      ThemeNotifier.predefinedColors[ThemeColor.red]!,
-                      themeNotifier,
+                    Text(
+                      tr('themeSettings.themeColor'),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    _buildColorButton(
-                      ThemeColor.golden,
-                      'Metal',
-                      ThemeNotifier.predefinedColors[ThemeColor.golden]!,
-                      themeNotifier,
+                    const SizedBox(height: 16),
+
+                    // Predefined color buttons
+                    Row(
+                      children: [
+                        _buildColorButton(
+                          ThemeColor.red,
+                          tr('themeSettings.fire'),
+                          ThemeNotifier.predefinedColors[ThemeColor.red]!,
+                          themeNotifier,
+                        ),
+                        _buildColorButton(
+                          ThemeColor.golden,
+                          tr('themeSettings.metal'),
+                          ThemeNotifier.predefinedColors[ThemeColor.golden]!,
+                          themeNotifier,
+                        ),
+                        _buildColorButton(
+                          ThemeColor.blue,
+                          tr('themeSettings.water'),
+                          ThemeNotifier.predefinedColors[ThemeColor.blue]!,
+                          themeNotifier,
+                        ),
+                        _buildColorButton(
+                          ThemeColor.green,
+                          tr('themeSettings.wood'),
+                          ThemeNotifier.predefinedColors[ThemeColor.green]!,
+                          themeNotifier,
+                        ),
+                        _buildColorButton(
+                          ThemeColor.system,
+                          tr('themeSettings.system'),
+                          systemColor ??
+                              ThemeNotifier.predefinedColors[ThemeColor.blue]!,
+                          themeNotifier,
+                        ),
+                      ],
                     ),
-                    _buildColorButton(
-                      ThemeColor.blue,
-                      'Water',
-                      ThemeNotifier.predefinedColors[ThemeColor.blue]!,
-                      themeNotifier,
+
+                    const SizedBox(height: 16),
+
+                    // Custom color button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () =>
+                            _showColorPicker(context, themeNotifier),
+                        icon: const Icon(Symbols.palette_rounded),
+                        label: Text(tr('themeSettings.customColor')),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              themeNotifier.selectedColor == ThemeColor.custom
+                              ? themeNotifier.customColor
+                              : Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: themeNotifier.getBorderRadiusAll(
+                              0.75,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    _buildColorButton(
-                      ThemeColor.green,
-                      'Wood',
-                      ThemeNotifier.predefinedColors[ThemeColor.green]!,
-                      themeNotifier,
+
+                    const SizedBox(height: 16),
+
+                    // Border Radius
+                    Text(
+                      tr('themeSettings.borderRadius'),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    const SizedBox(height: 16),
+
+                    // Border Radius Slider
+                    Slider(
+                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                      value: themeNotifier.borderRadius,
+                      min: 0,
+                      max: 32,
+                      divisions: 32,
+                      onChanged: (value) =>
+                          themeNotifier.setBorderRadius(value),
+                    ),
+
+                    // Only show window effects on desktop platforms
+                    if (isDesktopEnvironment) ...[
+                      const SizedBox(height: 32),
+
+                      Text(
+                        tr('themeSettings.windowEffect'),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Window Effect Dropdown
+                      DropdownButtonFormField<WindowEffectType>(
+                        initialValue: themeNotifier.windowEffect,
+                        decoration: InputDecoration(
+                          labelText: tr('themeSettings.windowEffect'),
+                          border: OutlineInputBorder(
+                            borderRadius: themeNotifier.getBorderRadiusAll(
+                              0.75,
+                            ),
+                          ),
+                          prefixIcon: const Icon(Symbols.window_rounded),
+                        ),
+                        items: ThemeNotifier.availableWindowEffects.map((
+                          effect,
+                        ) {
+                          return DropdownMenuItem(
+                            value: effect,
+                            child: Text(
+                              ThemeNotifier.getWindowEffectDisplayName(effect),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            themeNotifier.setWindowEffect(value);
+                          }
+                        },
+                      ),
+                    ],
                   ],
                 ),
-                
-                const SizedBox(height: 16),
-                
-                // Custom color button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _showColorPicker(context, themeNotifier),
-                    icon: const Icon(Symbols.palette_rounded),
-                    label: const Text('Custom Color'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: themeNotifier.selectedColor == ThemeColor.custom
-                          ? themeNotifier.customColor
-                          : Theme.of(context).colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Border Radius
-                Text(
-                  'Border Radius',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Border Radius Slider
-                Slider(
-                  padding: const EdgeInsets.symmetric(horizontal: 0),
-                  value: themeNotifier.borderRadius,
-                  min: 0,
-                  max: 32,
-                  divisions: 32,
-                  onChanged: (value) => themeNotifier.setBorderRadius(value),
-                ),
-
-                // Only show window effects on desktop platforms
-                if (!kIsWeb && (Platform.isWindows || Platform.isMacOS || Platform.isLinux)) ...[
-                  const SizedBox(height: 32),
-                  
-                  Text(
-                    'Window Effect',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Window Effect Dropdown
-                  DropdownButtonFormField<WindowEffectType>(
-                    initialValue: themeNotifier.windowEffect,
-                    decoration: InputDecoration(
-                      labelText: 'Window Effect',
-                      border: OutlineInputBorder(
-                        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-                      ),
-                      prefixIcon: const Icon(Symbols.window_rounded),
-                    ),
-                    items: ThemeNotifier.availableWindowEffects.map((effect) {
-                      return DropdownMenuItem(
-                        value: effect,
-                        child: Text(ThemeNotifier.getWindowEffectDisplayName(effect)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      if (value != null) {
-                        themeNotifier.setWindowEffect(value);
-                      }
-                    },
-                  ),
-                ],
-              ],
-            ),
-          );
-        },
-      ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

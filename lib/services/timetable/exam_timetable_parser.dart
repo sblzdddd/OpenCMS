@@ -25,8 +25,10 @@ List<ExamTimetableEntry> parseExamHtml(String html) {
     if (title.isEmpty) continue;
 
     final info = _parseTitleAttributes(title);
-    final subject = li.querySelector('strong.pl10')?.text.trim() ?? info['Paper'] ?? '';
-    final timeStr = li.querySelector('strong.c1')?.text.trim() ?? info['Time'] ?? '';
+    final subject =
+        li.querySelector('strong.pl10')?.text.trim() ?? info['Paper'] ?? '';
+    final timeStr =
+        li.querySelector('strong.c1')?.text.trim() ?? info['Time'] ?? '';
 
     // Find date from preceding .ca li within the same ul
     String? dateStr;
@@ -52,21 +54,25 @@ List<ExamTimetableEntry> parseExamHtml(String html) {
     // Parse time like "08:45-10:30"
     String startTime = '';
     String endTime = '';
-    final timeMatch = RegExp(r'(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})').firstMatch(timeStr);
+    final timeMatch = RegExp(
+      r'(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})',
+    ).firstMatch(timeStr);
     if (timeMatch != null) {
       startTime = timeMatch.group(1) ?? '';
       endTime = timeMatch.group(2) ?? '';
     }
 
-    entries.add(ExamTimetableEntry(
-      date: dateStr ?? '',
-      startTime: startTime,
-      endTime: endTime,
-      subject: subject,
-      code: info['Code'] ?? '',
-      room: info['Room'] ?? '',
-      seat: info['Seat'] ?? '',
-    ));
+    entries.add(
+      ExamTimetableEntry(
+        date: dateStr ?? '',
+        startTime: startTime,
+        endTime: endTime,
+        subject: subject,
+        code: info['Code'] ?? '',
+        room: info['Room'] ?? '',
+        seat: info['Seat'] ?? '',
+      ),
+    );
   }
 
   // Sort by date then time

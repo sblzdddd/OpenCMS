@@ -77,7 +77,9 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
 
   void _scrollToToday() {
     if (!mounted) {
-      debugPrint('CourseTimetableView: Warning: _scrollToToday called but widget is not mounted');
+      debugPrint(
+        'CourseTimetableView: Warning: _scrollToToday called but widget is not mounted',
+      );
       return;
     }
     if (_todayIndex >= 0 && _todayIndex < _dayKeys.length) {
@@ -143,23 +145,27 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
 
   double? _getHeaderOffset(int index) {
     if (index < 0 || index >= _dayKeys.length) return null;
-    
+
     final ctx = _dayKeys[index].currentContext;
     if (ctx == null) return null;
-    
+
     try {
       final RenderObject? renderObject = ctx.findRenderObject();
       if (renderObject == null) return null;
-      
-      final RenderAbstractViewport viewport = RenderAbstractViewport.of(renderObject);
-      
+
+      final RenderAbstractViewport viewport = RenderAbstractViewport.of(
+        renderObject,
+      );
+
       final RevealedOffset revealed = viewport.getOffsetToReveal(
         renderObject,
         0.0,
       );
       return revealed.offset;
     } catch (e) {
-      debugPrint('CourseTimetableView: Error getting header offset for index $index: $e');
+      debugPrint(
+        'CourseTimetableView: Error getting header offset for index $index: $e',
+      );
       return null;
     }
   }
@@ -171,31 +177,37 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
         _selectedDayIndex = index;
       });
     }
-    
+
     // Wait for the next frame to ensure the widget tree is built
     await Future.delayed(Duration.zero);
-    
+
     // Check if day keys are ready
     if (!_areDayKeysReady()) {
-      debugPrint('CourseTimetableView: Day keys are not ready yet, skipping scroll');
+      debugPrint(
+        'CourseTimetableView: Day keys are not ready yet, skipping scroll',
+      );
       return;
     }
-    
+
     _isAnimatingToTab = true;
     try {
       // Check if scroll controller has clients
       if (!_scrollController.hasClients) {
-        debugPrint('CourseTimetableView: Scroll controller has no clients, skipping scroll');
+        debugPrint(
+          'CourseTimetableView: Scroll controller has no clients, skipping scroll',
+        );
         return;
       }
-      
+
       // Get header offset
       final headerOffset = _getHeaderOffset(index);
       if (headerOffset == null) {
-        debugPrint('CourseTimetableView: Header offset is null for index $index, skipping scroll');
+        debugPrint(
+          'CourseTimetableView: Header offset is null for index $index, skipping scroll',
+        );
         return;
       }
-      
+
       // Perform the scroll
       if (jump) {
         _scrollController.jumpTo(headerOffset);
@@ -238,7 +250,8 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
   }
 
   @override
-  bool get isEmpty => _timetableData == null || _timetableData!.weekdays.isEmpty;
+  bool get isEmpty =>
+      _timetableData == null || _timetableData!.weekdays.isEmpty;
 
   @override
   String get errorTitle => 'Failed to load timetable';
@@ -286,7 +299,8 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
       builder: (context, constraints) {
         return Column(
           children: [
-            if (_viewMode == _TimetableViewMode.mobile && constraints.maxWidth < 800)
+            if (_viewMode == _TimetableViewMode.mobile &&
+                constraints.maxWidth < 800)
               DayTabs(
                 controller: _dayTabController,
                 onTap: _scrollToDay,
@@ -365,10 +379,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
           ),
         );
         // Return both stats and the full teacher name from the API
-        return (
-          stats: statsForCourse,
-          subtitle: statsForCourse.teachers,
-        );
+        return (stats: statsForCourse, subtitle: statsForCourse.teachers);
       },
     );
   }

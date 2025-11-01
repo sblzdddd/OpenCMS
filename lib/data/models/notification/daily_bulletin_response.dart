@@ -19,11 +19,7 @@ class DailyBulletin {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'department': department,
-    };
+    return {'id': id, 'title': title, 'department': department};
   }
 
   @override
@@ -42,8 +38,6 @@ class DailyBulletin {
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        title.hashCode ^
-        department.hashCode;
+    return id.hashCode ^ title.hashCode ^ department.hashCode;
   }
 }

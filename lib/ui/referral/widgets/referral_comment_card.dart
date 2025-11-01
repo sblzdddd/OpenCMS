@@ -21,8 +21,12 @@ class ReferralCommentCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
       color: themeNotifier.needTransparentBG
           ? (!themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                ? Theme.of(
+                    context,
+                  ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                : Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
           : Theme.of(context).colorScheme.surfaceContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -39,7 +43,10 @@ class ReferralCommentCard extends StatelessWidget {
             _CommentContent(themeNotifier: themeNotifier, comment: comment),
             if (comment.hasReplies) ...[
               const SizedBox(height: 12),
-              _RepliesList(themeNotifier: themeNotifier, replies: comment.replies),
+              _RepliesList(
+                themeNotifier: themeNotifier,
+                replies: comment.replies,
+              ),
             ],
           ],
         ),
@@ -52,10 +59,7 @@ class _CommentHeader extends StatelessWidget {
   final ThemeNotifier themeNotifier;
   final ReferralComment comment;
 
-  const _CommentHeader({
-    required this.themeNotifier,
-    required this.comment,
-  });
+  const _CommentHeader({required this.themeNotifier, required this.comment});
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +73,9 @@ class _CommentHeader extends StatelessWidget {
                 'subjectIcons.${SubjectIconConstants.getCategoryForSubject(subjectName: comment.subject ?? '', code: comment.subject ?? '')}',
             fallbackIcon: Symbols.person_rounded,
             fallbackIconColor: Theme.of(context).colorScheme.primary,
-            fallbackIconBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            fallbackIconBackgroundColor: Theme.of(
+              context,
+            ).colorScheme.primary.withValues(alpha: 0.1),
             size: 40,
             iconSize: 20,
           ),
@@ -107,7 +113,9 @@ class _CommentHeader extends StatelessWidget {
               comment.formattedDate,
               style: TextStyle(
                 fontSize: 12,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 4),
@@ -123,10 +131,7 @@ class _KindChips extends StatelessWidget {
   final ThemeNotifier themeNotifier;
   final ReferralComment comment;
 
-  const _KindChips({
-    required this.themeNotifier,
-    required this.comment,
-  });
+  const _KindChips({required this.themeNotifier, required this.comment});
 
   @override
   Widget build(BuildContext context) {
@@ -171,17 +176,16 @@ class _CommentContent extends StatelessWidget {
   final ThemeNotifier themeNotifier;
   final ReferralComment comment;
 
-  const _CommentContent({
-    required this.themeNotifier,
-    required this.comment,
-  });
+  const _CommentContent({required this.themeNotifier, required this.comment});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+        color: Theme.of(
+          context,
+        ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
       ),
       child: Column(
@@ -198,19 +202,26 @@ class _CommentContent extends StatelessWidget {
               decoration: BoxDecoration(
                 color: themeNotifier.needTransparentBG
                     ? (!themeNotifier.isDarkMode
-                        ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                        : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                          : Theme.of(context).colorScheme.surfaceContainer
+                                .withValues(alpha: 0.8))
                     : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(0.375),
                 border: Border.all(
-                  color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
                 comment.commentTranslation,
                 style: TextStyle(
                   fontSize: 12,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.8),
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -226,15 +237,16 @@ class _RepliesList extends StatelessWidget {
   final ThemeNotifier themeNotifier;
   final List<ReferralReply> replies;
 
-  const _RepliesList({
-    required this.themeNotifier,
-    required this.replies,
-  });
+  const _RepliesList({required this.themeNotifier, required this.replies});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: replies.map((reply) => _ReplyCard(themeNotifier: themeNotifier, reply: reply)).toList(),
+      children: replies
+          .map(
+            (reply) => _ReplyCard(themeNotifier: themeNotifier, reply: reply),
+          )
+          .toList(),
     );
   }
 }
@@ -243,10 +255,7 @@ class _ReplyCard extends StatelessWidget {
   final ThemeNotifier themeNotifier;
   final ReferralReply reply;
 
-  const _ReplyCard({
-    required this.themeNotifier,
-    required this.reply,
-  });
+  const _ReplyCard({required this.themeNotifier, required this.reply});
 
   @override
   Widget build(BuildContext context) {
@@ -256,8 +265,12 @@ class _ReplyCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: themeNotifier.needTransparentBG
             ? (!themeNotifier.isDarkMode
-                ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
             : Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
@@ -271,7 +284,9 @@ class _ReplyCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 16,
-                backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 child: Text(
                   'FT',
                   style: TextStyle(
@@ -295,7 +310,9 @@ class _ReplyCard extends StatelessWidget {
                 reply.formattedDate,
                 style: TextStyle(
                   fontSize: 10,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
             ],
@@ -311,7 +328,9 @@ class _ReplyCard extends StatelessWidget {
               reply.commentTranslation,
               style: TextStyle(
                 fontSize: 11,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
                 fontStyle: FontStyle.italic,
               ),
             ),

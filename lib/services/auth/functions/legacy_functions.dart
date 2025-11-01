@@ -8,12 +8,16 @@ Future<bool> refreshLegacyCookies(AuthServiceBase authService) async {
   try {
     final info = authService.userInfo;
     if (info == null) {
-      debugPrint('LegacyFunctions: refreshLegacyCookies skipped - missing user info');
+      debugPrint(
+        'LegacyFunctions: refreshLegacyCookies skipped - missing user info',
+      );
       return false;
     }
     final username = info.username;
     if (username.isEmpty) {
-      debugPrint('LegacyFunctions: refreshLegacyCookies skipped - missing username');
+      debugPrint(
+        'LegacyFunctions: refreshLegacyCookies skipped - missing username',
+      );
       return false;
     }
 
@@ -42,12 +46,63 @@ Future<bool> refreshLegacyCookies(AuthServiceBase authService) async {
     // Success if we no longer see the loading placeholder
     final ok = !visitResp.data.contains('<div>Loading...</div>');
     if (!ok) {
-      debugPrint('LegacyFunctions: Legacy visit may not have initialized cookies. Status: ${visitResp.statusCode}');
+      debugPrint(
+        'LegacyFunctions: Legacy visit may not have initialized cookies. Status: ${visitResp.statusCode}',
+      );
     }
     debugPrint('LegacyFunctions: Legacy cookies refreshed');
     return ok;
   } catch (e) {
     debugPrint('LegacyFunctions: refreshLegacyCookies exception: $e');
     return false;
+  }
+}
+
+Future<String> getJumpUrlToLegacy(
+  AuthServiceBase authService, {
+  String initialUrl = "",
+}) async {
+  try {
+    final info = authService.userInfo;
+    if (info == null) {
+      debugPrint(
+        'LegacyFunctions: getJumpUrlToLegacy skipped - missing user info',
+      );
+      return "";
+    }
+    final username = info.username;
+    if (username.isEmpty) {
+      debugPrint(
+        'LegacyFunctions: getJumpUrlToLegacy skipped - missing username',
+      );
+      return "";
+    }
+
+    // Exchange for legacy token
+    final tokenResp = await authService.httpService.get(
+      ApiConstants.legacyTokenUrlForHref,
+      refresh: true,
+    );
+    final data = tokenResp.data ?? {};
+    final code = (data['code'] ?? '').toString();
+    final iv = (data['iv'] ?? '').toString();
+    if (code.isEmpty || iv.isEmpty) {
+      debugPrint('LegacyFunctions: Legacy token response missing code/iv');
+      throw Exception('Legacy token response missing code/iv');
+    }
+
+    String path = (initialUrl.isNotEmpty
+        ? initialUrl.replaceAll("${ApiConstants.legacyCMSBaseUrl}/", '')
+        : '');
+    path = path.isEmpty ? username : path;
+
+    // Construct the jump URL
+    final jumpUrl =
+        '${ApiConstants.legacyCMSBaseUrl}/$path/?token=$code&iv=$iv&redirect=false';
+    debugPrint('LegacyFunctions: Jump URL to legacy CMS: $jumpUrl');
+    return jumpUrl;
+  } catch (e) {
+    debugPrint('LegacyFunctions: getJumpUrlToLegacy exception: $e');
+    return "";
   }
 }

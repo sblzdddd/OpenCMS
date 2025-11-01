@@ -25,10 +25,9 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   List<HomeworkItem> _filteredHomeworkItems = [];
   bool _showCompleted = false;
   Set<String> _completedKeys = {};
+
   @override
-  final String skinKey = 'homeworks';
-  @override
-  late bool isTransparent;
+  String get skinKey => 'homeworks';
 
   @override
   void initState() {
@@ -69,7 +68,8 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   ];
 
   @override
-  bool get isEmpty => _homeworkResponse == null || _homeworkResponse!.homeworkItems.isEmpty;
+  bool get isEmpty =>
+      _homeworkResponse == null || _homeworkResponse!.homeworkItems.isEmpty;
 
   @override
   String get errorTitle => 'Failed to load homework';
@@ -99,13 +99,15 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
     if (_homeworkResponse == null) return;
 
     final query = _searchController.text.toLowerCase();
-    List<HomeworkItem> list = _homeworkResponse!.homeworkItems.where((homework) {
+    List<HomeworkItem> list = _homeworkResponse!.homeworkItems.where((
+      homework,
+    ) {
       final matchesQuery = query.isEmpty
           ? true
           : (homework.courseName.toLowerCase().contains(query) ||
-             homework.title.toLowerCase().contains(query) ||
-             homework.teacherName.toLowerCase().contains(query) ||
-             homework.categoryText.toLowerCase().contains(query));
+                homework.title.toLowerCase().contains(query) ||
+                homework.teacherName.toLowerCase().contains(query) ||
+                homework.categoryText.toLowerCase().contains(query));
       if (!matchesQuery) return false;
 
       if (_showCompleted) return true;
@@ -147,99 +149,104 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FilterChip(
-              label: const Text('completed'),
-              selected: _showCompleted,
-              onSelected: (val) {
-                setState(() {
-                  _showCompleted = val;
-                });
-                _refreshFilteredList();
-              },
-            ),
-            const Spacer(),
-            AnimatedRotation(
-              turns: _showSettings ? 0.125 : 0.0, // 45 degrees rotation
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOutCubic,
-              child: IconButton(
-                tooltip: 'Toggle settings',
-                icon: Icon(Symbols.search_rounded, fill: _showSettings ? 1 : 0),
-                onPressed: () {
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FilterChip(
+                label: const Text('completed'),
+                selected: _showCompleted,
+                onSelected: (val) {
                   setState(() {
-                    _showSettings = !_showSettings;
+                    _showCompleted = val;
                   });
+                  _refreshFilteredList();
                 },
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          transitionBuilder: (child, animation) {
-            return SizeTransition(
-              sizeFactor: animation,
-              child: child,
-            );
-          },
-          child: _showSettings
-              ? Column(
-                  key: const ValueKey('search_filter'),
-                  children: [
-                    _buildSearchFilter(themeNotifier),
-                    const SizedBox(height: 12),
-                  ],
-                )
-              : const SizedBox.shrink(key: ValueKey('empty')),
-        ),
-      ],
-    ));
+              const Spacer(),
+              AnimatedRotation(
+                turns: _showSettings ? 0.125 : 0.0, // 45 degrees rotation
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                child: IconButton(
+                  tooltip: 'Toggle settings',
+                  icon: Icon(
+                    Symbols.search_rounded,
+                    fill: _showSettings ? 1 : 0,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _showSettings = !_showSettings;
+                    });
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            transitionBuilder: (child, animation) {
+              return SizeTransition(sizeFactor: animation, child: child);
+            },
+            child: _showSettings
+                ? Column(
+                    key: const ValueKey('search_filter'),
+                    children: [
+                      _buildSearchFilter(themeNotifier),
+                      const SizedBox(height: 12),
+                    ],
+                  )
+                : const SizedBox.shrink(key: ValueKey('empty')),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSearchFilter(ThemeNotifier themeNotifier) {
     return Row(
       children: [
         Expanded(
-          child: 
-            // Search bar
-            TextField(
-              controller: _searchController,
-              onChanged: _filterHomework,
-              decoration: InputDecoration(
-                hintText: 'Search homework...',
-                prefixIcon: const Icon(Symbols.search_rounded),
-                border: OutlineInputBorder(
-                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+          child:
+              // Search bar
+              TextField(
+                controller: _searchController,
+                onChanged: _filterHomework,
+                decoration: InputDecoration(
+                  hintText: 'Search homework...',
+                  prefixIcon: const Icon(Symbols.search_rounded),
+                  border: OutlineInputBorder(
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+                    borderSide: BorderSide(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.3),
+                    ),
                   ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+                    borderSide: BorderSide(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.3),
+                    ),
                   ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 2,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2,
+                    ),
                   ),
+                  filled: true,
+                  fillColor: Theme.of(context).colorScheme.surface,
                 ),
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.surface,
               ),
-            ),
         ),
       ],
     );
@@ -269,8 +276,6 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
     );
   }
 
-
-  
   @override
   String get emptyTitle => 'No homework found';
 }

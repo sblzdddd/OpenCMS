@@ -5,7 +5,8 @@ import '../../data/models/timetable/exam_timetable_entry.dart';
 
 /// Service to fetch and parse exam timetable HTML from legacy CMS
 class ExamTimetableService {
-  static final ExamTimetableService _instance = ExamTimetableService._internal();
+  static final ExamTimetableService _instance =
+      ExamTimetableService._internal();
   factory ExamTimetableService() => _instance;
   ExamTimetableService._internal();
 
@@ -15,7 +16,7 @@ class ExamTimetableService {
   Future<List<ExamTimetableEntry>> fetchExamTimetable({
     required int year,
     required int month,
-    bool refresh=false,
+    bool refresh = false,
   }) async {
     final username = await _authService.fetchCurrentUsername();
     if (username.isEmpty) {
@@ -25,10 +26,7 @@ class ExamTimetableService {
     // Note the double ampersand (as per provided endpoint)
     final endpoint = '/$username/view/examtimetable/?y=$year&&m=$month';
 
-    final response = await _httpService.getLegacy(
-      endpoint,
-      refresh: refresh,
-    );
+    final response = await _httpService.getLegacy(endpoint, refresh: refresh);
 
     if (response.statusCode != 200 && response.statusCode != 304) {
       throw Exception('Failed to fetch exam timetable: ${response.statusCode}');
@@ -36,7 +34,4 @@ class ExamTimetableService {
 
     return parseExamHtml(response.data);
   }
-
 }
-
-

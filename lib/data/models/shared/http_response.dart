@@ -6,14 +6,14 @@ class HttpResponse {
   final String body;
   final Map<String, String> headers;
   final bool isSuccess;
-  
+
   HttpResponse({
     required this.statusCode,
     required this.body,
     required this.headers,
     required this.isSuccess,
   });
-  
+
   /// Parse response body as JSON
   Map<String, dynamic>? get jsonBody {
     try {
@@ -28,7 +28,7 @@ class HttpResponse {
 class HttpException implements Exception {
   final String message;
   HttpException(this.message);
-  
+
   @override
   String toString() => 'HttpException: $message';
 }

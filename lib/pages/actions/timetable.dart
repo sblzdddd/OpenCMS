@@ -8,7 +8,11 @@ import '../../ui/shared/views/tabbed_page_base.dart';
 class TimetablePage extends StatefulWidget {
   final int initialTabIndex;
   final bool isTransparent;
-  const TimetablePage({super.key, this.initialTabIndex = 0, this.isTransparent = false});
+  const TimetablePage({
+    super.key,
+    this.initialTabIndex = 0,
+    this.isTransparent = false,
+  });
 
   @override
   State<TimetablePage> createState() => _TimetablePageState();

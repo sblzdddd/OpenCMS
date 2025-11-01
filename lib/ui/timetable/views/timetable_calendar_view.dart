@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 import '../../../data/constants/periods.dart';
@@ -58,61 +58,65 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       dataSource: _CourseDataSource(courses),
       showCurrentTimeIndicator: true,
       timeSlotViewSettings: const TimeSlotViewSettings(
-        startHour: 8, // 07:30
+        startHour: 7, // 07:30
         endHour: 18, // 18:30
         nonWorkingDays: <int>[DateTime.saturday, DateTime.sunday],
         timeIntervalHeight: 86,
         minimumAppointmentDuration: Duration(minutes: 30),
       ),
       specialRegions: _getTimeRegions(),
-      appointmentBuilder: (BuildContext context, CalendarAppointmentDetails details) {
-        final Course course = details.appointments.first as Course;
-        final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-        return Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: course.color,
-            borderRadius: themeNotifier.getBorderRadiusAll(0.25),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                course.subject,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+      appointmentBuilder:
+          (BuildContext context, CalendarAppointmentDetails details) {
+            final Course course = details.appointments.first as Course;
+            final themeNotifier = Provider.of<ThemeNotifier>(
+              context,
+              listen: true,
+            );
+            return Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: course.color,
+                borderRadius: themeNotifier.getBorderRadiusAll(0.25),
               ),
-                Text(
-                  course.code,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 8,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    course.subject,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              if (course.location.isNotEmpty && course.location != 'TBA') ...[
-                const Spacer(),
-                Text(
-                  course.location,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ]
-            ],
-          ),
-        );
-      },
+                  if (course.code.isNotEmpty) ...[
+                    Text(
+                      course.code,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 8,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  if (course.location.isNotEmpty &&
+                      course.location != 'TBA') ...[
+                    const Spacer(),
+                    Text(
+                      course.location,
+                      style: const TextStyle(color: Colors.white, fontSize: 11),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
       onTap: (details) {
         if (details.targetElement == CalendarElement.appointment &&
             details.appointments != null &&
@@ -126,54 +130,120 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
 
   List<TimeRegion> _getTimeRegions() {
     final List<TimeRegion> regions = <TimeRegion>[];
-    regions.add(TimeRegion(
+    regions.add(
+      TimeRegion(
         startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 8, 0),
         endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 8, 10),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 7,
+        ),
         color: Colors.grey.withValues(alpha: 0.2),
-        text: 'MR'));
-    regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 9, 30),
+        text: 'MR',
+      ),
+    );
+    regions.add(
+      TimeRegion(
+        startTime: DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          1,
+          9,
+          30,
+        ),
         endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 9, 40),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 7,
+        ),
         color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Break'));
-    regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 11, 0),
+        text: 'Break',
+      ),
+    );
+    regions.add(
+      TimeRegion(
+        startTime: DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          1,
+          11,
+          0,
+        ),
         endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 11, 20),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 7,
+        ),
         color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Break'));
-    regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 12, 40),
+        text: 'Break',
+      ),
+    );
+    regions.add(
+      TimeRegion(
+        startTime: DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          1,
+          12,
+          40,
+        ),
         endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 10),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 7,
+        ),
         color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Lunch'));
-    regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 10),
+        text: 'Lunch',
+      ),
+    );
+    regions.add(
+      TimeRegion(
+        startTime: DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          1,
+          13,
+          10,
+        ),
         endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 40),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 7,
+        ),
         color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Pastoral'));
-    regions.add(TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 15, 0),
+        text: 'Pastoral',
+      ),
+    );
+    regions.add(
+      TimeRegion(
+        startTime: DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          1,
+          15,
+          0,
+        ),
         endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 15, 10),
         enablePointerInteraction: false,
         recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 7),
+        textStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onSurface,
+          fontSize: 7,
+        ),
         color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Break'));
+        text: 'Break',
+      ),
+    );
 
     return regions;
   }
@@ -183,15 +253,21 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
     final data = widget.timetableData;
     if (data == null) return courses;
 
-    for (int dayIndex = 0; dayIndex < data.weekdays.length && dayIndex < 7; dayIndex++) {
+    for (
+      int dayIndex = 0;
+      dayIndex < data.weekdays.length && dayIndex < 7;
+      dayIndex++
+    ) {
       final weekDay = data.weekdays[dayIndex];
       final DateTime? date = _resolveDateForDayIndex(dayIndex);
       if (date == null) continue;
 
       final mergedEvents = CourseMergedEvent.mergeEventsForDay(weekDay);
-      
+
       for (final mergedEvent in mergedEvents) {
-        final startInfo = PeriodConstants.getPeriodInfo(mergedEvent.startPeriod);
+        final startInfo = PeriodConstants.getPeriodInfo(
+          mergedEvent.startPeriod,
+        );
         final endInfo = PeriodConstants.getPeriodInfo(mergedEvent.endPeriod);
         if (startInfo != null && endInfo != null) {
           final DateTime start = _combine(date, startInfo.startTime);
@@ -200,7 +276,9 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
           courses.add(
             Course(
               subject: mergedEvent.event.subject,
-              location: mergedEvent.event.room.isNotEmpty ? mergedEvent.event.room : mergedEvent.event.newRoom,
+              location: mergedEvent.event.room.isNotEmpty
+                  ? mergedEvent.event.room
+                  : mergedEvent.event.newRoom,
               from: start,
               to: end,
               color: color,
@@ -255,14 +333,16 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       Colors.lightBlue,
       Colors.lightGreen,
     ];
-    
+
     // Use course subject as the key for consistent coloring
     final String courseKey = event.id.toString();
-    
+
     // If we haven't assigned a color to this course yet, assign the next available color
     if (!_courseColors.containsKey(courseKey)) {
       if (_nextColorIndex < palette.length) {
-        _courseColors[courseKey] = palette[_nextColorIndex].withValues(alpha: 0.75);
+        _courseColors[courseKey] = palette[_nextColorIndex].withValues(
+          alpha: 0.75,
+        );
         _nextColorIndex++;
       } else {
         // If we've used all palette colors, cycle back to the beginning
@@ -271,7 +351,7 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
         _nextColorIndex++;
       }
     }
-    
+
     return _courseColors[courseKey]!;
   }
 }
@@ -326,5 +406,3 @@ class _CourseDataSource extends CalendarDataSource {
   @override
   String? getNotes(int index) => appointments![index].note as String;
 }
-
-

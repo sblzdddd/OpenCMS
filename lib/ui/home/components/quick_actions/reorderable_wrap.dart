@@ -39,7 +39,9 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
   @override
   void initState() {
     super.initState();
-    _uniqueId = widget.wrapId ?? 'wrap_${DateTime.now().millisecondsSinceEpoch}_$hashCode';
+    _uniqueId =
+        widget.wrapId ??
+        'wrap_${DateTime.now().millisecondsSinceEpoch}_$hashCode';
   }
 
   @override
@@ -52,8 +54,9 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
         final index = entry.key;
         final child = entry.value;
         final isTrashCan = child.key == const ValueKey('trash_can');
-        final isIgnorePointer = child is IgnorePointer; // Check for spacer items
-        
+        final isIgnorePointer =
+            child is IgnorePointer; // Check for spacer items
+
         // If it's trash can, add action, or spacer, don't make it draggable
         if (isTrashCan || isIgnorePointer) {
           return DragTarget<Map<String, dynamic>>(
@@ -61,7 +64,7 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
               final draggedData = details.data;
               // Only accept items from the same wrap instance
               if (draggedData['wrapId'] != _uniqueId) return false;
-              
+
               final draggedIndex = draggedData['index'] as int;
               if (isTrashCan) {
                 // Trash can accepts any dragged item from the same wrap (except itself)
@@ -79,14 +82,18 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
             },
             builder: (context, candidateData, rejectedData) {
               // Only highlight if the candidate is from the same wrap
-              final hasValidCandidate = candidateData.any((data) => data != null && data['wrapId'] == _uniqueId);
-              
+              final hasValidCandidate = candidateData.any(
+                (data) => data != null && data['wrapId'] == _uniqueId,
+              );
+
               if (isTrashCan && hasValidCandidate) {
                 // Preserve the original full-width SizedBox and only toggle the inner TrashCanItem highlight
                 if (child is SizedBox) {
                   final sized = child;
                   final inner = sized.child;
-                  final TrashCanItem originalTrash = inner is TrashCanItem ? inner : const TrashCanItem();
+                  final TrashCanItem originalTrash = inner is TrashCanItem
+                      ? inner
+                      : const TrashCanItem();
                   return SizedBox(
                     key: child.key,
                     width: sized.width,
@@ -98,7 +105,9 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
                   );
                 }
                 // Fallback: ask the TrashCanItem to render its highlighted state
-                final TrashCanItem original = child is TrashCanItem ? child : const TrashCanItem();
+                final TrashCanItem original = child is TrashCanItem
+                    ? child
+                    : const TrashCanItem();
                 return TrashCanItem(
                   key: child.key,
                   isHighlighted: true,
@@ -109,7 +118,7 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
             },
           );
         }
-        
+
         // Regular draggable items
         return LongPressDraggable<Map<String, dynamic>>(
           delay: const Duration(milliseconds: 400),
@@ -145,7 +154,7 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
               final draggedData = details.data;
               // Only accept items from the same wrap instance
               if (draggedData['wrapId'] != _uniqueId) return false;
-              
+
               final draggedIndex = draggedData['index'] as int;
               // Regular items accept reordering (not from trash can)
               return draggedIndex != index;
@@ -158,14 +167,18 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
             },
             builder: (context, candidateData, rejectedData) {
               // Only highlight if the candidate is from the same wrap
-              final hasValidCandidate = candidateData.any((data) => data != null && data['wrapId'] == _uniqueId);
-              
+              final hasValidCandidate = candidateData.any(
+                (data) => data != null && data['wrapId'] == _uniqueId,
+              );
+
               if (hasValidCandidate) {
                 // Highlight regular items when reordering without changing size
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.1),
                   ),
                   child: RepaintBoundary(child: child),
                 );

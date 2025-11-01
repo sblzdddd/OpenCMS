@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../services/theme/theme_services.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import '../../data/models/homework/homework_response.dart';
@@ -135,10 +135,15 @@ class _HomeworkCardState extends State<HomeworkCard> {
       child: ScaledInkWell(
         margin: const EdgeInsets.only(bottom: 8.0),
         background: (inkWell) => Material(
-          color: themeNotifier.needTransparentBG ? (!themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surfaceBright.withValues(alpha: 0.5)
-              : Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-          : Theme.of(context).colorScheme.surfaceContainer,
+          color: themeNotifier.needTransparentBG
+              ? (!themeNotifier.isDarkMode
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+              : Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
         ),

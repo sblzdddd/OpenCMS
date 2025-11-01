@@ -23,7 +23,6 @@ class AppNavigationRail extends StatefulWidget {
 }
 
 class _AppNavigationRailState extends State<AppNavigationRail> {
-
   int lastClickMilliseconds = DateTime.now().millisecondsSinceEpoch;
 
   void onDoubleTap() {
@@ -50,9 +49,11 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
-      alpha: themeNotifier.hasTransparentWindowEffect ? 
-      themeNotifier.isDarkMode ? 0.6 : 0
-      : 0,
+      alpha: themeNotifier.hasTransparentWindowEffect
+          ? themeNotifier.isDarkMode
+                ? 0.6
+                : 0
+          : 0,
     );
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -95,7 +96,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
                   (item) => NavigationRailDestination(
                     icon: Icon(item.icon),
                     selectedIcon: Icon(item.icon, fill: 1),
-                    label: Text(item.label, style: TextStyle(fontSize: 9),),
+                    label: Text(item.label, style: TextStyle(fontSize: 9)),
                   ),
                 )
                 .toList(),

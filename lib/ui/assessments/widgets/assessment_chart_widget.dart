@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:provider/provider.dart';
-import '../../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/assessment/assessment_response.dart';
 
 class AssessmentChartWidget extends StatelessWidget {
@@ -57,12 +57,16 @@ class AssessmentChartWidget extends StatelessWidget {
                     text: 'Assessments',
                     textStyle: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   labelStyle: TextStyle(
                     fontSize: 10,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                   majorGridLines: const MajorGridLines(width: 0),
                 ),
@@ -71,19 +75,25 @@ class AssessmentChartWidget extends StatelessWidget {
                     text: 'Percentage (%)',
                     textStyle: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   labelStyle: TextStyle(
                     fontSize: 10,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                   interval: 20,
                   minimum: _calculateYAxisMinimum(validAssessments),
                   maximum: 110,
                   majorGridLines: MajorGridLines(
                     width: 1,
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
                   ),
                 ),
                 tooltipBehavior: TooltipBehavior(
@@ -145,7 +155,9 @@ class AssessmentChartWidget extends StatelessWidget {
                   position: LegendPosition.bottom,
                   textStyle: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ),
               ),
@@ -172,7 +184,9 @@ class AssessmentChartWidget extends StatelessWidget {
             Icon(
               Symbols.analytics_rounded,
               size: 48,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
@@ -180,7 +194,9 @@ class AssessmentChartWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 8),
@@ -189,7 +205,9 @@ class AssessmentChartWidget extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
             ),
           ],
@@ -217,7 +235,9 @@ class AssessmentChartWidget extends StatelessWidget {
       final assessment = entry.value;
       return AssessmentData(
         label: 'A${index + 1}',
-        percentage: ((assessment.numericAverage ?? 0) / assessment.numericOutOf! * 100).toInt(),
+        percentage:
+            ((assessment.numericAverage ?? 0) / assessment.numericOutOf! * 100)
+                .toInt(),
         title: assessment.title,
         date: assessment.date,
       );
@@ -231,31 +251,33 @@ class AssessmentChartWidget extends StatelessWidget {
   double _calculateYAxisMinimum(List<Assessment> assessments) {
     // Get all percentage values from both user scores and class averages
     final List<double> allPercentages = [];
-    
+
     // Add user percentage scores
     for (final assessment in assessments) {
       if (assessment.percentageScore != null) {
         allPercentages.add(assessment.percentageScore!.toDouble());
       }
     }
-    
+
     // Add class average percentages if available
     for (final assessment in assessments) {
-      if (assessment.numericAverage != null && assessment.numericOutOf != null) {
-        final classAveragePercentage = (assessment.numericAverage! / assessment.numericOutOf! * 100);
+      if (assessment.numericAverage != null &&
+          assessment.numericOutOf != null) {
+        final classAveragePercentage =
+            (assessment.numericAverage! / assessment.numericOutOf! * 100);
         allPercentages.add(classAveragePercentage);
       }
     }
-    
+
     if (allPercentages.isEmpty) return 0;
-    
+
     // Find the minimum value
     final minValue = allPercentages.reduce((a, b) => a < b ? a : b);
-    
+
     // Set minimum to be 10 points below the lowest value, but not less than 0
     // This provides some visual breathing room at the bottom
     final calculatedMinimum = (minValue - 10).clamp(0.0, 100.0);
-    
+
     // Round down to nearest 10 for cleaner axis labels
     return (calculatedMinimum / 10).floor() * 10.0;
   }

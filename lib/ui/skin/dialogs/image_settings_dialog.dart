@@ -7,10 +7,7 @@ import '../../../data/models/skin/skin_image_type.dart';
 class ImageSettingsDialog extends StatefulWidget {
   final SkinImageData imageData;
 
-  const ImageSettingsDialog({
-    super.key,
-    required this.imageData,
-  });
+  const ImageSettingsDialog({super.key, required this.imageData});
 
   @override
   State<ImageSettingsDialog> createState() => _ImageSettingsDialogState();
@@ -64,19 +61,17 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              
               // Opacity Settings
               _buildSectionHeader('Opacity', Symbols.opacity_rounded),
               _buildOpacitySlider(),
               const SizedBox(height: 16),
-              
-              
+
               // Fill Mode (for background images)
               if (_currentImageData.type == SkinImageType.background) ...[
                 _buildFillModeSelector(),
                 const SizedBox(height: 16),
               ],
-              
+
               // Position (for foreground images)
               if (_currentImageData.type == SkinImageType.foreground) ...[
                 // Scale Settings
@@ -116,9 +111,9 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
           const SizedBox(width: 8),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -196,14 +191,8 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
       items: const [
-        DropdownMenuItem<bool>(
-          value: true,
-          child: Text('Inside'),
-        ),
-        DropdownMenuItem<bool>(
-          value: false,
-          child: Text('Outside'),
-        ),
+        DropdownMenuItem<bool>(value: true, child: Text('Inside')),
+        DropdownMenuItem<bool>(value: false, child: Text('Outside')),
       ],
       onChanged: (value) {
         setState(() {

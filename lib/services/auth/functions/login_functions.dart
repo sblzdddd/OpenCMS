@@ -6,7 +6,7 @@ import 'session_functions.dart';
 import 'package:flutter/foundation.dart';
 
 /// Login with username, password and captcha verification
-/// 
+///
 /// Returns [LoginResult] with success status and relevant data
 /// Handles multiple response scenarios:
 /// - Success: {"detail": "Successfully logged in!"}
@@ -19,29 +19,29 @@ Future<LoginResult> performLogin(
   required String password,
   required Object captchaData,
 }) async {
-  
   final loginPayload = {
     'username': username,
     'password': password, // Plain text
     'captcha': captchaData, // Whole captcha object
+    'remember': true,
   };
 
   try {
     debugPrint('LoginFunctions: Starting login process for user: $username');
-    
+
     // Prepare and send login request
     final response = await authService.httpService.post(
       ApiConstants.loginEndpoint,
       body: loginPayload,
       refresh: true,
     );
-    
+
     // Build debug info (mask sensitive fields)
     final sanitizedPayload = Map<String, dynamic>.from(loginPayload);
     sanitizedPayload['password'] = '[HIDDEN]';
 
     // Process the response
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       // Update authentication state on success
       await fetchAndSetCurrentUserInfo(authService);
       await refreshLegacyCookies(authService);
@@ -55,10 +55,9 @@ Future<LoginResult> performLogin(
         data: response.data,
       );
     }
-    
   } catch (e) {
     debugPrint('LoginFunctions: Login exception: $e');
-    
+
     final sanitizedPayload = Map<String, dynamic>.from(loginPayload);
     if (sanitizedPayload.containsKey('password')) {
       sanitizedPayload['password'] = '[HIDDEN]';
@@ -85,27 +84,21 @@ Future<LoginResult> performLogin(
 }
 
 /// Handle successful HTTP responses
-LoginResult handleSuccessResponse(
-  Map<String, dynamic>? responseData,
-) {
+LoginResult handleSuccessResponse(Map<String, dynamic>? responseData) {
   if (responseData != null && responseData.containsKey('detail')) {
     final detail = responseData['detail'];
     // Safe casting with null check
     if (detail is String) {
       if (detail != 'Successfully logged in!') {
-        debugPrint('Warning: Login might not be successful with detail: $detail');
-        return LoginResult.error(
-          message: detail,
-          data: responseData,
+        debugPrint(
+          'Warning: Login might not be successful with detail: $detail',
         );
+        return LoginResult.error(message: detail, data: responseData);
       }
     }
-    return LoginResult.success(
-      message: detail,
-      data: responseData,
-    );
+    return LoginResult.success(message: detail, data: responseData);
   }
-  
+
   // Unexpected success response format
   return LoginResult.error(
     message: 'Unexpected response format',
@@ -144,5 +137,3 @@ LoginResult handleErrorResponse(
     data: responseData,
   );
 }
-
-

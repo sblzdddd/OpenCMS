@@ -28,10 +28,10 @@ class ProfilePhotoWidget extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
 
     // Get house-based color or fallback to global theme
-    final houseColor = house != null && house!.isNotEmpty 
+    final houseColor = house != null && house!.isNotEmpty
         ? ThemeNotifier.getHouseColor(house)
         : Theme.of(context).colorScheme.primary;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -44,9 +44,7 @@ class ProfilePhotoWidget extends StatelessWidget {
           ],
         ),
         borderRadius: themeNotifier.getBorderRadiusAll(0.75),
-        border: Border.all(
-          color: houseColor.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: houseColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -56,10 +54,7 @@ class ProfilePhotoWidget extends StatelessWidget {
             height: 80,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: houseColor,
-                width: 2,
-              ),
+              border: Border.all(color: houseColor, width: 2),
               boxShadow: [
                 BoxShadow(
                   color: houseColor.withValues(alpha: 0.3),
@@ -73,20 +68,19 @@ class ProfilePhotoWidget extends StatelessWidget {
                   ? Image.network(
                       photoUrl,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => _buildDefaultAvatar(),
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildDefaultAvatar(),
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return const Center(child: CircularProgressIndicator());
                       },
                     )
                   : _buildDefaultAvatar(),
             ),
           ),
-          
+
           const SizedBox(width: 16),
-          
+
           // Name and Details
           Expanded(
             child: Column(
@@ -99,7 +93,7 @@ class ProfilePhotoWidget extends StatelessWidget {
                     color: houseColor,
                   ),
                 ),
-                
+
                 const SizedBox(height: 2),
 
                 Row(
@@ -118,16 +112,17 @@ class ProfilePhotoWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 2),
 
                 Text(
                   studentType,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
-                
               ],
             ),
           ),
@@ -142,10 +137,7 @@ class ProfilePhotoWidget extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.shade300,
-            Colors.purple.shade300,
-          ],
+          colors: [Colors.blue.shade300, Colors.purple.shade300],
         ),
       ),
       child: Center(

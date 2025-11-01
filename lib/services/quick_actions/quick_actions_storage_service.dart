@@ -5,7 +5,8 @@ import '../shared/storage_client.dart';
 
 /// Stores user's quick actions preferences as an ordered list of IDs.
 class QuickActionsStorageService {
-  static final QuickActionsStorageService _instance = QuickActionsStorageService._internal();
+  static final QuickActionsStorageService _instance =
+      QuickActionsStorageService._internal();
   factory QuickActionsStorageService() => _instance;
   QuickActionsStorageService._internal();
 
@@ -18,10 +19,12 @@ class QuickActionsStorageService {
     try {
       final String jsonString = jsonEncode(actionIds);
       await _storage.write(key: _quickActionsKey, value: jsonString);
-      debugPrint('QuickActionsStorageService: Preferences saved (${actionIds.length} items)');
+      debugPrint(
+        '[QuickActionsStorageService] Preferences saved (${actionIds.length} items)',
+      );
       return true;
     } catch (e) {
-      debugPrint('QuickActionsStorageService: Error saving preferences: $e');
+      debugPrint('[QuickActionsStorageService] Error saving preferences: $e');
       return false;
     }
   }
@@ -33,13 +36,17 @@ class QuickActionsStorageService {
       if (jsonString == null || jsonString.isEmpty) return null;
       final dynamic decoded = jsonDecode(jsonString);
       if (decoded is List) {
-        final List<String> actionIds = decoded.map<String>((item) => item.toString()).toList();
-        debugPrint('QuickActionsStorageService: Preferences loaded (${actionIds.length} items)');
+        final List<String> actionIds = decoded
+            .map<String>((item) => item.toString())
+            .toList();
+        debugPrint(
+          '[QuickActionsStorageService] Preferences loaded (${actionIds.length} items)',
+        );
         return actionIds;
       }
       return null;
     } catch (e) {
-      debugPrint('QuickActionsStorageService: Error loading preferences: $e');
+      debugPrint('[QuickActionsStorageService] Error loading preferences: $e');
       return null;
     }
   }
@@ -48,10 +55,10 @@ class QuickActionsStorageService {
   Future<bool> clearQuickActionsPreferences() async {
     try {
       await _storage.delete(key: _quickActionsKey);
-      debugPrint('QuickActionsStorageService: Preferences cleared');
+      debugPrint('[QuickActionsStorageService] Preferences cleared');
       return true;
     } catch (e) {
-      debugPrint('QuickActionsStorageService: Error clearing preferences: $e');
+      debugPrint('[QuickActionsStorageService] Error clearing preferences: $e');
       return false;
     }
   }
@@ -62,10 +69,8 @@ class QuickActionsStorageService {
       final String? value = await _storage.read(key: _quickActionsKey);
       return value != null && value.isNotEmpty;
     } catch (e) {
-      debugPrint('QuickActionsStorageService: Error checking preferences: $e');
+      debugPrint('[QuickActionsStorageService] Error checking preferences: $e');
       return false;
     }
   }
 }
-
-

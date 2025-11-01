@@ -2,10 +2,7 @@
 library;
 
 /// Enum representing simplified login result types
-enum LoginResultType {
-  success,
-  error,
-}
+enum LoginResultType { success, error }
 
 /// Login result data class
 class LoginResult {
@@ -15,8 +12,9 @@ class LoginResult {
   final String? errorCode;
   final Map<String, dynamic>? data;
   final Object? exception;
-  final Map<String, dynamic>? debugInfo; // optional rich debug details (request/response)
-  
+  final Map<String, dynamic>?
+  debugInfo; // optional rich debug details (request/response)
+
   LoginResult({
     required this.isSuccess,
     required this.message,
@@ -60,7 +58,7 @@ class LoginResult {
       debugInfo: debugInfo,
     );
   }
-  
+
   @override
   String toString() {
     return 'LoginResult(isSuccess: $isSuccess, resultType: $resultType, message: $message, errorCode: $errorCode)';

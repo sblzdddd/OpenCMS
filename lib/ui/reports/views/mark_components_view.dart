@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../../data/models/reports/reports.dart';
 
 class MarkComponentsView extends StatelessWidget {

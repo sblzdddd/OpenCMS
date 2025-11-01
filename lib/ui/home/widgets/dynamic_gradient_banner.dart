@@ -22,11 +22,23 @@ class ColorUtils {
     return Color(intValue);
   }
 
-  static String toHex(Color color, {bool leadingHashSign = true, bool includeAlpha = false}) {
-    final String a = ((color.a * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
-    final String r = ((color.r * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
-    final String g = ((color.g * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
-    final String b = ((color.b * 255.0).round() & 0xff).toRadixString(16).padLeft(2, '0');
+  static String toHex(
+    Color color, {
+    bool leadingHashSign = true,
+    bool includeAlpha = false,
+  }) {
+    final String a = ((color.a * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
+    final String r = ((color.r * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
+    final String g = ((color.g * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
+    final String b = ((color.b * 255.0).round() & 0xff)
+        .toRadixString(16)
+        .padLeft(2, '0');
     final String body = includeAlpha ? '$a$r$g$b' : '$r$g$b';
     return leadingHashSign ? '#$body' : body;
   }
@@ -58,7 +70,11 @@ class ColorUtils {
     final double newHue = (hsl.hue + hueDelta) % 360.0;
     final double newSaturation = (saturation).clamp(0.0, 1.0);
     final double newLightness = (lightness).clamp(0.0, 1.0);
-    return hsl.withHue(newHue).withSaturation(newSaturation).withLightness(newLightness).toColor();
+    return hsl
+        .withHue(newHue)
+        .withSaturation(newSaturation)
+        .withLightness(newLightness)
+        .toColor();
   }
 }
 
@@ -102,7 +118,9 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
   }
 
   Future<void> _loadProgram() async {
-    final program = await ui.FragmentProgram.fromAsset('assets/shaders/dynamic_banner.frag');
+    final program = await ui.FragmentProgram.fromAsset(
+      'assets/shaders/dynamic_banner.frag',
+    );
     if (mounted) {
       setState(() {
         _program = program;
@@ -130,7 +148,12 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
     final Color c3;
     final Color c4;
 
-    c1 = ColorUtils.adjustHsl(b, hueDelta: 4, saturation: 0.75, lightness: 0.54);
+    c1 = ColorUtils.adjustHsl(
+      b,
+      hueDelta: 4,
+      saturation: 0.75,
+      lightness: 0.54,
+    );
     c2 = ColorUtils.adjustHsl(b, hueDelta: 2, saturation: 0.9, lightness: 0.82);
     c3 = ColorUtils.adjustHsl(b, hueDelta: 1, saturation: 0.8, lightness: 0.54);
     c4 = ColorUtils.adjustHsl(b, hueDelta: 0, saturation: 1, lightness: 0.76);
@@ -198,5 +221,3 @@ class _DynamicGradientPainter extends CustomPainter {
         oldDelegate.program != program;
   }
 }
-
-

@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';  
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 
 /// Reusable username input field component with customizable label
 class UsernameInput extends StatefulWidget {
   /// Text editing controller for the password field
   final TextEditingController controller;
-  
+
   /// Label text to display for the field
   final String labelText;
-  
+
   /// Optional validator function
   final String? Function(String?)? validator;
-  
+
   /// Whether the field is enabled
   final bool enabled;
-  
+
   /// Optional prefix icon (defaults to person icon)
   final IconData? prefixIcon;
 

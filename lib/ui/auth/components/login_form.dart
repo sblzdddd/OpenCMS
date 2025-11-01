@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 import '../../shared/widgets/skin_icon_widget.dart';
 import 'captcha_input/captcha_input.dart';
 import 'password_input.dart';
 import 'username_input.dart';
 import '../controllers/login_form_controller.dart';
-import '../../../pages/settings/privacy_policy_page.dart';
+import '../../../pages/settings/privacy_policy.dart';
 import 'package:flutter/gestures.dart';
 import '../../shared/custom_snackbar/snackbar_utils.dart';
 
@@ -65,7 +65,10 @@ class _LoginFormState extends State<LoginForm> {
   /// Perform the complete login flow
   Future<void> _performLogin() async {
     if (!_agreedToPrivacyPolicy) {
-      SnackbarUtils.showError(context, 'Please agree to the Privacy Policy & Legal Terms');
+      SnackbarUtils.showError(
+        context,
+        'Please agree to the Privacy Policy & Legal Terms',
+      );
       return;
     }
     await _controller.performLogin(
@@ -103,7 +106,9 @@ class _LoginFormState extends State<LoginForm> {
                         fallbackIcon: Symbols.school_rounded,
                         size: 80,
                         iconSize: 80,
-                        fallbackIconColor: Theme.of(context).colorScheme.primary,
+                        fallbackIconColor: Theme.of(
+                          context,
+                        ).colorScheme.primary,
                         fallbackIconBackgroundColor: Colors.transparent,
                       ),
                       const SizedBox(height: 8),
@@ -196,24 +201,27 @@ class _LoginFormState extends State<LoginForm> {
                               child: RichText(
                                 text: TextSpan(
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                     fontSize: 14,
                                   ),
                                   children: [
-                                    const TextSpan(
-                                      text: 'I agree to the ',
-                                    ),
+                                    const TextSpan(text: 'I agree to the '),
                                     TextSpan(
                                       text: 'Privacy Policy & Legal Terms',
                                       style: TextStyle(
-                                        color: Theme.of(context).colorScheme.primary,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
                                         decoration: TextDecoration.underline,
                                       ),
                                       recognizer: TapGestureRecognizer()
                                         ..onTap = () {
                                           Navigator.of(context).push(
                                             MaterialPageRoute(
-                                              builder: (_) => const PrivacyPolicyPage(),
+                                              builder: (_) =>
+                                                  const PrivacyPolicyPage(),
                                             ),
                                           );
                                         },
@@ -233,7 +241,9 @@ class _LoginFormState extends State<LoginForm> {
                                 });
                               },
                         activeColor: Theme.of(context).colorScheme.primary,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 0,
+                        ),
                         dense: true,
                         controlAffinity: ListTileControlAffinity.leading,
                       ),
@@ -247,7 +257,9 @@ class _LoginFormState extends State<LoginForm> {
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
-                            borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+                            borderRadius: themeNotifier.getBorderRadiusAll(
+                              0.75,
+                            ),
                           ),
                           backgroundColor: Theme.of(
                             context,
@@ -295,13 +307,17 @@ class _LoginFormState extends State<LoginForm> {
                           ).colorScheme.surfaceContainerHighest,
                           shape: const CircleBorder(),
                           child: IconButton(
-                            tooltip: themeNotifier.isDarkMode ? 'Switch to light theme' : 'Switch to dark theme',
+                            tooltip: themeNotifier.isDarkMode
+                                ? 'Switch to light theme'
+                                : 'Switch to dark theme',
                             icon: Icon(
-                              themeNotifier.isDarkMode 
-                                ? Symbols.light_mode_rounded 
-                                : Symbols.dark_mode_rounded,
+                              themeNotifier.isDarkMode
+                                  ? Symbols.light_mode_rounded
+                                  : Symbols.dark_mode_rounded,
                             ),
-                            onPressed: isLoading ? null : () => themeNotifier.toggleTheme(),
+                            onPressed: isLoading
+                                ? null
+                                : () => themeNotifier.toggleTheme(),
                           ),
                         ),
                       ],

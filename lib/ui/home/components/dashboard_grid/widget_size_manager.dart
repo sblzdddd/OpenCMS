@@ -16,29 +16,29 @@ class WidgetSizeManager {
   // Available sizes for each widget type
   static const Map<String, List<Size>> availableSizes = <String, List<Size>>{
     'notices': [
-      Size(2, 1),    // Compact
-      Size(4, 1),    // Wide
-      Size(4, 1.6),  // Extra Wide
+      Size(2, 1), // Compact
+      Size(4, 1), // Wide
+      Size(4, 1.6), // Extra Wide
     ],
     'homework': [
-      Size(2, 1),    // Compact
-      Size(4, 1),    // Wide
+      Size(2, 1), // Compact
+      Size(4, 1), // Wide
     ],
     'assessments': [
-      Size(2, 1),    // Compact
-      Size(4, 1),    // Wide
+      Size(2, 1), // Compact
+      Size(4, 1), // Wide
     ],
     'banner': [
-      Size(4, 1.6),  // Fixed size
+      Size(4, 1.6), // Fixed size
     ],
     'next_class': [
-      Size(2, 1),    // Compact
-      Size(4, 1),    // Wide
+      Size(2, 1), // Compact
+      Size(4, 1), // Wide
     ],
     'calendar': [
-      Size(2, 1),    // Compact
-      Size(4, 1),    // Wide
-      Size(4, 1.6),  // Extra Wide
+      Size(2, 1), // Compact
+      Size(4, 1), // Wide
+      Size(4, 1.6), // Extra Wide
     ],
   };
 
@@ -53,21 +53,30 @@ class WidgetSizeManager {
   };
 
   // Default layout
-  static const List<MapEntry<String, Size>> defaultLayout = <MapEntry<String, Size>>[
-    MapEntry('banner', Size(4, 1.6)),
-    MapEntry('homework', Size(2, 1)),
-    MapEntry('assessments', Size(2, 1)),
-    MapEntry('next_class', Size(4, 1)),
-  ];
+  static const List<MapEntry<String, Size>> defaultLayout =
+      <MapEntry<String, Size>>[
+        MapEntry('banner', Size(4, 1.6)),
+        MapEntry('homework', Size(2, 1)),
+        MapEntry('assessments', Size(2, 1)),
+        MapEntry('next_class', Size(4, 1)),
+      ];
 
   /// Get available widgets that can be added
-  static List<String> getAddableWidgets(List<MapEntry<String, Size>> currentWidgets) {
-    final List<String> currentWidgetIds = currentWidgets.map((e) => e.key).toList();
-    return availableWidgets.where((widget) => !currentWidgetIds.contains(widget)).toList();
+  static List<String> getAddableWidgets(
+    List<MapEntry<String, Size>> currentWidgets,
+  ) {
+    final List<String> currentWidgetIds = currentWidgets
+        .map((e) => e.key)
+        .toList();
+    return availableWidgets
+        .where((widget) => !currentWidgetIds.contains(widget))
+        .toList();
   }
 
   /// Get current spans from widget order
-  static Map<String, Size> getCurrentSpans(List<MapEntry<String, Size>> widgetOrder) {
+  static Map<String, Size> getCurrentSpans(
+    List<MapEntry<String, Size>> widgetOrder,
+  ) {
     final Map<String, Size> spans = <String, Size>{};
     for (final entry in widgetOrder) {
       spans[entry.key] = entry.value;
@@ -138,12 +147,14 @@ class WidgetSizeManager {
   static Size getNextSize(String widgetId, Size currentSize) {
     final sizes = getAvailableSizes(widgetId);
     if (sizes.length <= 1) return currentSize;
-    
-    final currentIndex = sizes.indexWhere((size) => 
-        size.width == currentSize.width && size.height == currentSize.height);
-    
+
+    final currentIndex = sizes.indexWhere(
+      (size) =>
+          size.width == currentSize.width && size.height == currentSize.height,
+    );
+
     if (currentIndex == -1) return sizes.first;
-    
+
     final nextIndex = (currentIndex + 1) % sizes.length;
     return sizes[nextIndex];
   }
@@ -151,8 +162,13 @@ class WidgetSizeManager {
   /// Get all available sizes except the current one
   static List<Size> getAlternativeSizes(String widgetId, Size currentSize) {
     final sizes = getAvailableSizes(widgetId);
-    return sizes.where((size) => 
-        !(size.width == currentSize.width && size.height == currentSize.height)).toList();
+    return sizes
+        .where(
+          (size) =>
+              !(size.width == currentSize.width &&
+                  size.height == currentSize.height),
+        )
+        .toList();
   }
 
   /// Check if a size is valid for a widget
@@ -163,15 +179,7 @@ class WidgetSizeManager {
 
   /// Get size label
   static String getSizeLabel(Size size) {
-    if (size.width == 4 && size.height == 1.6) {
-      return 'Extra Wide (4×1.6)';
-    } else if (size.width == 4 && size.height == 1) {
-      return 'Wide (4×1)';
-    } else if (size.width == 2 && size.height == 1) {
-      return 'Compact (2×1)';
-    } else {
-      return '${size.width.toInt()}×${size.height.toInt()}';
-    }
+    return '${size.width.toInt()}×${size.height}';
   }
 
   /// Get next size label

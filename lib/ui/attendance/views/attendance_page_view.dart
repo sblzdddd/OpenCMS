@@ -34,7 +34,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
     super.initState();
     _endDate = DateTime.now();
     _startDate = DateTime(_endDate!.year - 1, 8, 1);
-    if(_endDate!.month >= 8 && _endDate!.day >= 1) {
+    if (_endDate!.month >= 8 && _endDate!.day >= 1) {
       _startDate = DateTime(_endDate!.year, 8, 1);
     }
   }
@@ -48,7 +48,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
         refresh: refresh,
       );
       if (!mounted) return;
-      
+
       // Update data without setState - RefreshableView handles the state
       _data = resp;
       // Build and cache sorted days once per load
@@ -67,7 +67,8 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
     }
 
     // Use cached sorted days to avoid re-sorting on every rebuild
-    final List<RecordOfDay> days = _sortedDaysCache ??
+    final List<RecordOfDay> days =
+        _sortedDaysCache ??
         ([...data.recordOfDays]..sort((a, b) => b.date.compareTo(a.date)));
 
     // Compute filtered days depending on view mode and selected courses
@@ -186,10 +187,7 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
             switchInCurve: Curves.easeOutCubic,
             switchOutCurve: Curves.easeInCubic,
             transitionBuilder: (child, animation) {
-              return SizeTransition(
-                sizeFactor: animation,
-                child: child,
-              );
+              return SizeTransition(sizeFactor: animation, child: child);
             },
             child: _showSettings
                 ? Column(
@@ -235,7 +233,9 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
         },
         tooltip: _isTableView ? 'Switch to Cards View' : 'Switch to Table View',
         child: Icon(
-          _isTableView ? Symbols.view_agenda_rounded : Symbols.table_chart_rounded,
+          _isTableView
+              ? Symbols.view_agenda_rounded
+              : Symbols.table_chart_rounded,
         ),
       ),
     );
@@ -370,7 +370,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
     );
   }
 
-
   Future<void> _onEventTap(AttendanceEntry entry, DateTime date) async {
     debugPrint('AttendancePageView: onEventTap: $entry, ${date.year}');
     if (entry.courseId == 0 || entry.courseName == '') {
@@ -401,12 +400,8 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
           ),
         );
         // Return both stats and the full teacher name from the API
-        return (
-          stats: statsForCourse,
-          subtitle: statsForCourse.teachers,
-        );
+        return (stats: statsForCourse, subtitle: statsForCourse.teachers);
       },
     );
   }
 }
-

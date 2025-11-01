@@ -17,10 +17,7 @@ class AttendancePage extends StatelessWidget {
         Tab(text: 'Attendance'),
         Tab(text: 'Course Statistics'),
       ],
-      tabViews: const [
-        AttendancePageView(),
-        CourseStatsView(),
-      ],
+      tabViews: const [AttendancePageView(), CourseStatsView()],
     );
   }
 }

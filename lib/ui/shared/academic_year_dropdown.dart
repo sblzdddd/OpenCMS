@@ -2,37 +2,37 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../data/constants/periods.dart';
 import 'package:provider/provider.dart';
-import '../../../services/theme/theme_services.dart';
+import '../../services/theme/theme_services.dart';
 
 /// Reusable academic year dropdown component with consistent styling
 class AcademicYearDropdown extends StatelessWidget {
   /// Currently selected academic year
   final AcademicYear? selectedYear;
-  
+
   /// Callback when year selection changes
   final ValueChanged<AcademicYear?>? onChanged;
-  
+
   /// Whether the dropdown is enabled
   final bool enabled;
-  
+
   /// Custom padding for the dropdown
   final EdgeInsetsGeometry? padding;
-  
+
   /// Custom elevation for the dropdown
   final int elevation;
-  
+
   /// Custom border radius for the dropdown
   final BorderRadius? borderRadius;
-  
+
   /// Whether to show the underline
   final bool showUnderline;
-  
+
   /// Custom icon for the dropdown
   final Widget? icon;
-  
+
   /// Whether to show a label above the dropdown
   final String? label;
-  
+
   /// Whether the dropdown should be expanded to fill available width
   final bool isExpanded;
 
@@ -57,9 +57,9 @@ class AcademicYearDropdown extends StatelessWidget {
       horizontal: 8.0,
       vertical: 4.0,
     );
-    
+
     final defaultBorderRadius = themeNotifier.getBorderRadiusAll(0.75);
-    
+
     final defaultIcon = const Icon(Symbols.arrow_drop_down_rounded);
 
     Widget dropdown = DropdownButton<AcademicYear>(
@@ -75,10 +75,8 @@ class AcademicYearDropdown extends StatelessWidget {
       ),
       items: PeriodConstants.getAcademicYears()
           .map(
-            (year) => DropdownMenuItem(
-              value: year,
-              child: Text(year.displayName),
-            ),
+            (year) =>
+                DropdownMenuItem(value: year, child: Text(year.displayName)),
           )
           .toList(),
       underline: showUnderline ? null : Container(),
@@ -93,10 +91,7 @@ class AcademicYearDropdown extends StatelessWidget {
         children: [
           Text(
             label!,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           dropdown,

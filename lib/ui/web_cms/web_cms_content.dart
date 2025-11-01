@@ -17,8 +17,6 @@ class WebCmsContent extends WebCmsBase {
 }
 
 class _WebCmsContentState extends WebCmsBaseState<WebCmsContent> {
-
-
   @override
   Widget build(BuildContext context) {
     if (widget.initialUrl == null) {
@@ -31,14 +29,18 @@ class _WebCmsContentState extends WebCmsBaseState<WebCmsContent> {
               Icon(
                 Symbols.error_outline_rounded,
                 size: 64,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 16),
               Text(
                 'No content available',
                 style: TextStyle(
                   fontSize: 18,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -53,7 +55,8 @@ class _WebCmsContentState extends WebCmsBaseState<WebCmsContent> {
           LinearProgressIndicator(value: progress == 0 ? null : progress),
         Expanded(
           child: buildWebView(
-            builder: (controller) => const SizedBox.shrink(), // WebView is built by base class
+            builder: (controller) =>
+                const SizedBox.shrink(), // WebView is built by base class
           ),
         ),
       ],

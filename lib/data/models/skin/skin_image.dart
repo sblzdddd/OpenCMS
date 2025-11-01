@@ -46,10 +46,10 @@ class SkinImageData {
   /// Convert to JSON
   Map<String, dynamic> toJson({bool useRelativePath = true}) {
     final json = <String, dynamic>{};
-    
+
     // Only serialize non-default values
     // Do not serialize `type`; it is derived from defaults
-    
+
     if (imagePath != null && imagePath!.isNotEmpty) {
       if (useRelativePath) {
         // Extract just the filename for export
@@ -58,32 +58,35 @@ class SkinImageData {
         json['imagePath'] = imagePath;
       }
     }
-    
+
     if (scale != 1.0) {
       json['scale'] = scale;
     }
-    
+
     if (opacity != (type == SkinImageType.icon ? 1.0 : 0.2)) {
       json['opacity'] = opacity;
     }
-    
+
     if (inside != true) {
       json['inside'] = inside;
     }
-    
+
     if (fillMode != SkinImageFillMode.cover) {
       json['fillMode'] = fillMode.name;
     }
-    
+
     if (position != SkinImagePosition.br) {
       json['position'] = position.name;
     }
-    
+
     return json;
   }
 
   /// Create from JSON using provided defaults (type and default values come from defaults)
-  factory SkinImageData.fromJsonWithDefaults(Map<String, dynamic> json, SkinImageData defaults) {
+  factory SkinImageData.fromJsonWithDefaults(
+    Map<String, dynamic> json,
+    SkinImageData defaults,
+  ) {
     final type = defaults.type;
     return SkinImageData(
       type: type,
@@ -129,7 +132,8 @@ class SkinImageData {
   }
 
   @override
-  int get hashCode => Object.hash(type, imagePath, scale, opacity, inside, fillMode, position);
+  int get hashCode =>
+      Object.hash(type, imagePath, scale, opacity, inside, fillMode, position);
 
   @override
   String toString() {

@@ -137,8 +137,12 @@ const defaultImageData = {
   'homeworks.background': SkinImageData(type: SkinImageType.background),
   'homeworks.foreground': SkinImageData(type: SkinImageType.foreground),
 
-  'available_classrooms.background': SkinImageData(type: SkinImageType.background),
-  'available_classrooms.foreground': SkinImageData(type: SkinImageType.foreground),
+  'available_classrooms.background': SkinImageData(
+    type: SkinImageType.background,
+  ),
+  'available_classrooms.foreground': SkinImageData(
+    type: SkinImageType.foreground,
+  ),
 
   'daily_bulletin.background': SkinImageData(type: SkinImageType.background),
   'daily_bulletin.foreground': SkinImageData(type: SkinImageType.foreground),
@@ -151,5 +155,4 @@ const defaultImageData = {
 
   'settings.background': SkinImageData(type: SkinImageType.background),
   'settings.foreground': SkinImageData(type: SkinImageType.foreground),
-
 };

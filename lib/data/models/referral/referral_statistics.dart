@@ -1,4 +1,3 @@
-
 /// Statistics about referral comments
 class ReferralStatistics {
   final int totalComments;

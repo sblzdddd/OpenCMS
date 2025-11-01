@@ -13,10 +13,11 @@ class StudentLedEventsParser {
 
     // Get all table rows (skip header row)
     final rows = table.querySelectorAll('tr');
-    for (int i = 1; i < rows.length; i++) { // Skip header row
+    for (int i = 1; i < rows.length; i++) {
+      // Skip header row
       final row = rows[i];
       final cells = row.querySelectorAll('td');
-      
+
       if (cells.length >= 6) {
         try {
           // Extract data from each cell
@@ -57,15 +58,17 @@ class StudentLedEventsParser {
 
           // Create event if we have valid data
           if (eventId > 0 && title.isNotEmpty) {
-            events.add(StudentEvent.fromHtml(
-              id: eventId,
-              type: StudentEventType.led,
-              title: title,
-              dateTime: dateTime,
-              applicant: applicant,
-              status: status,
-              approvalStatus: approvalStatus,
-            ));
+            events.add(
+              StudentEvent.fromHtml(
+                id: eventId,
+                type: StudentEventType.led,
+                title: title,
+                dateTime: dateTime,
+                applicant: applicant,
+                status: status,
+                approvalStatus: approvalStatus,
+              ),
+            );
           }
         } catch (e) {
           // Skip malformed rows

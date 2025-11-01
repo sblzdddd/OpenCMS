@@ -17,9 +17,11 @@ class BottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
-      alpha: themeNotifier.needTransparentBG ? 
-      themeNotifier.isDarkMode ? 0.6 : 0
-      : 1,
+      alpha: themeNotifier.needTransparentBG
+          ? themeNotifier.isDarkMode
+                ? 0.6
+                : 0
+          : 1,
     );
     return Container(
       decoration: BoxDecoration(

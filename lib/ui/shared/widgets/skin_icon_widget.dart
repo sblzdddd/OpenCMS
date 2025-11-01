@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../data/models/skin/skin.dart';
 import '../../../data/models/skin/skin_image.dart';
 import '../../../services/skin/skin_service.dart';
+import 'package:provider/provider.dart';
+import '../../../services/theme/theme_services.dart';
 
 /// A widget that displays skin images with fallback to default icons
 class SkinIcon extends StatefulWidget {
@@ -83,9 +85,12 @@ class _SkinIconState extends State<SkinIcon> {
   @override
   Widget build(BuildContext context) {
     final imageData = _getSkinImageData();
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
 
     // If no skin image available, show fallback icon
-    if (imageData == null || !imageData.hasImage || imageData.imagePath == null) {
+    if (imageData == null ||
+        !imageData.hasImage ||
+        imageData.imagePath == null) {
       return _buildFallbackIcon(context);
     }
 
@@ -99,17 +104,18 @@ class _SkinIconState extends State<SkinIcon> {
       width: widget.size,
       height: widget.size,
       child: ClipRRect(
-        borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.size * 0.2),
+        borderRadius:
+            widget.borderRadius ?? themeNotifier.getBorderRadiusAll(1),
         child: Opacity(
           opacity: imageData.opacity,
           child: Image.file(
-          File(imageData.imagePath!),
-          width: widget.size,
-          height: widget.size,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return _buildFallbackIcon(context);
-          },
+            File(imageData.imagePath!),
+            width: widget.size,
+            height: widget.size,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildFallbackIcon(context);
+            },
           ),
         ),
       ),
@@ -122,13 +128,15 @@ class _SkinIconState extends State<SkinIcon> {
       height: widget.size,
       decoration: BoxDecoration(
         color: widget.fallbackIconBackgroundColor,
-        borderRadius: widget.borderRadius ?? BorderRadius.circular(widget.size * 0.2),
+        borderRadius:
+            widget.borderRadius ?? BorderRadius.circular(widget.size * 0.2),
       ),
       child: Icon(
         widget.fallbackIcon,
         color: widget.fallbackIconColor,
         fill: widget.fill,
-        size: widget.iconSize ?? widget.size * 0.54, // 27/50 ratio from original
+        size:
+            widget.iconSize ?? widget.size * 0.54, // 27/50 ratio from original
       ),
     );
   }

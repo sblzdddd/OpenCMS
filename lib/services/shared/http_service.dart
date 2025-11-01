@@ -3,48 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
-import 'package:dio/browser.dart';
+import 'http_adapter_web.dart'
+    if (dart.library.io) 'http_adapter_stub.dart'
+    as http_adapter;
 import 'storage_client.dart';
-
-String convertToProxyUrl(String url) {
-  if (!kIsWeb) return url;
-  
-  final uri = Uri.parse(url);
-  final domain = uri.host;
-  
-  if (ApiConstants.domainMapping.containsKey(domain)) {
-    final proxyDomain = ApiConstants.domainMapping[domain]!;
-    final path = uri.path;
-    final query = uri.query.isNotEmpty ? '?${uri.query}' : '';
-    return '${ApiConstants.proxyBaseUrl}/proxy/$proxyDomain$path$query';
-  }
-  
-  return url;
-}
-
-/// Interceptor that redirects URLs to proxy when running on web
-class WebProxyInterceptor extends Interceptor {
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    if (kIsWeb) {
-      // Convert the URL to use proxy
-      final originalUrl = options.uri.toString();
-      final proxyUrl = convertToProxyUrl(originalUrl);
-      
-      if (proxyUrl != originalUrl) {
-        options.path = proxyUrl;
-        options.baseUrl = '';
-        
-        // Update headers for proxy
-        options.headers['X-Original-Host'] = options.uri.host;
-        options.headers['X-Proxy-Request'] = 'true';
-      }
-    }
-    
-    handler.next(options);
-  }
-}
-
+import 'proxy_service.dart';
 
 // Global options
 final cacheOptions = CacheOptions(
@@ -52,15 +15,9 @@ final cacheOptions = CacheOptions(
   store: MemCacheStore(),
 
   // All subsequent fields are optional to get a standard behaviour.
-  
+
   // Default.
   policy: CachePolicy.forceCache,
-  // Returns a cached response on error for given status codes.
-  // Defaults to `[]`.
-  // hitCacheOnErrorCodes: [500],
-  // Allows to return a cached response on network errors (e.g. offline usage).
-  // Defaults to `false`.
-  hitCacheOnErrorExcept: [401],
   // Overrides any HTTP directive to delete entry past this duration.
   // Useful only when origin server has no cache config or custom behaviour is desired.
   // Defaults to `null`.
@@ -84,22 +41,53 @@ class HttpService {
   late final Dio _dio;
 
   HttpService._internal() {
-    _dio = Dio()
-      ..interceptors.add(WebProxyInterceptor()) // Add proxy interceptor first
+    _dio = Dio();
+    if (!kIsWeb) {
+      _dio.interceptors.add(CookieManager(StorageClient.cookieJar));
+    } else {
+      _dio.interceptors.add(WebProxyInterceptor());
+      http_adapter.HttpAdapterHelper.configureAdapter(_dio);
+    }
+    _dio
       ..interceptors.add(DioCacheInterceptor(options: cacheOptions))
       ..options.connectTimeout = ApiConstants.connectTimeout
       ..options.receiveTimeout = ApiConstants.defaultTimeout
       ..options.headers = ApiConstants.defaultHeaders
-      ..options.validateStatus =
-          (status) => status != null && status >= 200 && status < 400;
-
-    if (!kIsWeb) {
-      _dio.interceptors.add(CookieManager(StorageClient.cookieJar));
-    } else {
-      (_dio.httpClientAdapter as BrowserHttpClientAdapter).withCredentials = true;
-    }
+      ..options.validateStatus = (status) =>
+          status != null && status >= 200 && status < 400;
   }
-  
+  // Centralized request executor
+  Future<Response<dynamic>> _request(
+    String method,
+    String endpoint, {
+    dynamic data,
+    Map<String, String> headers = const {},
+    bool refresh = false,
+    bool legacy = false,
+    bool followRedirects = true,
+  }) {
+    final options =
+        (refresh
+              ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions()
+              : Options())
+          ..headers = <String, dynamic>{
+            ..._dio.options.headers,
+            ...headers,
+            if (!kIsWeb && legacy) 'Referer': ApiConstants.legacyCMSReferer,
+          }
+          ..followRedirects = followRedirects
+          ..method = method.toUpperCase();
+
+    final url =
+        endpoint.startsWith('http://') || endpoint.startsWith('https://')
+        ? endpoint
+        : (legacy
+              ? '${ApiConstants.legacyCMSBaseUrl}$endpoint'
+              : '${ApiConstants.baseApiUrl}$endpoint');
+    debugPrint("[$method] $url");
+    return _dio.request(url, data: data, options: options);
+  }
+
   /// Make a POST request with automatic token refresh on 401
   Future<Response<dynamic>> post(
     String endpoint, {
@@ -107,48 +95,22 @@ class HttpService {
     Map<String, String> headers = const {},
     bool refresh = false,
   }) async {
-    Options options = Options();
-    if(refresh) {
-      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
-    }
-    options.headers = {
-      ..._dio.options.headers,
-      ...headers,
-    };
-    
-    String url;
-    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-      url = endpoint;
-    } else {
-      url = kIsWeb ? convertToProxyUrl('${ApiConstants.baseApiUrl}$endpoint') : '${ApiConstants.baseApiUrl}$endpoint';
-    }
-    
-    return _dio.post(url, data: body, options: options);
+    return _request(
+      'POST',
+      endpoint,
+      data: body,
+      headers: headers,
+      refresh: refresh,
+    );
   }
-  
+
   /// Make a GET request with automatic token refresh on 401
   Future<Response<dynamic>> get(
     String endpoint, {
     Map<String, String> headers = const {},
     bool refresh = false,
   }) async {
-    Options options = Options();
-    if(refresh) {
-      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
-    }
-    options.headers = {
-      ..._dio.options.headers,
-      ...headers,
-    };
-    
-    String url;
-    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
-      url = endpoint;
-    } else {
-      url = kIsWeb ? convertToProxyUrl('${ApiConstants.baseApiUrl}$endpoint') : '${ApiConstants.baseApiUrl}$endpoint';
-    }
-    
-    return _dio.get(url, options: options);
+    return _request('GET', endpoint, headers: headers, refresh: refresh);
   }
 
   /// Make a POST request with automatic token refresh on 401
@@ -159,21 +121,17 @@ class HttpService {
     bool refresh = false,
     bool followRedirects = true,
   }) async {
-    Options options = Options();
-    if(refresh) {
-      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
-    }
-    options.headers = {
-      ..._dio.options.headers,
-      ...headers,
-      if(!kIsWeb) 'Referer': ApiConstants.legacyCMSReferer,
-    };
-    options.followRedirects = followRedirects;
-    
-    final url = kIsWeb ? convertToProxyUrl('${ApiConstants.legacyCMSBaseUrl}$endpoint') : '${ApiConstants.legacyCMSBaseUrl}$endpoint';
-    return _dio.post(url, data: body, options: options);
+    return _request(
+      'POST',
+      endpoint,
+      data: body,
+      headers: headers,
+      refresh: refresh,
+      legacy: true,
+      followRedirects: followRedirects,
+    );
   }
-  
+
   /// Make a GET request with automatic token refresh on 401
   Future<Response<dynamic>> getLegacy(
     String endpoint, {
@@ -181,22 +139,16 @@ class HttpService {
     bool refresh = false,
     bool followRedirects = true,
   }) async {
-    Options options = Options();
-    if(refresh) {
-      options = cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions();
-    }
-    options.headers = {
-      ..._dio.options.headers,
-      ...headers,
-      if(!kIsWeb) 'Referer': ApiConstants.legacyCMSReferer,
-    };
-    options.followRedirects = followRedirects;
-    
-    final url = kIsWeb ? convertToProxyUrl('${ApiConstants.legacyCMSBaseUrl}$endpoint') : '${ApiConstants.legacyCMSBaseUrl}$endpoint';
-    return _dio.get(url, options: options);
+    return _request(
+      'GET',
+      endpoint,
+      headers: headers,
+      refresh: refresh,
+      legacy: true,
+      followRedirects: followRedirects,
+    );
   }
 
-  /// Make a POST request with automatic token refresh on 401
   Future<Response<dynamic>> postNative(
     String endpoint, {
     Map<String, dynamic>? body,
@@ -204,8 +156,7 @@ class HttpService {
   }) async {
     return _dio.post(endpoint, data: body, options: options);
   }
-  
-  /// Make a GET request with automatic token refresh on 401
+
   Future<Response<dynamic>> getNative(
     String endpoint, {
     Options? options,
@@ -213,4 +164,3 @@ class HttpService {
     return _dio.get(endpoint, options: options);
   }
 }
-

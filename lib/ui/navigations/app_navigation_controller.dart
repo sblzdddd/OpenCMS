@@ -5,21 +5,21 @@ class AppNavigationController {
   static ValueNotifier<int>? _selectedIndexNotifier;
   static BuildContext? _currentContext;
   static int? _pendingTimetableInnerTabIndex;
- 
- 	static void reset() {
- 		_selectedIndexNotifier = null;
- 		_currentContext = null;
- 		_pendingTimetableInnerTabIndex = null;
- 	}
-  
+
+  static void reset() {
+    _selectedIndexNotifier = null;
+    _currentContext = null;
+    _pendingTimetableInnerTabIndex = null;
+  }
+
   static void initialize(ValueNotifier<int> selectedIndexNotifier) {
     _selectedIndexNotifier = selectedIndexNotifier;
   }
-  
+
   static void updateContext(BuildContext context) {
     _currentContext = context;
   }
-  
+
   /// Tab indices: 0 = Home, 1 = Timetable, 2 = Homework, 3 = Feedback
   static void goToTab(int index) {
     if (_selectedIndexNotifier != null) {
@@ -41,9 +41,9 @@ class AppNavigationController {
       });
     }
   }
-  
+
   static int get currentTabIndex => _selectedIndexNotifier?.value ?? 0;
-  
+
   static bool get isInitialized => _selectedIndexNotifier != null;
 
   static void setPendingTimetableInnerTabIndex(int index) {

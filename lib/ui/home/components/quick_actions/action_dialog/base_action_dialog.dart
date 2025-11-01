@@ -10,13 +10,11 @@ import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 abstract class BaseActionDialog extends StatefulWidget {
   final List<String> currentActionIds;
 
-  const BaseActionDialog({
-    super.key,
-    required this.currentActionIds,
-  });
+  const BaseActionDialog({super.key, required this.currentActionIds});
 }
 
-abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T> {
+abstract class BaseActionDialogState<T extends BaseActionDialog>
+    extends State<T> {
   late List<Map<String, dynamic>> availableActions;
   List<Map<String, dynamic>> filteredActions = [];
   String searchQuery = '';
@@ -53,10 +51,11 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
         filteredActions = List.from(availableActions);
       } else {
         filteredActions = availableActions
-            .where((action) => action['title']
-                .toString()
-                .toLowerCase()
-                .contains(query.toLowerCase()))
+            .where(
+              (action) => action['title'].toString().toLowerCase().contains(
+                query.toLowerCase(),
+              ),
+            )
             .toList();
       }
     });
@@ -83,16 +82,17 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
               children: [
                 Text(
                   dialogTitle,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Symbols.close_rounded),
                   style: IconButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.1),
                     foregroundColor: Theme.of(context).colorScheme.primary,
                   ),
                 ),
@@ -109,13 +109,17 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                 border: OutlineInputBorder(
                   borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                   borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.3),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -135,8 +139,8 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
             Text(
               actionsCountText,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
 
@@ -162,13 +166,11 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                             searchQuery.isEmpty
                                 ? emptyStateMessage
                                 : 'No actions match your search',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
+                            style: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                             textAlign: TextAlign.center,
                           ),
@@ -180,12 +182,14 @@ abstract class BaseActionDialogState<T extends BaseActionDialog> extends State<T
                         const double spacing = 16.0;
                         const double minTileWidth = 100.0;
                         final double availableWidth = constraints.maxWidth;
-                        final int columns = (((availableWidth + spacing) /
-                                    (minTileWidth + spacing))
-                                .floor())
-                            .clamp(1, 6);
+                        final int columns =
+                            (((availableWidth + spacing) /
+                                        (minTileWidth + spacing))
+                                    .floor())
+                                .clamp(1, 6);
                         final double tileWidth =
-                            (availableWidth - (columns - 1) * spacing) / columns;
+                            (availableWidth - (columns - 1) * spacing) /
+                            columns;
 
                         return CustomChildScrollView(
                           child: Wrap(

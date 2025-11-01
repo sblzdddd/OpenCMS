@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../services/theme/theme_services.dart';
+import '../../../services/theme/theme_services.dart';
 
 class DayHeader extends StatelessWidget {
   final String title;
@@ -25,14 +25,12 @@ class DayHeader extends StatelessWidget {
     final Color leadingColor = isActive
         ? colorScheme.primary
         : (isToday
-            ? colorScheme.primary.withValues(alpha: 0.6)
-            : colorScheme.primary.withValues(alpha: 0.3));
+              ? colorScheme.primary.withValues(alpha: 0.6)
+              : colorScheme.primary.withValues(alpha: 0.3));
 
     final Color titleColor = isActive
         ? colorScheme.onSurface
-        : (isToday
-            ? colorScheme.primary
-            : colorScheme.onSurfaceVariant);
+        : (isToday ? colorScheme.primary : colorScheme.onSurfaceVariant);
 
     final Color dateColor = isActive || isToday
         ? colorScheme.primary
@@ -53,25 +51,18 @@ class DayHeader extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: Text(
-              title,
-              style: textStyle?.copyWith(
-                color: titleColor,
-              ),
-            ),
+            child: Text(title, style: textStyle?.copyWith(color: titleColor)),
           ),
           const SizedBox(width: 8),
           Text(
             dateText,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: dateColor,
-                  fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
-                ),
+              color: dateColor,
+              fontWeight: isToday ? FontWeight.w600 : FontWeight.w500,
+            ),
           ),
         ],
       ),
     );
   }
 }
-
-

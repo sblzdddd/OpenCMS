@@ -24,13 +24,12 @@ class EventsService {
 
     final endpoint = '/$username/sl_event/list/';
 
-    final response = await _httpService.getLegacy(
-      endpoint,
-      refresh: refresh,
-    );
+    final response = await _httpService.getLegacy(endpoint, refresh: refresh);
 
     if (response.statusCode != 200 && response.statusCode != 304) {
-      throw Exception('Failed to fetch student-led events: ${response.statusCode}');
+      throw Exception(
+        'Failed to fetch student-led events: ${response.statusCode}',
+      );
     }
 
     return StudentLedEventsParser.parseHtml(response.data);
@@ -47,13 +46,12 @@ class EventsService {
 
     final endpoint = '/$username/su_event/list/';
 
-    final response = await _httpService.getLegacy(
-      endpoint,
-      refresh: refresh,
-    );
+    final response = await _httpService.getLegacy(endpoint, refresh: refresh);
 
     if (response.statusCode != 200 && response.statusCode != 304) {
-      throw Exception('Failed to fetch student-unstaffed events: ${response.statusCode}');
+      throw Exception(
+        'Failed to fetch student-unstaffed events: ${response.statusCode}',
+      );
     }
 
     return StudentUnstaffedEventsParser.parseHtml(response.data);

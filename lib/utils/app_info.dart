@@ -18,7 +18,8 @@ class AppInfoUtil {
         final String platformName = defaultTargetPlatform.name;
         return 'Web • $platformName';
       }
-      final String os = Platform.operatingSystem; // e.g., windows, macos, linux, android, ios
+      final String os =
+          Platform.operatingSystem; // e.g., windows, macos, linux, android, ios
       final String osVersion = Platform.operatingSystemVersion;
       String arch = '';
       try {
@@ -29,8 +30,12 @@ class AppInfoUtil {
           arch = 'x64';
         }
       } catch (_) {}
-      final String osName = os.isNotEmpty ? '${os[0].toUpperCase()}${os.substring(1)}' : 'Unknown';
-      return arch.isNotEmpty ? '$osName $arch • $osVersion' : '$osName • $osVersion';
+      final String osName = os.isNotEmpty
+          ? '${os[0].toUpperCase()}${os.substring(1)}'
+          : 'Unknown';
+      return arch.isNotEmpty
+          ? '$osName $arch • $osVersion'
+          : '$osName • $osVersion';
     } catch (_) {
       return '';
     }

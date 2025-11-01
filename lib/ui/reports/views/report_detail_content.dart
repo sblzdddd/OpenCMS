@@ -215,14 +215,14 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
                     child: Opacity(
                       opacity: 0.15,
                       child: SkinIcon(
-                      imageKey: 'subjectIcons.$subjectIcon',
-                      fallbackIcon: altSubjectIcon,
-                      fallbackIconColor: Theme.of(
-                        context,
-                      ).colorScheme.onSurface,
-                      fallbackIconBackgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainer,
+                        imageKey: 'subjectIcons.$subjectIcon',
+                        fallbackIcon: altSubjectIcon,
+                        fallbackIconColor: Theme.of(
+                          context,
+                        ).colorScheme.onSurface,
+                        fallbackIconBackgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainer,
                         size: 75,
                         iconSize: 56,
                       ),

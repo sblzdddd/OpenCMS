@@ -24,12 +24,7 @@ class Notification {
 
   /// Convert Notification to JSON data
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'is_top': isTop,
-      'adddate': addDate,
-    };
+    return {'id': id, 'title': title, 'is_top': isTop, 'adddate': addDate};
   }
 
   /// Check if this notification is pinned to the top
@@ -52,9 +47,6 @@ class Notification {
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        title.hashCode ^
-        isTop.hashCode ^
-        addDate.hashCode;
+    return id.hashCode ^ title.hashCode ^ isTop.hashCode ^ addDate.hashCode;
   }
 }

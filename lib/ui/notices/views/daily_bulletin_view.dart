@@ -21,19 +21,21 @@ class _DailyBulletinViewState extends RefreshableView<DailyBulletinView> {
   @override
   Future<void> fetchData({bool refresh = false}) async {
     final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
-    final dailyBulletins = await _dailyBulletinService.getDailyBulletinsList(date: date, refresh: refresh);
+    final dailyBulletins = await _dailyBulletinService.getDailyBulletinsList(
+      date: date,
+      refresh: refresh,
+    );
     setState(() {
       _dailyBulletins = dailyBulletins;
     });
   }
-
 
   @override
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     if (_dailyBulletins == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     return AdaptiveDailyBulletinLayout(
       dailyBulletins: _dailyBulletins!,
       selectedDailyBulletin: _selectedDailyBulletin,

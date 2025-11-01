@@ -20,5 +20,3 @@ class ExamTimetableEntry {
     required this.seat,
   });
 }
-
-

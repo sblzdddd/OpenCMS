@@ -15,7 +15,8 @@ class SkinFileManager {
 
   static Future<String> getSkinDirectoryPath(String skinId) async {
     final skinsDirectory = await getSkinsDirectory();
-    final skinDirectory = '${skinsDirectory.path}${Platform.pathSeparator}$skinId';
+    final skinDirectory =
+        '${skinsDirectory.path}${Platform.pathSeparator}$skinId';
     await ensureDirectoryExists(skinDirectory);
     return skinDirectory;
   }
@@ -26,18 +27,18 @@ class SkinFileManager {
   }
 
   static Future<String> copyImageToSkinsDirectory(
-    String sourcePath, 
-    String skinId, 
-    String key
+    String sourcePath,
+    String skinId,
+    String key,
   ) async {
     final skinsDirectory = await getSkinDirectoryPath(skinId);
-    
+
     final sourceFile = File(sourcePath);
     final extension = sourcePath.split('.').last;
     final fileName = '$key.$extension';
     final destinationPath = '$skinsDirectory${Platform.pathSeparator}$fileName';
     print(destinationPath);
-    
+
     await sourceFile.copy(destinationPath);
     return destinationPath;
   }
@@ -46,23 +47,25 @@ class SkinFileManager {
     if (path != null) {
       final skinsDirectory = await getSkinDirectoryPath(skinId);
       final file = File(path);
-      if (file.existsSync() && _isPathWithinDirectory(file.path, skinsDirectory)) {
-        print('Deleting file: ${file.path}');
+      if (file.existsSync() &&
+          _isPathWithinDirectory(file.path, skinsDirectory)) {
+        print('[SkinFileManager] Deleting file: ${file.path}');
         file.deleteSync();
       }
     }
   }
 
   static Future<void> deleteSkinFiles(
-    Map<String, SkinImageData> imageData, 
-    String skinId
+    Map<String, SkinImageData> imageData,
+    String skinId,
   ) async {
     final skinsDirectory = await getSkinDirectoryPath(skinId);
     for (final key in imageData.keys) {
       final path = imageData[key]?.imagePath;
       if (path != null) {
         final file = File(path);
-        if (file.existsSync() && _isPathWithinDirectory(file.path, skinsDirectory)) {
+        if (file.existsSync() &&
+            _isPathWithinDirectory(file.path, skinsDirectory)) {
           file.deleteSync();
         }
       }
@@ -85,7 +88,10 @@ class SkinFileManager {
     }
   }
 
-  static Future<void> writeSkinJsonMap(String skinId, Map<String, dynamic> json) async {
+  static Future<void> writeSkinJsonMap(
+    String skinId,
+    Map<String, dynamic> json,
+  ) async {
     final file = await getSkinJsonFile(skinId);
     await file.writeAsString(jsonEncode(json));
   }
@@ -114,11 +120,13 @@ class SkinFileManager {
     if (exportJson.containsKey('imageData')) {
       final imageData = exportJson['imageData'] as Map<String, dynamic>;
       for (final key in imageData.keys) {
-        if (imageData[key] is Map<String, dynamic> && 
+        if (imageData[key] is Map<String, dynamic> &&
             imageData[key].containsKey('imagePath')) {
           final imagePath = imageData[key]['imagePath'] as String;
           if (imagePath.isNotEmpty) {
-            imageData[key]['imagePath'] = imagePath.split(Platform.pathSeparator).last;
+            imageData[key]['imagePath'] = imagePath
+                .split(Platform.pathSeparator)
+                .last;
           }
         }
       }
@@ -137,7 +145,7 @@ class SkinFileManager {
     if (exportJson.containsKey('imageData')) {
       final imageData = exportJson['imageData'] as Map<String, dynamic>;
       for (final key in imageData.keys) {
-        if (imageData[key] is Map<String, dynamic> && 
+        if (imageData[key] is Map<String, dynamic> &&
             imageData[key].containsKey('imagePath')) {
           final fileName = imageData[key]['imagePath'] as String;
           if (fileName.isNotEmpty) {
@@ -160,9 +168,13 @@ class SkinFileManager {
 
   static bool _isPathWithinDirectory(String filePath, String directoryPath) {
     try {
-      final normalizedFilePath = File(filePath).absolute.path.replaceAll(Platform.pathSeparator, '/');
-      final normalizedDirPath = Directory(directoryPath).absolute.path.replaceAll(Platform.pathSeparator, '/');
-      
+      final normalizedFilePath = File(
+        filePath,
+      ).absolute.path.replaceAll(Platform.pathSeparator, '/');
+      final normalizedDirPath = Directory(
+        directoryPath,
+      ).absolute.path.replaceAll(Platform.pathSeparator, '/');
+
       return normalizedFilePath.startsWith(normalizedDirPath);
     } catch (e) {
       return false;
@@ -177,7 +189,7 @@ class SkinFileManager {
 
     final bytes = await file.readAsBytes();
     final archive = ZipDecoder().decodeBytes(bytes);
-    
+
     final skinJsonEntry = archive.findFile('skin.json');
     if (skinJsonEntry == null) {
       throw Exception('skin.json not found in archive');
@@ -185,7 +197,7 @@ class SkinFileManager {
 
     final skinJsonContent = utf8.decode(skinJsonEntry.content);
     final skinJson = jsonDecode(skinJsonContent) as Map<String, dynamic>;
-    
+
     final newSkinId = DateTime.now().millisecondsSinceEpoch.toString();
     final skinDirPath = await getSkinDirectoryPath(newSkinId);
 
@@ -202,11 +214,12 @@ class SkinFileManager {
     if (skinJson.containsKey('imageData')) {
       final imageData = skinJson['imageData'] as Map<String, dynamic>;
       for (final key in imageData.keys) {
-        if (imageData[key] is Map<String, dynamic> && 
+        if (imageData[key] is Map<String, dynamic> &&
             imageData[key].containsKey('imagePath')) {
           final fileName = imageData[key]['imagePath'] as String;
           if (fileName.isNotEmpty) {
-            imageData[key]['imagePath'] = '$skinDirPath${Platform.pathSeparator}$fileName';
+            imageData[key]['imagePath'] =
+                '$skinDirPath${Platform.pathSeparator}$fileName';
           }
         }
       }

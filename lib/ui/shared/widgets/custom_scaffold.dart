@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 import '../../../services/skin/skin_service.dart';
 import '../../../data/models/skin/skin.dart';
@@ -67,7 +66,7 @@ class CustomScaffold extends StatelessWidget {
     this.endDrawerEnableOpenDragGesture = true,
     this.restorationId,
     this.isTransparent = false,
-    this.skinKey='global',
+    this.skinKey = 'global',
     this.fallbackColor,
     this.boxFit,
     this.opacity,
@@ -82,7 +81,7 @@ class CustomScaffold extends StatelessWidget {
     // First try to get category-specific foreground
     final categoryKey = '$skinKey.foreground';
     final categoryImageData = activeSkin.imageData[categoryKey];
-    
+
     if (categoryImageData != null && categoryImageData.hasImage) {
       return categoryImageData;
     }
@@ -90,7 +89,7 @@ class CustomScaffold extends StatelessWidget {
     // Fall back to global foreground
     final globalKey = 'global.foreground';
     final globalImageData = activeSkin.imageData[globalKey];
-    
+
     if (globalImageData != null && globalImageData.hasImage) {
       return globalImageData;
     }
@@ -106,7 +105,7 @@ class CustomScaffold extends StatelessWidget {
   /// Create positioned foreground image widget
   Widget? _createForegroundImage(Skin activeSkin) {
     final imageData = _getForegroundImageData(activeSkin);
-    
+
     if (imageData == null || imageData.imagePath == null) {
       return null;
     }
@@ -129,7 +128,7 @@ class CustomScaffold extends StatelessWidget {
                   final imageInfo = snapshot.data!;
                   final scaledWidth = imageInfo.image.width * imageData.scale;
                   final scaledHeight = imageInfo.image.height * imageData.scale;
-                  
+
                   return Image.file(
                     File(imageData.imagePath!),
                     width: scaledWidth,
@@ -156,7 +155,7 @@ class CustomScaffold extends StatelessWidget {
     final imageProvider = FileImage(imageFile);
     final imageStream = imageProvider.resolve(ImageConfiguration.empty);
     final completer = Completer<ImageInfo>();
-    
+
     late ImageStreamListener listener;
     listener = ImageStreamListener((ImageInfo imageInfo, bool synchronousCall) {
       if (!completer.isCompleted) {
@@ -164,7 +163,7 @@ class CustomScaffold extends StatelessWidget {
         imageStream.removeListener(listener);
       }
     });
-    
+
     imageStream.addListener(listener);
     return completer.future;
   }
@@ -204,12 +203,15 @@ class CustomScaffold extends StatelessWidget {
 
     Color fallbackColor = Theme.of(context).colorScheme.surface;
 
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    // Use ThemeNotifier singleton instead of Provider to avoid context issues
+    final themeNotifier = ThemeNotifier.instance;
 
     if (isHomePage && themeNotifier.hasTransparentWindowEffect) {
       fallbackColor = fallbackColor.withValues(alpha: 0);
     } else if (themeNotifier.hasTransparentWindowEffect) {
-      fallbackColor = fallbackColor.withValues(alpha: themeNotifier.isDarkMode? 0.8:0.5);
+      fallbackColor = fallbackColor.withValues(
+        alpha: themeNotifier.isDarkMode ? 0.8 : 0.5,
+      );
     }
 
     // If skinKey is provided, wrap with SkinBackgroundWidget
@@ -225,17 +227,12 @@ class CustomScaffold extends StatelessWidget {
     if (enableForeground) {
       final skinService = SkinService.instance;
       final activeSkin = skinService.activeSkin;
-      
+
       if (activeSkin != null) {
         final foregroundImage = _createForegroundImage(activeSkin);
-        
+
         if (foregroundImage != null) {
-          return Stack(
-            children: [
-              backgroundWidget,
-              foregroundImage,
-            ],
-          );
+          return Stack(children: [backgroundWidget, foregroundImage]);
         }
       }
     }

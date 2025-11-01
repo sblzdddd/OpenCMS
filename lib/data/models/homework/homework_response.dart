@@ -1,13 +1,10 @@
-
 /// Data models for homework API response
 library;
 
 class HomeworkResponse {
   final List<HomeworkItem> homeworkItems;
 
-  HomeworkResponse({
-    required this.homeworkItems,
-  });
+  HomeworkResponse({required this.homeworkItems});
 
   factory HomeworkResponse.fromJson(List<dynamic> json) {
     return HomeworkResponse(
@@ -43,8 +40,11 @@ class HomeworkItem {
     return HomeworkItem(
       id: json['id'] as int? ?? 0,
       title: json['title'] as String? ?? '',
-      assignedDate: DateTime.tryParse(json['whichday'] as String? ?? '') ?? DateTime.now(),
-      dueDate: DateTime.tryParse(json['duedate'] as String? ?? '') ?? DateTime.now(),
+      assignedDate:
+          DateTime.tryParse(json['whichday'] as String? ?? '') ??
+          DateTime.now(),
+      dueDate:
+          DateTime.tryParse(json['duedate'] as String? ?? '') ?? DateTime.now(),
       courseName: json['ename'] as String? ?? '',
       courseEnglishName: json['course_ename'] as String? ?? '',
       teacherName: json['teacher_ename'] as String? ?? '',
@@ -52,7 +52,7 @@ class HomeworkItem {
     );
   }
 
-  /// Check if homework is overdue  
+  /// Check if homework is overdue
   bool get isOverdue => DateTime.now().isAfter(dueDate);
 
   /// Get days until due date (negative if overdue)

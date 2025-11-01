@@ -65,10 +65,12 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     try {
       final response = await _skinService.getActiveSkin();
       if (!(response.success && response.skin != null)) {
-        print('SkinBackgroundWidget: Failed to load active skin: ${response.error}');
+        debugPrint(
+          '[SkinBackgroundWidget] Failed to load active skin: ${response.error}',
+        );
       }
     } catch (e) {
-      print('SkinBackgroundWidget: Error loading active skin: $e');
+      debugPrint('[SkinBackgroundWidget] Error loading active skin: $e');
     }
   }
 
@@ -79,7 +81,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     // First try to get category-specific background
     final categoryKey = '${widget.category}.background';
     final categoryImageData = _activeSkin!.imageData[categoryKey];
-    
+
     if (categoryImageData != null && categoryImageData.hasImage) {
       return categoryImageData;
     }
@@ -87,7 +89,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     // Fall back to global background
     final globalKey = 'global.background';
     final globalImageData = _activeSkin!.imageData[globalKey];
-    
+
     if (globalImageData != null && globalImageData.hasImage) {
       return globalImageData;
     }
@@ -97,7 +99,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
   /// Get BoxFit from SkinImageData or use provided fallback
   BoxFit _getBoxFit(SkinImageData imageData) {
     if (widget.boxFit != null) return widget.boxFit!;
-    
+
     switch (imageData.fillMode) {
       case SkinImageFillMode.contain:
         return BoxFit.contain;
@@ -120,7 +122,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
   @override
   Widget build(BuildContext context) {
     final imageData = _getBackgroundImageData();
-    
+
     if (imageData == null || imageData.imagePath == null) {
       // No background image available, use fallback color
       return Container(
@@ -128,12 +130,12 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
         decoration: BoxDecoration(
           color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
           image: widget.category == 'login'
-            ? const DecorationImage(
-                image: AssetImage('assets/images/default-login-bg.jpg'),
-                fit: BoxFit.cover,
-                opacity: 0.2,
-              )
-            : null,
+              ? const DecorationImage(
+                  image: AssetImage('assets/images/default-login-bg.jpg'),
+                  fit: BoxFit.cover,
+                  opacity: 0.2,
+                )
+              : null,
         ),
         child: widget.child,
       );
@@ -146,12 +148,12 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
         decoration: BoxDecoration(
           color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
           image: widget.category == 'login'
-            ? const DecorationImage(
-                image: AssetImage('assets/images/default-login-bg.jpg'),
-                fit: BoxFit.cover,
-                opacity: 0.2,
-              )
-            : null,
+              ? const DecorationImage(
+                  image: AssetImage('assets/images/default-login-bg.jpg'),
+                  fit: BoxFit.cover,
+                  opacity: 0.2,
+                )
+              : null,
         ),
         child: widget.child,
       );

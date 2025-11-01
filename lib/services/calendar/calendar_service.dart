@@ -16,7 +16,7 @@ class CalendarService {
   final AuthService _authService = AuthService();
 
   /// Get calendar data for a specific month
-  /// 
+  ///
   /// Parameters:
   /// - [year]: Year (e.g., 2025)
   /// - [month]: Month (1-12)
@@ -37,9 +37,7 @@ class CalendarService {
       final response = await _httpService.postLegacy(
         '${ApiConstants.calendarUrl}?psid=$psid&y=$year&p=$year&m=$month&kind=-1',
         body: 'psid=$psid&y=$year&p=$year&m=$month&kind=-1',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         refresh: refresh,
       );
 
@@ -50,7 +48,7 @@ class CalendarService {
   }
 
   /// Get detailed information for a specific calendar event
-  /// 
+  ///
   /// Parameters:
   /// - [eventId]: The ID of the calendar event
   /// - [refresh]: Whether to refresh cache
@@ -62,14 +60,14 @@ class CalendarService {
       final response = await _httpService.postLegacy(
         ApiConstants.calendarDetailUrl,
         body: 'id=$eventId',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         refresh: refresh,
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to fetch calendar detail: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch calendar detail: ${response.statusCode}',
+        );
       }
 
       return CalendarDetailResponse.fromJson(response.data);
@@ -83,7 +81,9 @@ class CalendarService {
   /// This calls `/legacy/calendar/yyyy-mm-dd/` which returns a JSON array
   /// of calendar items for the provided date. Only today's date is supported
   /// by this convenience method.
-  Future<List<CalendarTodayItem>> getTodayCalendar({bool refresh = false}) async {
+  Future<List<CalendarTodayItem>> getTodayCalendar({
+    bool refresh = false,
+  }) async {
     try {
       final today = DateTime.now();
       final yyyy = today.year.toString().padLeft(4, '0');
@@ -97,7 +97,9 @@ class CalendarService {
       );
 
       if (!(response.statusCode == 200 || response.statusCode == 304)) {
-        throw Exception('Failed to fetch today\'s calendar: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch today\'s calendar: ${response.statusCode}',
+        );
       }
 
       final data = response.data;
@@ -121,7 +123,7 @@ class CalendarService {
   }
 
   /// Get comment information for a specific calendar event
-  /// 
+  ///
   /// Parameters:
   /// - [eventId]: The ID of the calendar event
   /// - [kind]: The kind of comment (e.g., "ft_title", "fv_title", "ve_title", "sle_title", "sue_title")
@@ -135,14 +137,14 @@ class CalendarService {
       final response = await _httpService.postLegacy(
         ApiConstants.calendarCommentUrl,
         body: 'id=$eventId&kind=$kind',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         refresh: refresh,
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to fetch calendar comment: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch calendar comment: ${response.statusCode}',
+        );
       }
 
       return CalendarCommentResponse.fromJson(response.data);
@@ -152,13 +154,11 @@ class CalendarService {
   }
 
   /// Get calendar for current month
-  Future<CalendarResponse> getCurrentMonthCalendar({bool refresh = false}) async {
+  Future<CalendarResponse> getCurrentMonthCalendar({
+    bool refresh = false,
+  }) async {
     final now = DateTime.now();
-    return getCalendar(
-      year: now.year,
-      month: now.month,
-      refresh: refresh,
-    );
+    return getCalendar(year: now.year, month: now.month, refresh: refresh);
   }
 
   /// Get calendar for next month
@@ -173,7 +173,9 @@ class CalendarService {
   }
 
   /// Get calendar for previous month
-  Future<CalendarResponse> getPreviousMonthCalendar({bool refresh = false}) async {
+  Future<CalendarResponse> getPreviousMonthCalendar({
+    bool refresh = false,
+  }) async {
     final now = DateTime.now();
     final prevMonth = DateTime(now.year, now.month - 1);
     return getCalendar(

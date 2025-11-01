@@ -14,7 +14,7 @@ class ReportDetailView extends StatefulWidget {
 
 class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
   @override
-  final String skinKey = 'reports';
+  String get skinKey => 'reports';
 
   @override
   String get appBarTitle => 'Report Detail';
@@ -26,10 +26,7 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
 
   @override
   Widget buildPageContent(BuildContext context, ThemeNotifier themeNotifier) {
-    return ReportDetailContent(
-      exam: widget.exam,
-      isWideScreen: false,
-    );
+    return ReportDetailContent(exam: widget.exam, isWideScreen: false);
   }
 
   @override
@@ -37,5 +34,4 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
 
   @override
   String get errorTitle => 'Error loading report details';
-
 }

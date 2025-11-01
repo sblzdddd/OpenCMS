@@ -5,7 +5,8 @@ import '../shared/http_service.dart';
 
 /// Service for handling daily bulletins from the CMS system
 class DailyBulletinService {
-  static final DailyBulletinService _instance = DailyBulletinService._internal();
+  static final DailyBulletinService _instance =
+      DailyBulletinService._internal();
   factory DailyBulletinService() => _instance;
   DailyBulletinService._internal();
 
@@ -13,19 +14,27 @@ class DailyBulletinService {
   final AuthService _authService = AuthService();
 
   /// Get a list of all daily bulletins
-  /// 
+  ///
   /// Returns a list of [DailyBulletin] objects
-  Future<List<DailyBulletin>> getDailyBulletinsList({required String date, bool refresh = false}) async {
+  Future<List<DailyBulletin>> getDailyBulletinsList({
+    required String date,
+    bool refresh = false,
+  }) async {
     try {
-      final response = await _httpService.get(ApiConstants.dailyBulletinUrl(date), refresh: refresh);
-      
+      final response = await _httpService.get(
+        ApiConstants.dailyBulletinUrl(date),
+        refresh: refresh,
+      );
+
       if (response.data != null) {
         final List<dynamic> notificationsJson = response.data as List<dynamic>;
         return notificationsJson
             .map((json) => DailyBulletin.fromJson(json as Map<String, dynamic>))
             .toList();
       } else {
-        throw Exception('Failed to fetch daily bulletins: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch daily bulletins: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching daily bulletins: $e');

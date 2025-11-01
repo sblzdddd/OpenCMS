@@ -6,14 +6,14 @@ class SkinCategoriesHelper {
   /// Get all unique categories from skin constants
   static List<String> getCategories() {
     final categories = <String>{};
-    
+
     for (final key in defaultImageData.keys) {
       final parts = key.split('.');
       if (parts.isNotEmpty) {
         categories.add(parts.first);
       }
     }
-    
+
     return categories.toList();
   }
 

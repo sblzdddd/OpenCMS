@@ -1,5 +1,5 @@
 /// HTML content for the Tencent Captcha verification interface
-String captchaHtmlContent (bool enableDarkMode) {
+String captchaHtmlContent(bool enableDarkMode) {
   return '''
 <!DOCTYPE html>
 <html lang="en">
