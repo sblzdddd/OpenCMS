@@ -35,7 +35,6 @@ An open-source, cross-platform campus management app designed for students at a 
 - **iOS**: iOS 11.0 or higher
 - **Windows**: Windows 10 version 1903 or higher (64-bit only)
 - **macOS**: macOS 10.14 or higher
-- **Linux**: Ubuntu 18.04 LTS or equivalent (64-bit only)
 
 ### Download and Install
 
@@ -44,7 +43,6 @@ An open-source, cross-platform campus management app designed for students at a 
    - **macOS**: Intel or Apple Silicon (M1/M2) - check in About This Mac
    - **iOS**: iOS 11.0 or higher (Flutter requirement)
    - **Android**: Check in Settings > About Phone for architecture (arm64, x86_64, or armeabi-v7a)
-   - **Linux**: 64-bit only (Flutter requirement)
 
 2. **Download the latest release**:
    - Visit the [Releases](https://github.com/your-username/OpenCMS/releases) page
@@ -56,7 +54,6 @@ An open-source, cross-platform campus management app designed for students at a 
    - **iOS**: Sign the app archive and sideload the IPA file (requires Apple Developer account)
    - **Windows**: Extract the portable version and run the executable
    - **macOS**: Extract the archive and run OpenCMS.app
-   - **Linux**: Extract the archive and run the opencms executable
 
 ## 🛠️ Development
 
@@ -72,7 +69,6 @@ An open-source, cross-platform campus management app designed for students at a 
    - **iOS**: Xcode (macOS only)
    - **Windows**: Visual Studio with C++ development tools
    - **macOS**: Xcode command line tools
-   - **Linux**: CMake and other build tools
 
    For detailed specifications, run `flutter doctor` to check your development environment.
 
@@ -105,7 +101,6 @@ An open-source, cross-platform campus management app designed for students at a 
    flutter run -d android
    flutter run -d ios
    flutter run -d macos
-   flutter run -d linux
    ```
 
 ### Development Workflow
