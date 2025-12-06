@@ -83,8 +83,8 @@ jobs:
             build/windows/x64/runner/OCMS-Win64-${{ env.VERSION }}/
           compression-level: 9
 
-  build-linux:
-    name: Build (Linux & Android)
+  build-android:
+    name: Build (Android)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -145,17 +145,4 @@ jobs:
           name: Android-X86_64-${{ env.VERSION }}
           path: |
             build/app/outputs/flutter-apk/OCMS-Android-x86_64-${{ env.VERSION }}.apk
-          compression-level: 9
-      - name: Build linux
-        run: flutter build linux --release
-      - name: Rename Linux Build
-        run: |
-          cd build/linux/x64/release/
-          mv bundle OCMS-Linux-$VERSION
-      - name: Upload Artifacts (Linux)
-        uses: actions/upload-artifact@v4
-        with:
-          name: OCMS-Linux-${{ env.VERSION }}
-          path: |
-            build/linux/x64/release/OCMS-Linux-${{ env.VERSION }}/
           compression-level: 9
