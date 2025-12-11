@@ -5,6 +5,8 @@ import '../ui/auth/components/login_form.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/widgets/custom_scaffold.dart';
 import 'package:opencms/utils/app_info.dart';
+import 'package:opencms/utils/device_id.dart';
+import 'package:flutter/services.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -89,11 +91,41 @@ class _LoginPageState extends State<LoginPage> {
                   horizontal: 12,
                   vertical: 8,
                 ),
-                child: Text(
-                  _footerText,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                child: GestureDetector(
+                  onLongPress: () async {
+                    final id = await getDeviceId();
+                    if (!context.mounted) return;
+                    await showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: const Text('Device ID'),
+                          content: Text(id ?? 'Unavailable'),
+                          actions: [
+                            TextButton(
+                              onPressed: id == null
+                                  ? null
+                                  : () async {
+                                      await Clipboard.setData(ClipboardData(text: id));
+                                      if (ctx.mounted) Navigator.of(ctx).pop();
+                                    },
+                              child: const Text('Copy ID'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              child: const Text('Close'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Text(
+                    _footerText,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ),

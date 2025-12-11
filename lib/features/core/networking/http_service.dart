@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/io.dart';
 import 'package:opencms/features/core/di/locator.dart';
 import 'package:opencms/features/core/storage/cookie_storage.dart';
 import 'package:opencms/features/core/networking/interceptors/legacy_cache_interceptor.dart';
@@ -28,6 +31,13 @@ class HttpService {
         followRedirects: false,
       ),
     );
+
+    // allow self-signed certificate
+    (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.badCertificateCallback = (cert, host, port) => true;
+      return client;
+    };
 
     // add authorization header
     _dio.interceptors.add(AuthInterceptor(_dio));

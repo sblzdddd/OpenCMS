@@ -17,7 +17,7 @@ class ExamTimetableService {
     required int month,
     bool refresh = false,
   }) async {
-    final username = await di<LoginState>().currentUsername;
+    final username = di<LoginState>().currentUsername;
     if (username.isEmpty) {
       throw Exception('Missing username. Please login again.');
     }

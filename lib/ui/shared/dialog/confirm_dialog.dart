@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../../../features/auth/services/auth_service.dart';
 import '../../../services/theme/theme_services.dart';
-import '../../../features/core/storage/storage_client.dart';
 import '../../navigations/app_navigation_controller.dart';
 
 void showConfirmationDialog(
@@ -75,7 +74,6 @@ void showClearDataDialog(BuildContext context) {
     (dialogContext) async {
       Navigator.of(dialogContext).pop();
       await di<AuthService>().logout();
-      StorageClient.instance.deleteAll();
       if (context.mounted) {
         // Ensure global navigation state is cleared and remove all routes
         AppNavigationController.reset();

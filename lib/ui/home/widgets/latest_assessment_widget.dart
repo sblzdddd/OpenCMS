@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:intl/intl.dart';
 import '../../../data/constants/periods.dart';
 import '../../../data/models/assessment/assessment_response.dart';
 import '../../../services/assessment/assessment_service.dart';
