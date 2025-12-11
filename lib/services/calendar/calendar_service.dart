@@ -1,8 +1,11 @@
 /// Calendar service for handling calendar-related API calls
 library;
 
-import '../shared/http_service.dart';
-import '../auth/auth_service.dart';
+import 'package:dio/dio.dart';
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
+
+import '../../features/core/networking/http_service.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/calendar/calendar.dart';
 
@@ -11,9 +14,6 @@ class CalendarService {
   static final CalendarService _instance = CalendarService._internal();
   factory CalendarService() => _instance;
   CalendarService._internal();
-
-  final HttpService _httpService = HttpService();
-  final AuthService _authService = AuthService();
 
   /// Get calendar data for a specific month
   ///
@@ -27,17 +27,21 @@ class CalendarService {
     bool refresh = false,
   }) async {
     try {
-      final username = await _authService.fetchCurrentUsername();
+      final username = di<LoginState>().currentUsername;
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
 
       final psid = username;
 
-      final response = await _httpService.postLegacy(
-        '${ApiConstants.calendarUrl}?psid=$psid&y=$year&p=$year&m=$month&kind=-1',
-        body: 'psid=$psid&y=$year&p=$year&m=$month&kind=-1',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      final response = await di<HttpService>().post(
+        '${API.calendarUrl}?psid=$psid&y=$year&p=$year&m=$month&kind=-1',
+        data: 'psid=$psid&y=$year&p=$year&m=$month&kind=-1',
+        options: (
+          Options(
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          )
+        ),
         refresh: refresh,
       );
 
@@ -57,10 +61,12 @@ class CalendarService {
     bool refresh = false,
   }) async {
     try {
-      final response = await _httpService.postLegacy(
-        ApiConstants.calendarDetailUrl,
-        body: 'id=$eventId',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      final response = await di<HttpService>().post(
+        API.calendarDetailUrl,
+        data: 'id=$eventId',
+        options: Options(
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        ),
         refresh: refresh,
       );
 
@@ -91,8 +97,8 @@ class CalendarService {
       final dd = today.day.toString().padLeft(2, '0');
       final dateStr = '$yyyy-$mm-$dd';
 
-      final response = await _httpService.get(
-        ApiConstants.calendarByDateUrl(dateStr),
+      final response = await di<HttpService>().get(
+        API.calendarByDateUrl(dateStr),
         refresh: refresh,
       );
 
@@ -134,10 +140,12 @@ class CalendarService {
     bool refresh = false,
   }) async {
     try {
-      final response = await _httpService.postLegacy(
-        ApiConstants.calendarCommentUrl,
-        body: 'id=$eventId&kind=$kind',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      final response = await di<HttpService>().post(
+        API.calendarCommentUrl,
+        data: 'id=$eventId&kind=$kind',
+        options: Options(
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        ),
         refresh: refresh,
       );
 

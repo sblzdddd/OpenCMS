@@ -1,5 +1,7 @@
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/core/di/locator.dart';
+
 import 'background_fetcher.dart';
-import '../auth/auth_service.dart';
 import 'package:flutter/foundation.dart';
 
 class CookiesRefreshService extends BackgroundFetcher {
@@ -22,7 +24,7 @@ class CookiesRefreshService extends BackgroundFetcher {
 
   @override
   Future<void> onUpdate() async {
-    await AuthService().refreshCookiesIfNeeded();
-    await AuthService().refreshLegacyCookies();
+    await di<TokenRefreshService>().refreshNewToken();
+    await di<TokenRefreshService>().refreshLegacyCookies();
   }
 }

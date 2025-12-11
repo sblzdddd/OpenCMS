@@ -55,20 +55,26 @@ class ExamTimetableListView extends StatelessWidget {
             ),
             for (final exam in items)
               Builder(
-                builder: (cardContext) => TimetableCard(
-                  subject: exam.subject.isNotEmpty
-                      ? exam.subject
-                      : (exam.code.isNotEmpty ? exam.code : 'Exam'),
-                  code: exam.code.isNotEmpty ? exam.code : '',
-                  room: exam.room.isNotEmpty ? exam.room : 'TBA',
-                  extraInfo:
-                      'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
-                  timespan: '${exam.startTime} - ${exam.endTime}',
-                  periodText: '',
-                  onTap: () => onExamTap(exam),
+                builder: (cardContext) => Column(
+                  children: [
+                    TimetableCard(
+                      subject: exam.paper.isNotEmpty
+                          ? exam.paper
+                          : (exam.code.isNotEmpty ? exam.code : 'Exam'),
+                      code: exam.code.isNotEmpty && exam.code != "0"
+                          ? exam.code
+                          : exam.examName,
+                      room: exam.room.isNotEmpty ? exam.room : 'TBA',
+                      extraInfo:
+                          'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+                      timespan: '${exam.startTime} - ${exam.endTime}',
+                      periodText: '',
+                      onTap: () => onExamTap(exam),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
                 ),
               ),
-            const SizedBox(height: 8),
             if (index != sortedDates.length - 1) const Divider(height: 20),
           ],
         );

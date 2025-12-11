@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
@@ -162,8 +163,8 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       final endDate = DateTime(year, month, day, endHour, endMinute);
 
       final Event event = Event(
-        title: exam.subject.isNotEmpty
-            ? '${exam.subject} (${exam.code})'
+        title: exam.paper.isNotEmpty
+            ? '${exam.paper} (${exam.code})'
             : (exam.code.isNotEmpty ? exam.code : 'Exam'),
         description:
             '${exam.code.isNotEmpty ? 'Code: ${exam.code}\n' : ''}Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
@@ -198,7 +199,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
               ),
               child: Row(
                 children: [
-                  Text('Month: ', style: Theme.of(context).textTheme.bodyLarge),
+                  Text('timetable.month'.tr(), style: Theme.of(context).textTheme.bodyLarge),
                   const SizedBox(width: 8),
                   DropdownButton<int>(
                     value: _selectedMonth,

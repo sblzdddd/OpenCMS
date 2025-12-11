@@ -4,9 +4,13 @@
 /// used throughout the application.
 library;
 
-import 'package:flutter/foundation.dart';
+class API {
+  // HTTP configuration
+  static const Duration defaultTimeout = Duration(seconds: 30);
+  static const Duration connectTimeout = Duration(seconds: 15);
+  static const Duration solveCaptchaPollInterval = Duration(seconds: 1);
+  static const int maxRetries = 2; // ~60s
 
-class ApiConstants {
   // Base API configuration
   static const String baseDomain =
       'a'
@@ -28,9 +32,10 @@ class ApiConstants {
   static const String legacyCMSBaseUrl = '$legacyBaseUrl/user';
 
   // Authentication endpoint
-  static const String loginEndpoint = '/token/';
+  static const String loginUrl = '/app/token/';
+  static const String logoutUrl = '/app/token/logout/';
   // new CMS refresh token
-  static const String tokenRefreshEndpoint = '/token/refresh/';
+  static const String tokenRefreshUrl = '/app/token/refresh/';
   static const String tencentCaptchaAppId = '194431589';
 
   // Legacy token exchange endpoint in new CMS. Provide an href (e.g. "/student/examtimetable/")
@@ -45,6 +50,9 @@ class ApiConstants {
   // Course Timetable endpoint
   // parameters: year (academic year), date (today's date in yyyy-mm-dd e.g. 2025-08-14)
   static const String courseTimetableUrl = '/legacy/students/my/timetable/';
+  // Exam Timetable endpoint
+  // parameters: year (calendar year)
+  static const String examTimetableUrl = '/legacy/students/my/exam_timetable/';
   // Assembly Info endpoint
   static const String assemblyInfoUrl = '/legacy/students/my/assembly/';
   // Course Stats endpoint
@@ -71,12 +79,6 @@ class ApiConstants {
   // Free classrooms endpoint (legacy)
   // parameters: b (date in yyyy-mm-dd format), w (week period like W1)
   static const String freeClassroomsUrl = '/classroom/get_freeroom_by_ajax/';
-
-  // HTTP configuration
-  static const Duration defaultTimeout = Duration(seconds: 30);
-  static const Duration connectTimeout = Duration(seconds: 15);
-  static const Duration solveCaptchaPollInterval = Duration(seconds: 1);
-  static const int solveCaptchaMaxPollAttempts = 20; // ~60s
 
   // Referer
   // used for accountUserUrl
@@ -118,22 +120,14 @@ class ApiConstants {
     'www.$baseDomain': 'www.$baseDomain',
   };
 
-  // Headers
-  static Map<String, String> get defaultHeaders => {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    if (!kIsWeb) 'Referer': cmsReferer,
-    if (!kIsWeb)
-      'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
-  };
+  static const String apiClientVersion = '1.0.7+1';
+  static const String userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36';
 
-  static Map<String, String> get legacyHeaders => {
-    'Content-Type': 'application/json',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    if (!kIsWeb) 'Referer': legacyCMSReferer,
-    if (!kIsWeb)
-      'user-agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+  // Headers
+  static Map<String, String> defaultHeaders = {
+    'Accept': 'application/json',
+    'X-App-Version': apiClientVersion,
+    'Referer': cmsReferer,
+    'user-agent': userAgent,
   };
 }

@@ -3,7 +3,7 @@ library;
 
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/referral/referral.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -26,7 +26,7 @@ class ReferralService {
       );
 
       final response = await _httpService.get(
-        ApiConstants.referralUrl,
+        API.referralUrl,
         refresh: refresh,
       );
 

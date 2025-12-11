@@ -1,6 +1,6 @@
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/reports/reports.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 import 'package:flutter/foundation.dart';
 
 /// Service for fetching student reports including:
@@ -22,7 +22,7 @@ class ReportsService {
       debugPrint('[ReportsService] Fetching reports list');
 
       final response = await _httpService.get(
-        ApiConstants.reportsListUrl,
+        API.reportsListUrl,
         refresh: refresh,
       );
 
@@ -54,7 +54,7 @@ class ReportsService {
       debugPrint('[ReportsService] Fetching report detail for exam $examId');
 
       final response = await _httpService.get(
-        ApiConstants.reportsDetailUrl(examId),
+        API.reportsDetailUrl(examId),
         refresh: refresh,
       );
 

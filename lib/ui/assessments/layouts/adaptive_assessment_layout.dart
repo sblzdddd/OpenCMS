@@ -5,6 +5,7 @@ import '../../../data/models/assessment/assessment_response.dart';
 import '../../shared/selectable_item_wrapper.dart';
 import '../../shared/views/adaptive_list_detail_layout.dart';
 import '../views/subject_assessments_content.dart';
+import '../../../data/constants/subject_icons.dart';
 
 class AdaptiveAssessmentLayout extends StatelessWidget {
   final List<SubjectAssessment> subjects;
@@ -59,14 +60,21 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
                   .reduce((a, b) => a + b) /
               validAssessments.length
         : 0.0;
-
+    
+    final category = SubjectIconConstants.getCategoryForSubject(
+      subjectName: subject.subject,
+      code: subject.subject,
+    );
+    final displaySubject = category != 'unknown'
+        ? SubjectIconConstants.getTranslatedName(category: category)
+        : subject.subject;
     return SelectableItemWrapper(
       isSelected: isSelected,
       onTap: () => onSubjectSelected(subject),
       child: ListTile(
         mouseCursor: SystemMouseCursors.click,
         title: Text(
-          '${subject.name.split('.')[0]} ${subject.subject}',
+          '${subject.name.split('.')[0]} $displaySubject',
           style: TextStyle(
             fontWeight: FontWeight.w500,
             color: isSelected

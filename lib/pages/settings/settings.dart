@@ -270,7 +270,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 tr('settings.changePassword'),
                 Symbols.password_rounded,
                 const WebCmsPage(
-                  initialUrl: '${ApiConstants.cmsReferer}/auth/change_password',
+                  initialUrl: '${API.cmsReferer}/auth/change_password',
                   windowTitle: 'Change Password',
                 ),
               ),

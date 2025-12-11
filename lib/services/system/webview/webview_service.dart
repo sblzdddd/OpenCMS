@@ -20,6 +20,6 @@ class WebviewService {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
     }
-    // PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
+    PlatformInAppWebViewController.debugLoggingSettings.enabled = false;
   }
 }

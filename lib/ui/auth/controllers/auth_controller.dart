@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import '../../../services/services.dart';
 import '../../shared/custom_snackbar/snackbar_utils.dart';
 import '../../shared/error/error_dialog.dart';
 
 class AuthController extends ChangeNotifier {
-  final AuthService _authService = AuthService();
   bool _isLoading = false;
 
   bool get isLoading => _isLoading;
@@ -20,7 +20,7 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final loginResult = await _authService.login(
+      final loginResult = await di<AuthService>().login(
         username: username,
         password: password,
         captchaData: captchaData,
@@ -41,11 +41,6 @@ class AuthController extends ChangeNotifier {
           context,
           'Successfully logged in as $username!',
         );
-
-        // Ensure user info is fetched so Home can display en_name immediately
-        try {
-          await _authService.fetchAndSetCurrentUserInfo();
-        } catch (_) {}
 
         // Navigate to home page
         if (context.mounted) {

@@ -58,7 +58,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
   void _initializeTencentCaptchaDialog() async {
     try {
       // Use provided appId or default for development
-      final appId = widget.appId ?? ApiConstants.tencentCaptchaAppId;
+      final appId = widget.appId ?? API.tencentCaptchaAppId;
       TencentCaptchaDialog.init(appId);
       debugPrint(
         'CaptchaInput: Tencent Captcha initialized with appId: $appId',

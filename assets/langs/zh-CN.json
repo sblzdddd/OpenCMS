@@ -75,6 +75,19 @@
     "certifications": "证书",
     "settings": "设置"
   },
+  "home": {
+    "title": "首页"
+  },
+  "timetable": {
+    "course": "课程表",
+    "exam": "考试时间表",
+    "month": "月份: "
+  },
+  "homework": {
+    "noHomeworks": "没有作业 🎉",
+    "showCompleted": "显示已完成",
+    "searchPlaceholder": "搜索作业..."
+  },
   "periods": {
     "formTime": "早班会",
     "period1": "第一节",

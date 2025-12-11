@@ -50,18 +50,9 @@ class AssessmentChartWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 300,
+              height: 280,
               child: SfCartesianChart(
                 primaryXAxis: CategoryAxis(
-                  title: AxisTitle(
-                    text: 'Assessments',
-                    textStyle: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
                   labelStyle: TextStyle(
                     fontSize: 10,
                     color: Theme.of(
@@ -71,22 +62,13 @@ class AssessmentChartWidget extends StatelessWidget {
                   majorGridLines: const MajorGridLines(width: 0),
                 ),
                 primaryYAxis: NumericAxis(
-                  title: AxisTitle(
-                    text: 'Percentage (%)',
-                    textStyle: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
-                  ),
                   labelStyle: TextStyle(
                     fontSize: 10,
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
-                  interval: 20,
+                  interval: 10,
                   minimum: _calculateYAxisMinimum(validAssessments),
                   maximum: 110,
                   majorGridLines: MajorGridLines(
@@ -276,7 +258,7 @@ class AssessmentChartWidget extends StatelessWidget {
 
     // Set minimum to be 10 points below the lowest value, but not less than 0
     // This provides some visual breathing room at the bottom
-    final calculatedMinimum = (minValue - 10).clamp(0.0, 100.0);
+    final calculatedMinimum = (minValue - 5).clamp(0.0, 100.0);
 
     // Round down to nearest 10 for cleaner axis labels
     return (calculatedMinimum / 10).floor() * 10.0;

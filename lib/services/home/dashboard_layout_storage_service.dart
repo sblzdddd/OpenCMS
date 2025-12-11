@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../shared/storage_client.dart';
+import '../../features/core/storage/storage_client.dart';
 
 /// Stores user's dashboard layout as an ordered list of widget IDs with their sizes.
 class DashboardLayoutStorageService {

@@ -20,7 +20,7 @@ class OCMSColorThemes {
     // with ref to: Today
     ColorScheme lightColorScheme = baseLightColorScheme.copyWith(
       surface: Color.lerp(
-        const Color.fromARGB(248, 252, 252, 252),
+        const Color.fromARGB(248, 248, 248, 248),
         seedColor,
         0.04,
       )!,

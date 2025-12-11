@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import 'package:provider/provider.dart';
 import '../../../services/theme/theme_services.dart';
 import 'dynamic_gradient_banner.dart';
 import '../../../data/constants/periods.dart';
-import '../../../services/auth/auth_service.dart';
 import 'dart:async';
 import '../../../pages/actions/profile.dart';
 import '../../shared/scaled_ink_well.dart';
@@ -21,7 +22,6 @@ class _BannerWidgetState extends State<BannerWidget>
     with AutomaticKeepAliveClientMixin {
   bool _isLoading = true;
   bool _hasError = false;
-  final _userAuth = AuthService();
 
   // Cache the streams to prevent recreation
   late final Stream<String> _timeStream;
@@ -121,7 +121,7 @@ class _BannerWidgetState extends State<BannerWidget>
                       },
                     ),
                     Text(
-                      _userAuth.authState.userInfo?.enName ?? 'User',
+                      di<LoginState>().userInfo?.enName ?? 'User',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 20,

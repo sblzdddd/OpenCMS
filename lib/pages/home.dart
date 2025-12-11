@@ -121,82 +121,83 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildScrollableHomeContent() {
-    return RefreshIndicator(
-      key: _refreshIndicatorKey,
-      onRefresh: _refreshHomePage,
-      child: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.trackpad,
-          },
-        ),
-        child: CustomChildScrollView(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final isWideScreen = constraints.maxWidth >= 850;
-              // Use single column layout on smaller screens
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomAppBar(
-                    backgroundColor: Colors.transparent,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isWideScreen ? 20 : 5,
-                      vertical: 10,
-                    ),
-                    title: Text('Home'),
-                    actions: [
-                      IconButton(
-                        onPressed: _showAddWidgetDrawer,
-                        icon: Icon(Symbols.add_rounded),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isWideScreen = constraints.maxWidth >= 850;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomAppBar(
+              backgroundColor: Colors.transparent,
+              padding: EdgeInsets.symmetric(
+                horizontal: isWideScreen ? 10 : 5,
+                vertical: 10,
+              ),
+              title: Text('Home'),
+              actions: [
+                IconButton(
+                  onPressed: _showAddWidgetDrawer,
+                  icon: Icon(Symbols.add_rounded),
+                ),
+              ],
+              forceMaterialTransparency: true,
+              surfaceTintColor: Colors.transparent,
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                key: _refreshIndicatorKey,
+                onRefresh: _refreshHomePage,
+                child: ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse,
+                      PointerDeviceKind.trackpad,
+                    },
+                  ),
+                  child: CustomChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isWideScreen ? 24 : 16,
+                        vertical: 0,
                       ),
-                    ],
-                    forceMaterialTransparency: true,
-                    surfaceTintColor: Colors.transparent,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isWideScreen ? 24 : 16,
-                      vertical: 0,
-                    ),
-                    child: Column(
-                      children: [
-                        if (!isWideScreen) ...[
-                          DashboardGrid(controller: _dashboardController),
+                      child: Column(
+                        children: [
+                          if (!isWideScreen) ...[
+                            DashboardGrid(controller: _dashboardController),
+                            const SizedBox(height: 16),
+                            QuickActions(controller: _quickActionsController),
+                          ] else ...[
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: DashboardGrid(
+                                    controller: _dashboardController,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  flex: 4,
+                                  child: QuickActions(
+                                    controller: _quickActionsController,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                           const SizedBox(height: 16),
-                          QuickActions(controller: _quickActionsController),
-                        ] else ...[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: DashboardGrid(
-                                  controller: _dashboardController,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                flex: 4,
-                                child: QuickActions(
-                                  controller: _quickActionsController,
-                                ),
-                              ),
-                            ],
-                          ),
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

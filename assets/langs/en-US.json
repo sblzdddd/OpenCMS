@@ -75,6 +75,19 @@
     "certifications": "Certifications",
     "settings": "Settings"
   },
+  "home": {
+    "title": "Home"
+  },
+  "timetable": {
+    "course": "Course Timetable",
+    "exam": "Exam Timetable",
+    "month": "Month: "
+  },
+  "homework": {
+    "noHomeworks": "No homeworks 🎉",
+    "showCompleted": "Show completed",
+    "searchPlaceholder": "Search homeworks..."
+  },
   "periods": {
     "formTime": "Form Time",
     "period1": "Period 1",

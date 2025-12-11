@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/assessment/assessment_response.dart';
 
@@ -22,7 +22,7 @@ class AssessmentService {
     try {
       debugPrint('[AssessmentService] Fetching assessments for year $year');
 
-      final url = '${ApiConstants.assessmentsUrl}?year=$year';
+      final url = '${API.assessmentsUrl}?year=$year';
 
       final response = await _httpService.get(url, refresh: refresh);
 

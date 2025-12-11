@@ -1,6 +1,6 @@
 import 'dart:convert';
 import '../../data/models/homework/homework_response.dart';
-import '../shared/storage_client.dart';
+import '../../features/core/storage/storage_client.dart';
 import 'package:flutter/foundation.dart';
 
 /// Service for managing completed homework items in local storage

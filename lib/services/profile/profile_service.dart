@@ -3,7 +3,7 @@ library;
 
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/profile/profile.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 
 class ProfileService {
   static final ProfileService _instance = ProfileService._internal();
@@ -19,7 +19,7 @@ class ProfileService {
   Future<ProfileResponse> getProfile({bool refresh = false}) async {
     try {
       final response = await _httpService.get(
-        ApiConstants.userProfileUrl,
+        API.userProfileUrl,
         refresh: refresh,
       );
 

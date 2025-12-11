@@ -1,4 +1,4 @@
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/timetable/timetable_response.dart';
 import '../../data/models/timetable/course_merged_event.dart';
@@ -27,12 +27,12 @@ class CourseTimetableService {
         '[CourseTimetableService] Fetching timetable for year $year, date $date',
       );
 
-      final url = '${ApiConstants.courseTimetableUrl}?year=$year&date=$date';
+      final url = '${API.courseTimetableUrl}?year=$year&date=$date';
 
       final response = await _httpService.get(url, refresh: refresh);
 
       final assemblyResponse = await _httpService.get(
-        ApiConstants.assemblyInfoUrl,
+        API.assemblyInfoUrl,
         refresh: refresh,
       );
 

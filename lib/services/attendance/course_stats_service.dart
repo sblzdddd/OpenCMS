@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/attendance/course_stats_response.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 
 class CourseStatsService {
   static final CourseStatsService _instance = CourseStatsService._internal();
@@ -20,7 +20,7 @@ class CourseStatsService {
     try {
       debugPrint('[CourseStatsService] Fetching course stats for year $year');
 
-      final url = '${ApiConstants.courseStatsUrl}?year=$year';
+      final url = '${API.courseStatsUrl}?year=$year';
 
       final response = await _httpService.get(url, refresh: refresh);
 

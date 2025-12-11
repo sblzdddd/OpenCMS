@@ -90,6 +90,8 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
             onDestinationSelected: widget.onTapCallback,
             extended: false,
             labelType: NavigationRailLabelType.selected,
+            // Center destinations vertically within the rail
+            groupAlignment: 0.0,
             backgroundColor: bgColor,
             destinations: appNavItems
                 .map(
@@ -100,6 +102,10 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
                   ),
                 )
                 .toList(),
+            trailing: SizedBox(
+              height: 75,
+              width: 16,
+            ),
           ),
         );
       },

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
-import '../../../services/auth/auth_service.dart';
+import '../../../features/auth/services/auth_service.dart';
 import '../../../services/theme/theme_services.dart';
-import '../../../services/shared/storage_client.dart';
+import '../../../features/core/storage/storage_client.dart';
 import '../../navigations/app_navigation_controller.dart';
 
 void showConfirmationDialog(
@@ -53,7 +54,7 @@ void showLogoutDialog(BuildContext context) {
     'Are you sure you want to logout?',
     (dialogContext) async {
       Navigator.of(dialogContext).pop();
-      await AuthService().logout();
+      await di<AuthService>().logout();
       if (context.mounted) {
         // Ensure global navigation state is cleared and remove all routes
         AppNavigationController.reset();
@@ -73,7 +74,7 @@ void showClearDataDialog(BuildContext context) {
     'Are you sure you want to clear all user data?\nThis action cannot be undone and will delete ALL your data.',
     (dialogContext) async {
       Navigator.of(dialogContext).pop();
-      await AuthService().logout();
+      await di<AuthService>().logout();
       StorageClient.instance.deleteAll();
       if (context.mounted) {
         // Ensure global navigation state is cleared and remove all routes

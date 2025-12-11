@@ -1,7 +1,9 @@
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
+
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/notification/daily_bulletin_response.dart';
-import '../../services/auth/auth_service.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 
 /// Service for handling daily bulletins from the CMS system
 class DailyBulletinService {
@@ -9,9 +11,6 @@ class DailyBulletinService {
       DailyBulletinService._internal();
   factory DailyBulletinService() => _instance;
   DailyBulletinService._internal();
-
-  final HttpService _httpService = HttpService();
-  final AuthService _authService = AuthService();
 
   /// Get a list of all daily bulletins
   ///
@@ -21,8 +20,8 @@ class DailyBulletinService {
     bool refresh = false,
   }) async {
     try {
-      final response = await _httpService.get(
-        ApiConstants.dailyBulletinUrl(date),
+      final response = await di<HttpService>().get(
+        API.dailyBulletinUrl(date),
         refresh: refresh,
       );
 
@@ -43,11 +42,11 @@ class DailyBulletinService {
 
   Future<String> getDailyBulletinContentUrl(int dailyBulletinId) async {
     try {
-      final username = await _authService.fetchCurrentUsername();
+      final username = di<LoginState>().currentUsername;
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
-      return '${ApiConstants.legacyCMSBaseUrl}${ApiConstants.dailyBulletinDetailUrl(username, dailyBulletinId)}';
+      return '${API.legacyCMSBaseUrl}${API.dailyBulletinDetailUrl(username, dailyBulletinId)}';
     } catch (e) {
       throw Exception('Error fetching daily bulletin content: $e');
     }

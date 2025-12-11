@@ -149,7 +149,7 @@ class _LoginFormState extends State<LoginForm> {
                         labelText: 'Password',
                         enabled: !isLoading,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 4),
 
                       // Captcha field
                       CaptchaInput(
