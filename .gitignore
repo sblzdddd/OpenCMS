@@ -48,3 +48,4 @@ app.*.map.json
 lib/chat/
 
 keystore.jks
+lib/features/auth/services/auto_captcha_service.dart

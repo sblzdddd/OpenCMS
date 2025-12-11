@@ -6,7 +6,7 @@ import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/widgets/skin_icon_widget.dart';
 
 class EmptyPlaceholder extends StatelessWidget {
-  EmptyPlaceholder({super.key, this.title, required this.onRetry});
+  const EmptyPlaceholder({super.key, this.title, required this.onRetry});
   final String? title;
   final VoidCallback onRetry;
 
