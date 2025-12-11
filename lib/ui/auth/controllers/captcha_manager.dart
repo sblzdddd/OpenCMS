@@ -31,7 +31,7 @@ class CaptchaManager extends ChangeNotifier {
   }
 
   /// Automatically solve captcha using the auto captcha service
-  Future<bool> autoSolveCaptcha() async {
+  Future<bool> autoSolveCaptcha(String username) async {
     if (_isAutoSolving) return false;
 
     _isAutoSolving = true;
@@ -39,9 +39,9 @@ class CaptchaManager extends ChangeNotifier {
 
     try {
       debugPrint('CaptchaManager: Attempting to auto-solve captcha');
-      final captchaResult = await di<AutoCaptchaService>().getTicket();
+      final captchaResult = await di<AutoCaptchaService>().getTicket(username);
 
-      if (captchaResult != false) {
+      if (captchaResult != null) {
         _isCaptchaVerified = true;
         _captchaData = captchaResult;
         debugPrint(

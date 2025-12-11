@@ -63,11 +63,6 @@ class LoginFormController extends ChangeNotifier {
     SnackbarUtils.showSuccess(context, 'Form cleared');
   }
 
-  /// Manually trigger auto-captcha solving
-  Future<bool> solveAutoCaptcha() async {
-    return await _captchaManager.autoSolveCaptcha();
-  }
-
   /// Perform the complete login flow
   Future<void> performLogin(
     BuildContext context, {
@@ -88,7 +83,7 @@ class LoginFormController extends ChangeNotifier {
     if (!_captchaManager.isCaptchaVerified ||
         _captchaManager.captchaData == null) {
       debugPrint('LoginFormController: Attempting auto captcha solve');
-      final autoSolveSuccess = await _captchaManager.autoSolveCaptcha();
+      final autoSolveSuccess = await _captchaManager.autoSolveCaptcha(username);
 
       if (!autoSolveSuccess) {
         // Fallback to manual captcha if auto-solve fails
