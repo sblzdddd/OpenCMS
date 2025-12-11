@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../../services/auth/functions/auto_captcha_functions.dart';
-import '../../../services/auth/auth_service_base.dart';
+import 'package:opencms/features/core/di/locator.dart';
+import '../../../features/auth/services/auto_captcha_service.dart';
 
 /// Component responsible for managing captcha verification and auto-solving
 class CaptchaManager extends ChangeNotifier {
   bool _isCaptchaVerified = false;
   Object? _captchaData;
   bool _isAutoSolving = false;
-  final AuthServiceBase _authService = AuthServiceBase();
 
   bool get isCaptchaVerified => _isCaptchaVerified;
   Object? get captchaData => _captchaData;
@@ -40,7 +39,7 @@ class CaptchaManager extends ChangeNotifier {
 
     try {
       debugPrint('CaptchaManager: Attempting to auto-solve captcha');
-      final captchaResult = await getTicket(_authService);
+      final captchaResult = await di<AutoCaptchaService>().getTicket();
 
       if (captchaResult != false) {
         _isCaptchaVerified = true;

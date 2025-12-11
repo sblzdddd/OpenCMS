@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
-import '../shared/storage_client.dart';
+import '../../features/core/storage/storage_client.dart';
 
 /// Stores user's quick actions preferences as an ordered list of IDs.
 class QuickActionsStorageService {

@@ -1,6 +1,6 @@
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/attendance/attendance_response.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 
 class AttendanceService {
   static final AttendanceService _instance = AttendanceService._internal();
@@ -27,7 +27,7 @@ class AttendanceService {
     final String endStr = _fmt(end);
 
     final String url =
-        '${ApiConstants.attendanceUrl}?start_date=$startStr&end_date=$endStr';
+        '${API.attendanceUrl}?start_date=$startStr&end_date=$endStr';
 
     final response = await _httpService.get(url, refresh: refresh);
 

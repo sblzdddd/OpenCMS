@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/data/constants/periods.dart';
@@ -57,7 +58,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
   }
 
   @override
-  String get appBarTitle => 'Homework';
+  String get appBarTitle => 'quickActions.homeworks'.tr();
 
   @override
   List<Widget>? get appBarActions => [
@@ -156,7 +157,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               FilterChip(
-                label: const Text('completed'),
+                label: Text('homework.showCompleted'.tr()),
                 selected: _showCompleted,
                 onSelected: (val) {
                   setState(() {
@@ -218,7 +219,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
                 controller: _searchController,
                 onChanged: _filterHomework,
                 decoration: InputDecoration(
-                  hintText: 'Search homework...',
+                  hintText: 'homework.searchPlaceholder'.tr(),
                   prefixIcon: const Icon(Symbols.search_rounded),
                   border: OutlineInputBorder(
                     borderRadius: themeNotifier.getBorderRadiusAll(0.75),

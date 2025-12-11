@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/services/auth/auth_service.dart';
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import '../dialog/confirm_dialog.dart';
 import 'package:opencms/ui/shared/widgets/custom_scroll_view.dart';
 import 'package:opencms/ui/shared/widgets/skin_icon_widget.dart';
 
 class ErrorPlaceholder extends StatelessWidget {
-  ErrorPlaceholder({
+  const ErrorPlaceholder({
     super.key,
     required this.title,
     required this.errorMessage,
@@ -15,10 +16,9 @@ class ErrorPlaceholder extends StatelessWidget {
   final String title;
   final String errorMessage;
   final VoidCallback onRetry;
-  final AuthService authService = AuthService();
 
   Future<void> _onRetry() async {
-    await authService.refreshCookies();
+    await di<TokenRefreshService>().refreshNewToken();
     onRetry();
   }
 

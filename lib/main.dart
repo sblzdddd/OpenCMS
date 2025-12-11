@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import 'package:opencms/pages/splash.dart';
 import 'package:opencms/services/system/desktop_tray/tray_service.dart';
 import 'package:opencms/services/system/desktop_window/window_service.dart';
@@ -18,6 +20,7 @@ final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
 void main() async {
+  configureDependencies();
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await WebviewService.initWebview();
@@ -91,7 +94,6 @@ class AuthWrapper extends StatefulWidget {
 }
 
 class AuthWrapperState extends State<AuthWrapper> with WindowListener {
-  final AuthService _authService = AuthService();
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
 
@@ -117,19 +119,10 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   void _checkAuthenticationStatus() async {
     await Future.delayed(const Duration(milliseconds: 500));
 
-    bool isAuthenticated = false;
-    await _authService.refreshCookies();
-
-    try {
-      await _authService.fetchAndSetCurrentUserInfo();
-      await _authService.refreshLegacyCookies();
-      isAuthenticated = true;
-    } catch (e) {
-      isAuthenticated = false;
-    }
+    await di<AuthService>().checkAuth();
 
     setState(() {
-      _isAuthenticated = isAuthenticated;
+      _isAuthenticated = di<LoginState>().isAuthenticated;
       _isCheckingAuth = false;
     });
   }

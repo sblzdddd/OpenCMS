@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import 'package:provider/provider.dart';
 import '../../../data/models/events/student_event.dart';
 import '../../../services/theme/theme_services.dart';
-import '../../../services/auth/auth_service.dart';
 import '../../shared/selectable_item_wrapper.dart';
 import '../../web_cms/web_cms_content.dart';
 import '../../shared/views/list_section.dart';
@@ -235,8 +236,7 @@ class AdaptiveEventsLayout extends StatelessWidget {
   }
 
   Future<String> _getEventDetailUrl(StudentEvent event) async {
-    final authService = AuthService();
-    final username = await authService.fetchCurrentUsername();
+    final username = di<LoginState>().currentUsername;
     if (username.isEmpty) {
       throw Exception('Missing username. Please login again.');
     }

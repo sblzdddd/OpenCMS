@@ -299,8 +299,8 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
         final Color color = _colorForExam(exam);
         courses.add(
           ExamCourse(
-            subject: exam.subject.isNotEmpty
-                ? exam.subject
+            subject: exam.paper.isNotEmpty
+                ? exam.paper
                 : (exam.code.isNotEmpty ? exam.code : 'Exam'),
             location: exam.room.isNotEmpty ? exam.room : 'TBA',
             from: startDate,
@@ -352,7 +352,7 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
     ];
 
     // Use exam code as the key for consistent coloring
-    final String examKey = exam.code.isNotEmpty ? exam.code : exam.subject;
+    final String examKey = exam.code.isNotEmpty ? exam.code : exam.paper;
 
     // If we haven't assigned a color to this exam yet, assign the next available color
     if (!_courseColors.containsKey(examKey)) {

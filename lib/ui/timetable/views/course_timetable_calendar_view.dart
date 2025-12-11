@@ -88,8 +88,9 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
                       color: Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (course.code.isNotEmpty) ...[

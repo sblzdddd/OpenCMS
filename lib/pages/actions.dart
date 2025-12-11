@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import 'package:opencms/pages/actions/notices.dart';
 import 'actions/attendance.dart';
 import 'actions/assessment.dart';
@@ -12,7 +14,6 @@ import 'actions/reports.dart';
 import 'actions/referral_comments.dart';
 import '../ui/navigations/app_navigation_controller.dart';
 import 'settings/settings.dart';
-import '../services/auth/auth_service.dart';
 import '../data/constants/api_endpoints.dart';
 import '../ui/shared/widgets/custom_app_bar.dart';
 
@@ -55,8 +56,7 @@ class UnknownActionPage extends StatelessWidget {
 }
 
 Future<Widget> buildActionPage(Map<String, dynamic> action) async {
-  final authService = AuthService();
-  final username = await authService.fetchCurrentUsername();
+  final username = di<LoginState>().currentUsername;
   final String id = action['id'] as String;
   switch (id) {
     case 'webcms':
@@ -85,7 +85,7 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
       return const HomeworkPage();
     case 'documents':
       return const WebCmsPage(
-        initialUrl: '${ApiConstants.legacyBaseUrl}/file/list/student/',
+        initialUrl: '${API.legacyBaseUrl}/file/list/student/',
         windowTitle: 'Documents',
       );
     case 'available_classrooms':
@@ -93,13 +93,13 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
     case 'maintenance':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/repairment/list/',
+            '${API.legacyCMSBaseUrl}/$username/repairment/list/',
         windowTitle: 'Maintenance',
       );
     case 'leave_requests':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/studentleave/list/ps/',
+            '${API.legacyCMSBaseUrl}/$username/studentleave/list/ps/',
         windowTitle: 'Leave Requests',
       );
     case 'student_profile':
@@ -109,68 +109,68 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
     case 'eca':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/ecaclass/index/',
+            '${API.legacyCMSBaseUrl}/$username/ecaclass/index/',
         windowTitle: 'ECA',
       );
     case 'mentoring':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/mentoring/list/',
+            '${API.legacyCMSBaseUrl}/$username/mentoring/list/',
         windowTitle: 'Mentoring',
       );
     case 'global_citizenship':
       return WebCmsPage(
-        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/achievement/',
+        initialUrl: '${API.legacyCMSBaseUrl}/$username/achievement/',
         windowTitle: 'Global Citizenship',
       );
     case 'surveys':
       return WebCmsPage(
-        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/survey/',
+        initialUrl: '${API.legacyCMSBaseUrl}/$username/survey/',
         windowTitle: 'Surveys',
       );
     case 'course_selection':
       return WebCmsPage(
-        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/course/select/',
+        initialUrl: '${API.legacyCMSBaseUrl}/$username/course/select/',
         windowTitle: 'Course Selection',
       );
     case 'exam_entry':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/report/cie_statement_self/',
+            '${API.legacyCMSBaseUrl}/$username/report/cie_statement_self/',
         windowTitle: 'Exam Entry',
       );
     case 'insurance':
       return WebCmsPage(
-        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/insurance/',
+        initialUrl: '${API.legacyCMSBaseUrl}/$username/insurance/',
         windowTitle: 'Insurance',
       );
     case 'e_agreement':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/jump_into_internal/econtract:list/',
+            '${API.legacyCMSBaseUrl}/jump_into_internal/econtract:list/',
         windowTitle: 'E-Agreement',
       );
     case 'special_consideration':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/special_consideration/',
+            '${API.legacyCMSBaseUrl}/$username/special_consideration/',
         windowTitle: 'Special Concern',
       );
     case 'id_card':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/student_idcard_upload/',
+            '${API.legacyCMSBaseUrl}/$username/student_idcard_upload/',
         windowTitle: 'ID Card',
       );
     case 'university_application':
       return WebCmsPage(
-        initialUrl: '${ApiConstants.legacyCMSBaseUrl}/$username/uniapp/',
+        initialUrl: '${API.legacyCMSBaseUrl}/$username/uniapp/',
         windowTitle: 'University Application',
       );
     case 'certifications':
       return WebCmsPage(
         initialUrl:
-            '${ApiConstants.legacyCMSBaseUrl}/$username/certification/create/',
+            '${API.legacyCMSBaseUrl}/$username/certification/create/',
         windowTitle: 'Certifications',
       );
     case 'settings':

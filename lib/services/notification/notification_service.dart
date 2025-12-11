@@ -1,16 +1,15 @@
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
+
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/notification/notification_response.dart';
-import '../../services/auth/auth_service.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 
 /// Service for handling notifications from the CMS system
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
-
-  final HttpService _httpService = HttpService();
-  final AuthService _authService = AuthService();
 
   /// Get a list of all notifications
   ///
@@ -19,8 +18,8 @@ class NotificationService {
     bool refresh = false,
   }) async {
     try {
-      final response = await _httpService.get(
-        ApiConstants.notificationUrl,
+      final response = await di<HttpService>().get(
+        API.notificationUrl,
         refresh: refresh,
       );
 
@@ -41,11 +40,11 @@ class NotificationService {
 
   Future<String> getNotificationContentUrl(int notificationId) async {
     try {
-      final username = await _authService.fetchCurrentUsername();
+      final username = di<LoginState>().currentUsername;
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
-      return '${ApiConstants.legacyCMSBaseUrl}${ApiConstants.notificationDetailUrl(username, notificationId)}';
+      return '${API.legacyCMSBaseUrl}${API.notificationDetailUrl(username, notificationId)}';
     } catch (e) {
       throw Exception('Error fetching notification content: $e');
     }

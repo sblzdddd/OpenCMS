@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/core/di/locator.dart';
+import 'package:opencms/features/core/storage/cookie_storage.dart';
+import 'package:opencms/features/core/storage/token_storage.dart';
 import '../../data/constants/api_endpoints.dart';
-import '../../services/auth/auth_service.dart';
-import '../../services/shared/storage_client.dart';
+import '../../features/auth/services/auth_service.dart';
 import '../../data/constants/web_cms_styles.dart';
 
 /// Base class for web CMS components that handles common functionality
@@ -18,7 +21,6 @@ abstract class WebCmsBase extends StatefulWidget {
 
 abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
   iaw.InAppWebViewController? _webViewController;
-  final AuthService _authService = AuthService();
   double _progress = 0.0;
   bool _cookiesPrepared = false;
   String?
@@ -42,7 +44,7 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
     try {
       if (kIsWeb) {
         try {
-          final resolved = await _authService.getJumpUrlToLegacy();
+          final resolved = await di<AuthService>().getJumpUrlToLegacy();
           if (resolved.isNotEmpty) {
             _resolvedUrl = resolved;
             debugPrint(
@@ -52,34 +54,46 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
             debugPrint(
               'WebCmsBase: Empty redirect location, fallback to CMS referer',
             );
-            _resolvedUrl = widget.initialUrl ?? ApiConstants.cmsReferer;
+            _resolvedUrl = widget.initialUrl ?? API.cmsReferer;
           }
         } catch (e) {
           debugPrint('WebCmsBase: Failed to resolve web redirect: $e');
-          _resolvedUrl = widget.initialUrl ?? ApiConstants.cmsReferer;
+          _resolvedUrl = widget.initialUrl ?? API.cmsReferer;
         }
       } else {
-        await _authService.refreshLegacyCookies();
-        final List<Cookie> cookies = await StorageClient.currentCookies;
+        await di<TokenRefreshService>().refreshLegacyCookies();
+        final List<Cookie> cookies = await di<CookieStorage>().currentCookies;
         final iaw.CookieManager cookieManager = iaw.CookieManager.instance();
 
-        final iaw.WebUri baseUri = iaw.WebUri(ApiConstants.baseUrl);
+        final iaw.WebUri baseUri = iaw.WebUri(API.baseUrl);
         final iaw.WebUri legacyBaseUri = iaw.WebUri(
-          ApiConstants.legacyCMSBaseUrl,
+          API.legacyCMSBaseUrl,
         );
 
+        await cookieManager.setCookie(
+          url: baseUri,
+          name: "access_token",
+          value: await di<TokenStorage>().getAccessToken() ?? '',
+          path: '/',
+          isSecure: true,
+          domain: baseUri.host,
+          isHttpOnly: false,
+          sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
+        );
+        await cookieManager.setCookie(
+          url: baseUri,
+          name: "refresh_token",
+          value: await di<TokenStorage>().getRefreshToken() ?? '',
+          path: '/',
+          isSecure: true,
+          domain: baseUri.host,
+          isHttpOnly: false,
+          sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
+        );
+
+        // set legacy cookies
         for (final Cookie cookie in cookies) {
           if (cookie.value.isEmpty) continue;
-          await cookieManager.setCookie(
-            url: baseUri,
-            name: cookie.name,
-            value: cookie.value,
-            path: cookie.path ?? '/',
-            isSecure: cookie.secure,
-            domain: baseUri.host,
-            isHttpOnly: cookie.httpOnly,
-            sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
-          );
           await cookieManager.setCookie(
             url: legacyBaseUri,
             name: cookie.name,
@@ -110,7 +124,7 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
   void _loadCmsIfReady() {
     if (_cookiesPrepared && _webViewController != null) {
       final String url =
-          _resolvedUrl ?? widget.initialUrl ?? ApiConstants.cmsReferer;
+          _resolvedUrl ?? widget.initialUrl ?? API.cmsReferer;
       debugPrint('WebCmsBase: Loading CMS with URL: $url');
       _webViewController!.loadUrl(
         urlRequest: iaw.URLRequest(url: iaw.WebUri(url)),

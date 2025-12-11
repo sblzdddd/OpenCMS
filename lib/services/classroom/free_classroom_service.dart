@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import '../../data/constants/api_endpoints.dart';
 import '../../data/models/classroom/free_classroom_response.dart';
 import '../../data/models/classroom/all_periods_classroom_response.dart';
-import '../auth/auth_service.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 
 /// Service for fetching free classroom information
 class FreeClassroomService {
@@ -11,9 +12,6 @@ class FreeClassroomService {
       FreeClassroomService._internal();
   factory FreeClassroomService() => _instance;
   FreeClassroomService._internal();
-
-  final HttpService _httpService = HttpService();
-  final AuthService _authService = AuthService();
 
   /// Fetch free classrooms for a specific date and period
   ///
@@ -27,19 +25,19 @@ class FreeClassroomService {
   }) async {
     try {
       debugPrint('[FreeClassroomService] Fetching free classrooms');
-      final username = await _authService.fetchCurrentUsername();
+      final username = di<LoginState>().currentUsername;
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
 
-      final endpoint = '/$username${ApiConstants.freeClassroomsUrl}';
+      final endpoint = '/$username${API.freeClassroomsUrl}';
 
       // Prepare form data
-      final body = 'b=$date&w=$period&c=${ApiConstants.classroomsList}';
+      final body = 'b=$date&w=$period&c=${API.classroomsList}';
 
-      final response = await _httpService.postLegacy(
+      final response = await di<HttpService>().post(
         endpoint,
-        body: body,
+        data: body,
         refresh: refresh,
       );
 

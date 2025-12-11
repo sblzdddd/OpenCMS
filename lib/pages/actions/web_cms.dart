@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/core/di/locator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../ui/web_cms/web_cms_base.dart';
 import '../../ui/shared/widgets/custom_app_bar.dart';
 import '../../ui/shared/widgets/custom_scaffold.dart';
-import '../../services/auth/auth_service.dart';
+import '../../features/auth/services/auth_service.dart';
 
 class WebCmsPage extends WebCmsBase {
   final bool disableControls;
@@ -25,7 +26,6 @@ class WebCmsPage extends WebCmsBase {
 class _WebCmsPageState extends WebCmsBaseState<WebCmsPage> {
   bool _canGoBack = false;
   bool _canGoForward = false;
-  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -36,8 +36,8 @@ class _WebCmsPageState extends WebCmsBaseState<WebCmsPage> {
   }
 
   Future<void> _handleWebModeInitialization() async {
-    final resolved = await _authService.getJumpUrlToLegacy(
-      path: widget.initialUrl ?? '',
+    final resolved = await di<AuthService>().getJumpUrlToLegacy(
+      initialUrl: widget.initialUrl ?? '',
     );
     if (resolved.isNotEmpty) {
       // Open the resolved URL in a new browser tab

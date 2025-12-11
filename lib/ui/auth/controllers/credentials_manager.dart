@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../services/auth/credentials_storage_service.dart';
+import '../../../features/auth/credentials_storage_service.dart';
 
 /// Component responsible for managing credential loading and saving
 class CredentialsManager extends ChangeNotifier {

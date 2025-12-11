@@ -1,8 +1,8 @@
 library;
 
 export '../data/constants/api_endpoints.dart';
-export 'shared/shared_services.dart';
-export 'auth/auth_service.dart';
+export '../features/core/core_features.dart';
+export '../features/auth/services/auth_service.dart';
 export 'timetable/course_timetable_service.dart';
 export 'assessment/assessment_service.dart';
 export 'reports/reports.dart';

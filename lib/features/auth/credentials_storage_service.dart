@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/foundation.dart';
-import '../shared/storage_client.dart';
-import '../../data/models/auth/saved_credentials.dart';
+import '../core/storage/storage_client.dart';
+import 'models/saved_credentials.dart';
 
 /// Handles secure storage operations for credentials and related flags.
 class CredentialsStorageService {
@@ -92,26 +92,6 @@ class CredentialsStorageService {
     } catch (e) {
       debugPrint('[CredentialsStorageService] Error checking credentials: $e');
       return false;
-    }
-  }
-
-  /// Get debug information about stored data (without exposing sensitive info)
-  Future<Map<String, dynamic>> getDebugInfo() async {
-    try {
-      final bool hasUsername = await _storage.containsKey(key: _usernameKey);
-      final bool hasPassword = await _storage.containsKey(key: _passwordKey);
-      final String? remember = await _storage.read(
-        key: _rememberCredentialsKey,
-      );
-
-      return {
-        'hasUsername': hasUsername,
-        'hasPassword': hasPassword,
-        'rememberCredentials': remember == 'true',
-        'storageAvailable': true,
-      };
-    } catch (e) {
-      return {'error': e.toString(), 'storageAvailable': false};
     }
   }
 }

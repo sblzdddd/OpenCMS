@@ -6,7 +6,7 @@ import '../../../data/models/timetable/timetable_response.dart';
 import '../../../services/timetable/course_timetable_service.dart';
 import '../components/day_tabs.dart';
 import 'timetable_mobile_view.dart';
-import 'timetable_calendar_view.dart';
+import 'course_timetable_calendar_view.dart';
 import '../../../services/attendance/course_stats_service.dart';
 import '../../shared/dialog/course_detail_dialog.dart';
 import '../../shared/views/refreshable_view.dart';

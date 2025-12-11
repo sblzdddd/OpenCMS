@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:intl/intl.dart';
@@ -148,7 +149,7 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
   IconData getWidgetIcon() => Symbols.assessment_rounded;
 
   @override
-  String getWidgetTitle() => 'Assessment';
+  String getWidgetTitle() => 'quickActions.assessment'.tr();
 
   @override
   String getWidgetSubtitle() {

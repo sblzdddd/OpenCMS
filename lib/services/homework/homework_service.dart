@@ -1,5 +1,5 @@
 import '../../data/models/homework/homework_response.dart';
-import '../shared/http_service.dart';
+import '../../features/core/networking/http_service.dart';
 import '../../data/constants/api_endpoints.dart';
 import 'package:flutter/foundation.dart';
 
@@ -21,7 +21,7 @@ class HomeworkService {
       debugPrint('[HomeworkService] Fetching homework for year $academicYear');
 
       // New API endpoint
-      final endpoint = '${ApiConstants.homeworkUrl}?year=$academicYear';
+      final endpoint = '${API.homeworkUrl}?year=$academicYear';
 
       final response = await _httpService.get(endpoint, refresh: refresh);
 

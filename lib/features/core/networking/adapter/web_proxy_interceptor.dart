@@ -1,4 +1,4 @@
-import '../../data/constants/api_endpoints.dart';
+import '../../../../data/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
@@ -8,11 +8,11 @@ String convertToProxyUrl(String url) {
   final uri = Uri.parse(url);
   final domain = uri.host;
 
-  if (ApiConstants.domainMapping.containsKey(domain)) {
-    final proxyDomain = ApiConstants.domainMapping[domain]!;
+  if (API.domainMapping.containsKey(domain)) {
+    final proxyDomain = API.domainMapping[domain]!;
     final path = uri.path;
     final query = uri.query.isNotEmpty ? '?${uri.query}' : '';
-    return '${ApiConstants.proxyBaseUrl}/proxy/$proxyDomain$path$query';
+    return '${API.proxyBaseUrl}/proxy/$proxyDomain$path$query';
   }
 
   return url;

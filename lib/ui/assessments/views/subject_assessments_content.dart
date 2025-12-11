@@ -86,7 +86,6 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         children: [
           _buildHeader(themeNotifier),
           _buildPerformanceSummary(themeNotifier),
-          _buildChartSection(themeNotifier),
           _buildAssessmentsList(themeNotifier),
         ],
       ),
@@ -190,35 +189,58 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: _buildSummaryCard(
-                'Average',
-                '${averageScore.toStringAsFixed(1)}%',
-                _getScoreColor(averageScore),
-                themeNotifier,
+        Card(
+          color: themeNotifier.needTransparentBG
+              ? (!themeNotifier.isDarkMode
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+              : Theme.of(context).colorScheme.surfaceContainer,
+          elevation: 0,
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildSummaryCard(
+                      'Average',
+                      '${averageScore.toStringAsFixed(1)}%',
+                      _getScoreColor(averageScore),
+                      themeNotifier,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildSummaryCard(
+                      'Highest',
+                      '${highestScore.toStringAsFixed(1)}%',
+                      _getScoreColor(highestScore),
+                      themeNotifier,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildSummaryCard(
+                      'Lowest',
+                      '${lowestScore.toStringAsFixed(1)}%',
+                      _getScoreColor(lowestScore),
+                      themeNotifier,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildSummaryCard(
-                'Highest',
-                '${highestScore.toStringAsFixed(1)}%',
-                _getScoreColor(highestScore),
-                themeNotifier,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AssessmentChartWidget(
+                    assessments: _currentSubject.assessments,
+                    subjectName: _currentSubject.subject,
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildSummaryCard(
-                'Lowest',
-                '${lowestScore.toStringAsFixed(1)}%',
-                _getScoreColor(lowestScore),
-                themeNotifier,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -236,7 +258,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
         borderRadius: themeNotifier.getBorderRadiusAll(1),
       ),
       clipBehavior: Clip.antiAlias,
-      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.4),
+      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -262,18 +284,6 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildChartSection(ThemeNotifier themeNotifier) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AssessmentChartWidget(
-          assessments: _currentSubject.assessments,
-          subjectName: _currentSubject.subject,
-        ),
-      ],
     );
   }
 
@@ -351,44 +361,55 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getAssessmentTypeColor(
-                            assessment.kind,
-                          ).withValues(alpha: 0.2),
-                          borderRadius: themeNotifier.getBorderRadiusAll(999),
-                        ),
-                        child: Text(
-                          assessment.kind,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _getAssessmentTypeColor(assessment.kind),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      if (assessment.teacher.isNotEmpty)
-                        Container(
+                      Flexible(
+                        child: Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer
-                                .withValues(alpha: 0.3),
+                            color: _getAssessmentTypeColor(
+                              assessment.kind,
+                            ).withValues(alpha: 0.2),
                             borderRadius: themeNotifier.getBorderRadiusAll(999),
                           ),
                           child: Text(
-                            assessment.teacher,
-                            style: const TextStyle(fontSize: 12),
+                            assessment.kind,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: _getAssessmentTypeColor(assessment.kind),
+                            ),
                           ),
                         ),
+                      ),
+                      if (assessment.teacher.isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .secondaryContainer
+                                  .withValues(alpha: 0.3),
+                              borderRadius: themeNotifier.getBorderRadiusAll(
+                                999,
+                              ),
+                            ),
+                            child: Text(
+                              assessment.teacher,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 8),
