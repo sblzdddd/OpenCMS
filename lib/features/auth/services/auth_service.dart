@@ -1,14 +1,14 @@
 library;
 
 import 'package:logging/logging.dart';
-import 'package:opencms/data/constants/api_endpoints.dart';
-import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/auth/models/auth_models.dart';
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
-import 'package:opencms/features/core/di/locator.dart';
-import 'package:opencms/features/core/networking/http_service.dart';
-import 'package:opencms/features/core/storage/cookie_storage.dart';
-import 'package:opencms/features/core/storage/token_storage.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/API/storage/cookie_storage.dart';
+import 'package:opencms/features/API/storage/token_storage.dart';
 import 'package:opencms/features/user/services/user_service.dart';
 
 import '../models/login_result.dart';
@@ -97,12 +97,9 @@ class AuthService {
   }
 
   Future<void> checkAuth() async {
-    final accessToken = await di<TokenStorage>().getAccessToken();
-    final refreshToken = await di<TokenStorage>().getRefreshToken();
-    final isAuthenticated = accessToken != null && accessToken.isNotEmpty &&
-        refreshToken != null && refreshToken.isNotEmpty;
+    final status = await di<TokenRefreshService>().refreshNewToken(skipAuth: true);
 
-    if (isAuthenticated) {
+    if (status) {
       try {
         final userInfo = await di<UserService>().fetchUserAccountInfo();
         di<LoginState>().setAuthenticated(userInfo);
@@ -113,6 +110,7 @@ class AuthService {
         di<TokenStorage>().clearAll();
       }
     } else {
+      log.warning('Refresh token invalid or expired during auth check.');
       di<LoginState>().clearAuthentication();
       di<CookieStorage>().clearCookies();
       di<TokenStorage>().clearAll();

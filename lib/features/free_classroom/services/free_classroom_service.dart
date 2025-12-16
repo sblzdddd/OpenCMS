@@ -1,0 +1,126 @@
+import 'package:flutter/foundation.dart';
+import 'package:opencms/di/locator.dart';
+import '../../shared/constants/api_endpoints.dart';
+import '../models/free_classroom_response.dart';
+import '../models/all_periods_classroom_response.dart';
+import '../../API/networking/http_service.dart';
+
+/// Service for fetching free classroom information
+class FreeClassroomService {
+  static final FreeClassroomService _instance =
+      FreeClassroomService._internal();
+  factory FreeClassroomService() => _instance;
+  FreeClassroomService._internal();
+
+  /// Fetch free classrooms for a specific date and period
+  Future<FreeClassroomResponse> fetchFreeClassrooms({
+    required String date,
+    required String period,
+    bool refresh = false,
+  }) async {
+    try {
+      debugPrint('[FreeClassroomService] Fetching free classrooms');
+
+      final response = await di<HttpService>().post(
+        API.freeClassroomsUrl,
+        data: 'b=$date&w=$period&c=${API.classroomsList}',
+        refresh: refresh,
+        legacy: true,
+      );
+
+      // Accept both 200 and 304 status codes (304 means cached response)
+      if (response.statusCode != 200 && response.statusCode != 304) {
+        throw Exception(
+          'Failed to fetch free classrooms: ${response.statusCode}',
+        );
+      }
+
+      // The response is JSON with status, info, and rooms fields
+      final Map<String, dynamic> jsonData = response.data;
+
+      // Check if the response status is OK
+      if (jsonData['status'] != 'OK') {
+        throw Exception(
+          'API returned error status: ${jsonData['status']} - ${jsonData['info']}',
+        );
+      }
+
+      return FreeClassroomResponse.fromJson(jsonData);
+    } catch (e) {
+      debugPrint('[FreeClassroomService] Error fetching free classrooms: $e');
+      return FreeClassroomResponse.empty();
+    }
+  }
+
+  /// Convert period number to API format
+  static String periodToApiFormat(int period) {
+    return 'W$period';
+  }
+
+  /// Fetch free classrooms for all periods asynchronously
+  /// Returns a stream that emits updates as each period loads
+  Stream<AllPeriodsClassroomResponse> fetchAllPeriodsClassrooms({
+    required String date,
+    bool refresh = false,
+  }) async* {
+    AllPeriodsClassroomResponse currentResponse =
+        AllPeriodsClassroomResponse.empty(date);
+    yield currentResponse;
+
+    // Start loading all periods
+    final futures = <int, Future<FreeClassroomResponse>>{};
+
+    for (int period = 1; period <= 10; period++) {
+      // Mark period as loading
+      currentResponse = currentResponse.copyWith(
+        loadingStates: Map.from(currentResponse.loadingStates)..[period] = true,
+      );
+      yield currentResponse;
+
+      // Start the fetch for this period
+      futures[period] = fetchFreeClassrooms(
+        date: date,
+        period: periodToApiFormat(period),
+        refresh: refresh,
+      );
+    }
+
+    // Process results as they complete
+    for (final entry in futures.entries) {
+      final period = entry.key;
+      final future = entry.value;
+
+      try {
+        final response = await future;
+        debugPrint(
+          '[FreeClassroomService] Period $period completed successfully',
+        );
+        currentResponse = currentResponse.copyWith(
+          periodData: Map.from(currentResponse.periodData)..[period] = response,
+          loadingStates: Map.from(currentResponse.loadingStates)
+            ..[period] = false,
+          errorStates: Map.from(currentResponse.errorStates)..[period] = null,
+        );
+        yield currentResponse;
+      } catch (e) {
+        debugPrint(
+          '[FreeClassroomService] Period $period failed with error: $e',
+        );
+        currentResponse = currentResponse.copyWith(
+          loadingStates: Map.from(currentResponse.loadingStates)
+            ..[period] = false,
+          errorStates: Map.from(currentResponse.errorStates)
+            ..[period] = e.toString(),
+        );
+        yield currentResponse;
+      }
+    }
+  }
+
+  /// Format date for API
+  static String formatDate(DateTime date) {
+    final mm = date.month.toString().padLeft(2, '0');
+    final dd = date.day.toString().padLeft(2, '0');
+    return '${date.year}-$mm-$dd';
+  }
+}

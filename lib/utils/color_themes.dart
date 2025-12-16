@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './text_theme_util.dart';
-import './global_press_scale.dart';
+import 'text_theme_util.dart';
+import 'global_press_scale.dart';
 
 class OCMSColorThemes {
   late TextTheme textTheme;

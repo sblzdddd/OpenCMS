@@ -1,0 +1,43 @@
+import 'package:opencms/di/locator.dart';
+
+import '../../shared/constants/api_endpoints.dart';
+import '../models/attendance_models.dart';
+import '../../API/networking/http_service.dart';
+
+class AttendanceService {
+  static final AttendanceService _instance = AttendanceService._internal();
+  factory AttendanceService() => _instance;
+  AttendanceService._internal();
+
+  /// Fetch attendance between [startDate] and [endDate] (inclusive)
+  /// If not provided, defaults to 1 year prior to today through today.
+  Future<AttendanceResponse> fetchAttendance({
+    DateTime? startDate,
+    DateTime? endDate,
+    bool refresh = false,
+  }) async {
+    final DateTime today = DateTime.now();
+    DateTime start = startDate ?? DateTime(today.year - 1, 8, 1);
+    if (today.month >= 8 && today.day >= 1) {
+      start = DateTime(today.year, 8, 1);
+    }
+    final DateTime end = endDate ?? today;
+
+    final String startStr = _fmt(start);
+    final String endStr = _fmt(end);
+
+    final String url =
+        '${API.attendanceUrl}?start_date=$startStr&end_date=$endStr';
+
+    final response = await di<HttpService>().get(url, refresh: refresh);
+
+    final Map<String, dynamic> jsonData = response.data as Map<String, dynamic>;
+    return AttendanceResponse.fromJson(jsonData);
+  }
+
+  String _fmt(DateTime d) {
+    final mm = d.month.toString().padLeft(2, '0');
+    final dd = d.day.toString().padLeft(2, '0');
+    return '${d.year}-$mm-$dd';
+  }
+}

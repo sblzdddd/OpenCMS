@@ -36,25 +36,3 @@ LegacyTokenResponse _$LegacyTokenResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$LegacyTokenResponseToJson(
   LegacyTokenResponse instance,
 ) => <String, dynamic>{'code': instance.code, 'iv': instance.iv};
-
-UserInfo _$UserInfoFromJson(Map<String, dynamic> json) => UserInfo(
-  userName: json['username'] as String,
-  userType: (json['user_type'] as num).toInt(),
-  id: (json['id'] as num).toInt(),
-  name: json['name'] as String,
-  enName: json['en_name'] as String,
-  language: json['language'] as String,
-  permissions: (json['permissions'] as List<dynamic>)
-      .map((e) => e as String)
-      .toList(),
-);
-
-Map<String, dynamic> _$UserInfoToJson(UserInfo instance) => <String, dynamic>{
-  'username': instance.userName,
-  'user_type': instance.userType,
-  'id': instance.id,
-  'name': instance.name,
-  'en_name': instance.enName,
-  'language': instance.language,
-  'permissions': instance.permissions,
-};

@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:opencms/features/auth/login_state.dart';
-import 'package:opencms/features/core/di/locator.dart';
-import 'package:opencms/pages/splash.dart';
-import 'package:opencms/services/system/desktop_tray/tray_service.dart';
-import 'package:opencms/services/system/desktop_window/window_service.dart';
-import 'package:opencms/services/system/webview/webview_service.dart';
+import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/shared/pages/splash.dart';
+import 'package:opencms/features/system/desktop_tray/tray_service.dart';
+import 'package:opencms/features/system/desktop_window/window_service.dart';
+import 'package:opencms/features/web_cms/services/webview_service.dart';
 import 'package:opencms/utils/color_themes.dart';
-import 'pages/login.dart';
-import 'pages/home.dart';
-import 'services/services.dart';
+import 'features/auth/views/pages/login.dart';
+import 'features/home/views/pages/home.dart';
 import 'package:window_manager/window_manager.dart';
-import 'services/background/cookies_refresh_service.dart';
-import 'services/theme/theme_services.dart';
+import 'features/background/cookies_refresh_service.dart';
+import 'features/theme/services/theme_services.dart';
 import 'package:provider/provider.dart';
-import 'services/system/update/update_checker_service.dart';
+import 'features/system/update/update_checker_service.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -117,8 +117,7 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   }
 
   void _checkAuthenticationStatus() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    await Future.delayed(const Duration(milliseconds: 100));
     await di<AuthService>().checkAuth();
 
     setState(() {

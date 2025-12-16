@@ -1,10 +1,10 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:opencms/data/constants/api_endpoints.dart';
-import 'package:opencms/features/auth/models/auth_models.dart';
-import 'package:opencms/features/core/di/locator.dart';
-import 'package:opencms/features/core/networking/http_service.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/user/models/user_models.dart';
 
 class UserService {
   /// fetch user account information (for auth validations)

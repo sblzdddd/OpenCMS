@@ -1,9 +1,10 @@
 import 'package:logging/logging.dart';
-import 'package:opencms/features/auth/login_state.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/auth/models/auth_models.dart';
-import 'package:opencms/features/core/di/locator.dart';
-import 'package:opencms/features/core/storage/token_storage.dart';
-import 'package:opencms/services/services.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/API/storage/token_storage.dart';
 
 final log = Logger('TokenRefreshService');
 
@@ -18,12 +19,12 @@ class TokenRefreshService {
   static Future<bool>? _refreshNewTokenInFlight;
   static Future<bool>? _refreshLegacyCookiesInFlight;
 
-  Future<bool> refreshNewToken() async {
+  Future<bool> refreshNewToken({bool skipAuth = false}) async {
     // If a refresh is already in flight, await the same future.
     final inFlight = _refreshNewTokenInFlight;
     if (inFlight != null) return await inFlight;
 
-    final future = _doRefreshNewToken();
+    final future = _doRefreshNewToken(skipAuth: skipAuth);
     _refreshNewTokenInFlight = future;
     try {
       return await future;
@@ -35,7 +36,7 @@ class TokenRefreshService {
     }
   }
 
-  Future<bool> _doRefreshNewToken() async {
+  Future<bool> _doRefreshNewToken({bool skipAuth = false}) async {
     try {
       final refreshToken = await storage.getRefreshToken();
       if (refreshToken == null || refreshToken.isEmpty) return false;
@@ -46,7 +47,7 @@ class TokenRefreshService {
         API.tokenRefreshUrl,
         data: {'refresh': refreshToken},
       );
-      if(!di<LoginState>().isAuthenticated) return false;
+      if(!di<LoginState>().isAuthenticated && !skipAuth) return false;
       if (resp.statusCode == 200) {
         final data = TokenResponse.fromJson(resp.data);
         await storage.setAccessToken('Bearer ${data.accessToken}');
