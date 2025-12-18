@@ -105,7 +105,7 @@ class TokenRefreshService {
 
       // Visit legacy site to set cookies (server will set cookies and redirect)
       final result = await di<HttpService>().get(
-        '/${userInfo.userName}/?token=${data.code}&iv=${data.iv}',
+        '/?token=${data.code}&iv=${data.iv}',
         refresh: true,
         legacy: true,
       );
