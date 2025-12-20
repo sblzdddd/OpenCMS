@@ -1,6 +1,10 @@
 /// Data models for reports list API response
 library;
 
+import 'package:json_annotation/json_annotation.dart';
+
+part 'reports_list_response.g.dart';
+
 class ReportsListResponse {
   final List<GradeGroup> gradeGroups;
 
@@ -15,24 +19,19 @@ class ReportsListResponse {
   }
 }
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class GradeGroup {
   final String grade;
   final List<Exam> exams;
 
   GradeGroup({required this.grade, required this.exams});
 
-  factory GradeGroup.fromJson(Map<String, dynamic> json) {
-    return GradeGroup(
-      grade: json['grade'] ?? '',
-      exams:
-          (json['exams'] as List<dynamic>?)
-              ?.map((item) => Exam.fromJson(item as Map<String, dynamic>))
-              .toList() ??
-          [],
-    );
-  }
+  factory GradeGroup.fromJson(Map<String, dynamic> json) =>
+      _$GradeGroupFromJson(json);
+  Map<String, dynamic> toJson() => _$GradeGroupToJson(this);
 }
 
+@JsonSerializable(fieldRename: FieldRename.snake)
 class Exam {
   final int id;
   final String name;
@@ -60,21 +59,9 @@ class Exam {
     required this.subjectComment,
   });
 
-  factory Exam.fromJson(Map<String, dynamic> json) {
-    return Exam(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      grade: json['grade'] ?? '',
-      year: json['year'] ?? 0,
-      semester: json['semester'] ?? 0,
-      month: json['month'] ?? '',
-      kind: json['kind'] ?? 0,
-      courseMark: json['course_mark'] ?? [],
-      pSat: json['p_sat'] ?? [],
-      markComponent: json['mark_component'] ?? [],
-      subjectComment: json['subject_comment'] ?? [],
-    );
-  }
+  factory Exam.fromJson(Map<String, dynamic> json) =>
+      _$ExamFromJson(json);
+  Map<String, dynamic> toJson() => _$ExamToJson(this);
 
   /// Get exam type description based on kind
   String get examType {

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../shared/constants/api_endpoints.dart';
 import 'captcha_dialog.dart';
 import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CaptchaInput');
 
 /// Callback function signature for captcha state changes
 typedef CaptchaStateCallback =
@@ -59,12 +62,9 @@ class _CaptchaInputState extends State<CaptchaInput> {
     try {
       // Use provided appId or default for development
       final appId = widget.appId ?? API.tencentCaptchaAppId;
-      TencentCaptchaDialog.init(appId);
-      debugPrint(
-        'CaptchaInput: Tencent Captcha initialized with appId: $appId',
-      );
+      logger.fine('Tencent Captcha initialized with appId: $appId');
     } catch (e) {
-      debugPrint('CaptchaInput: Error initializing Tencent Captcha: $e');
+      logger.severe('CaptchaInput: Error initializing Tencent Captcha: $e');
     }
   }
 
@@ -76,7 +76,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
       _isVerifying = true;
     });
 
-    debugPrint('CaptchaInput: Starting Tencent Captcha verification...');
+    logger.info('Starting Tencent Captcha verification...');
 
     try {
       final config = TencentCaptchaDialogConfig(
@@ -88,10 +88,10 @@ class _CaptchaInputState extends State<CaptchaInput> {
         context: context,
         config: config,
         onLoaded: (dynamic data) {
-          debugPrint('CaptchaInput: Captcha onLoaded: $data');
+          logger.fine('Captcha onLoaded: $data');
         },
         onSuccess: (dynamic data) {
-          debugPrint('CaptchaInput: Captcha onSuccess: $data');
+          logger.fine('CaptchaInput: Captcha onSuccess: $data');
           setState(() {
             _isCaptchaVerified = true;
             _captchaData = data;
@@ -103,7 +103,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
           onSuccess?.call(data);
         },
         onFail: (dynamic data) {
-          debugPrint('CaptchaInput: Captcha onFail: $data');
+          logger.fine('CaptchaInput: Captcha onFail: $data');
           setState(() {
             _isCaptchaVerified = false;
             _captchaData = null;
@@ -123,7 +123,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
         },
       );
     } catch (e) {
-      debugPrint('CaptchaInput: Error during captcha verification: $e');
+      logger.severe('CaptchaInput: Error during captcha verification: $e');
       setState(() {
         _isCaptchaVerified = false;
         _captchaData = null;

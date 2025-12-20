@@ -7,7 +7,6 @@ import 'package:opencms/features/auth/models/auth_models.dart';
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/networking/http_service.dart';
-import 'package:opencms/features/API/storage/cookie_storage.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
 import 'package:opencms/features/user/services/user_service.dart';
 
@@ -83,38 +82,41 @@ class AuthService {
   Future<void> logout() async {
     log.info('Logging out user');
 
-    di<LoginState>().clearAuthentication();
-    di<TokenStorage>().clearAll();
-    di<CookieStorage>().clearCookies();
-    await di<CookieStorage>().clearCookies();
     try {
       await di<HttpService>().post(API.logoutUrl);
     } catch (e) {
       log.warning('Logout request failed: $e');
     }
+    await clearAuthentication();
 
     log.info('Logout completed');
   }
 
   Future<void> checkAuth() async {
+    log.info("Checking Authentication Status...");
     final status = await di<TokenRefreshService>().refreshNewToken(skipAuth: true);
 
     if (status) {
       try {
         final userInfo = await di<UserService>().fetchUserAccountInfo();
         di<LoginState>().setAuthenticated(userInfo);
+        log.info("User authenticated: ${userInfo.name}");
+        di<TokenRefreshService>().refreshLegacyCookies();
       } catch (e) {
         log.warning('Failed to fetch user info during auth check: $e');
-        di<LoginState>().clearAuthentication();
-        di<CookieStorage>().clearCookies();
-        di<TokenStorage>().clearAll();
+      await clearAuthentication();
       }
     } else {
       log.warning('Refresh token invalid or expired during auth check.');
-      di<LoginState>().clearAuthentication();
-      di<CookieStorage>().clearCookies();
-      di<TokenStorage>().clearAll();
+      await clearAuthentication();
     }
+  }
+
+  Future<void> clearAuthentication() async {
+    log.info('Clearing authentication state and stored tokens.');
+
+    di<LoginState>().clearAuthentication();
+    await di<TokenStorage>().clearAll();
   }
 
   Future<String> getJumpUrlToLegacy({String initialUrl = ""}) async {

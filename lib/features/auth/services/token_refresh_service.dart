@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
@@ -38,7 +41,7 @@ class TokenRefreshService {
 
   Future<bool> _doRefreshNewToken({bool skipAuth = false}) async {
     try {
-      final refreshToken = await storage.getRefreshToken();
+      final refreshToken = await storage.refreshToken;
       if (refreshToken == null || refreshToken.isEmpty) return false;
 
       log.info('Refreshing access token using refresh token.');
@@ -50,11 +53,17 @@ class TokenRefreshService {
       if(!di<LoginState>().isAuthenticated && !skipAuth) return false;
       if (resp.statusCode == 200) {
         final data = TokenResponse.fromJson(resp.data);
-        await storage.setAccessToken('Bearer ${data.accessToken}');
-        await storage.setRefreshToken(data.refreshToken);
+        if (data.accessToken != null && data.accessToken?.isNotEmpty == true) {
+          await storage.setAccessToken('Bearer ${data.accessToken}');
+        }
+        if (data.refreshToken != null && data.refreshToken?.isNotEmpty == true) {
+          await storage.setRefreshToken(data.refreshToken);
+        }
         log.info('Token refresh successful.');
         log.fine('Refreshed access token: ${data.accessToken}, refresh token: ${data.refreshToken}');
         return true;
+      } else {
+        log.warning('Token refresh failed with status: ${resp.statusCode}');
       }
       return false;
     } catch (e) {
@@ -95,6 +104,7 @@ class TokenRefreshService {
       final tokenResp = await di<HttpService>().get(
         API.legacyTokenUrlForHref,
         refresh: true,
+        options: Options(extra: {"legacyRefresh": true}),
       );
       final data = LegacyTokenResponse.fromJson(tokenResp.data);
 
@@ -108,15 +118,32 @@ class TokenRefreshService {
         '/?token=${data.code}&iv=${data.iv}',
         refresh: true,
         legacy: true,
+        options: Options(extra: {"legacyRefresh": true}),
       );
 
-      // Success if we no longer see the loading placeholder
-      final ok = !result.data.contains('<div>Loading...</div>');
-      if (!ok) {
-        log.warning('Legacy visit may not have initialized cookies. Status: ${result.statusCode}');
+      final List<String>? cookies = result.headers[HttpHeaders.setCookieHeader];
+      if(cookies == null || cookies.isEmpty) {
+        log.warning('No Set-Cookie headers received from legacy site.');
+        return false;
+      }
+      int flag = 0;
+      for(final cookie in cookies) {
+        logger.fine(cookie);
+        if(cookie.startsWith('sid_nb=')) {
+          await storage.setSidNb(cookie.substring(7).split(';').first);
+          flag++;
+        }
+        if(cookie.startsWith('sid_scie=')) {
+          await storage.setSidScie(cookie.substring(9).split(';').first);
+          flag++;
+        }
+      }
+      if(flag < 2){
+        log.warning('Not enough credentials obtained');
+        return false;
       }
       log.info('Legacy cookies refreshed');
-      return ok;
+      return true;
     } catch (e) {
       log.severe('refreshLegacyCookies exception: $e');
       return false;

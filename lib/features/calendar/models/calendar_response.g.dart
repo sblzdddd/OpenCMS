@@ -18,7 +18,7 @@ CalendarResponse _$CalendarResponseFromJson(Map<String, dynamic> json) =>
       preYear: json['preyear'] as String,
       nextMonth: json['nextmonth'] as String,
       nextYear: json['nextyear'] as String,
-      fromPeriod: json['fromperiod'] as String,
+      fromPeriod: json['fromperiod'] as int,
       todaySpanId: json['todayspanid'] as String?,
     );
 

@@ -9,13 +9,12 @@ import 'captcha_html_content.dart';
 import 'captcha_dialog_web.dart'
     if (dart.library.io) 'captcha_dialog_stub.dart'
     as web_helper;
+import 'package:logging/logging.dart';
+
+final logger = Logger('CaptchaDialog');
 
 /// Tencent Captcha implementation
 class TencentCaptchaDialog {
-  /// Initialize the captcha with appId
-  static void init(String appId) {
-    debugPrint('CaptchaDialog: Tencent Captcha initialized with appId: $appId');
-  }
 
   /// Perform captcha verification with popup webview
   static Future<void> verify({
@@ -25,13 +24,13 @@ class TencentCaptchaDialog {
     required Function(dynamic) onSuccess,
     required Function(dynamic) onFail,
   }) async {
-    debugPrint('CaptchaDialog: Tencent Captcha: Starting verification...');
+    logger.info('Starting verification...');
 
     // Simulate loading
     await Future.delayed(const Duration(milliseconds: 200));
     onLoaded({'status': 'loaded', 'bizState': config.bizState});
     if (!context.mounted) {
-      debugPrint('CaptchaDialog: Tencent Captcha: Context is not mounted');
+      logger.severe('Context is not mounted');
       return;
     }
 
@@ -110,17 +109,15 @@ class TencentCaptchaDialog {
                         applicationNameForUserAgent: "OpenCMS-Captcha-WebView",
                       ),
                       onWebViewCreated: (InAppWebViewController controller) {
-                        debugPrint('CaptchaDialog: Captcha WebView created');
+                        logger.fine('Captcha WebView created');
 
                         // Add JavaScript handler to listen for captcha completion (non-web platforms)
                         if (!kIsWeb) {
                           controller.addJavaScriptHandler(
                             handlerName: 'captchaComplete',
                             callback: (args) {
-                              debugPrint(
-                                'CaptchaDialog: Received captcha completion event: $args',
-                              );
-
+                              logger.fine('Received captcha completion event: $args');
+                              
                               Navigator.of(dialogContext).pop();
                               if (args[0] == 'success') {
                                 onSuccess(args[1]);
@@ -142,7 +139,7 @@ class TencentCaptchaDialog {
                             InAppWebViewController controller,
                             WebUri? url,
                           ) async {
-                            debugPrint('CaptchaDialog: Captcha WebView loaded');
+                            logger.fine('Captcha WebView loaded');
                           },
                       onReceivedError:
                           (
@@ -150,14 +147,10 @@ class TencentCaptchaDialog {
                             WebResourceRequest request,
                             WebResourceError error,
                           ) {
-                            debugPrint(
-                              'CaptchaDialog: Captcha WebView error: ${error.description}',
-                            );
+                            logger.warning('Captcha WebView error: ${error.description}');
 
                             // For any errors, just log them since we're already using local HTML
-                            debugPrint(
-                              'CaptchaDialog: WebView error: ${error.description} for ${request.url}',
-                            );
+                            logger.warning('CaptchaDialog: WebView error: ${error.description} for ${request.url}');
                           },
                       onProgressChanged:
                           (InAppWebViewController controller, int progress) {},

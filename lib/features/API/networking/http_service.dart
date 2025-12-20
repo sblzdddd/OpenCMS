@@ -2,15 +2,14 @@ import 'dart:io';
 
 import 'package:dio/io.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/interceptors/legacy_auth_interceptor.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/features/API/storage/cookie_storage.dart';
 import 'package:opencms/features/API/networking/interceptors/legacy_cache_interceptor.dart';
 import 'package:opencms/features/API/networking/interceptors/auth_interceptor.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../../shared/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'adapter/http_adapter_web.dart'
     if (dart.library.io) 'adapter/http_adapter_stub.dart'
     as http_adapter;
@@ -42,18 +41,17 @@ class HttpService {
 
     // add authorization header
     _dio.interceptors.add(AuthInterceptor(_dio));
+    _dio.interceptors.add(LegacyAuthInterceptor(_dio));
 
     if (kIsWeb) {
       http_adapter.HttpAdapterHelper.configureAdapter(_dio);
-    } else {
-      _dio.interceptors.add(CookieManager(di<CookieStorage>().cookieJar));
     }
     _dio.interceptors.add(CacheInterceptor());
     if (kDebugMode) {
       _dio.interceptors.add(PrettyDioLogger(
         requestHeader: true,
         requestBody: true,
-        responseBody: true,
+        responseBody: false,
         responseHeader: false,
         error: true,
         compact: true,
@@ -72,19 +70,22 @@ class HttpService {
     Map<String, dynamic>? data,
     bool refresh = false,
     bool legacy = false,
+    bool ignoreLegacyUsername = false,
     Options? options,
   }) async {
-    final opt = (refresh ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions() : options ?? Options()).copyWith(
+    final baseOptions = refresh ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions() : options ?? Options();
+    final opt = baseOptions.copyWith(
       headers: legacy
           ? {...?options?.headers, 'Referer': API.legacyCMSReferer}
           : options?.headers,
+      extra: {...?baseOptions.extra, ...?options?.extra},
     );
     if (legacy) {
       final username = di<LoginState>().currentUsername;
-      if (username.isEmpty) {
+      if (username.isEmpty && !ignoreLegacyUsername) {
         throw Exception('Missing username. Please login again.');
       }
-      return _dio.get('${API.legacyCMSBaseUrl}/$username$endpoint', queryParameters: data, options: opt);
+      return _dio.get('${API.legacyCMSBaseUrl}${ ignoreLegacyUsername ? '' : "/$username"}$endpoint', queryParameters: data, options: opt);
     }
     return _dio.get(endpoint, queryParameters: data, options: opt);
   }
@@ -94,19 +95,22 @@ class HttpService {
     dynamic data,
     bool refresh = false,
     bool legacy = false,
+    bool ignoreLegacyUsername = false,
     Options? options,
   }) async {
-    final opt = (refresh ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions() : options ?? Options()).copyWith(
+    final baseOptions = refresh ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions() : options ?? Options();
+    final opt = baseOptions.copyWith(
       headers: legacy
           ? {...?options?.headers, 'Referer': API.legacyCMSReferer}
           : options?.headers,
+      extra: {...?baseOptions.extra, ...?options?.extra},
     );
     if (legacy) {
       final username = di<LoginState>().currentUsername;
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
-      return _dio.post('${API.legacyCMSBaseUrl}/$username$endpoint', data: data, options: opt);
+      return _dio.post('${API.legacyCMSBaseUrl}${ ignoreLegacyUsername ? '' : "/$username"}$endpoint', data: data, options: opt);
     }
     return _dio.post(endpoint, data: data, options: opt);
   }

@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('WebviewService');
 
 class WebviewService {
   static WebViewEnvironment? webViewEnvironment;
@@ -14,7 +17,11 @@ class WebviewService {
         'Failed to find a WebView2 Runtime or Edge.',
       );
 
-      webViewEnvironment = await WebViewEnvironment.create();
+      try {
+        webViewEnvironment = await WebViewEnvironment.create();
+      } catch (e) {
+        logger.warning('Failed to create WebViewEnvironment: $e');
+      }
     }
 
     if (defaultTargetPlatform == TargetPlatform.android) {

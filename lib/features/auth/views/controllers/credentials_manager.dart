@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../services/credentials_storage_service.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CredentialsManager');
 
 /// Component responsible for managing credential loading and saving
 class CredentialsManager extends ChangeNotifier {
@@ -30,12 +33,10 @@ class CredentialsManager extends ChangeNotifier {
         usernameController.text = savedCredentials.username;
         passwordController.text = savedCredentials.password;
         _rememberMe = savedCredentials.remember;
-        debugPrint(
-          'CredentialsManager: Loaded saved credentials for user: ${savedCredentials.username}',
-        );
+        logger.info('Loaded saved credentials for user: ${savedCredentials.username}');
       }
     } catch (e) {
-      debugPrint('CredentialsManager: Error loading saved credentials: $e');
+      logger.severe('Error loading saved credentials: $e');
     } finally {
       _isLoadingCredentials = false;
       notifyListeners();
@@ -54,17 +55,17 @@ class CredentialsManager extends ChangeNotifier {
           password: password,
           remember: _rememberMe,
         );
-        debugPrint('CredentialsManager: Credentials saved securely');
+        logger.info('Credentials saved securely');
       } catch (e) {
-        debugPrint('CredentialsManager: Error saving credentials: $e');
+        logger.severe('Error saving credentials: $e');
       }
     } else {
       // Clear any previously saved credentials if remember me is unchecked
       try {
         await _secureStorageService.clearCredentials();
-        debugPrint('CredentialsManager: Previously saved credentials cleared');
+        logger.info('Previously saved credentials cleared');
       } catch (e) {
-        debugPrint('CredentialsManager: Error clearing credentials: $e');
+        logger.severe('Error clearing credentials: $e');
       }
     }
   }

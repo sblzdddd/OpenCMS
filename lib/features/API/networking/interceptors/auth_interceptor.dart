@@ -19,29 +19,32 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    final token = await storage.getAccessToken();
+    final token = await storage.accessToken;
     final urlPath = options.path;
-    // User must authenticate to add auth headers / refresh their token
-    if (!urlPath.startsWith(API.accountUserUrl) && 
-        !urlPath.contains('logout') && 
-        (urlPath.startsWith(API.loginUrl) || !loginState.isAuthenticated)) {
-      log.fine("skipping auth");
+    
+    final isAccountUser = urlPath.startsWith(API.accountUserUrl);
+    final isLogout = urlPath.contains('logout');
+    final isLogin = urlPath.startsWith(API.loginUrl);
+    final isAuthenticated = loginState.isAuthenticated;
+    final isLegacyUrl = urlPath.startsWith(API.legacyBaseUrl);
+
+    if (!isAccountUser && !isLogout && (isLogin || !isAuthenticated || isLegacyUrl)) {
+      log.fine("Skipping auth headers for: $urlPath");
       return handler.next(options);
     }
 
     if (token != null && token.isNotEmpty) {
       options.headers['authorization'] = token;
-    } else {
-      final refreshed = await tokenRefreshService.refreshNewToken();
-      options.headers['authorization'] = refreshed ? token : null;
+      return handler.next(options);
     }
-    return handler.next(options);
+    options.extra['noToken'] = true;
+    return handler.reject(DioException(requestOptions: options, error: 'No access token available'));
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     var options = err.requestOptions;
-    if (options.path.startsWith(API.loginUrl) || !loginState.isAuthenticated) {
+    if (options.path.startsWith(API.loginUrl) || options.path.startsWith(API.legacyBaseUrl) || !loginState.isAuthenticated) {
       return handler.next(err);
     }
     // check retry count
@@ -49,10 +52,10 @@ class AuthInterceptor extends Interceptor {
     if (retries == null || retries is! int) retries = 0;
     if (retries >= API.maxRetries) return handler.next(err);
     // If unauthorized, try refreshing token
-    if (err.response?.statusCode == 401 || err.response?.statusCode == 400) {
+    if (err.response?.statusCode == 401 || err.response?.statusCode == 400 || options.extra['noToken'] == true) {
       final success = await tokenRefreshService.refreshNewToken();
       if (!success) return handler.next(err);
-      final token = await storage.getAccessToken();
+      final token = await storage.accessToken;
       if (token != null && token.isNotEmpty) {
         options.headers['authorization'] = token;
       }

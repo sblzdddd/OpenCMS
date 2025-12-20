@@ -2,6 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'dart:io';
+import 'package:logging/logging.dart';
+
+final logger = Logger('WindowEffectService');
 
 enum WindowEffectType { disabled, transparent, aero, acrylic, mica, tabbed }
 
@@ -98,14 +101,12 @@ class WindowEffectService with ChangeNotifier {
     required bool isDarkMode,
   }) async {
     try {
-      debugPrint('[WindowEffectService] Applying window effect: $windowEffect');
+      logger.info('Applying window effect: $windowEffect');
       if (windowEffect == WindowEffectType.disabled) {
         await Window.setEffect(effect: WindowEffect.disabled);
       } else {
         WindowEffect flutterEffect = _getFlutterWindowEffect(windowEffect);
-        debugPrint(
-          '[WindowEffectService] info: flutterEffect: $flutterEffect, color: $color, isDarkMode: $isDarkMode',
-        );
+        logger.fine('flutterEffect: $flutterEffect, color: $color, isDarkMode: $isDarkMode');
 
         await Window.setEffect(
           effect: flutterEffect,
@@ -115,7 +116,7 @@ class WindowEffectService with ChangeNotifier {
         );
       }
     } catch (e) {
-      debugPrint('[WindowEffectService] Failed to apply window effect: $e');
+      logger.warning('Failed to apply window effect: $e');
     }
   }
 

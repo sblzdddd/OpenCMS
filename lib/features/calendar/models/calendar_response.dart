@@ -24,7 +24,7 @@ class CalendarResponse {
   @JsonKey(name: 'nextyear')
   final String nextYear;
   @JsonKey(name: 'fromperiod')
-  final String fromPeriod;
+  final int fromPeriod;
   @JsonKey(name: 'todayspanid')
   final String? todaySpanId;
   @JsonKey(includeFromJson: false)

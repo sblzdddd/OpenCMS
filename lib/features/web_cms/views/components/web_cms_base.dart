@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
-import 'package:cookie_jar/cookie_jar.dart';
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
-import 'package:opencms/features/API/storage/cookie_storage.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
 import '../../../shared/constants/api_endpoints.dart';
 import '../../../auth/services/auth_service.dart';
@@ -62,7 +60,6 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
         }
       } else {
         await di<TokenRefreshService>().refreshLegacyCookies();
-        final List<Cookie> cookies = await di<CookieStorage>().currentCookies;
         final iaw.CookieManager cookieManager = iaw.CookieManager.instance();
 
         final iaw.WebUri baseUri = iaw.WebUri(API.baseUrl);
@@ -73,38 +70,45 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
         await cookieManager.setCookie(
           url: baseUri,
           name: "access_token",
-          value: await di<TokenStorage>().getAccessToken() ?? '',
+          value: (await di<TokenStorage>().accessToken ?? '').replaceFirst('Bearer ', ''),
           path: '/',
           isSecure: true,
           domain: baseUri.host,
-          isHttpOnly: false,
-          sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
+          isHttpOnly: true,
+          sameSite: iaw.HTTPCookieSameSitePolicy.LAX,
         );
         await cookieManager.setCookie(
           url: baseUri,
           name: "refresh_token",
-          value: await di<TokenStorage>().getRefreshToken() ?? '',
+          value: await di<TokenStorage>().refreshToken ?? '',
           path: '/',
           isSecure: true,
           domain: baseUri.host,
+          isHttpOnly: true,
+          sameSite: iaw.HTTPCookieSameSitePolicy.LAX,
+        );
+
+        await cookieManager.setCookie(
+          url: legacyBaseUri,
+          name: "sid_nb",
+          value: await di<TokenStorage>().sidNb ?? '',
+          path: '/',
+          isSecure: true,
+          domain: legacyBaseUri.host,
           isHttpOnly: false,
           sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
         );
 
-        // set legacy cookies
-        for (final Cookie cookie in cookies) {
-          if (cookie.value.isEmpty) continue;
-          await cookieManager.setCookie(
-            url: legacyBaseUri,
-            name: cookie.name,
-            value: cookie.value,
-            path: cookie.path ?? '/',
-            isSecure: cookie.secure,
-            domain: baseUri.host,
-            isHttpOnly: cookie.httpOnly,
-            sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
-          );
-        }
+        await cookieManager.setCookie(
+          url: legacyBaseUri,
+          name: "sid_scie",
+          value: await di<TokenStorage>().sidScie ?? '',
+          path: '/',
+          isSecure: true,
+          domain: legacyBaseUri.host,
+          isHttpOnly: false,
+          sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
+        );
       }
     } catch (e) {
       debugPrint('WebCmsBase: Failed to prepare cookies: $e');

@@ -1,5 +1,7 @@
-import 'package:flutter/rendering.dart';
+import 'package:logging/logging.dart';
 import 'package:opencms/features/user/models/user_models.dart';
+
+final logger = Logger("LoginState");
 
 class LoginState {
   bool _isAuthenticated = false;
@@ -13,22 +15,21 @@ class LoginState {
     _isAuthenticated = true;
     _userInfo = userInfo;
 
-    debugPrint('[LoginState] User authenticated - ${userInfo.userName}');
+    logger.info('Set ${userInfo.userName} as authenticated user');
   }
 
   /// Clear authentication state
   void clearAuthentication() {
+    logger.info('Authentication cleared for ${_userInfo?.userName ?? "unknown"}');
     _isAuthenticated = false;
     _userInfo = null;
-
-    debugPrint('[LoginState] Authentication cleared');
   }
 
   /// Update user information without changing authentication status
   void updateUserInfo(UserInfo updates) {
     if (_userInfo != null) {
       _userInfo = updates;
-      debugPrint('[LoginState] User info updated');
+      logger.info('User info updated for ${_userInfo?.userName ?? "unknown"}');
     }
   }
 

@@ -1,7 +1,9 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import '../../API/storage/storage_client.dart';
 import '../models/saved_credentials.dart';
+
+final logger = Logger('CredentialsStorage');
 
 /// Handles secure storage operations for credentials and related flags.
 class CredentialsStorageService {
@@ -28,15 +30,13 @@ class CredentialsStorageService {
         await _storage.write(key: _usernameKey, value: username);
         await _storage.write(key: _passwordKey, value: password);
         await _storage.write(key: _rememberCredentialsKey, value: 'true');
-        debugPrint(
-          '[CredentialsStorageService] Credentials saved successfully',
-        );
+        logger.info('Credentials saved successfully');
       } else {
         await clearCredentials();
       }
       return true;
     } catch (e) {
-      debugPrint('[CredentialsStorageService] Error saving credentials: $e');
+      logger.severe('Error saving credentials: $e');
       return false;
     }
   }
@@ -50,9 +50,7 @@ class CredentialsStorageService {
       final remember = rememberStr == 'true';
 
       if (remember && username != null && password != null) {
-        debugPrint(
-          '[CredentialsStorageService] Credentials loaded successfully',
-        );
+        logger.info('Credentials loaded successfully');
         return SavedCredentials(
           username: username,
           password: password,
@@ -60,10 +58,10 @@ class CredentialsStorageService {
           hasCredentials: true,
         );
       }
-      debugPrint('[CredentialsStorageService] No saved credentials found');
+      logger.warning('No saved credentials found');
       return SavedCredentials.empty();
     } catch (e) {
-      debugPrint('[CredentialsStorageService] Error loading credentials: $e');
+      logger.severe('Error loading credentials: $e');
       return SavedCredentials.empty();
     }
   }
@@ -74,12 +72,10 @@ class CredentialsStorageService {
       await _storage.delete(key: _usernameKey);
       await _storage.delete(key: _passwordKey);
       await _storage.delete(key: _rememberCredentialsKey);
-      debugPrint(
-        '[CredentialsStorageService] Credentials cleared successfully',
-      );
+      logger.info('Credentials cleared successfully');
       return true;
     } catch (e) {
-      debugPrint('[CredentialsStorageService] Error clearing credentials: $e');
+      logger.severe('Error clearing credentials: $e');
       return false;
     }
   }
@@ -90,7 +86,7 @@ class CredentialsStorageService {
       final remember = await _storage.read(key: _rememberCredentialsKey);
       return remember == 'true';
     } catch (e) {
-      debugPrint('[CredentialsStorageService] Error checking credentials: $e');
+      logger.severe('Error checking credentials: $e');
       return false;
     }
   }

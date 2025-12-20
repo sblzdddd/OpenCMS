@@ -48,7 +48,6 @@ class SkinImageData {
     final json = <String, dynamic>{};
 
     // Only serialize non-default values
-    // Do not serialize `type`; it is derived from defaults
 
     if (imagePath != null && imagePath!.isNotEmpty) {
       if (useRelativePath) {

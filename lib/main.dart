@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
@@ -15,11 +16,20 @@ import 'features/background/cookies_refresh_service.dart';
 import 'features/theme/services/theme_services.dart';
 import 'package:provider/provider.dart';
 import 'features/system/update/update_checker_service.dart';
+import 'package:logging/logging.dart';
+import 'package:easy_logger/easy_logger.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
 void main() async {
+  // Initialize logging
+  Logger.root.level = kDebugMode ? Level.FINEST : Level.INFO;
+  Logger.root.onRecord.listen((record) {
+    print('${record.time} [${record.loggerName}] ${record.level.name}: ${record.message}');
+  });
+  EasyLocalization.logger.enableLevels = [LevelMessages.error, LevelMessages.warning, LevelMessages.info];
+
   configureDependencies();
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();

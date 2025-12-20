@@ -20,28 +20,25 @@ class CalendarService {
     required int month,
     bool refresh = false,
   }) async {
-    try {
-      final username = di<LoginState>().currentUsername;
-      if (username.isEmpty) {
-        throw Exception('Missing username. Please login again.');
-      }
-
-      final response = await di<HttpService>().post(
-        '${API.calendarUrl}?psid=$username&y=$year&p=$year&m=$month&kind=-1',
-        data: 'psid=$username&y=$year&p=$year&m=$month&kind=-1',
-        options: (
-          Options(
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-          )
-        ),
-        refresh: refresh,
-        legacy: true,
-      );
-
-      return CalendarResponse.fromJson(response.data);
-    } catch (e) {
-      throw Exception('Calendar service error: $e');
+    final username = di<LoginState>().currentUsername;
+    if (username.isEmpty) {
+      throw Exception('Missing username. Please login again.');
     }
+
+    final response = await di<HttpService>().post(
+      '${API.calendarUrl}?psid=$username&y=$year&p=$year&m=$month&kind=-1',
+      data: 'psid=$username&y=$year&p=$year&m=$month&kind=-1',
+      options: (
+        Options(
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        )
+      ),
+      refresh: refresh,
+      legacy: true,
+      ignoreLegacyUsername: true,
+    );
+
+    return CalendarResponse.fromJson(response.data);
   }
 
   /// Get detailed information for a specific calendar event
@@ -57,6 +54,8 @@ class CalendarService {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         ),
         refresh: refresh,
+        legacy: true,
+        ignoreLegacyUsername: true,
       );
 
       if (response.statusCode != 200) {
@@ -127,6 +126,8 @@ class CalendarService {
           headers: {'Content-Type': 'application/x-www-form-urlencoded'},
         ),
         refresh: refresh,
+        legacy: true,
+        ignoreLegacyUsername: true,
       );
 
       if (response.statusCode != 200) {

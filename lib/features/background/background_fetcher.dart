@@ -1,6 +1,8 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:opencms/utils/device_info.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('BackgroundFetcher');
 
 class BackgroundFetcher {
   Timer? _timer;
@@ -19,7 +21,7 @@ class BackgroundFetcher {
 
   /// Override for your background task logic
   Future<void> onUpdate() async {
-    debugPrint('BackgroundFetcher: $name update');
+    logger.info('$name onUpdate called');
   }
 
   /// Start background service
@@ -27,7 +29,7 @@ class BackgroundFetcher {
     if (isRunning || !isDesktopEnvironment) return;
 
     _startDesktopTimer();
-    debugPrint('BackgroundFetcher: $name started (desktop)');
+    logger.info('$name started');
 
     isRunning = true;
   }
@@ -39,13 +41,13 @@ class BackgroundFetcher {
     _timer?.cancel();
 
     isRunning = false;
-    debugPrint('BackgroundFetcher: $name stopped');
+    logger.info('$name stopped');
   }
 
   /// Modify fetch interval while running
   Future<void> modifyInterval(Duration newInterval) async {
     interval = newInterval;
-    debugPrint('BackgroundFetcher: $name interval updated to $interval');
+    logger.info('$name interval updated to $interval');
 
     if (isRunning) {
       await stop();

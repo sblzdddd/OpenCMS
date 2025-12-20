@@ -12,13 +12,10 @@ class TokenStorage {
     return TokenStorage._(storage);
   }
 
-  Future<String?> getRefreshToken() async {
-    return await storage.read('refresh');
-  }
-
-  Future<String?> getAccessToken() async {
-    return await storage.read('access');
-  }
+  Future<String?> get refreshToken async => await storage.read('refresh');
+  Future<String?> get accessToken async => await storage.read('access');
+  Future<String?> get sidNb async => await storage.read('sid_nb');
+  Future<String?> get sidScie async => await storage.read('sid_scie');
 
   Future<void> setRefreshToken(String? token) async {
     if (token == null || token.isEmpty) return;
@@ -30,8 +27,20 @@ class TokenStorage {
     await storage.write('access', token);
   }
 
+  Future<void> setSidNb(String? token) async {
+    if (token == null || token.isEmpty) return;
+    await storage.write('sid_nb', token);
+  }
+
+  Future<void> setSidScie(String? token) async {
+    if (token == null || token.isEmpty) return;
+    await storage.write('sid_scie', token);
+  }
+
   Future<void> clearAll() async {
     await storage.delete('access');
     await storage.delete('refresh');
+    await storage.delete('sid_nb');
+    await storage.delete('sid_scie');
   }
 }

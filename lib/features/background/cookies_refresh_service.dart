@@ -1,8 +1,9 @@
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
-
 import 'background_fetcher.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CookiesRefreshService');
 
 class CookiesRefreshService extends BackgroundFetcher {
   static final CookiesRefreshService _instance =
@@ -19,11 +20,12 @@ class CookiesRefreshService extends BackgroundFetcher {
   @override
   Future<void> start() async {
     await super.start();
-    debugPrint('CookiesRefreshService started');
+    logger.info('started');
   }
 
   @override
   Future<void> onUpdate() async {
+    logger.info('Refreshing cookies...');
     await di<TokenRefreshService>().refreshNewToken();
     await di<TokenRefreshService>().refreshLegacyCookies();
   }
