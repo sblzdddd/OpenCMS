@@ -41,10 +41,7 @@ class TimetableCard extends StatelessWidget {
       category: category,
     );
 
-    // Get translated subject name if category is known, otherwise use original
-    final displaySubject = category != 'unknown'
-        ? SubjectIconConstants.getTranslatedName(category: category)
-        : subject;
+    final displaySubject = subject;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

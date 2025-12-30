@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
-import '../components/dashboard_grid/add_widget_drawer.dart';
+import 'manage_widgets_page.dart';
 import '../components/quick_actions/quick_actions.dart';
 import '../components/dashboard_grid/dashboard_grid.dart';
 import '../../../navigations/views/bottom_navigation.dart';
@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
       DashboardGridController();
   final QuickActionsController _quickActionsController =
       QuickActionsController();
+  int _layoutVersion = 0;
 
   int get _selectedIndex => _selectedIndexNotifier.value;
 
@@ -136,8 +137,9 @@ class _HomePageState extends State<HomePage> {
               title: Text('Home'),
               actions: [
                 IconButton(
-                  onPressed: _showAddWidgetDrawer,
-                  icon: Icon(Symbols.add_rounded),
+                  onPressed: _onManageWidgets,
+                  icon: Icon(Symbols.edit_rounded),
+                  tooltip: 'Manage Widgets',
                 ),
               ],
               forceMaterialTransparency: true,
@@ -164,9 +166,17 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           if (!isWideScreen) ...[
-                            DashboardGrid(controller: _dashboardController),
+                            DashboardGrid(
+                              key: ValueKey('grid_$_layoutVersion'),
+                              controller: _dashboardController,
+                              isReadOnly: true,
+                            ),
                             const SizedBox(height: 16),
-                            QuickActions(controller: _quickActionsController),
+                            QuickActions(
+                              key: ValueKey('actions_$_layoutVersion'),
+                              controller: _quickActionsController,
+                              isReadOnly: true,
+                            ),
                           ] else ...[
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,14 +184,18 @@ class _HomePageState extends State<HomePage> {
                                 Expanded(
                                   flex: 3,
                                   child: DashboardGrid(
+                                    key: ValueKey('grid_w_$_layoutVersion'),
                                     controller: _dashboardController,
+                                    isReadOnly: true,
                                   ),
                                 ),
                                 const SizedBox(width: 14),
                                 Expanded(
                                   flex: 4,
                                   child: QuickActions(
+                                    key: ValueKey('actions_w_$_layoutVersion'),
                                     controller: _quickActionsController,
+                                    isReadOnly: true,
                                   ),
                                 ),
                               ],
@@ -201,30 +215,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _showAddWidgetDrawer() {
-    final addableWidgets = _dashboardController.getAddableWidgets();
-    final addableActions = _quickActionsController.getAddableActions();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => AddWidgetDrawer(
-        addableWidgets: addableWidgets,
-        onAddWidget: (id, size) {
-          _dashboardController.addWidget(id, size);
-          Navigator.of(context).pop();
-        },
-        addableActions: addableActions,
-        onAddAction: (action) {
-          _quickActionsController.addAction(action);
-          Navigator.of(context).pop();
-        },
-        onReset: () {
-          _dashboardController.resetLayout();
-          _quickActionsController.resetActions();
-        },
-      ),
-    );
+  Future<void> _onManageWidgets() async {
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const ManageWidgetsPage()));
+    if (mounted) {
+      setState(() {
+        _layoutVersion++;
+      });
+    }
   }
 
   /// Refresh all data on the home page

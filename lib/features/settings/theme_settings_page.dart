@@ -8,7 +8,6 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../system/desktop_window/window_effect_service.dart';
 import '../shared/views/widgets/custom_scaffold.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
@@ -45,7 +44,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         ),
         clipBehavior: Clip.antiAlias,
-        title: Text(tr('themeSettings.pickCustomColor')),
+        title: const Text('Pick Custom Color'),
         content: CustomChildScrollView(
           child: Column(
             children: [
@@ -73,7 +72,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                   controller: _hexController,
                   decoration: InputDecoration(
                     prefixIcon: Icon(Symbols.tag_rounded),
-                    labelText: tr('themeSettings.hexColor'),
+                    labelText: 'Hex Color',
                     border: OutlineInputBorder(),
                   ),
                   maxLength: 9,
@@ -96,14 +95,14 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(tr('themeSettings.cancel')),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
               themeNotifier.setCustomColor(currentColor);
               Navigator.of(context).pop();
             },
-            child: Text(tr('themeSettings.apply')),
+            child: const Text('Apply'),
           ),
         ],
       ),
@@ -188,7 +187,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
               icon: const Icon(Symbols.arrow_back_rounded),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: Text(tr('themeSettings.title')),
+            title: const Text('Theme Settings'),
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
@@ -204,7 +203,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tr('themeSettings.themeColor'),
+                      'Theme Color',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -216,31 +215,31 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                       children: [
                         _buildColorButton(
                           ThemeColor.red,
-                          tr('themeSettings.fire'),
+                          'Fire',
                           ThemeNotifier.predefinedColors[ThemeColor.red]!,
                           themeNotifier,
                         ),
                         _buildColorButton(
                           ThemeColor.golden,
-                          tr('themeSettings.metal'),
+                          'Metal',
                           ThemeNotifier.predefinedColors[ThemeColor.golden]!,
                           themeNotifier,
                         ),
                         _buildColorButton(
                           ThemeColor.blue,
-                          tr('themeSettings.water'),
+                          'Water',
                           ThemeNotifier.predefinedColors[ThemeColor.blue]!,
                           themeNotifier,
                         ),
                         _buildColorButton(
                           ThemeColor.green,
-                          tr('themeSettings.wood'),
+                          'Wood',
                           ThemeNotifier.predefinedColors[ThemeColor.green]!,
                           themeNotifier,
                         ),
                         _buildColorButton(
                           ThemeColor.system,
-                          tr('themeSettings.system'),
+                          'System',
                           systemColor ??
                               ThemeNotifier.predefinedColors[ThemeColor.blue]!,
                           themeNotifier,
@@ -257,7 +256,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                         onPressed: () =>
                             _showColorPicker(context, themeNotifier),
                         icon: const Icon(Symbols.palette_rounded),
-                        label: Text(tr('themeSettings.customColor')),
+                        label: const Text('Custom Color'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
                               themeNotifier.selectedColor == ThemeColor.custom
@@ -278,7 +277,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
 
                     // Border Radius
                     Text(
-                      tr('themeSettings.borderRadius'),
+                      'Border Radius',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -301,7 +300,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                       const SizedBox(height: 32),
 
                       Text(
-                        tr('themeSettings.windowEffect'),
+                        'Window Effect',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -312,7 +311,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                       DropdownButtonFormField<WindowEffectType>(
                         initialValue: themeNotifier.windowEffect,
                         decoration: InputDecoration(
-                          labelText: tr('themeSettings.windowEffect'),
+                          labelText: 'Window Effect',
                           border: OutlineInputBorder(
                             borderRadius: themeNotifier.getBorderRadiusAll(
                               0.75,

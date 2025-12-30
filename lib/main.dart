@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
@@ -16,8 +16,12 @@ import 'features/background/cookies_refresh_service.dart';
 import 'features/theme/services/theme_services.dart';
 import 'package:provider/provider.dart';
 import 'features/system/update/update_checker_service.dart';
+import 'features/auth/views/controllers/credentials_manager.dart';
+import 'features/auth/views/controllers/captcha_manager.dart';
+import 'features/auth/views/components/captcha_input/captcha_input.dart';
+import 'features/auth/services/credentials_storage_service.dart';
 import 'package:logging/logging.dart';
-import 'package:easy_logger/easy_logger.dart';
+import 'dart:async';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -28,11 +32,9 @@ void main() async {
   Logger.root.onRecord.listen((record) {
     print('${record.time} [${record.loggerName}] ${record.level.name}: ${record.message}');
   });
-  EasyLocalization.logger.enableLevels = [LevelMessages.error, LevelMessages.warning, LevelMessages.info];
 
   configureDependencies();
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
   await WebviewService.initWebview();
   // init window manager and effects
   await OCMSWindowService.initWindowManager();
@@ -41,14 +43,7 @@ void main() async {
   // Initialize ThemeNotifier singleton
   await ThemeNotifier.initialize();
 
-  runApp(
-    EasyLocalization(
-      supportedLocales: const [Locale('en', 'US'), Locale('zh', 'CN')],
-      path: 'assets/langs',
-      fallbackLocale: const Locale('en', 'US'),
-      child: const OCMSApp(),
-    ),
-  );
+  runApp(Phoenix(child: OCMSApp()));
 }
 
 class OCMSApp extends StatelessWidget {
@@ -65,10 +60,7 @@ class OCMSApp extends StatelessWidget {
 
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            title: tr('app.title'),
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
+            title: "OpenCMS",
             theme: colorThemes.buildLightTheme(seedColor),
             darkTheme: colorThemes.buildDarkTheme(seedColor),
             themeMode: themeNotifier.isDarkMode
@@ -96,6 +88,7 @@ class OCMSApp extends StatelessWidget {
   }
 }
 
+
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});
 
@@ -106,18 +99,34 @@ class AuthWrapper extends StatefulWidget {
 class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   bool _isCheckingAuth = true;
   bool _isAuthenticated = false;
+  String? _statusText;
+
+  // Managers for auto-login
+  late final CredentialsManager _credentialsManager;
+  late final CaptchaManager _captchaManager;
+  final GlobalKey _captchaKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     windowManager.addListener(this);
-    _checkAuthenticationStatus();
+    
+    _credentialsManager = CredentialsManager();
+    _captchaManager = CaptchaManager();
+    
+    // Defer check to next frame to ensure managers are ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuthenticationStatus();
+    });
+    
     UpdateCheckerService.scheduleUpdateCheck(context);
   }
 
   @override
   void dispose() {
     windowManager.removeListener(this);
+    _credentialsManager.dispose();
+    _captchaManager.dispose();
     super.dispose();
   }
 
@@ -127,20 +136,127 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
   }
 
   void _checkAuthenticationStatus() async {
-    await Future.delayed(const Duration(milliseconds: 100));
+    // Check existing session
     await di<AuthService>().checkAuth();
+    final isSessionValid = di<LoginState>().isAuthenticated;
+
+    if (isSessionValid) {
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = true;
+          _isCheckingAuth = false;
+        });
+      }
+      return;
+    }
+
+    // If session invalid, check for auto-login
+    await _credentialsManager.loadSavedCredentials(
+      usernameController: TextEditingController(), 
+      passwordController: TextEditingController()
+    );
+
+    if (_credentialsManager.autoLogin && _credentialsManager.rememberMe) {
+        await _performAutoLogin();
+    } else {
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = false;
+          _isCheckingAuth = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _performAutoLogin() async {
+    if (!mounted) return;
+    
+    // Get credentials from storage (already loaded in manager but we need the values)
+    final savedCreds = await di<CredentialsStorageService>().loadCredentials();
+    if (!savedCreds.hasCredentials) {
+      setState(() { _isCheckingAuth = false; });
+      return;
+    }
+
+    final username = savedCreds.username;
+    final password = savedCreds.password;
 
     setState(() {
-      _isAuthenticated = di<LoginState>().isAuthenticated;
-      _isCheckingAuth = false;
+      _statusText = 'Logging in as $username...';
     });
+    
+    // a. Try auto-solve captcha
+    bool captchaVerified = await _captchaManager.autoSolveCaptcha(username);
+
+    // b. If auto-solve failed, trigger manual verification
+    if (!captchaVerified) {
+      if (!mounted) return;
+      
+      // Wait for manual verification
+      final completer = Completer<bool>();
+      
+      _captchaManager.triggerManualVerification(
+        _captchaKey,
+        onSuccess: (data) {
+          if (!completer.isCompleted) completer.complete(true);
+        },
+      );
+      return; 
+    } else {
+       // Auto-solve success
+       await _executeLogin(username, password, _captchaManager.captchaData!);
+    }
+  }
+
+  Future<void> _executeLogin(String username, String password, Object captchaData) async {
+     final success = await di<AuthService>().login(
+        username: username,
+        password: password,
+        captchaData: captchaData,
+      );
+
+      if (mounted) {
+        if (success.isSuccess) {
+           setState(() {
+            _isAuthenticated = true;
+            _isCheckingAuth = false;
+          });
+        } else {
+           // Login failed, fallback to login page
+           setState(() {
+            _isAuthenticated = false;
+            _isCheckingAuth = false;
+            _statusText = null;
+          });
+        }
+      }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isCheckingAuth) {
-      return const SplashScreen();
+      return Stack(
+        children: [
+          // Splash Screen with optional status text
+          SplashScreen(statusText: _statusText), 
+          
+          // Invisible Captcha Input for manual verification fallback
+          CaptchaInput(
+            key: _captchaKey,
+            onCaptchaStateChanged: (verified, data) {
+               if (verified && data != null && _credentialsManager.autoLogin) {
+                  di<CredentialsStorageService>().loadCredentials().then((creds) {
+                    if (creds.hasCredentials) {
+                       _executeLogin(creds.username, creds.password, data);
+                    }
+                  });
+               }
+            },
+          ),
+        ],
+      );
     }
     return _isAuthenticated ? const HomePage() : const LoginPage();
   }
 }
+

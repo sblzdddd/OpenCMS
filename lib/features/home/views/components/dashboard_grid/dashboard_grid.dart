@@ -51,8 +51,14 @@ class DashboardGridController extends ChangeNotifier {
 class DashboardGrid extends StatefulWidget {
   final VoidCallback? onRefresh;
   final DashboardGridController? controller;
+  final bool isReadOnly;
 
-  const DashboardGrid({super.key, this.onRefresh, this.controller});
+  const DashboardGrid({
+    super.key,
+    this.onRefresh,
+    this.controller,
+    this.isReadOnly = false,
+  });
 
   @override
   State<DashboardGrid> createState() => _DashboardGridState();
@@ -260,8 +266,10 @@ class _DashboardGridState extends State<DashboardGrid> {
               runSpacing: spacing,
               alignment: WrapAlignment.start,
               isEditMode: _isEditMode,
+              enableReorder: !widget.isReadOnly,
               wrapId: 'dashboard_grid',
               onReorderStart: () {
+                if (widget.isReadOnly) return;
                 setState(() {
                   _isEditMode = true;
                 });

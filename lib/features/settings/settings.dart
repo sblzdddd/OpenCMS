@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/storage/token_storage.dart';
+import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/navigations/views/app_navigation_controller.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
 import '../shared/views/dialog/confirm_dialog.dart';
@@ -12,7 +17,6 @@ import '../shared/views/widgets/custom_scaffold.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/shared/views/widgets/app_card.dart';
 import 'package:opencms/features/settings/privacy_policy.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -22,8 +26,48 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  void _clearUserData() {
-    showClearDataDialog(context);
+  
+  void _clearUserData(BuildContext context) {
+    showConfirmationDialog(
+      context,
+      'Clear Data',
+      'Are you sure you want to clear all user data?\nThis action cannot be undone and will delete ALL your data and restart the application.',
+      (dialogContext) async {
+        Navigator.of(dialogContext).pop();
+        await di<AuthService>().logout();
+        if (context.mounted) {
+          // Ensure global navigation state is cleared and remove all routes
+          AppNavigationController.reset();
+
+          // Ensure window close prevention is maintained after logout
+          // if (defaultTargetPlatform == TargetPlatform.windows) {
+          //   await windowManager.setPreventClose(true);
+          // }
+          if (!context.mounted) {
+            debugPrint('ClearDataDialog: Context is not mounted');
+            return;
+          }
+          // Navigator.of(
+          //   context,
+          // ).pushNamedAndRemoveUntil('/login', (route) => false);
+          Phoenix.rebirth(context);
+        }
+      },
+    );
+  }
+
+  void _clearTokens() {
+    showConfirmationDialog(
+      context,
+      'Clear Tokens',
+      'Are you sure you want to clear all stored tokens and cookies?\n(Restart required)',
+      (dialogContext) async {
+        Navigator.of(dialogContext).pop();
+        await di<TokenStorage>().clearAll();
+        
+        Phoenix.rebirth(context);
+      },
+    );
   }
 
   Widget _buildSettingsItem(
@@ -87,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
           icon: const Icon(Symbols.arrow_back_rounded),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(tr('settings.title')),
+        title: const Text('Settings'),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -97,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSettingsTitle(tr('settings.theme')),
+              _buildSettingsTitle('Theme'),
               Consumer<ThemeNotifier>(
                 builder: (context, themeNotifier, child) {
                   return Column(
@@ -121,7 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ),
                                 const SizedBox(width: 12),
                                 Text(
-                                  tr('settings.darkMode'),
+                                  'Dark Mode',
                                   style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               ],
@@ -139,120 +183,19 @@ class _SettingsPageState extends State<SettingsPage> {
                           ],
                         ),
                       ),
-                      const Divider(height: 2),
-
-                      // Language Selection
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 6.0,
-                          horizontal: 8.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Symbols.language_rounded,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  tr('settings.language'),
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                            DropdownButton<Locale>(
-                              value: context.locale,
-                              underline: Container(),
-                              icon: Icon(
-                                Symbols.arrow_drop_down_rounded,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              items: context.supportedLocales.map((
-                                Locale locale,
-                              ) {
-                                String languageName;
-                                switch (locale.toString()) {
-                                  case 'en_US':
-                                    languageName = 'English';
-                                    break;
-                                  case 'zh_CN':
-                                    languageName = '简体中文';
-                                    break;
-                                  default:
-                                    languageName = locale.toString();
-                                }
-                                return DropdownMenuItem<Locale>(
-                                  value: locale,
-                                  child: Text(
-                                    languageName,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodyMedium,
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (Locale? newLocale) {
-                                if (newLocale != null) {
-                                  context.setLocale(newLocale);
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // const Divider(height: 2);
-
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(
-                      //     vertical: 6.0,
-                      //     horizontal: 8.0,
-                      //   ),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //     children: [
-                      //       Row(
-                      //         children: [
-                      //           Icon(
-                      //             Symbols.access_time_rounded,
-                      //             color: Theme.of(context).colorScheme.primary,
-                      //           ),
-                      //           const SizedBox(width: 12),
-                      //           Text(
-                      //             'Use 24H Time Format',
-                      //             style: Theme.of(context).textTheme.bodyLarge,
-                      //           ),
-                      //         ],
-                      //       ),
-                      //       Switch(
-                      //         value:
-                      //             false, // TODO: Implement 24H time format toggle
-                      //         onChanged: (value) {
-                      //           // TODO: Implement 24H time format toggle
-                      //         },
-                      //         activeColor: Theme.of(
-                      //           context,
-                      //         ).colorScheme.primary,
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                     ],
                   );
                 },
               ),
               const Divider(height: 2),
               _buildSettingsItem(
-                tr('settings.themeSettings'),
+                'Theme Settings',
                 Symbols.palette_rounded,
                 const ThemeSettingsPage(),
               ),
               const Divider(height: 2),
               _buildSettingsItem(
-                tr('settings.skins'),
+                'Skins',
                 Symbols.brush_rounded,
                 const SkinSettingsPage(),
               ),
@@ -265,9 +208,9 @@ class _SettingsPageState extends State<SettingsPage> {
               //   const ThemeSettingsPage(),
               // ),
               // const Divider(height: 2),
-              _buildSettingsTitle(tr('settings.account')),
+              _buildSettingsTitle('Account'),
               _buildSettingsItem(
-                tr('settings.changePassword'),
+                'Change Password',
                 Symbols.password_rounded,
                 const WebCmsPage(
                   initialUrl: '${API.cmsReferer}/auth/change_password',
@@ -276,24 +219,31 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               const Divider(height: 2),
               _buildSettingsItem(
-                tr('settings.logout'),
+                'Logout',
                 Symbols.logout_rounded,
                 null,
                 onTap: () => showLogoutDialog(context),
               ),
               const Divider(height: 2),
               _buildSettingsItem(
-                tr('settings.clearUserData'),
-                Symbols.delete_forever_rounded,
+                'Clear Tokens',
+                Symbols.delete_sweep_rounded,
                 null,
-                onTap: () => _clearUserData(),
+                onTap: () => _clearTokens(),
               ),
               const Divider(height: 2),
-              _buildSettingsTitle(tr('settings.about')),
+              _buildSettingsItem(
+                'Clear All Data',
+                Symbols.delete_forever_rounded,
+                null,
+                onTap: () => _clearUserData(context),
+              ),
+              const Divider(height: 2),
+              _buildSettingsTitle('About'),
               const AppCard(),
               const Divider(height: 2),
               _buildSettingsItem(
-                tr('settings.privacyLegal'),
+                'Privacy & Legal',
                 Symbols.privacy_tip_rounded,
                 const PrivacyPolicyPage(),
               ),

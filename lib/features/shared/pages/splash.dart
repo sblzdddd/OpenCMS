@@ -5,7 +5,8 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/utils/app_info.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final String? statusText;
+  const SplashScreen({super.key, this.statusText});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -49,6 +50,15 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 24),
             const CircularProgressIndicator(),
+            if (widget.statusText != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                widget.statusText!,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+              ),
+            ],
           ],
         ),
       ),

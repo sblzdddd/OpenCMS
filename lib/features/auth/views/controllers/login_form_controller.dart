@@ -87,6 +87,7 @@ class LoginFormController extends ChangeNotifier {
 
       if (!autoSolveSuccess) {
         // Fallback to manual captcha if auto-solve fails
+        print(111111);
         _captchaManager.triggerManualVerification(
           captchaKey,
           onSuccess: (data) {

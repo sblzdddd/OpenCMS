@@ -48,7 +48,8 @@ class QuickActionsController extends ChangeNotifier {
 
 class QuickActions extends StatefulWidget {
   final QuickActionsController? controller;
-  const QuickActions({super.key, this.controller});
+  final bool isReadOnly;
+  const QuickActions({super.key, this.controller, this.isReadOnly = false});
 
   @override
   State<QuickActions> createState() => _QuickActionsState();
@@ -285,9 +286,11 @@ class _QuickActionsState extends State<QuickActions> {
                               runSpacing: spacing,
                               alignment: WrapAlignment.start,
                               isEditMode: _isEditMode,
+                              enableReorder: !widget.isReadOnly,
                               wrapId:
                                   'quick_actions', // Unique identifier for this wrap
                               onReorderStart: () {
+                                if (widget.isReadOnly) return;
                                 setState(() {
                                   _isEditMode = true;
                                 });

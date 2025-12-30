@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:opencms/features/shared/constants/subject_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/services/theme_services.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
@@ -130,13 +129,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final isOverdue = widget.homework.isOverdue;
     final daysUntilDue = widget.homework.daysUntilDue;
-    final category = SubjectIconConstants.getCategoryForSubject(
-      subjectName: widget.homework.courseName,
-      code: widget.homework.courseEnglishName,
-    );
-    final displaySubject = category != 'unknown'
-        ? SubjectIconConstants.getTranslatedName(category: category)
-        : widget.homework.courseName;
+    final displaySubject = widget.homework.courseName;
 
     return Opacity(
       opacity: _isCompleted ? 0.5 : 1,

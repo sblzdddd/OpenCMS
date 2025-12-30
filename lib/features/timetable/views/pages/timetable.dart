@@ -4,7 +4,6 @@ import '../../../shared/views/academic_year_dropdown.dart';
 import '../../course_timetable/views/layouts/course_timetable_view.dart';
 import '../../exam_timetable/views/layouts/exam_timetable_view.dart';
 import '../../../shared/views/views/tabbed_page_base.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 class TimetablePage extends StatefulWidget {
   final int initialTabIndex;
@@ -41,7 +40,7 @@ class _TimetablePageState extends State<TimetablePage> {
   Widget build(BuildContext context) {
     return TabbedPageBase(
       isTransparent: widget.isTransparent,
-      title: 'quickActions.timetable'.tr(),
+      title: 'Timetable',
       skinKey: ['timetable', 'exam'],
       initialTabIndex: widget.initialTabIndex,
       actions: [
@@ -51,8 +50,8 @@ class _TimetablePageState extends State<TimetablePage> {
         ),
       ],
       tabs: [
-        Tab(text: 'timetable.course'.tr()),
-        Tab(text: 'timetable.exam'.tr()),
+        Tab(text: 'Courses'),
+        Tab(text: 'Exams'),
       ],
       tabViews: [
         CourseTimetableView(selectedYear: _selectedYear),

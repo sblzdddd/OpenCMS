@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 /// Contains all available quick actions that users can add to their home screen.
@@ -9,7 +8,7 @@ class QuickActionsConstants {
   static const String moreActionId = 'more';
 
   static Map<String, dynamic> get moreAction => {
-    'title': 'quickActions.more'.tr(),
+    'title': 'More',
     'icon': Symbols.more_horiz_rounded,
     'id': moreActionId,
   };
@@ -17,157 +16,157 @@ class QuickActionsConstants {
   /// All available quick actions
   static List<Map<String, dynamic>> get availableActions => [
     {
-      'title': 'quickActions.webcms'.tr(),
+      'title': 'WebCMS',
       'icon': Symbols.language,
       'id': 'webcms',
     },
     {
-      'title': 'quickActions.timetable'.tr(),
+      'title': 'Timetable',
       'icon': Symbols.calendar_view_day_rounded,
       'id': 'timetable',
     },
     {
-      'title': 'quickActions.exam'.tr(),
+      'title': 'Exams',
       'icon': Symbols.calendar_clock_rounded,
       'id': 'exam',
     },
     {
-      'title': 'quickActions.attendance'.tr(),
+      'title': 'Attendance',
       'icon': Symbols.schedule,
       'id': 'attendance',
     },
     {
-      'title': 'quickActions.reports'.tr(),
+      'title': 'Reports',
       'icon': Symbols.assignment_rounded,
       'id': 'reports',
     },
     {
-      'title': 'quickActions.assessment'.tr(),
+      'title': 'Assessment',
       'icon': Symbols.assessment_rounded,
       'id': 'assessment',
     },
     {
-      'title': 'quickActions.comments'.tr(),
+      'title': 'Comments',
       'icon': Symbols.comment_rounded,
       'id': 'comments',
     },
     {
-      'title': 'quickActions.calendar'.tr(),
+      'title': 'Calendar',
       'icon': Symbols.calendar_month_rounded,
       'id': 'calendar',
     },
     {
-      'title': 'quickActions.notice'.tr(),
+      'title': 'Notices',
       'icon': Symbols.notifications_rounded,
       'id': 'notice',
     },
     {
-      'title': 'quickActions.daily_bulletin'.tr(),
+      'title': 'Daily Bulletin',
       'icon': Symbols.format_list_bulleted_rounded,
       'id': 'daily_bulletin',
     },
     {
-      'title': 'quickActions.events'.tr(),
+      'title': 'Events',
       'icon': Symbols.event_upcoming_rounded,
       'id': 'events',
     },
     {
-      'title': 'quickActions.homeworks'.tr(),
+      'title': 'Homeworks',
       'icon': Symbols.edit_note_rounded,
       'id': 'homeworks',
     },
     {
-      'title': 'quickActions.documents'.tr(),
+      'title': 'Documents',
       'icon': Symbols.description_rounded,
       'id': 'documents',
     },
     {
-      'title': 'quickActions.available_classrooms'.tr(),
+      'title': 'Available Classrooms',
       'icon': Symbols.door_open_rounded,
       'id': 'available_classrooms',
     },
     {
-      'title': 'quickActions.maintenance'.tr(),
+      'title': 'Maintenance',
       'icon': Symbols.build_rounded,
       'id': 'maintenance',
     },
     {
-      'title': 'quickActions.leave_requests'.tr(),
+      'title': 'Leave Requests',
       'icon': Symbols.move_item_rounded,
       'id': 'leave_requests',
     },
     {
-      'title': 'quickActions.student_profile'.tr(),
+      'title': 'Student Profile',
       'icon': Symbols.person_rounded,
       'id': 'student_profile',
     },
     {
-      'title': 'quickActions.course_stats'.tr(),
+      'title': 'Course Stats',
       'icon': Symbols.school_rounded,
       'id': 'course_stats',
     },
     {
-      'title': 'quickActions.eca'.tr(),
+      'title': 'ECA',
       'icon': Symbols.padel_rounded,
       'id': 'eca',
     },
     {
-      'title': 'quickActions.mentoring'.tr(),
+      'title': 'Mentoring',
       'icon': Symbols.psychiatry_rounded,
       'id': 'mentoring',
     },
     {
-      'title': 'quickActions.global_citizenship'.tr(),
+      'title': 'Global Citizenship',
       'icon': Symbols.diversity_2_rounded,
       'id': 'global_citizenship',
     },
     {
-      'title': 'quickActions.surveys'.tr(),
+      'title': 'Surveys',
       'icon': Symbols.rate_review_rounded,
       'id': 'surveys',
     },
     {
-      'title': 'quickActions.course_selection'.tr(),
+      'title': 'Course Selection',
       'icon': Symbols.book_rounded,
       'id': 'course_selection',
     },
     {
-      'title': 'quickActions.exam_entry'.tr(),
+      'title': 'Exam Entry',
       'icon': Symbols.assignment_turned_in_rounded,
       'id': 'exam_entry',
     },
     {
-      'title': 'quickActions.insurance'.tr(),
+      'title': 'Insurance',
       'icon': Symbols.health_and_safety_rounded,
       'id': 'insurance',
     },
     {
-      'title': 'quickActions.e_agreement'.tr(),
+      'title': 'E Agreement',
       'icon': Symbols.contract_rounded,
       'id': 'e_agreement',
     },
     {
-      'title': 'quickActions.special_consideration'.tr(),
+      'title': 'Special Consideration',
       'icon': Symbols.bookmark_heart_rounded,
       'id': 'special_consideration',
     },
     {
-      'title': 'quickActions.id_card'.tr(),
+      'title': 'ID Card',
       'icon': Symbols.id_card_rounded,
       'id': 'id_card',
     },
     {
-      'title': 'quickActions.university_application'.tr(),
+      'title': 'UniApp',
       'icon': Symbols.school_rounded,
       'id': 'university_application',
     },
     {
-      'title': 'quickActions.certifications'.tr(),
+      'title': 'Certifications',
       'icon': Symbols.license_rounded,
       'id': 'certifications',
     },
     {
-      'title': 'quickActions.settings'.tr(),
+      'title': 'Settings',
       'icon': Symbols.settings_rounded,
       'id': 'settings',
     },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:easy_localization/easy_localization.dart';
 
 /// Provides icon lookup for subjects based on name aliases first, then code.
 class SubjectIconConstants {
@@ -211,10 +210,5 @@ class SubjectIconConstants {
 
   static IconData getIconForCategory({required String category}) {
     return _categoryToIcon[category] ?? _defaultIcon;
-  }
-
-  /// Get translated subject name for a category
-  static String getTranslatedName({required String category}) {
-    return 'subjects.$category'.tr();
   }
 }

@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../../theme/services/theme_services.dart';
@@ -54,7 +53,8 @@ class _QuickActionTileState extends State<QuickActionTile>
     final TextStyle resolvedTitleStyle =
         widget.titleStyle ??
         Theme.of(context).textTheme.bodyMedium!.copyWith(
-          fontSize: (context.locale == Locale('zh', 'CN') ? 12 : 10),
+          // fontSize: (context.locale == Locale('zh', 'CN') ? 12 : 10),
+          fontSize: 10,
           fontWeight: FontWeight.w500,
         );
 

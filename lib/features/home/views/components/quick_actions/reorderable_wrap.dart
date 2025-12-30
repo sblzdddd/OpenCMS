@@ -25,8 +25,11 @@ class ReorderableWrap extends StatefulWidget {
     this.runSpacing = 0.0,
     this.alignment = WrapAlignment.start,
     this.isEditMode = false,
+    this.enableReorder = true,
     this.wrapId, // Optional unique identifier
   });
+
+  final bool enableReorder;
 
   @override
   State<ReorderableWrap> createState() => _ReorderableWrapState();
@@ -119,8 +122,9 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
           );
         }
 
+
         // Regular draggable items
-        return LongPressDraggable<Map<String, dynamic>>(
+        final draggable = LongPressDraggable<Map<String, dynamic>>(
           delay: const Duration(milliseconds: 400),
           data: {
             'index': index,
@@ -187,6 +191,12 @@ class _ReorderableWrapState extends State<ReorderableWrap> {
             },
           ),
         );
+
+        if (!widget.enableReorder) {
+            return child;
+        }
+
+        return draggable;
       }).toList(),
     );
   }

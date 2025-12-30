@@ -9,7 +9,6 @@ import 'username_input.dart';
 import '../controllers/login_form_controller.dart';
 import '../../../settings/privacy_policy.dart';
 import 'package:flutter/gestures.dart';
-import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
 
 class LoginForm extends StatefulWidget {
   final TextEditingController usernameController;
@@ -31,7 +30,6 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   late final LoginFormController _controller;
-  bool _agreedToPrivacyPolicy = false;
 
   @override
   void initState() {
@@ -64,13 +62,6 @@ class _LoginFormState extends State<LoginForm> {
 
   /// Perform the complete login flow
   Future<void> _performLogin() async {
-    if (!_agreedToPrivacyPolicy) {
-      SnackbarUtils.showError(
-        context,
-        'Please agree to the Privacy Policy & Legal Terms',
-      );
-      return;
-    }
     await _controller.performLogin(
       context,
       formKey: widget.formKey,
@@ -101,37 +92,43 @@ class _LoginFormState extends State<LoginForm> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const SizedBox(height: 14),
-                      SkinIcon(
-                        imageKey: 'global.app_icon',
-                        fallbackIcon: Symbols.school_rounded,
-                        size: 80,
-                        iconSize: 80,
-                        fallbackIconColor: Theme.of(
-                          context,
-                        ).colorScheme.primary,
-                        fallbackIconBackgroundColor: Colors.transparent,
+                      Center(
+                        child: SkinIcon(
+                          imageKey: 'global.app_icon',
+                          fallbackIcon: Symbols.school_rounded,
+                          size: 80,
+                          iconSize: 80,
+                          fallbackIconColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          fallbackIconBackgroundColor: Colors.transparent,
+                        ),
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        'Welcome Back!',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w500,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      Center(
+                        child: Text(
+                          'Welcome Back!',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'Login with your'
-                        ' SC'
-                        'IE'
-                        ' Account',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.onSurface,
+                      Center(
+                        child: Text(
+                          'Login with your'
+                          ' SC'
+                          'IE'
+                          ' Account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 26),
 
@@ -159,8 +156,10 @@ class _LoginFormState extends State<LoginForm> {
                         initiallyVerified:
                             _controller.captchaManager.isCaptchaVerified,
                         enabled: !isLoading,
+                        usernameController: widget.usernameController,
                       ),
-
+                      const SizedBox(height: 8),
+                      
                       // Remember me checkbox
                       CheckboxListTile(
                         title: Text(
@@ -168,15 +167,6 @@ class _LoginFormState extends State<LoginForm> {
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 14,
-                          ),
-                        ),
-                        subtitle: Text(
-                          'Securely save credentials for next login',
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withAlpha(153),
-                            fontSize: 12,
                           ),
                         ),
                         value: _controller.credentialsManager.rememberMe,
@@ -193,94 +183,82 @@ class _LoginFormState extends State<LoginForm> {
                         dense: true,
                         controlAffinity: ListTileControlAffinity.leading,
                       ),
-                      // Privacy Policy agreement checkbox
                       CheckboxListTile(
-                        title: Row(
-                          children: [
-                            Flexible(
-                              child: RichText(
-                                text: TextSpan(
-                                  style: TextStyle(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
-                                    fontSize: 14,
-                                  ),
-                                  children: [
-                                    const TextSpan(text: 'I agree to the '),
-                                    TextSpan(
-                                      text: 'Privacy Policy & Legal Terms',
-                                      style: TextStyle(
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                      recognizer: TapGestureRecognizer()
-                                        ..onTap = () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  const PrivacyPolicyPage(),
-                                            ),
-                                          );
-                                        },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                        title: Text(
+                          'Auto-login next time',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 14,
+                          ),
                         ),
-                        value: _agreedToPrivacyPolicy,
+                        value: _controller.credentialsManager.autoLogin,
                         onChanged: isLoading
                             ? null
                             : (value) {
-                                setState(() {
-                                  _agreedToPrivacyPolicy = value ?? false;
-                                });
+                                _controller.credentialsManager.autoLogin =
+                                    value ?? false;
                               },
                         activeColor: Theme.of(context).colorScheme.primary,
+                        dense: true,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 0,
                         ),
-                        dense: true,
                         controlAffinity: ListTileControlAffinity.leading,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
 
                       // Login button
-                      ElevatedButton(
-                        onPressed: (isLoading || isLoadingCredentials)
-                            ? null
-                            : _performLogin,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 18),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: themeNotifier.getBorderRadiusAll(
-                              0.75,
-                            ),
-                          ),
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.primary,
-                        ),
-                        child: (isLoading || isLoadingCredentials)
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimary,
+                      Center(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: FilledButton(
+                            onPressed: (isLoading || isLoadingCredentials)
+                                ? null
+                                : _performLogin,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: themeNotifier.getBorderRadiusAll(
+                                  0.75,
                                 ),
                               ),
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                            ),
+                            child: (isLoading || isLoadingCredentials)
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : Text('Login'),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Center(
+                        child: RichText(
+                          text: TextSpan(
+                            text: 'Privacy Policy & Legal Terms',
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withAlpha(100),
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const PrivacyPolicyPage(),
+                                  ),
+                                );
+                              },
+                          ),
+                        ),
                       ),
                     ],
                   ),

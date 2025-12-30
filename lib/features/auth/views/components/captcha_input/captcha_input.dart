@@ -27,6 +27,9 @@ class CaptchaInput extends StatefulWidget {
   /// Whether captcha input is enabled
   final bool enabled;
 
+  /// Optional username controller for auto-solve request
+  final TextEditingController? usernameController;
+
   const CaptchaInput({
     super.key,
     this.onCaptchaStateChanged,
@@ -34,6 +37,7 @@ class CaptchaInput extends StatefulWidget {
     this.appId,
     this.bizState,
     this.enabled = true,
+    this.usernameController,
   });
 
   @override
@@ -82,6 +86,7 @@ class _CaptchaInputState extends State<CaptchaInput> {
       final config = TencentCaptchaDialogConfig(
         bizState: widget.bizState ?? '',
         enableDarkMode: Theme.of(context).brightness == Brightness.dark,
+        username: widget.usernameController?.text,
       );
 
       await TencentCaptchaDialog.verify(

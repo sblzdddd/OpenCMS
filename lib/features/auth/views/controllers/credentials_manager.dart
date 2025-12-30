@@ -11,13 +11,30 @@ class CredentialsManager extends ChangeNotifier {
 
   bool _isLoadingCredentials = true;
   bool _rememberMe = false;
+  bool _autoLogin = false;
 
   bool get isLoadingCredentials => _isLoadingCredentials;
   bool get rememberMe => _rememberMe;
+  bool get autoLogin => _autoLogin;
 
   set rememberMe(bool value) {
     if (_rememberMe != value) {
       _rememberMe = value;
+      // If remember me is disabled, auto login must also be disabled
+      if (!value) {
+        _autoLogin = false;
+      }
+      notifyListeners();
+    }
+  }
+
+  set autoLogin(bool value) {
+    if (_autoLogin != value) {
+      _autoLogin = value;
+      // If auto login is enabled, remember me must also be enabled
+      if (value) {
+        _rememberMe = true;
+      }
       notifyListeners();
     }
   }
@@ -33,6 +50,7 @@ class CredentialsManager extends ChangeNotifier {
         usernameController.text = savedCredentials.username;
         passwordController.text = savedCredentials.password;
         _rememberMe = savedCredentials.remember;
+        _autoLogin = savedCredentials.autoLogin;
         logger.info('Loaded saved credentials for user: ${savedCredentials.username}');
       }
     } catch (e) {
@@ -54,6 +72,7 @@ class CredentialsManager extends ChangeNotifier {
           username: username,
           password: password,
           remember: _rememberMe,
+          autoLogin: _autoLogin,
         );
         logger.info('Credentials saved securely');
       } catch (e) {
@@ -73,6 +92,8 @@ class CredentialsManager extends ChangeNotifier {
   /// Clear the remember me state
   void clearRememberMe() {
     _rememberMe = false;
+    _autoLogin = false;
     notifyListeners();
   }
+
 }

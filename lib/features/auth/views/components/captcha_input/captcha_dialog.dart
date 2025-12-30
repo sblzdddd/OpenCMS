@@ -10,6 +10,9 @@ import 'captcha_dialog_web.dart'
     if (dart.library.io) 'captcha_dialog_stub.dart'
     as web_helper;
 import 'package:logging/logging.dart';
+import '../../../services/auto_captcha_service.dart';
+import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final logger = Logger('CaptchaDialog');
 
@@ -43,6 +46,77 @@ class TencentCaptchaDialog {
     );
   }
 
+  /// Show auto-solve confirmation dialog
+  static void _showAutoSolveConfirmation(
+    BuildContext context,
+    String username,
+  ) {
+    showDialog(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text("Auto-Solve Request"),
+            content: Text(
+              "Your username ($username) and Device Id might be collected for Captcha auto-verification service (to ensure such service is not abused), based on your agreement to this additional service. Apart from that, We do not collect, store, analyze, or transmit any personal data or usage analytics to our servers or any third parties.",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  // Close confirmation dialog
+                  Navigator.of(dialogContext).pop();
+
+                  // Show loading indicator
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder:
+                        (loadingContext) =>
+                            const Center(child: CircularProgressIndicator()),
+                  );
+
+                  try {
+                    final service = AutoCaptchaService();
+                    final success = await service.sendRequest(username);
+
+                    if (!context.mounted) return;
+
+                    // Close loading indicator
+                    Navigator.of(context).pop();
+
+                    if (success) {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('auto_captcha_requested', true);
+
+                      if (context.mounted) {
+                        SnackbarUtils.showSuccess(
+                          context,
+                          "Auto-solve request sent successfully",
+                        );
+                      }
+                    } else {
+                      SnackbarUtils.showError(
+                        context,
+                        "Failed to send auto-solve request",
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      Navigator.of(context).pop(); // Close loading
+                      SnackbarUtils.showError(context, "Error: $e");
+                    }
+                  }
+                },
+                child: const Text("Accept"),
+              ),
+            ],
+          ),
+    );
+  }
+
   /// Show captcha webview in a popup dialog
   static Future<void> _showCaptchaWebView({
     required BuildContext context,
@@ -51,6 +125,10 @@ class TencentCaptchaDialog {
     required Function(dynamic) onFail,
   }) async {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final prefs = await SharedPreferences.getInstance();
+    final bool autoSolveRequested =
+        prefs.getBool('auto_captcha_requested') ?? false;
+
     await showDialog(
       context: context,
       barrierDismissible: false, // Disable clicking outside to close
@@ -157,6 +235,36 @@ class TencentCaptchaDialog {
                     ),
                   ),
                 ),
+                if (!autoSolveRequested &&
+                    config.username != null &&
+                    config.username!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Don't want to slide this bs? ",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => _showAutoSolveConfirmation(context, config.username!),
+                          style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          child: const Text(
+                            "Request Auto-Solve",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
@@ -170,9 +278,11 @@ class TencentCaptchaDialog {
 class TencentCaptchaDialogConfig {
   final String bizState;
   final bool enableDarkMode;
+  final String? username;
 
   const TencentCaptchaDialogConfig({
     required this.bizState,
     this.enableDarkMode = false,
+    this.username,
   });
 }

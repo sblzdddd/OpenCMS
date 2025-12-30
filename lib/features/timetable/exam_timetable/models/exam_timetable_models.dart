@@ -12,7 +12,7 @@ class ExamTimetableEntry {
   final String time;
   final String room;
   final String seat;
-  final bool isTaken;
+  final int isTaken;
 
   @JsonKey(includeFromJson: false)
   String get startTime => time.contains('-') ? time.split('-').first.trim() : '';

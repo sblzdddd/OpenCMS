@@ -16,6 +16,7 @@ class CredentialsStorageService {
   static const String _usernameKey = 'saved_username';
   static const String _passwordKey = 'saved_password';
   static const String _rememberCredentialsKey = 'remember_credentials';
+  static const String _autoLoginKey = 'auto_login';
 
   FlutterSecureStorage get _storage => StorageClient.instance;
 
@@ -24,12 +25,14 @@ class CredentialsStorageService {
     required String username,
     required String password,
     required bool remember,
+    required bool autoLogin,
   }) async {
     try {
       if (remember) {
         await _storage.write(key: _usernameKey, value: username);
         await _storage.write(key: _passwordKey, value: password);
         await _storage.write(key: _rememberCredentialsKey, value: 'true');
+        await _storage.write(key: _autoLoginKey, value: autoLogin.toString());
         logger.info('Credentials saved successfully');
       } else {
         await clearCredentials();
@@ -41,13 +44,28 @@ class CredentialsStorageService {
     }
   }
 
+  /// Set auto-login state independently
+  Future<bool> setAutoLogin(bool enabled) async {
+    try {
+      await _storage.write(key: _autoLoginKey, value: enabled.toString());
+      logger.info('Auto-login state set to $enabled');
+      return true;
+    } catch (e) {
+      logger.severe('Error setting auto-login state: $e');
+      return false;
+    }
+  }
+
   /// Load saved credentials
   Future<SavedCredentials> loadCredentials() async {
     try {
       final username = await _storage.read(key: _usernameKey);
       final password = await _storage.read(key: _passwordKey);
       final rememberStr = await _storage.read(key: _rememberCredentialsKey);
+      final autoLoginStr = await _storage.read(key: _autoLoginKey);
+      
       final remember = rememberStr == 'true';
+      final autoLogin = autoLoginStr == 'true';
 
       if (remember && username != null && password != null) {
         logger.info('Credentials loaded successfully');
@@ -55,6 +73,7 @@ class CredentialsStorageService {
           username: username,
           password: password,
           remember: remember,
+          autoLogin: autoLogin,
           hasCredentials: true,
         );
       }
@@ -72,6 +91,7 @@ class CredentialsStorageService {
       await _storage.delete(key: _usernameKey);
       await _storage.delete(key: _passwordKey);
       await _storage.delete(key: _rememberCredentialsKey);
+      await _storage.delete(key: _autoLoginKey);
       logger.info('Credentials cleared successfully');
       return true;
     } catch (e) {

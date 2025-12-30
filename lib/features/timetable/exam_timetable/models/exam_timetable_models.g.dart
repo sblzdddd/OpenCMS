@@ -17,7 +17,7 @@ ExamTimetableEntry _$ExamTimetableEntryFromJson(Map<String, dynamic> json) =>
       code: json['code'] as String,
       room: json['room'] as String,
       seat: json['seat'] as String,
-      isTaken: json['is_taken'] as bool,
+      isTaken: json['is_taken'] as int,
     );
 
 Map<String, dynamic> _$ExamTimetableEntryToJson(ExamTimetableEntry instance) =>

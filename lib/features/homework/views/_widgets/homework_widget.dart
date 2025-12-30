@@ -1,5 +1,5 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../shared/constants/period_constants.dart';
 import '../../models/homework_models.dart';
@@ -134,7 +134,7 @@ class _HomeworkCardState extends State<HomeworkCard>
   }
 
   @override
-  String getWidgetTitle() => 'quickActions.homeworks'.tr();
+  String getWidgetTitle() => 'Homeworks';
 
   @override
   String getWidgetSubtitle() {
