@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/io.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/networking/interceptors/legacy_auth_interceptor.dart';

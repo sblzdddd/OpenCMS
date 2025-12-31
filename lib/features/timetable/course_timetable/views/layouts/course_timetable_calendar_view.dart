@@ -131,120 +131,122 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
 
   List<TimeRegion> _getTimeRegions() {
     final List<TimeRegion> regions = <TimeRegion>[];
-    regions.add(
-      TimeRegion(
-        startTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 8, 0),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 8, 10),
-        enablePointerInteraction: false,
-        recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 7,
+    for(int i=-1;i<2;i++) {
+      regions.add(
+        TimeRegion(
+          startTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 8, 0),
+          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 8, 10),
+          enablePointerInteraction: false,
+          recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+          textStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 7,
+          ),
+          color: Colors.grey.withValues(alpha: 0.2),
+          text: 'MR',
         ),
-        color: Colors.grey.withValues(alpha: 0.2),
-        text: 'MR',
-      ),
-    );
-    regions.add(
-      TimeRegion(
-        startTime: DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          1,
-          9,
-          30,
+      );
+      regions.add(
+        TimeRegion(
+          startTime: DateTime(
+            DateTime.now().year-i,
+            DateTime.now().month,
+            1,
+            9,
+            30,
+          ),
+          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 9, 40),
+          enablePointerInteraction: false,
+          recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+          textStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 7,
+          ),
+          color: Colors.grey.withValues(alpha: 0.2),
+          text: 'Break',
         ),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 9, 40),
-        enablePointerInteraction: false,
-        recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 7,
+      );
+      regions.add(
+        TimeRegion(
+          startTime: DateTime(
+            DateTime.now().year-i,
+            DateTime.now().month,
+            1,
+            11,
+            0,
+          ),
+          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 11, 20),
+          enablePointerInteraction: false,
+          recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+          textStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 7,
+          ),
+          color: Colors.grey.withValues(alpha: 0.2),
+          text: 'Break',
         ),
-        color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Break',
-      ),
-    );
-    regions.add(
-      TimeRegion(
-        startTime: DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          1,
-          11,
-          0,
+      );
+      regions.add(
+        TimeRegion(
+          startTime: DateTime(
+            DateTime.now().year-i,
+            DateTime.now().month,
+            1,
+            12,
+            40,
+          ),
+          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 13, 10),
+          enablePointerInteraction: false,
+          recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+          textStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 7,
+          ),
+          color: Colors.grey.withValues(alpha: 0.2),
+          text: 'Lunch',
         ),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 11, 20),
-        enablePointerInteraction: false,
-        recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 7,
+      );
+      regions.add(
+        TimeRegion(
+          startTime: DateTime(
+            DateTime.now().year-i,
+            DateTime.now().month,
+            1,
+            13,
+            10,
+          ),
+          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 13, 40),
+          enablePointerInteraction: false,
+          recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+          textStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 7,
+          ),
+          color: Colors.grey.withValues(alpha: 0.2),
+          text: 'Pastoral',
         ),
-        color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Break',
-      ),
-    );
-    regions.add(
-      TimeRegion(
-        startTime: DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          1,
-          12,
-          40,
+      );
+      regions.add(
+        TimeRegion(
+          startTime: DateTime(
+            DateTime.now().year-i,
+            DateTime.now().month,
+            1,
+            15,
+            0,
+          ),
+          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 15, 10),
+          enablePointerInteraction: false,
+          recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
+          textStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 7,
+          ),
+          color: Colors.grey.withValues(alpha: 0.2),
+          text: 'Break',
         ),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 10),
-        enablePointerInteraction: false,
-        recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 7,
-        ),
-        color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Lunch',
-      ),
-    );
-    regions.add(
-      TimeRegion(
-        startTime: DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          1,
-          13,
-          10,
-        ),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 13, 40),
-        enablePointerInteraction: false,
-        recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 7,
-        ),
-        color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Pastoral',
-      ),
-    );
-    regions.add(
-      TimeRegion(
-        startTime: DateTime(
-          DateTime.now().year,
-          DateTime.now().month,
-          1,
-          15,
-          0,
-        ),
-        endTime: DateTime(DateTime.now().year, DateTime.now().month, 1, 15, 10),
-        enablePointerInteraction: false,
-        recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
-        textStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 7,
-        ),
-        color: Colors.grey.withValues(alpha: 0.2),
-        text: 'Break',
-      ),
-    );
+      );
+    }
 
     return regions;
   }

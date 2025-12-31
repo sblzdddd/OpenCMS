@@ -34,26 +34,6 @@
         android:icon="@mipmap/launcher_icon"
         android:label="opencms"
         tools:replace="android:label">
-        <receiver
-            android:name=".NextClassWidget"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/next_class_widget_info" />
-        </receiver>
-
-        <!-- Custom receiver for manual widget updates via ADB -->
-        <receiver
-            android:name=".WidgetUpdateReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.sblzdddd.opencms.UPDATE_WIDGET" />
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name=".MainActivity"

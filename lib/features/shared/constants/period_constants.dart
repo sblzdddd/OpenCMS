@@ -300,7 +300,10 @@ class PeriodConstants {
   /// Generate academic years from 2019-2020 to 2025-2026
   static List<AcademicYear> getAcademicYears() {
     final List<AcademicYear> years = [];
-    for (int year = DateTime.now().year; year >= 2019; year--) {
+    final now = DateTime.now();
+    final startYear = now.month < 8 ? now.year - 1 : now.year;
+
+    for (int year = startYear; year >= 2019; year--) {
       years.add(
         AcademicYear(
           year: year,
