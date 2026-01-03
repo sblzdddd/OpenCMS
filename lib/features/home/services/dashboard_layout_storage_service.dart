@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../API/storage/storage_client.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('DashboardLayoutStorageService');
 
 /// Stores user's dashboard layout as an ordered list of widget IDs with their sizes.
 class DashboardLayoutStorageService {
@@ -31,7 +34,7 @@ class DashboardLayoutStorageService {
       await _storage.write(key: _layoutKey, value: jsonString);
       return true;
     } catch (e) {
-      debugPrint('[DashboardLayoutStorageService] Error saving layout: $e');
+      logger.severe('Error saving layout: $e');
       return false;
     }
   }
@@ -61,7 +64,7 @@ class DashboardLayoutStorageService {
       }
       return null;
     } catch (e) {
-      debugPrint('[DashboardLayoutStorageService] Error loading layout: $e');
+      logger.severe('Error loading layout: $e');
       return null;
     }
   }
@@ -71,7 +74,7 @@ class DashboardLayoutStorageService {
       await _storage.delete(key: _layoutKey);
       return true;
     } catch (e) {
-      debugPrint('[DashboardLayoutStorageService] Error clearing layout: $e');
+      logger.severe('Error clearing layout: $e');
       return false;
     }
   }

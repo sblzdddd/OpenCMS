@@ -9,6 +9,9 @@ import '../../services/course_timetable_service.dart';
 import 'dart:async';
 import '../../../../home/views/widgets/base_dashboard_widget.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('NextClassWidget');
 
 /// Widget that displays either the next class or current class information
 class NextClassWidget extends StatefulWidget {
@@ -22,63 +25,25 @@ class NextClassWidget extends StatefulWidget {
 }
 
 class _NextClassWidgetState extends State<NextClassWidget>
-    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   TimetableResponse? _timetableData;
   CourseMergedEvent? _currentClass;
   CourseMergedEvent? _nextClass;
-
   final CourseTimetableService _timetableService = CourseTimetableService();
+  bool _isLoading = true;
+  bool _hasError = false;
 
-  @override
-  void initState() {
-    super.initState();
-    initializeWidget();
-    startTimer();
-  }
-
-  @override
-  void didUpdateWidget(covariant NextClassWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null &&
-        widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint(
-        'NextClassWidget: refreshTick changed -> refreshing with refresh=true',
-      );
-      refresh();
-    }
-  }
-
-  @override
-  void dispose() {
-    disposeMixin();
-    super.dispose();
-  }
-
-  @override
-  Future<void> initializeWidget() async {
-    await _fetchTimetable();
-  }
-
-  @override
-  void startTimer() {
-    // Update every minute to refresh class status and UI
-    setCustomTimer(const Duration(minutes: 1));
-  }
-
-  @override
-  Future<void> refreshData() async {
-    await _fetchTimetable(refresh: true);
-    // Call the parent refresh callback if provided
-    widget.onRefresh?.call();
-  }
-
-  Future<void> _fetchTimetable({bool refresh = false}) async {
+  Future<void> _fetchWidgetData({bool refresh = false}) async {
     try {
-      setLoading(true);
-      setError(false);
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _hasError = false;
+        });
+      }
 
       final today = DateTime.now();
       final dateString = DateFormat('yyyy-MM-dd').format(today);
@@ -93,15 +58,17 @@ class _NextClassWidgetState extends State<NextClassWidget>
         setState(() {
           _timetableData = timetable;
           _updateClassStatus();
+          _isLoading = false;
         });
-        setLoading(false);
       }
     } catch (e) {
       if (mounted) {
-        setLoading(false);
-        setError(true);
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
       }
-      debugPrint('NextClassWidget: Error fetching timetable: $e');
+      logger.severe('NextClassWidget: Error fetching timetable: $e', e, StackTrace.current);
     }
   }
 
@@ -189,19 +156,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
     return '${event.event.subject}-${event.event.code}';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-
-    // Update class status before building to ensure latest data
-    _updateClassStatus();
-
-    // Use the base layout
-    return buildCommonLayout();
-  }
-
-  @override
-  Widget? getExtraContent(BuildContext context) {
+  Widget? _getExtraContent(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final bool hasCurrentClass = _currentClass != null;
     if (!hasCurrentClass) return null;
@@ -216,11 +171,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
     );
   }
 
-  @override
-  String getWidgetTitle() => _getTitleText();
-
-  @override
-  String getRightSideText() {
+  String _getRightSideText() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
 
@@ -229,8 +180,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
     return event.timeSpan;
   }
 
-  @override
-  String getWidgetSubtitle() {
+  String _getWidgetSubtitle() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
 
@@ -239,18 +189,16 @@ class _NextClassWidgetState extends State<NextClassWidget>
     return '${event.periodText} (${event.periodCount} periods)\n';
   }
 
-  @override
-  String getBottomText() {
+  String _getBottomText() {
     final bool hasCurrentClass = _currentClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
 
-    return event != null && hasWidgetData()
+    return event != null && _hasWidgetData()
         ? event.event.teacher
         : 'Enjoy your free time!';
   }
 
-  @override
-  String? getBottomRightText() {
+  String? _getBottomRightText() {
     final bool hasCurrentClass = _currentClass != null;
     final bool hasNextClass = _nextClass != null;
     final event = hasCurrentClass ? _currentClass! : _nextClass;
@@ -266,21 +214,32 @@ class _NextClassWidgetState extends State<NextClassWidget>
         : null;
   }
 
-  @override
-  String getLoadingText() => 'Loading timetable...';
+  bool _hasWidgetData() => _currentClass != null || _nextClass != null;
 
   @override
-  String getErrorText() => 'Failed to load timetable';
+  Widget build(BuildContext context) {
+    super.build(context);
+    
+    // Update class status before building to ensure latest data
+    _updateClassStatus();
 
-  @override
-  String getNoDataText() => 'No more classes today';
-
-  @override
-  bool hasWidgetData() => _currentClass != null || _nextClass != null;
-
-  @override
-  String getActionId() => 'timetable';
-
-  @override
-  IconData getWidgetIcon() => Symbols.calendar_view_day_rounded;
+    return BaseDashboardWidget(
+      title: _getTitleText(),
+      subtitle: _getWidgetSubtitle(),
+      icon: Symbols.calendar_view_day_rounded,
+      actionId: 'timetable',
+      isLoading: _isLoading,
+      hasError: _hasError,
+      hasData: _hasWidgetData(),
+      loadingText: 'Loading timetable...',
+      errorText: 'Failed to load timetable',
+      noDataText: 'No more classes today',
+      rightSideText: _getRightSideText(),
+      bottomText: _getBottomText(),
+      bottomRightText: _getBottomRightText(),
+      extraContent: _getExtraContent(context),
+      onFetch: _fetchWidgetData,
+      refreshTick: widget.refreshTick,
+    );
+  }
 }

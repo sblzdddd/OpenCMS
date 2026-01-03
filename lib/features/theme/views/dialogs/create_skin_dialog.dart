@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/di/locator.dart';
 import '../../models/skin.dart';
 import '../../services/skin_service.dart';
 import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
@@ -18,13 +19,12 @@ class _CreateSkinDialogState extends State<CreateSkinDialog> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _authorController = TextEditingController();
-  final SkinService _skinService = SkinService.instance;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _skinService.initialize();
+    di<SkinService>().initialize();
   }
 
   @override
@@ -43,7 +43,7 @@ class _CreateSkinDialogState extends State<CreateSkinDialog> {
     });
 
     try {
-      final response = await _skinService.createSkin(
+      final response = await di<SkinService>().createSkin(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
         author: _authorController.text.trim(),

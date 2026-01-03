@@ -30,7 +30,7 @@ class NoticeCard extends StatefulWidget {
 }
 
 class _NoticeCardState extends State<NoticeCard>
-    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+    with AutomaticKeepAliveClientMixin {
   final NotificationService _notificationService = NotificationService();
   final DailyBulletinService _dailyBulletinService = DailyBulletinService();
   final EventsService _eventsService = EventsService();
@@ -39,56 +39,26 @@ class _NoticeCardState extends State<NoticeCard>
   DailyBulletin? _latestBulletin;
   StudentEvent? _latestEvent;
 
-  @override
-  void initState() {
-    super.initState();
-    initializeWidget();
-  }
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   bool get wantKeepAlive => true;
 
-  @override
-  void didUpdateWidget(covariant NoticeCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null &&
-        widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint(
-        'NoticeCard: refreshTick changed -> refreshing with refresh=true',
-      );
-      refresh();
-    }
-  }
-
-  @override
-  void dispose() {
-    disposeMixin();
-    super.dispose();
-  }
-
-  @override
-  Future<void> initializeWidget() async {
-    startTimer();
-    await _fetchData();
-  }
-
-  @override
-  Future<void> refreshData() async {
-    await _fetchData(refresh: true);
-    widget.onRefresh?.call();
-  }
-
-  Future<void> _fetchData({bool refresh = false}) async {
+  Future<void> _fetchWidgetData({bool refresh = false}) async {
     try {
-      setLoading(true);
-      setError(false);
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _hasError = false;
+        });
+      }
 
       // Fetch latest notice
       final notifications = await _notificationService.getSortedNotifications(
         refresh: refresh,
       );
-      _latestNotice = notifications.isNotEmpty ? notifications : [];
-
+      
       // Fetch latest daily bulletin for today
       final today = DateTime.now();
       final todayString =
@@ -97,26 +67,28 @@ class _NoticeCardState extends State<NoticeCard>
         date: todayString,
         refresh: refresh,
       );
-      _latestBulletin = bulletins.isNotEmpty ? bulletins.first : null;
 
       // Fetch latest event
       final events = await _eventsService.fetchStudentLedEvents(
         refresh: refresh,
       );
-      _latestEvent = events.isNotEmpty ? events.first : null;
 
-      setLoading(false);
+      if (mounted) {
+        setState(() {
+          _latestNotice = notifications.isNotEmpty ? notifications : [];
+          _latestBulletin = bulletins.isNotEmpty ? bulletins.first : null;
+          _latestEvent = events.isNotEmpty ? events.first : null;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       if (mounted) {
-        setError(true);
-        setLoading(false);
+        setState(() {
+          _hasError = true;
+          _isLoading = false;
+        });
       }
     }
-  }
-
-  @override
-  String getWidgetTitle() {
-    return 'Notices';
   }
 
   /// Check if widget is in wide mode (4x1.6)
@@ -125,8 +97,7 @@ class _NoticeCardState extends State<NoticeCard>
     return size != null && size.width == 4 && size.height == 1.6;
   }
 
-  @override
-  String getWidgetSubtitle() {
+  String _getWidgetSubtitle() {
     String subtitle = '';
     if (_latestNotice.isNotEmpty) {
       subtitle = _latestNotice.first.title;
@@ -148,17 +119,7 @@ class _NoticeCardState extends State<NoticeCard>
     }
   }
 
-  @override
-  String? getRightSideText() {
-    if (isWideMode) {
-      return _latestNotice.isNotEmpty ? _latestNotice.first.addDate : null;
-    } else {
-      return null;
-    }
-  }
-
-  @override
-  Widget? getExtraContent(BuildContext context) {
+  Widget? _getExtraContent(BuildContext context) {
     if (isWideMode) {
       return Column(
         children: [
@@ -312,29 +273,30 @@ class _NoticeCardState extends State<NoticeCard>
     );
   }
 
-  @override
-  bool hasWidgetData() {
-    return _latestBulletin != null || _latestEvent != null;
-  }
-
-  @override
-  String getActionId() => 'notice';
-
-  @override
-  IconData getWidgetIcon() => Symbols.notifications_rounded;
-
-  @override
-  String getNoDataText() => 'No recent notices or bulletins';
-
-  @override
-  bool hasMultipleTapAreas() {
-    // Return true if we have bulletin or events data (which create additional tap areas)
+  bool _hasWidgetData() {
     return _latestBulletin != null || _latestEvent != null;
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required for AutomaticKeepAliveClientMixin
-    return buildCommonLayout();
+    super.build(context);
+    
+    return BaseDashboardWidget(
+      title: 'Notices',
+      subtitle: _getWidgetSubtitle(),
+      icon: Symbols.notifications_rounded,
+      actionId: 'notice',
+      isLoading: _isLoading,
+      hasError: _hasError,
+      hasData: _hasWidgetData(),
+      noDataText: 'No recent notices or bulletins',
+      rightSideText: isWideMode 
+          ? (_latestNotice.isNotEmpty ? _latestNotice.first.addDate : null) 
+          : null,
+      extraContent: _getExtraContent(context),
+      onFetch: _fetchWidgetData,
+      refreshTick: widget.refreshTick,
+      hasMultipleTapAreas: _latestBulletin != null || _latestEvent != null,
+    );
   }
 }

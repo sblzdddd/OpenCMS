@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:opencms/di/locator.dart';
 import '../../models/skin.dart';
 import '../../models/skin_image.dart';
 import '../../services/skin_service.dart';
@@ -34,16 +35,15 @@ class SkinIcon extends StatefulWidget {
 }
 
 class _SkinIconState extends State<SkinIcon> {
-  final SkinService _skinService = SkinService.instance;
   Skin? _activeSkin;
   bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
-    _skinService.addListener(_onSkinChanged);
+    di<SkinService>().addListener(_onSkinChanged);
     // Get the cached active skin immediately
-    _activeSkin = _skinService.activeSkin;
+    _activeSkin = di<SkinService>().activeSkin;
     // If no cached skin, trigger loading in background
     if (_activeSkin == null) {
       _loadActiveSkin();
@@ -52,7 +52,7 @@ class _SkinIconState extends State<SkinIcon> {
 
   @override
   void dispose() {
-    _skinService.removeListener(_onSkinChanged);
+    di<SkinService>().removeListener(_onSkinChanged);
     _disposed = true;
     super.dispose();
   }
@@ -60,14 +60,14 @@ class _SkinIconState extends State<SkinIcon> {
   void _onSkinChanged() {
     if (!_disposed && mounted) {
       setState(() {
-        _activeSkin = _skinService.activeSkin;
+        _activeSkin = di<SkinService>().activeSkin;
       });
     }
   }
 
   Future<void> _loadActiveSkin() async {
     try {
-      final response = await _skinService.getActiveSkin();
+      final response = await di<SkinService>().getActiveSkin();
       if (response.success && response.skin != null) {
         // The listener will handle the state update
       }

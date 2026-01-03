@@ -1,8 +1,10 @@
-import 'package:flutter/foundation.dart';
 import 'package:opencms/di/locator.dart';
 import '../../shared/constants/api_endpoints.dart';
 import '../models/course_stats_models.dart';
 import '../../API/networking/http_service.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CourseStatsService');
 
 class CourseStatsService {
   static final CourseStatsService _instance = CourseStatsService._internal();
@@ -15,7 +17,7 @@ class CourseStatsService {
     bool refresh = false,
   }) async {
     try {
-      debugPrint('[CourseStatsService] Fetching course stats for year $year');
+      logger.info('Fetching course stats for year $year');
 
       final url = '${API.courseStatsUrl}?year=$year';
 
@@ -36,7 +38,7 @@ class CourseStatsService {
         throw Exception('Failed to parse JSON response: $e');
       }
     } catch (e) {
-      debugPrint('[CourseStatsService] Error fetching course stats: $e');
+      logger.severe('Error fetching course stats: $e');
       rethrow;
     }
   }

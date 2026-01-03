@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/foundation.dart';
 import '../../API/storage/storage_client.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('QuickActionsStorageService');
 
 /// Stores user's quick actions preferences as an ordered list of IDs.
 class QuickActionsStorageService {
@@ -19,12 +21,10 @@ class QuickActionsStorageService {
     try {
       final String jsonString = jsonEncode(actionIds);
       await _storage.write(key: _quickActionsKey, value: jsonString);
-      debugPrint(
-        '[QuickActionsStorageService] Preferences saved (${actionIds.length} items)',
-      );
+      logger.info('Preferences saved (${actionIds.length} items)');
       return true;
     } catch (e) {
-      debugPrint('[QuickActionsStorageService] Error saving preferences: $e');
+      logger.severe('Error saving preferences: $e');
       return false;
     }
   }
@@ -39,14 +39,12 @@ class QuickActionsStorageService {
         final List<String> actionIds = decoded
             .map<String>((item) => item.toString())
             .toList();
-        debugPrint(
-          '[QuickActionsStorageService] Preferences loaded (${actionIds.length} items)',
-        );
+        logger.info('Preferences loaded (${actionIds.length} items)');
         return actionIds;
       }
       return null;
     } catch (e) {
-      debugPrint('[QuickActionsStorageService] Error loading preferences: $e');
+      logger.severe('Error loading preferences: $e');
       return null;
     }
   }
@@ -55,10 +53,10 @@ class QuickActionsStorageService {
   Future<bool> clearQuickActionsPreferences() async {
     try {
       await _storage.delete(key: _quickActionsKey);
-      debugPrint('[QuickActionsStorageService] Preferences cleared');
+      logger.info('Preferences cleared');
       return true;
     } catch (e) {
-      debugPrint('[QuickActionsStorageService] Error clearing preferences: $e');
+      logger.severe('Error clearing preferences: $e');
       return false;
     }
   }
@@ -69,7 +67,7 @@ class QuickActionsStorageService {
       final String? value = await _storage.read(key: _quickActionsKey);
       return value != null && value.isNotEmpty;
     } catch (e) {
-      debugPrint('[QuickActionsStorageService] Error checking preferences: $e');
+      logger.severe('Error checking preferences: $e');
       return false;
     }
   }

@@ -6,6 +6,9 @@ import '../models/skin_image.dart';
 import '../models/skin_response.dart';
 import '../models/skin_constants.dart';
 import 'skin_file_manager.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('SkinService');
 
 /// Service for managing skin configurations and image files
 class SkinService extends ChangeNotifier {
@@ -16,15 +19,6 @@ class SkinService extends ChangeNotifier {
 
   /// Current active skin
   Skin? _activeSkin;
-
-  /// Singleton instance
-  static final SkinService _instance = SkinService._internal();
-
-  /// Private constructor
-  SkinService._internal();
-
-  /// Get the singleton instance
-  static SkinService get instance => _instance;
 
   /// Get the current active skin
   Skin? get activeSkin => _activeSkin;
@@ -43,11 +37,15 @@ class SkinService extends ChangeNotifier {
       final skins = allSkinsResponse.skins ?? [];
       final skin = skins.firstWhere(
         (s) => s.id == skinId,
-        orElse: () => throw Exception('Skin not found'),
+        orElse: () {
+          logger.warning('Skin not found for id: $skinId');
+          throw Exception('Skin not found');
+        },
       );
 
       return SkinResponse.success(skin: skin);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to get skin by id: $e', e, stackTrace);
       return SkinResponse.error('Failed to get skin by id: $e');
     }
   }
@@ -86,7 +84,8 @@ class SkinService extends ChangeNotifier {
       skins.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       return SkinResponse.success(skins: skins);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to load skins: $e', e, stackTrace);
       return SkinResponse.error('Failed to load skins: $e');
     }
   }
@@ -116,7 +115,8 @@ class SkinService extends ChangeNotifier {
       _activeSkin = Skin.fromJson(map).copyWith(isActive: true);
       notifyListeners();
       return SkinResponse.success(skin: _activeSkin);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to get active skin: $e', e, stackTrace);
       return SkinResponse.error('Failed to get active skin: $e');
     }
   }
@@ -128,6 +128,7 @@ class SkinService extends ChangeNotifier {
     required String author,
   }) async {
     try {
+      logger.info("Creating new skin: $name by $author");
       final skin = Skin(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: name,
@@ -150,7 +151,8 @@ class SkinService extends ChangeNotifier {
         message: 'Skin created successfully',
         skin: skin,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to create skin: $e', e, stackTrace);
       return SkinResponse.error('Failed to create skin: $e');
     }
   }
@@ -158,13 +160,15 @@ class SkinService extends ChangeNotifier {
   /// Update an existing skin
   Future<SkinResponse> updateSkin(Skin skin) async {
     try {
+      logger.info("Updating skin: ${skin.name} by ${skin.author}");
       final updatedSkin = skin.copyWith(updatedAt: DateTime.now());
       await SkinFileManager.writeSkinJsonMap(
         updatedSkin.id,
         updatedSkin.toJson(),
       );
       return SkinResponse.success(skin: updatedSkin);
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to update skin: $e', e, stackTrace);
       return SkinResponse.error('Failed to update skin: $e');
     }
   }
@@ -172,6 +176,7 @@ class SkinService extends ChangeNotifier {
   /// Delete a skin
   Future<SkinResponse> deleteSkin(String skinId) async {
     try {
+      logger.info('Deleting skin with id: $skinId');
       // Remove from ID list and delete files on disk
       final prefs = await SharedPreferences.getInstance();
       final ids = prefs.getStringList(_skinsKey) ?? <String>[];
@@ -191,17 +196,19 @@ class SkinService extends ChangeNotifier {
       await SkinFileManager.deleteSkinDirectory(skinId);
 
       return SkinResponse.success(message: 'Skin deleted successfully');
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to delete skin: $e', e, stackTrace);
       return SkinResponse.error('Failed to delete skin: $e');
     }
   }
 
-  /// Set a skin as active (only one skin can be active at a time)
   Future<SkinResponse> setActiveSkin(String skinId) async {
     try {
+      logger.info('Setting active skin to id: $skinId');
       // Validate the skin exists by checking skin.json
       final map = await SkinFileManager.readSkinJsonMap(skinId);
       if (map == null) {
+        logger.warning('Skin not found for id: $skinId');
         return SkinResponse.error('Skin not found');
       }
 
@@ -217,7 +224,8 @@ class SkinService extends ChangeNotifier {
         message: 'Skin activated successfully',
         skin: _activeSkin,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to set active skin: $e', e, stackTrace);
       return SkinResponse.error('Failed to set active skin: $e');
     }
   }
@@ -225,6 +233,7 @@ class SkinService extends ChangeNotifier {
   /// Clear the active skin (reset to default)
   Future<SkinResponse> clearActiveSkin() async {
     try {
+      logger.info('Clearing active skin to default');
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_activeSkinKey, 'default');
 
@@ -237,7 +246,8 @@ class SkinService extends ChangeNotifier {
         message: 'Default skin is now active',
         skin: defaultSkin,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to clear active skin: $e', e, stackTrace);
       return SkinResponse.error('Failed to clear active skin: $e');
     }
   }
@@ -255,6 +265,7 @@ class SkinService extends ChangeNotifier {
       );
 
       if (pickedFile == null) {
+        logger.fine('No image selected for skinId: $skinId, key: $key');
         return SkinResponse.error('No image selected');
       }
 
@@ -263,7 +274,8 @@ class SkinService extends ChangeNotifier {
         key: key,
         imagePath: pickedFile.path,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to pick image: $e', e, stackTrace);
       return SkinResponse.error('Failed to pick image: $e');
     }
   }
@@ -275,6 +287,7 @@ class SkinService extends ChangeNotifier {
     required String imagePath,
   }) async {
     try {
+      logger.info('Setting image for skinId: $skinId, key: $key');
       final map = await SkinFileManager.readSkinJsonMap(skinId);
       if (map == null) return SkinResponse.error('Skin not found');
       final skin = Skin.fromJson(map);
@@ -292,7 +305,8 @@ class SkinService extends ChangeNotifier {
         message: 'Image set successfully',
         skin: updatedSkin,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to set image: $e', e, stackTrace);
       return SkinResponse.error('Failed to set image: $e');
     }
   }
@@ -303,6 +317,7 @@ class SkinService extends ChangeNotifier {
     required String key,
   }) async {
     try {
+      logger.info('Removing image for skinId: $skinId, key: $key');
       final map = await SkinFileManager.readSkinJsonMap(skinId);
       if (map == null) return SkinResponse.error('Skin not found');
       final skin = Skin.fromJson(map);
@@ -322,7 +337,8 @@ class SkinService extends ChangeNotifier {
         message: 'Image removed successfully',
         skin: updatedSkin,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to remove image: $e', e, stackTrace);
       return SkinResponse.error('Failed to remove image: $e');
     }
   }
@@ -334,6 +350,7 @@ class SkinService extends ChangeNotifier {
     required SkinImageData updatedImageData,
   }) async {
     try {
+      logger.info('Updating image data for skinId: $skinId, imageKey: $imageKey');
       final map = await SkinFileManager.readSkinJsonMap(skinId);
       if (map == null) return SkinResponse.error('Skin not found');
       final skin = Skin.fromJson(map);
@@ -353,7 +370,8 @@ class SkinService extends ChangeNotifier {
         message: 'Image data updated successfully',
         skin: updatedSkin,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      logger.severe('Failed to update image data: $e', e, stackTrace);
       return SkinResponse.error('Failed to update image data: $e');
     }
   }

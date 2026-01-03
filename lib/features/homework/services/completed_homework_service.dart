@@ -1,7 +1,9 @@
 import 'dart:convert';
 import '../models/homework_models.dart';
 import '../../API/storage/storage_client.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CompletedHomeworkService');
 
 /// Service for managing completed homework items in local storage
 class CompletedHomeworkService {
@@ -15,8 +17,8 @@ class CompletedHomeworkService {
 
       final List<dynamic> jsonList = jsonDecode(data);
       return jsonList.map((json) => CompletedHomework.fromJson(json)).toList();
-    } catch (e) {
-      debugPrint('Error reading completed homeworks: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error reading completed homeworks', e, stackTrace);
       return [];
     }
   }
@@ -54,8 +56,8 @@ class CompletedHomeworkService {
         completed.add(newCompleted);
         await _saveCompletedHomeworks(completed);
       }
-    } catch (e) {
-      debugPrint('Error marking homework as completed: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error marking homework as completed', e, stackTrace);
     }
   }
 
@@ -70,8 +72,8 @@ class CompletedHomeworkService {
       );
 
       await _saveCompletedHomeworks(completed);
-    } catch (e) {
-      debugPrint('Error marking homework as not completed: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error marking homework as not completed', e, stackTrace);
     }
   }
 
@@ -79,8 +81,8 @@ class CompletedHomeworkService {
   static Future<void> clearCompletedHomeworks() async {
     try {
       await StorageClient.instance.delete(key: _storageKey);
-    } catch (e) {
-      debugPrint('Error clearing completed homeworks: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error clearing completed homeworks', e, stackTrace);
     }
   }
 
@@ -92,8 +94,8 @@ class CompletedHomeworkService {
       final jsonList = homeworks.map((hw) => hw.toJson()).toList();
       final data = jsonEncode(jsonList);
       await StorageClient.instance.write(key: _storageKey, value: data);
-    } catch (e) {
-      debugPrint('Error saving completed homeworks: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error saving completed homeworks', e, stackTrace);
     }
   }
 }

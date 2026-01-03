@@ -208,7 +208,7 @@ class TencentCaptchaDialog {
                       },
                       onLoadStart:
                           (InAppWebViewController controller, WebUri? url) {
-                            debugPrint(
+                            logger.fine(
                               'CaptchaDialog: Captcha WebView loading...',
                             );
                           },

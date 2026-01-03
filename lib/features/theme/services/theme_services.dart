@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/di/locator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../system/desktop_window/window_effect_service.dart';
 import 'skin_service.dart';
@@ -31,7 +32,7 @@ class ThemeNotifier with ChangeNotifier {
       _instance = ThemeNotifier._internal();
       await _instance!._loadThemeAsync();
       // Listen to skin service changes to update needTransparentBG
-      SkinService.instance.addListener(_instance!._onSkinChanged);
+      di<SkinService>().addListener(_instance!._onSkinChanged);
       _isInitialized = true;
     }
   }
@@ -47,25 +48,22 @@ class ThemeNotifier with ChangeNotifier {
   Color get customColor => _customColor;
   Color? get systemColor => _systemColor;
   double get borderRadius => _borderRadius;
-  WindowEffectType get windowEffect =>
-      WindowEffectService.instance.windowEffect;
   bool get needTransparentBG {
     // If skin has background image, always need transparent background
     if (hasActiveSkinBackgroundImage) {
       return true;
     }
-
     // Otherwise, use the window effect setting
-    return WindowEffectService.instance.needTransparentBG;
+    return di<WindowEffectService>().needTransparentBG;
   }
 
   bool get hasTransparentWindowEffect {
-    return WindowEffectService.instance.windowEffect !=
+    return di<WindowEffectService>().windowEffect !=
         WindowEffectType.disabled;
   }
 
   bool get hasActiveSkinBackgroundImage {
-    return SkinService.instance.activeSkin?.hasAnyBGImage() ?? false;
+    return di<SkinService>().activeSkin?.hasAnyBGImage() ?? false;
   }
 
   // Predefined colors
@@ -133,7 +131,7 @@ class ThemeNotifier with ChangeNotifier {
 
   void reapplyWindowEffect() {
     notifyListeners();
-    WindowEffectService.instance.reapplyWindowEffect(
+    di<WindowEffectService>().reapplyWindowEffect(
       color: currentColor,
       isDarkMode: _isDarkMode,
     );
@@ -169,7 +167,7 @@ class ThemeNotifier with ChangeNotifier {
 
   // Window effect methods - delegate to WindowEffectService
   void setWindowEffect(WindowEffectType effect) {
-    WindowEffectService.instance.setWindowEffect(
+    di<WindowEffectService>().setWindowEffect(
       effect,
       color: currentColor,
       isDarkMode: _isDarkMode,
@@ -210,7 +208,7 @@ class ThemeNotifier with ChangeNotifier {
     await prefs.setDouble('borderRadius', _borderRadius);
     await prefs.setInt(
       'windowEffect',
-      WindowEffectService.instance.windowEffect.index,
+      di<WindowEffectService>().windowEffect.index,
     );
   }
 
@@ -226,7 +224,7 @@ class ThemeNotifier with ChangeNotifier {
     _borderRadius = prefs.getDouble('borderRadius') ?? 8.0;
 
     // Load window effect preference
-    WindowEffectService.instance.windowEffect =
+    di<WindowEffectService>().windowEffect =
         WindowEffectType.values[prefs.getInt('windowEffect') ?? 0];
 
     notifyListeners();

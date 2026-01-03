@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 import '../../../shared/constants/period_constants.dart';
 import 'course_merged_event.dart';
+import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 
 part 'course_timetable_models.g.dart';
 
@@ -207,3 +209,56 @@ class TimetableEvent {
     return Object.hash(id, name, room, teacher);
   }
 }
+
+
+class CalendarCourse {
+  final String subject;
+  final String location;
+  final DateTime from;
+  final DateTime to;
+  final Color color;
+  final bool isAllDay;
+  final TimetableEvent sourceEvent;
+  final String note;
+  final String code;
+
+  CalendarCourse({
+    required this.subject,
+    required this.location,
+    required this.from,
+    required this.to,
+    required this.color,
+    required this.isAllDay,
+    required this.sourceEvent,
+    required this.note,
+    required this.code,
+  });
+}
+
+class CourseDataSource extends CalendarDataSource {
+  CourseDataSource(List<CalendarCourse> source) {
+    appointments = source;
+  }
+
+  @override
+  DateTime getStartTime(int index) => appointments![index].from as DateTime;
+
+  @override
+  DateTime getEndTime(int index) => appointments![index].to as DateTime;
+
+  @override
+  String getSubject(int index) => appointments![index].subject as String;
+
+  @override
+  String? getLocation(int index) => appointments![index].location as String;
+
+  @override
+  Color getColor(int index) => appointments![index].color as Color;
+
+  @override
+  bool isAllDay(int index) => appointments![index].isAllDay as bool;
+
+  @override
+  String? getNotes(int index) => appointments![index].note as String;
+}
+

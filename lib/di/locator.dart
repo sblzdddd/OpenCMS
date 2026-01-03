@@ -6,6 +6,8 @@ import 'package:opencms/features/auth/services/auto_captcha_service.dart';
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/features/API/networking/http_service.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
+import 'package:opencms/features/system/desktop_window/window_effect_service.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
 import 'package:opencms/features/user/services/user_service.dart';
 
 final di = GetIt.instance;
@@ -20,4 +22,6 @@ void configureDependencies() {
   di.registerSingleton<UserService>(UserService());
   di.registerSingleton<AuthService>(AuthService());
   di.registerSingleton<AutoCaptchaService>(AutoCaptchaService());
+  di.registerSingleton<SkinService>(SkinService());
+  di.registerSingleton<WindowEffectService>(WindowEffectService());
 }

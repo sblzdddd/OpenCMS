@@ -5,9 +5,11 @@ import 'action_item/action_item.dart';
 import 'action_dialog/more_actions_dialog.dart';
 import 'action_item/trash_can_item.dart';
 import 'reorderable_wrap.dart';
-
 import '../../../../shared/constants/quick_actions.dart';
 import '../../../services/quick_actions_storage_service.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('QuickActions');
 
 /// Controller to trigger actions on QuickActions from parent widgets
 class QuickActionsController extends ChangeNotifier {
@@ -113,7 +115,7 @@ class _QuickActionsState extends State<QuickActions> {
         actions.add(QuickActionsConstants.moreAction);
       }
     } catch (e) {
-      debugPrint('QuickActions: Error loading quick actions preferences: $e');
+      logger.severe('QuickActions: Error loading quick actions preferences: $e');
       // Fallback to default actions
       actions = QuickActionsConstants.getActionsFromIds(
         QuickActionsConstants.defaultActionIds,
@@ -140,7 +142,7 @@ class _QuickActionsState extends State<QuickActions> {
       final actionIds = QuickActionsConstants.getIdsFromActions(actions);
       await _storageService.saveQuickActionsPreferences(actionIds);
     } catch (e) {
-      debugPrint('QuickActions: Error saving quick actions preferences: $e');
+      logger.severe('QuickActions: Error saving quick actions preferences: $e');
     }
   }
 
@@ -188,12 +190,7 @@ class _QuickActionsState extends State<QuickActions> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.only(
-                left: 12,
-                right: 12,
-                bottom: 12,
-                top: 12,
-              ),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: themeNotifier.needTransparentBG
                     ? (!themeNotifier.isDarkMode
@@ -204,6 +201,18 @@ class _QuickActionsState extends State<QuickActions> {
                                 .withValues(alpha: 0.8))
                     : Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+                    blurRadius: 8,
+                    offset: const Offset(0, 5),
+                  ),
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+                    blurRadius: 18,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

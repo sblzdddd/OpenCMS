@@ -60,7 +60,7 @@ class AuthInterceptor extends Interceptor {
         options.headers['authorization'] = token;
       }
     }
-
+    
     final response = await _dio.fetch(options.copyWith(extra: {
       'retries': retries + 1,
     }));

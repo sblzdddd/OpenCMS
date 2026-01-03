@@ -7,6 +7,9 @@ import 'package:opencms/features/API/storage/token_storage.dart';
 import '../../../shared/constants/api_endpoints.dart';
 import '../../../auth/services/auth_service.dart';
 import '../../constants/web_cms_styles.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('WebCmsBase');
 
 /// Base class for web CMS components that handles common functionality
 /// like cookie preparation, web view management, and CSS injection
@@ -45,17 +48,17 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
           final resolved = await di<AuthService>().getJumpUrlToLegacy();
           if (resolved.isNotEmpty) {
             _resolvedUrl = resolved;
-            debugPrint(
-              'WebCmsBase: Resolved redirect URL (raw): $_resolvedUrl',
+            logger.info(
+              'Resolved redirect URL (raw): $_resolvedUrl',
             );
           } else {
-            debugPrint(
-              'WebCmsBase: Empty redirect location, fallback to CMS referer',
+            logger.info(
+              'Empty redirect location, fallback to CMS referer',
             );
             _resolvedUrl = widget.initialUrl ?? API.cmsReferer;
           }
-        } catch (e) {
-          debugPrint('WebCmsBase: Failed to resolve web redirect: $e');
+        } catch (e, stackTrace) {
+          logger.severe('Failed to resolve web redirect: $e', e, stackTrace);
           _resolvedUrl = widget.initialUrl ?? API.cmsReferer;
         }
       } else {
@@ -110,8 +113,8 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
           sameSite: iaw.HTTPCookieSameSitePolicy.NONE,
         );
       }
-    } catch (e) {
-      debugPrint('WebCmsBase: Failed to prepare cookies: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Failed to prepare cookies: $e', e, stackTrace);
       if (!mounted) return;
     } finally {
       if (mounted) {
@@ -129,7 +132,7 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
     if (_cookiesPrepared && _webViewController != null) {
       final String url =
           _resolvedUrl ?? widget.initialUrl ?? API.cmsReferer;
-      debugPrint('WebCmsBase: Loading CMS with URL: $url');
+      logger.info('Loading CMS with URL: $url');
       _webViewController!.loadUrl(
         urlRequest: iaw.URLRequest(url: iaw.WebUri(url)),
       );
@@ -148,8 +151,8 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
         final webCmsStyleString = webCmsStyle(context);
         await _webViewController!.evaluateJavascript(source: webCmsStyleString);
       }
-    } catch (e) {
-      debugPrint('WebCmsBase: CSS inject failed: $e');
+    } catch (e, stackTrace) {
+      logger.severe('CSS inject failed: $e', e, stackTrace);
     }
   }
 

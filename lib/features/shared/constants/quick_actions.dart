@@ -169,7 +169,7 @@ class QuickActionsConstants {
       'title': 'Settings',
       'icon': Symbols.settings_rounded,
       'id': 'settings',
-    },
+    }
   ];
 
   /// Default quick actions (shown when user hasn't customized)

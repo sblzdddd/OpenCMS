@@ -151,12 +151,12 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
     c1 = ColorUtils.adjustHsl(
       b,
       hueDelta: 4,
-      saturation: 0.75,
+      saturation: 0.6,
       lightness: 0.54,
     );
-    c2 = ColorUtils.adjustHsl(b, hueDelta: 2, saturation: 0.9, lightness: 0.82);
-    c3 = ColorUtils.adjustHsl(b, hueDelta: 1, saturation: 0.8, lightness: 0.54);
-    c4 = ColorUtils.adjustHsl(b, hueDelta: 0, saturation: 1, lightness: 0.76);
+    c2 = ColorUtils.adjustHsl(b, hueDelta: 2, saturation: 0.5, lightness: 0.8);
+    c3 = ColorUtils.adjustHsl(b, hueDelta: 1, saturation: 0.6, lightness: 0.6);
+    c4 = ColorUtils.adjustHsl(b, hueDelta: 0, saturation: 0.7, lightness: 0.7);
     return CustomPaint(
       painter: _DynamicGradientPainter(
         program: program,

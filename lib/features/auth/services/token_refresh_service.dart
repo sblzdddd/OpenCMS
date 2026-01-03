@@ -100,13 +100,19 @@ class TokenRefreshService {
         return false;
       }
 
+      var data = LegacyTokenResponse(code: '', iv: '');
       // Exchange for legacy token
-      final tokenResp = await di<HttpService>().get(
-        API.legacyTokenUrlForHref,
-        refresh: true,
-        options: Options(extra: {"legacyRefresh": true}),
-      );
-      final data = LegacyTokenResponse.fromJson(tokenResp.data);
+      try {
+        final tokenResp = await di<HttpService>().get(
+          API.legacyTokenUrlForHref,
+          refresh: true,
+          options: Options(extra: {"legacyRefresh": true}),
+        );
+        data = LegacyTokenResponse.fromJson(tokenResp.data);
+      } catch (e, stackTrace) {
+        log.warning('Error obtaining legacy token: $e', e, stackTrace);
+        return false;
+      }
 
       if (data.code.isEmpty || data.iv.isEmpty) {
         log.warning('Response missing code/iv');

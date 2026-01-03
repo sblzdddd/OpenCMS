@@ -6,6 +6,9 @@ import 'package:window_manager/window_manager.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/services/theme_services.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CustomAppBar');
 
 /// A custom app bar that includes window controls for desktop platforms
 /// and allows other scaffolds to add their own actions
@@ -196,9 +199,9 @@ class _CustomAppBarState extends State<CustomAppBar> {
       } else {
         await windowManager.unmaximize();
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle any errors silently to avoid blocking the UI
-      debugPrint('Error handling double tap: $e');
+      logger.severe('Error handling double tap: $e', e, stackTrace);
     }
   }
 }

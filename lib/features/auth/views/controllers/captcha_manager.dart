@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:opencms/di/locator.dart';
 import '../../services/auto_captcha_service.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CaptchaManager');
 
 /// Component responsible for managing captcha verification and auto-solving
 class CaptchaManager extends ChangeNotifier {
@@ -18,7 +21,7 @@ class CaptchaManager extends ChangeNotifier {
     _captchaData = data;
     notifyListeners();
 
-    debugPrint(
+    logger.fine(
       'Captcha state changed - Verified: $isVerified, Data: ${data?.runtimeType}',
     );
   }
@@ -38,26 +41,26 @@ class CaptchaManager extends ChangeNotifier {
     notifyListeners();
 
     try {
-      debugPrint('CaptchaManager: Attempting to auto-solve captcha');
+      logger.fine('Attempting to auto-solve captcha');
       final captchaResult = await di<AutoCaptchaService>().getTicket(username);
 
       if (captchaResult != null) {
         _isCaptchaVerified = true;
         _captchaData = captchaResult;
-        debugPrint(
-          'CaptchaManager: Auto-solve successful, ticket: $captchaResult',
+        logger.fine(
+          'Auto-solve successful, ticket: $captchaResult',
         );
         _isAutoSolving = false;
         notifyListeners();
         return true;
       } else {
-        debugPrint('CaptchaManager: Auto-solve failed');
+        logger.fine('Auto-solve failed');
         _isAutoSolving = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
-      debugPrint('CaptchaManager: Auto-solve exception: $e');
+      logger.severe('Auto-solve exception: $e');
       _isAutoSolving = false;
       notifyListeners();
       return false;

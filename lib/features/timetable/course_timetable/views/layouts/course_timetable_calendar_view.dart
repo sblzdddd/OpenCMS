@@ -55,7 +55,7 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       minDate: minDate,
       maxDate: maxDate,
       headerHeight: 0,
-      dataSource: _CourseDataSource(courses),
+      dataSource: CourseDataSource(courses),
       showCurrentTimeIndicator: true,
       timeSlotViewSettings: const TimeSlotViewSettings(
         startHour: 7, // 07:30
@@ -67,7 +67,7 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       specialRegions: _getTimeRegions(),
       appointmentBuilder:
           (BuildContext context, CalendarAppointmentDetails details) {
-            final Course course = details.appointments.first as Course;
+            final CalendarCourse course = details.appointments.first as CalendarCourse;
             final themeNotifier = Provider.of<ThemeNotifier>(
               context,
               listen: true,
@@ -122,7 +122,7 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
         if (details.targetElement == CalendarElement.appointment &&
             details.appointments != null &&
             details.appointments!.isNotEmpty) {
-          final Course tapped = details.appointments!.first as Course;
+          final CalendarCourse tapped = details.appointments!.first as CalendarCourse;
           widget.onEventTap(tapped.sourceEvent);
         }
       },
@@ -251,8 +251,8 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
     return regions;
   }
 
-  List<Course> _buildCourses() {
-    final List<Course> courses = <Course>[];
+  List<CalendarCourse> _buildCourses() {
+    final List<CalendarCourse> courses = <CalendarCourse>[];
     final data = widget.timetableData;
     if (data == null) return courses;
 
@@ -277,7 +277,7 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
           final DateTime end = _combine(date, endInfo.endTime);
           final Color color = _colorForEvent(mergedEvent.event, dayIndex);
           courses.add(
-            Course(
+            CalendarCourse(
               subject: mergedEvent.event.subject,
               location: mergedEvent.event.room.isNotEmpty
                   ? mergedEvent.event.room
@@ -340,15 +340,15 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
     // Use course subject as the key for consistent coloring
     final String courseKey = event.id.toString();
 
-    // If we haven't assigned a color to this course yet, assign the next available color
     if (!_courseColors.containsKey(courseKey)) {
+      // assign the next available color
       if (_nextColorIndex < palette.length) {
         _courseColors[courseKey] = palette[_nextColorIndex].withValues(
           alpha: 0.75,
         );
         _nextColorIndex++;
       } else {
-        // If we've used all palette colors, cycle back to the beginning
+        // cycle back to the beginning
         final int colorIndex = _nextColorIndex % palette.length;
         _courseColors[courseKey] = palette[colorIndex].withValues(alpha: 0.75);
         _nextColorIndex++;
@@ -357,55 +357,4 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
 
     return _courseColors[courseKey]!;
   }
-}
-
-class Course {
-  final String subject;
-  final String location;
-  final DateTime from;
-  final DateTime to;
-  final Color color;
-  final bool isAllDay;
-  final TimetableEvent sourceEvent;
-  final String note;
-  final String code;
-
-  Course({
-    required this.subject,
-    required this.location,
-    required this.from,
-    required this.to,
-    required this.color,
-    required this.isAllDay,
-    required this.sourceEvent,
-    required this.note,
-    required this.code,
-  });
-}
-
-class _CourseDataSource extends CalendarDataSource {
-  _CourseDataSource(List<Course> source) {
-    appointments = source;
-  }
-
-  @override
-  DateTime getStartTime(int index) => appointments![index].from as DateTime;
-
-  @override
-  DateTime getEndTime(int index) => appointments![index].to as DateTime;
-
-  @override
-  String getSubject(int index) => appointments![index].subject as String;
-
-  @override
-  String? getLocation(int index) => appointments![index].location as String;
-
-  @override
-  Color getColor(int index) => appointments![index].color as Color;
-
-  @override
-  bool isAllDay(int index) => appointments![index].isAllDay as bool;
-
-  @override
-  String? getNotes(int index) => appointments![index].note as String;
 }

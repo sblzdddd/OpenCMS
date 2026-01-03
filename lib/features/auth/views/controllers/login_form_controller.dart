@@ -3,6 +3,9 @@ import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
 import 'credentials_manager.dart';
 import 'captcha_manager.dart';
 import 'auth_controller.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('LoginFormController');
 
 /// Controller responsible for coordinating the login form logic
 /// Manages the interaction between credentials, captcha, and authentication
@@ -82,12 +85,12 @@ class LoginFormController extends ChangeNotifier {
     // Try to auto-solve captcha first if not already verified
     if (!_captchaManager.isCaptchaVerified ||
         _captchaManager.captchaData == null) {
-      debugPrint('LoginFormController: Attempting auto captcha solve');
+      logger.fine('Attempting auto captcha solve');
       final autoSolveSuccess = await _captchaManager.autoSolveCaptcha(username);
 
       if (!autoSolveSuccess) {
         // Fallback to manual captcha if auto-solve fails
-        print(111111);
+        logger.fine('Auto captcha solve failed, falling back to manual verification');
         _captchaManager.triggerManualVerification(
           captchaKey,
           onSuccess: (data) {
@@ -109,7 +112,7 @@ class LoginFormController extends ChangeNotifier {
     if (!_captchaManager.isCaptchaVerified ||
         _captchaManager.captchaData == null) {
       if (!context.mounted) {
-        debugPrint('LoginFormController: Context is not mounted');
+        logger.warning('Context is not mounted');
         return;
       }
       SnackbarUtils.showWarning(
@@ -119,7 +122,7 @@ class LoginFormController extends ChangeNotifier {
       return;
     }
     if (!context.mounted) {
-      debugPrint('LoginFormController: Context is not mounted');
+      logger.warning('Context is not mounted');
       return;
     }
     // Perform authentication

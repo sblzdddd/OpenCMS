@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 import '../../../shared/constants/period_constants.dart';
 import '../../models/attendance_models.dart';
 import '../../../shared/views/timetable_card.dart';
@@ -38,27 +39,31 @@ class AttendanceCardsView extends StatelessWidget {
       }
     }
 
-    return ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(),
-      itemCount: visibleDayIndices.length,
-      padding: EdgeInsets.zero,
-      cacheExtent: 800,
-      separatorBuilder: (context, index) => const SizedBox(height: 12),
-      itemBuilder: (context, index) {
-        final day = days[visibleDayIndices[index]];
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RepaintBoundary(
-              key: ValueKey(day.date.toIso8601String()),
-              child: _buildDaySection(context, day, selectedCourseIds),
-            ),
-            const SizedBox(height: 16),
-            const Divider(height: 32),
-            const SizedBox(height: 8),
-          ],
-        );
-      },
+    return SilkyScroll(
+      scrollSpeed: 2,
+      builder: (context, controller, physics) => ListView.separated(
+        physics: physics,
+        controller: controller,
+        itemCount: visibleDayIndices.length,
+        padding: EdgeInsets.zero,
+        cacheExtent: 800,
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemBuilder: (context, index) {
+          final day = days[visibleDayIndices[index]];
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RepaintBoundary(
+                key: ValueKey(day.date.toIso8601String()),
+                child: _buildDaySection(context, day, selectedCourseIds),
+              ),
+              const SizedBox(height: 16),
+              const Divider(height: 32),
+              const SizedBox(height: 8),
+            ],
+          );
+        },
+      ),
     );
   }
 

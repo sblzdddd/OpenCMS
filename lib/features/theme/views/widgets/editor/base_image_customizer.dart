@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:opencms/di/locator.dart';
 import 'dart:io';
 import '../../../models/skin.dart';
 import '../../../models/skin_image.dart';
@@ -8,6 +9,9 @@ import '../../../services/skin_service.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
 import '../../dialogs/image_settings_dialog.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('BaseImageCustomizer');
 
 /// Base class for image customization functionality
 class BaseImageCustomizer extends StatefulWidget {
@@ -35,13 +39,12 @@ class BaseImageCustomizer extends StatefulWidget {
 }
 
 class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
-  final SkinService _skinService = SkinService.instance;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _skinService.initialize();
+    di<SkinService>().initialize();
   }
 
   @override
@@ -68,7 +71,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     });
 
     try {
-      final response = await _skinService.pickAndSetImage(
+      final response = await di<SkinService>().pickAndSetImage(
         skinId: widget.skin.id,
         key: widget.imageKey,
         source: ImageSource.gallery,
@@ -76,7 +79,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
 
       if (response.success && response.skin != null) {
         widget.onSkinUpdated?.call(response.skin!);
-        debugPrint('${widget.imageKey} image set successfully');
+        logger.info('${widget.imageKey} image set successfully');
       } else {
         if (mounted) {
           SnackbarUtils.showError(
@@ -105,14 +108,14 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     });
 
     try {
-      final response = await _skinService.removeSkinImage(
+      final response = await di<SkinService>().removeSkinImage(
         skinId: widget.skin.id,
         key: widget.imageKey,
       );
 
       if (response.success && response.skin != null) {
         widget.onSkinUpdated?.call(response.skin!);
-        debugPrint('${widget.imageKey} image removed');
+        logger.info('${widget.imageKey} image removed');
       } else {
         if (mounted) {
           SnackbarUtils.showError(
@@ -145,7 +148,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
   bool get hasCurrentImage {
     final path = currentImagePath;
     if (path == null || path.isEmpty) {
-      debugPrint('${widget.imageKey}: No image path found');
+      logger.info('${widget.imageKey}: No image path found');
       return false;
     }
 
@@ -305,8 +308,6 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     switch (imageType) {
       case SkinImageType.background:
         return Symbols.photo_library_rounded;
-      case SkinImageType.foreground:
-        return Symbols.layers_rounded;
       case SkinImageType.icon:
         return Symbols.image_rounded;
     }
@@ -371,7 +372,7 @@ class _BaseImageCustomizerState extends State<BaseImageCustomizer> {
     if (!mounted) return;
 
     try {
-      final response = await _skinService.updateSkinImageData(
+      final response = await di<SkinService>().updateSkinImageData(
         skinId: widget.skin.id,
         imageKey: widget.imageKey,
         updatedImageData: updatedData,

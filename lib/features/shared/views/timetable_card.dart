@@ -75,20 +75,41 @@ class TimetableCard extends StatelessWidget {
         if (timespan != null || periodText != null) const SizedBox(height: 8),
         ScaledInkWell(
           onTap: onTap,
-          background: (inkWell) => Material(
-            color:
-                backgroundColor ??
-                (themeNotifier.needTransparentBG
-                    ? (!themeNotifier.isDarkMode
-                          ? theme.colorScheme.surfaceBright.withValues(
-                              alpha: 0.5,
-                            )
-                          : theme.colorScheme.surfaceContainer.withValues(
-                              alpha: 0.8,
-                            ))
-                    : theme.colorScheme.surfaceContainer),
-            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-            child: inkWell,
+          background: (inkWell) => Container(
+            decoration: BoxDecoration(
+              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.01),
+                  blurRadius: 8,
+                  offset: const Offset(0, 5),
+                ),
+                BoxShadow(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.01),
+                  blurRadius: 18,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: Material(
+              color:
+                  backgroundColor ??
+                  (themeNotifier.needTransparentBG
+                      ? (!themeNotifier.isDarkMode
+                            ? theme.colorScheme.surfaceBright.withValues(
+                                alpha: 0.5,
+                              )
+                            : theme.colorScheme.surfaceContainer.withValues(
+                                alpha: 0.8,
+                              ))
+                      : theme.colorScheme.surfaceContainer),
+              borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+              child: inkWell,
+            ),
           ),
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: Stack(

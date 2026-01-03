@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Enum representing different types of skin elements
-enum SkinImageType { background, foreground, icon }
+enum SkinImageType { background, icon }
 
 /// Enum for background image positioning
 enum SkinImageFillMode { contain, stretch, cover, fit }
@@ -25,8 +25,6 @@ extension SkinImageTypeExtension on SkinImageType {
     switch (this) {
       case SkinImageType.background:
         return 'Background';
-      case SkinImageType.foreground:
-        return 'Foreground';
       case SkinImageType.icon:
         return 'Icon';
     }
@@ -36,8 +34,6 @@ extension SkinImageTypeExtension on SkinImageType {
     switch (this) {
       case SkinImageType.background:
         return 'backgroundImage';
-      case SkinImageType.foreground:
-        return 'foregroundImage';
       case SkinImageType.icon:
         return 'iconImage';
     }

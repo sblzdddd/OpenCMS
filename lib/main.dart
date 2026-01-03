@@ -12,7 +12,6 @@ import 'package:opencms/utils/color_themes.dart';
 import 'features/auth/views/pages/login.dart';
 import 'features/home/views/pages/home.dart';
 import 'package:window_manager/window_manager.dart';
-import 'features/background/cookies_refresh_service.dart';
 import 'features/theme/services/theme_services.dart';
 import 'package:provider/provider.dart';
 import 'features/system/update/update_checker_service.dart';
@@ -39,7 +38,6 @@ void main() async {
   // init window manager and effects
   await OCMSWindowService.initWindowManager();
   await OCMSTrayService.initSystemTray();
-  await CookiesRefreshService().start();
   // Initialize ThemeNotifier singleton
   await ThemeNotifier.initialize();
 
@@ -187,25 +185,23 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
     
     // a. Try auto-solve captcha
     bool captchaVerified = await _captchaManager.autoSolveCaptcha(username);
+    if (captchaVerified) {
+      await _executeLogin(username, password, _captchaManager.captchaData!);
+      return;
+    }
 
     // b. If auto-solve failed, trigger manual verification
-    if (!captchaVerified) {
-      if (!mounted) return;
-      
-      // Wait for manual verification
-      final completer = Completer<bool>();
-      
-      _captchaManager.triggerManualVerification(
-        _captchaKey,
-        onSuccess: (data) {
-          if (!completer.isCompleted) completer.complete(true);
-        },
-      );
-      return; 
-    } else {
-       // Auto-solve success
-       await _executeLogin(username, password, _captchaManager.captchaData!);
-    }
+    if (!mounted) return;
+
+    // Wait for manual verification
+    final completer = Completer<bool>();
+    
+    _captchaManager.triggerManualVerification(
+      _captchaKey,
+      onSuccess: (data) {
+        if (!completer.isCompleted) completer.complete(true);
+      },
+    );
   }
 
   Future<void> _executeLogin(String username, String password, Object captchaData) async {

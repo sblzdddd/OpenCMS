@@ -63,8 +63,8 @@ class CourseMark {
   final String mark;
   final String grade;
   final String comment;
-  final String commentCn;
-  final String teacherName;
+  final String? commentCn;
+  final String? teacherName;
   final String level;
 
   CourseMark({

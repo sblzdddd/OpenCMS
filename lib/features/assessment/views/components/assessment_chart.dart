@@ -17,7 +17,6 @@ class AssessmentChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final validAssessments = assessments
         .where((assessment) => assessment.percentageScore != null)
         .toList();
@@ -37,16 +36,7 @@ class AssessmentChart extends StatelessWidget {
       }
     });
 
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
-      shape: RoundedRectangleBorder(
-        borderRadius: themeNotifier.getBorderRadiusAll(1),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Padding(
-        padding: const EdgeInsets.all(0),
-        child: Column(
+    return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
@@ -145,8 +135,6 @@ class AssessmentChart extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
     );
   }
 

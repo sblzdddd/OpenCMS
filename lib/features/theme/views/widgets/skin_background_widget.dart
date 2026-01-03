@@ -1,11 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:opencms/di/locator.dart';
 import 'package:provider/provider.dart';
 import '../../services/theme_services.dart';
 import '../../models/skin.dart';
 import '../../models/skin_image.dart';
 import '../../models/skin_image_type.dart';
 import '../../services/skin_service.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('SkinBackgroundWidget');
 
 /// A widget that displays background images based on skin configuration
 /// Falls back from category.background to global.background if available
@@ -30,16 +34,15 @@ class SkinBackgroundWidget extends StatefulWidget {
 }
 
 class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
-  final SkinService _skinService = SkinService.instance;
   Skin? _activeSkin;
   bool _disposed = false;
 
   @override
   void initState() {
     super.initState();
-    _skinService.addListener(_onSkinChanged);
+    di<SkinService>().addListener(_onSkinChanged);
     // Get the cached active skin immediately, no loading needed
-    _activeSkin = _skinService.activeSkin;
+    _activeSkin = di<SkinService>().activeSkin;
     // If no cached skin, trigger loading in background
     if (_activeSkin == null) {
       _loadActiveSkin();
@@ -48,7 +51,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
 
   @override
   void dispose() {
-    _skinService.removeListener(_onSkinChanged);
+    di<SkinService>().removeListener(_onSkinChanged);
     _disposed = true;
     super.dispose();
   }
@@ -56,21 +59,21 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
   void _onSkinChanged() {
     if (!_disposed && mounted) {
       setState(() {
-        _activeSkin = _skinService.activeSkin;
+        _activeSkin = di<SkinService>().activeSkin;
       });
     }
   }
 
   Future<void> _loadActiveSkin() async {
     try {
-      final response = await _skinService.getActiveSkin();
+      final response = await di<SkinService>().getActiveSkin();
       if (!(response.success && response.skin != null)) {
-        debugPrint(
-          '[SkinBackgroundWidget] Failed to load active skin: ${response.error}',
+        logger.warning(
+          'Failed to load active skin: ${response.error}',
         );
       }
-    } catch (e) {
-      debugPrint('[SkinBackgroundWidget] Error loading active skin: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error loading active skin: $e', e, stackTrace);
     }
   }
 
@@ -78,8 +81,13 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
   SkinImageData? _getBackgroundImageData() {
     if (_activeSkin == null) return null;
 
+    String categoryKey;
     // First try to get category-specific background
-    final categoryKey = '${widget.category}.background';
+    if (widget.category.replaceAll(".", "") != widget.category) {
+      categoryKey = widget.category;
+    } else {
+      categoryKey = '${widget.category}.background';
+    }
     final categoryImageData = _activeSkin!.imageData[categoryKey];
 
     if (categoryImageData != null && categoryImageData.hasImage) {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:provider/provider.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 import '../models/student_event.dart';
 import '../../theme/services/theme_services.dart';
 import '../../shared/views/selectable_item_wrapper.dart';
@@ -10,7 +11,6 @@ import '../../web_cms/views/components/web_cms_content.dart';
 import '../../shared/views/views/list_section.dart';
 import '../../web_cms/views/pages/web_cms.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 
 class AdaptiveEventsLayout extends StatelessWidget {
   final List<StudentEvent> studentLedEvents;
@@ -81,17 +81,13 @@ class AdaptiveEventsLayout extends StatelessWidget {
   }
 
   Widget _buildEventsList(BuildContext context) {
-    return CustomChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    final items = [
           // Student-Led Events section
           if (studentLedEvents.isNotEmpty)
             ListSection(
               title: 'Student-Led Events',
               icon: Symbols.person_rounded,
-              padding: const EdgeInsets.only(left: 16, bottom: 12),
+              padding: const EdgeInsets.only(left: 16, bottom: 6),
               children: studentLedEvents
                   .map((event) => _buildEventItem(event, context))
                   .toList(),
@@ -102,13 +98,23 @@ class AdaptiveEventsLayout extends StatelessWidget {
             ListSection(
               title: 'Student-Unstaffed Events',
               icon: Symbols.person_rounded,
-              padding: const EdgeInsets.only(left: 16, bottom: 12, top: 12),
+              padding: const EdgeInsets.only(left: 16, bottom: 6, top: 12),
               children: studentUnstaffedEvents
                   .map((event) => _buildEventItem(event, context))
                   .toList(),
             ),
-        ],
-      ),
+        ];
+    return SilkyScroll(
+      scrollSpeed: 2,
+      builder: (context, controller, physics) {
+        return ListView.builder(
+          controller: controller,
+          physics: physics,
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          itemCount: items.length,
+          itemBuilder: (context, index) => items[index],
+        );
+      },
     );
   }
 

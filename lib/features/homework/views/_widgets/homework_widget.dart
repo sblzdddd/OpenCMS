@@ -6,9 +6,10 @@ import '../../models/homework_models.dart';
 import '../../services/homework_service.dart';
 import 'dart:async';
 import '../../../home/views/widgets/base_dashboard_widget.dart';
+import 'package:logging/logging.dart';
 
-/// Widget that displays homework information
-/// Shows recent homework items with due dates and status
+final logger = Logger('HomeworkCard');
+
 class HomeworkCard extends StatefulWidget {
   final VoidCallback? onRefresh;
   final int? refreshTick;
@@ -20,60 +21,23 @@ class HomeworkCard extends StatefulWidget {
 }
 
 class _HomeworkCardState extends State<HomeworkCard>
-    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   HomeworkResponse? _homeworkData;
   final HomeworkService _homeworkService = HomeworkService();
+  bool _isLoading = true;
+  bool _hasError = false;
 
-  @override
-  void initState() {
-    super.initState();
-    initializeWidget();
-    startTimer();
-  }
-
-  @override
-  void didUpdateWidget(covariant HomeworkCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null &&
-        widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint(
-        'HomeworkCard: refreshTick changed -> refreshing with refresh=true',
-      );
-      refresh();
-    }
-  }
-
-  @override
-  void dispose() {
-    disposeMixin();
-    super.dispose();
-  }
-
-  @override
-  Future<void> initializeWidget() async {
-    await _fetchHomework();
-  }
-
-  @override
-  void startTimer() {
-    // Update every hour to refresh homework status
-    setCustomTimer(const Duration(hours: 1));
-  }
-
-  @override
-  Future<void> refreshData() async {
-    await _fetchHomework(refresh: true);
-    // Call the parent refresh callback if provided
-    widget.onRefresh?.call();
-  }
-
-  Future<void> _fetchHomework({bool refresh = false}) async {
+  Future<void> _fetchWidgetData({bool refresh = false}) async {
     try {
-      setLoading(true);
-      setError(false);
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _hasError = false;
+        });
+      }
 
       final homework = await _homeworkService.fetchHomework(
         academicYear: PeriodConstants.getAcademicYears().first.year,
@@ -83,15 +47,17 @@ class _HomeworkCardState extends State<HomeworkCard>
       if (mounted) {
         setState(() {
           _homeworkData = homework;
+          _isLoading = false;
         });
-        setLoading(false);
       }
     } catch (e) {
       if (mounted) {
-        setLoading(false);
-        setError(true);
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
       }
-      debugPrint('HomeworkCard: Error fetching homework: $e');
+      logger.severe('Error fetching homework', e, StackTrace.current);
     }
   }
 
@@ -127,51 +93,44 @@ class _HomeworkCardState extends State<HomeworkCard>
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return buildCommonLayout();
-  }
-
-  @override
-  String getWidgetTitle() => 'Homeworks';
-
-  @override
-  String getWidgetSubtitle() {
+  String _getWidgetSubtitle() {
     final recentHomework = _getRecentHomework();
     if (recentHomework == null) return '';
     return recentHomework.title;
   }
 
-  @override
-  String? getBottomRightText() {
+  String? _getBottomRightText() {
     final recentHomework = _getRecentHomework();
     if (recentHomework == null) return null;
     return _getDueDateText(recentHomework.dueDate);
   }
 
-  @override
-  String? getBottomText() {
+  String? _getBottomText() {
     final recentHomework = _getRecentHomework();
     if (recentHomework == null) return null;
     return recentHomework.courseName;
   }
 
-  @override
-  String getLoadingText() => 'Loading homework...';
+  bool _hasWidgetData() => _getRecentHomework() != null;
 
   @override
-  String getErrorText() => 'Failed to load homework';
-
-  @override
-  String getNoDataText() => 'No recent homework';
-
-  @override
-  bool hasWidgetData() => _getRecentHomework() != null;
-
-  @override
-  String getActionId() => 'homeworks';
-
-  @override
-  IconData getWidgetIcon() => Symbols.edit_note_rounded;
+  Widget build(BuildContext context) {
+    super.build(context);
+    return BaseDashboardWidget(
+      title: 'Homeworks',
+      subtitle: _getWidgetSubtitle(),
+      icon: Symbols.edit_note_rounded,
+      actionId: 'homeworks',
+      isLoading: _isLoading,
+      hasError: _hasError,
+      hasData: _hasWidgetData(),
+      loadingText: 'Loading homework...',
+      errorText: 'Failed to load homework',
+      noDataText: 'No recent homework',
+      bottomText: _getBottomText(),
+      bottomRightText: _getBottomRightText(),
+      onFetch: _fetchWidgetData,
+      refreshTick: widget.refreshTick,
+    );
+  }
 }

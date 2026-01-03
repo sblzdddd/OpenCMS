@@ -39,8 +39,10 @@ class ReferralCommentCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _CommentHeader(themeNotifier: themeNotifier, comment: comment),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             _CommentContent(themeNotifier: themeNotifier, comment: comment),
+            const SizedBox(height: 8),
+            _KindChips(themeNotifier: themeNotifier, comment: comment),
             if (comment.hasReplies) ...[
               const SizedBox(height: 12),
               _RepliesList(
@@ -118,8 +120,6 @@ class _CommentHeader extends StatelessWidget {
                 ).colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
-            const SizedBox(height: 4),
-            _KindChips(themeNotifier: themeNotifier, comment: comment),
           ],
         ),
       ],
@@ -181,6 +181,7 @@ class _CommentContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Theme.of(
@@ -198,6 +199,7 @@ class _CommentContent extends StatelessWidget {
           if (comment.commentTranslation.isNotEmpty) ...[
             const SizedBox(height: 8),
             Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: themeNotifier.needTransparentBG

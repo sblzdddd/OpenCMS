@@ -371,7 +371,6 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
   }
 
   Future<void> _onEventTap(AttendanceEntry entry, DateTime date) async {
-    debugPrint('AttendancePageView: onEventTap: $entry, ${date.year}');
     if (entry.courseId == 0 || entry.courseName == '') {
       return;
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 import '../../../theme/services/theme_services.dart';
 import '../../../shared/constants/period_constants.dart';
 import '../../models/course_stats_models.dart';
@@ -43,15 +44,19 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
     return Column(
       children: [
         _buildYearSelector(),
-        Expanded(
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
+        Expanded(child: 
+        SilkyScroll(
+          scrollSpeed: 2,
+          builder: (context, controller, physics) => ListView.builder(
+            physics: physics,
+            controller: controller,
             itemCount: _courseStats!.length,
             itemBuilder: (context, index) {
               return _buildCourseCard(_courseStats![index]);
             },
           ),
-        ),
+        )),
+        const SizedBox(height: 32),
       ],
     );
   }
@@ -87,21 +92,32 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
 
   Widget _buildCourseCard(CourseStats stats) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      color: themeNotifier.needTransparentBG
-          ? (!themeNotifier.isDarkMode
-                ? Theme.of(
-                    context,
-                  ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-          : Theme.of(context).colorScheme.surfaceContainer,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
         borderRadius: themeNotifier.getBorderRadiusAll(1),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+            blurRadius: 8,
+            offset: const Offset(0, 5),
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+            blurRadius: 18,
+            offset: const Offset(0, 5),
+          ),
+        ],
+        color: themeNotifier.needTransparentBG
+            ? (!themeNotifier.isDarkMode
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+            : Theme.of(context).colorScheme.surfaceContainer,
       ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

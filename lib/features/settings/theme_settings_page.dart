@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:opencms/di/locator.dart';
 import 'package:opencms/utils/device_info.dart';
 import 'package:provider/provider.dart';
 import '../theme/services/theme_services.dart';
@@ -309,7 +310,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
 
                       // Window Effect Dropdown
                       DropdownButtonFormField<WindowEffectType>(
-                        initialValue: themeNotifier.windowEffect,
+                        initialValue: di<WindowEffectService>().windowEffect,
                         decoration: InputDecoration(
                           labelText: 'Window Effect',
                           border: OutlineInputBorder(

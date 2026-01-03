@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 
 /// A generic adaptive layout that shows a list on the left and details on the right for wide screens,
 /// and navigates to a detail page for mobile screens.
@@ -64,12 +65,9 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
         // Right side - Details
         Expanded(
           flex: 2,
-          child: Padding(
-            padding: const EdgeInsets.all(4),
-            child: selectedItem != null
-                ? detailBuilder(selectedItem as T)
-                : _buildEmptySelectionView(context),
-          ),
+          child: selectedItem != null
+            ? detailBuilder(selectedItem as T)
+            : _buildEmptySelectionView(context),
         ),
       ],
     );
@@ -85,8 +83,10 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
   }
 
   Widget _buildList(BuildContext context) {
-    return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
+    return SilkyScroll(builder: (context, controller, physics) =>
+    ListView.builder(
+      physics: physics,
+      controller: controller,
       padding: const EdgeInsets.symmetric(vertical: 12.0),
       itemCount: items.length,
       itemBuilder: (context, index) {
@@ -94,7 +94,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
         final isSelected = selectedItem == item;
         return itemBuilder(item, isSelected);
       },
-    );
+    ));
   }
 
   Widget _buildEmptySelectionView(BuildContext context) {

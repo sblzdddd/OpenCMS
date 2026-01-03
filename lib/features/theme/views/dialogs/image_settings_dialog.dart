@@ -71,18 +71,6 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
                 _buildFillModeSelector(),
                 const SizedBox(height: 16),
               ],
-
-              // Position (for foreground images)
-              if (_currentImageData.type == SkinImageType.foreground) ...[
-                // Scale Settings
-                _buildSectionHeader('Scale', Symbols.zoom_in_rounded),
-                _buildScaleSlider(),
-                const SizedBox(height: 16),
-                _buildInsideToggle(),
-                const SizedBox(height: 16),
-                _buildPositionSelector(),
-                const SizedBox(height: 16),
-              ],
             ],
           ),
         ),
@@ -120,37 +108,6 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
     );
   }
 
-  Widget _buildScaleSlider() {
-    return Row(
-      children: [
-        Expanded(
-          child: Slider(
-            padding: const EdgeInsets.symmetric(horizontal: 0),
-            value: _scale,
-            min: 0.5,
-            max: 2.0,
-            divisions: 15,
-            label: '${(_scale * 100).round()}%',
-            onChanged: (value) {
-              setState(() {
-                _scale = value;
-              });
-              _updateImageData();
-            },
-          ),
-        ),
-        SizedBox(
-          width: 60,
-          child: Text(
-            '${(_scale * 100).round()}%',
-            style: Theme.of(context).textTheme.bodySmall,
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildOpacitySlider() {
     return Row(
       children: [
@@ -182,27 +139,6 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
     );
   }
 
-  Widget _buildInsideToggle() {
-    return DropdownButtonFormField<bool>(
-      initialValue: _inside,
-      decoration: const InputDecoration(
-        labelText: 'Fit Mode',
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-      items: const [
-        DropdownMenuItem<bool>(value: true, child: Text('Inside')),
-        DropdownMenuItem<bool>(value: false, child: Text('Outside')),
-      ],
-      onChanged: (value) {
-        setState(() {
-          _inside = value!;
-        });
-        _updateImageData();
-      },
-    );
-  }
-
   Widget _buildFillModeSelector() {
     return DropdownButtonFormField<SkinImageFillMode>(
       initialValue: _fillMode,
@@ -220,30 +156,6 @@ class _ImageSettingsDialogState extends State<ImageSettingsDialog> {
       onChanged: (value) {
         setState(() {
           _fillMode = value!;
-        });
-        _updateImageData();
-      },
-    );
-  }
-
-  Widget _buildPositionSelector() {
-    return DropdownButtonFormField<SkinImagePosition>(
-      initialValue: _position,
-      decoration: const InputDecoration(
-        labelText: 'Position',
-        helperText: 'Where to position the foreground image',
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      ),
-      items: SkinImagePosition.values.map((position) {
-        return DropdownMenuItem<SkinImagePosition>(
-          value: position,
-          child: Text(position.displayName),
-        );
-      }).toList(),
-      onChanged: (value) {
-        setState(() {
-          _position = value!;
         });
         _updateImageData();
       },

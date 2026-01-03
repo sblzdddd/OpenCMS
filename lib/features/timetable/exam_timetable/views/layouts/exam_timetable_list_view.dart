@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 import '../../models/exam_timetable_models.dart';
 import '../../../../shared/views/timetable_card.dart';
 import '../../../../shared/views/error/empty_placeholder.dart';
@@ -35,50 +36,54 @@ class ExamTimetableListView extends StatelessWidget {
       );
     }
 
-    return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: sortedDates.length,
-      itemBuilder: (context, index) {
-        final date = sortedDates[index];
-        final items = byDate[date]!
-          ..sort((a, b) => a.startTime.compareTo(b.startTime));
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6.0),
-              child: Text(
-                date,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-            for (final exam in items)
-              Builder(
-                builder: (cardContext) => Column(
-                  children: [
-                    TimetableCard(
-                      subject: exam.paper.isNotEmpty
-                          ? exam.paper
-                          : (exam.code.isNotEmpty ? exam.code : 'Exam'),
-                      code: exam.code.isNotEmpty && exam.code != "0"
-                          ? exam.code
-                          : exam.examName,
-                      room: exam.room.isNotEmpty ? exam.room : 'TBA',
-                      extraInfo:
-                          'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
-                      timespan: '${exam.startTime} - ${exam.endTime}',
-                      periodText: '',
-                      onTap: () => onExamTap(exam),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
+    return SilkyScroll(
+      scrollSpeed: 2,
+      builder: (context, controller, physics) => ListView.builder(
+        controller: controller,
+        physics: physics,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: sortedDates.length,
+        itemBuilder: (context, index) {
+          final date = sortedDates[index];
+          final items = byDate[date]!
+            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Text(
+                  date,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
-            if (index != sortedDates.length - 1) const Divider(height: 20),
-          ],
-        );
-      },
+              for (final exam in items)
+                Builder(
+                  builder: (cardContext) => Column(
+                    children: [
+                      TimetableCard(
+                        subject: exam.paper.isNotEmpty
+                            ? exam.paper
+                            : (exam.code.isNotEmpty ? exam.code : 'Exam'),
+                        code: exam.code.isNotEmpty && exam.code != "0"
+                            ? exam.code
+                            : exam.examName,
+                        room: exam.room.isNotEmpty ? exam.room : 'TBA',
+                        extraInfo:
+                            'Seat: ${exam.seat.isNotEmpty ? exam.seat : 'TBA'}',
+                        timespan: '${exam.startTime} - ${exam.endTime}',
+                        periodText: '',
+                        onTap: () => onExamTap(exam),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              if (index != sortedDates.length - 1) const Divider(height: 20),
+            ],
+          );
+        },
+      ),
     );
   }
 }

@@ -5,6 +5,9 @@ import '../../../theme/services/theme_services.dart';
 import '../error/error_placeholder.dart';
 import '../error/empty_placeholder.dart';
 import '../custom_snackbar/snackbar_utils.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('RefreshableView');
 
 /// Abstract base class for pages that need refresh functionality with loading and error states
 abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
@@ -90,8 +93,8 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
           SnackbarUtils.showSuccess(context, 'Data refreshed successfully');
         }
       }
-    } catch (e) {
-      debugPrint('RefreshableView: Error loading data: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error loading data: $e', e, stackTrace);
       if (mounted) {
         setState(() {
           _error = e.toString();

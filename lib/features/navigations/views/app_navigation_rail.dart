@@ -5,6 +5,9 @@ import '../../theme/services/theme_services.dart';
 import 'nav_items.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../theme/views/widgets/skin_icon_widget.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('AppNavigationRail');
 
 class AppNavigationRail extends StatefulWidget {
   const AppNavigationRail({
@@ -39,7 +42,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
       }
     } catch (e) {
       // Handle any errors silently to avoid blocking the UI
-      debugPrint('Error handling double tap: $e');
+      logger.severe('Error handling double tap: $e');
     }
   }
 

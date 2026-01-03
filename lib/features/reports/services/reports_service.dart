@@ -3,7 +3,9 @@ import 'package:opencms/di/locator.dart';
 import '../../shared/constants/api_endpoints.dart';
 import '../models/reports.dart';
 import '../../API/networking/http_service.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('ReportsService');
 
 /// Service for fetching student reports
 class ReportsService {
@@ -14,7 +16,7 @@ class ReportsService {
   /// Fetch all reports grouped by grade level
   Future<ReportsListResponse> fetchReportsList({bool refresh = false}) async {
     try {
-      debugPrint('[ReportsService] Fetching reports list');
+      logger.info('Fetching reports list');
 
       final response = await di<HttpService>().get(
         API.reportsListUrl,
@@ -31,8 +33,8 @@ class ReportsService {
       } else {
         throw Exception('Failed to fetch reports list: ${response.statusCode}');
       }
-    } catch (e) {
-      debugPrint('[ReportsService] Error fetching reports list: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error fetching reports list: $e', e, stackTrace);
       rethrow;
     }
   }
@@ -43,7 +45,7 @@ class ReportsService {
     bool refresh = false,
   }) async {
     try {
-      debugPrint('[ReportsService] Fetching report detail for exam $examId');
+      logger.info('Fetching report detail for exam $examId');
 
       final response = await di<HttpService>().get(
         API.reportsDetailUrl(examId),
@@ -62,9 +64,11 @@ class ReportsService {
           'Failed to fetch report detail: ${response.statusCode}',
         );
       }
-    } catch (e) {
-      debugPrint(
-        '[ReportsService] Error fetching report detail for exam $examId: $e',
+    } catch (e, stackTrace) {
+      logger.severe(
+        'Error fetching report detail for exam $examId: $e',
+        e,
+        stackTrace,
       );
       rethrow;
     }

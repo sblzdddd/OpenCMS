@@ -1,9 +1,10 @@
-import 'package:flutter/rendering.dart';
-
 import 'skin_image.dart';
 import 'skin_constants.dart';
 import '../services/skin_file_manager.dart';
 import 'skin_image_type.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('Skin');
 
 /// Configuration for skin customization elements
 class Skin {
@@ -154,12 +155,12 @@ class Skin {
             );
           }
         }
-      } catch (e) {
-        debugPrint('[Skin] Error parsing imageData: $e');
+      } catch (e, stackTrace) {
+        logger.severe('[Skin] Error parsing imageData: $e', e, stackTrace);
         imageData = Map<String, SkinImageData>.from(defaultImageData);
       }
     } else {
-      debugPrint('[Skin] No image data found, using default');
+      logger.info('[Skin] No image data found, using default');
       imageData = Map<String, SkinImageData>.from(defaultImageData);
     }
 

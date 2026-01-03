@@ -4,6 +4,9 @@ import '../quick_actions/action_item/trash_can_item.dart';
 import '../../../services/dashboard_layout_storage_service.dart';
 import 'widget_size_manager.dart';
 import 'widget_tile_builder.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('DashboardGrid');
 
 /// Controller to trigger actions on DashboardGrid from parent widgets
 class DashboardGridController extends ChangeNotifier {
@@ -11,7 +14,7 @@ class DashboardGridController extends ChangeNotifier {
   void Function()? _resetLayoutHandler;
   List<String> Function()? _getAddableWidgetsHandler;
 
-  /// Request all dashboard widgets to refresh their data
+  /// Request all dashboard widgets to refresh
   void refresh() {
     notifyListeners();
   }
@@ -49,13 +52,13 @@ class DashboardGridController extends ChangeNotifier {
 }
 
 class DashboardGrid extends StatefulWidget {
-  final VoidCallback? onRefresh;
+  // final VoidCallback? onRefresh;
   final DashboardGridController? controller;
   final bool isReadOnly;
 
   const DashboardGrid({
     super.key,
-    this.onRefresh,
+    // this.onRefresh,
     this.controller,
     this.isReadOnly = false,
   });
@@ -144,7 +147,7 @@ class _DashboardGridState extends State<DashboardGrid> {
         });
       }
     } catch (e) {
-      debugPrint('DashboardGrid: Error loading layout: $e');
+      logger.severe('DashboardGrid: Error loading layout: $e');
       if (mounted) {
         setState(() {
           // On error, try to load the saved layout again, but if that fails, use default
@@ -165,15 +168,16 @@ class _DashboardGridState extends State<DashboardGrid> {
         _refreshTick++;
       });
     }
-    // Trigger refresh callback if provided (kept for backward compatibility)
-    widget.onRefresh?.call();
-    // Don't reload the layout on refresh - this was causing the reset issue
-    // await _loadLayout();
+    // no more onRefresh shit
+    // widget.onRefresh?.call();
   }
 
   Future<void> _saveLayout() async {
-    // Save the complete layout with sizes
-    await _storage.saveLayout(_widgetOrder);
+    try {
+      await _storage.saveLayout(_widgetOrder);
+    } catch (e) {
+      logger.severe('Error saving layout: $e');
+    }
   }
 
   void _onReorder(int oldIndex, int newIndex) {
@@ -215,8 +219,8 @@ class _DashboardGridState extends State<DashboardGrid> {
       context,
       // Make widgets non-clickable
       isEditModeParam: _isEditMode,
-      // Refresh callback to widgets
-      onRefresh: widget.onRefresh,
+      // NO
+      // onRefresh: widget.onRefresh,
       refreshTick: _refreshTick,
     );
   }

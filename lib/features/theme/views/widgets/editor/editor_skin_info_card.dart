@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
 import '../../../models/skin.dart';
 import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../services/skin_service.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -106,15 +107,15 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
       _isExporting = true;
     });
     try {
-      /* final path = */ await SkinService.instance.exportSkinToCmsk(widget.skin.id);
+      final path = await di<SkinService>().exportSkinToCmsk(widget.skin.id);
 
       // Use Share.shareXFiles for mobile and web platforms
-      // await SharePlus.instance.share(
-      //   ShareParams(
-      //     files: [XFile(path, name: '${widget.skin.name}.cmsk')],
-      //     text: '"${widget.skin.name}" OpenCMS skin',
-      //   ),
-      // );
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(path, name: '${widget.skin.name}.cmsk')],
+          text: '"${widget.skin.name}" OpenCMS skin',
+        ),
+      );
     } catch (e) {
       if (mounted) {
         SnackbarUtils.showError(context, 'Export failed: $e');
@@ -134,7 +135,7 @@ class _SkinInfoCardState extends State<SkinInfoCard> {
       _isExporting = true;
     });
     try {
-      final path = await SkinService.instance.exportSkinToCmsk(widget.skin.id);
+      final path = await di<SkinService>().exportSkinToCmsk(widget.skin.id);
       String? outputPath = await FilePicker.platform.saveFile(
         dialogTitle: 'Save skin package',
         fileName: '${widget.skin.name}.cmsk',

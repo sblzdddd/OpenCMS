@@ -4,6 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import '../models/skin_constants.dart';
 import '../models/skin_image.dart';
 import 'package:archive/archive_io.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('SkinFileManager');
 
 /// Manages file I/O operations for skin customization
 class SkinFileManager {
@@ -37,7 +40,7 @@ class SkinFileManager {
     final extension = sourcePath.split('.').last;
     final fileName = '$key.$extension';
     final destinationPath = '$skinsDirectory${Platform.pathSeparator}$fileName';
-    print(destinationPath);
+    logger.info('Copying image from: $sourcePath to: $destinationPath');
 
     await sourceFile.copy(destinationPath);
     return destinationPath;
@@ -49,7 +52,7 @@ class SkinFileManager {
       final file = File(path);
       if (file.existsSync() &&
           _isPathWithinDirectory(file.path, skinsDirectory)) {
-        print('[SkinFileManager] Deleting file: ${file.path}');
+        logger.info('Deleting file: ${file.path}');
         file.deleteSync();
       }
     }
@@ -97,6 +100,7 @@ class SkinFileManager {
   }
 
   static Future<void> deleteSkinDirectory(String skinId) async {
+    logger.info('Deleting skin directory for id: $skinId');
     final dirPath = await getSkinDirectoryPath(skinId);
     final dir = Directory(dirPath);
     if (dir.existsSync()) {
@@ -105,14 +109,17 @@ class SkinFileManager {
   }
 
   static Future<String> exportSkinAsCmsk(String skinId) async {
+    logger.info('Exporting skin as .cmsk for id: $skinId');
     final skinDirPath = await getSkinDirectoryPath(skinId);
     final skinDir = Directory(skinDirPath);
     if (!skinDir.existsSync()) {
+      logger.warning('Skin directory not found for id: $skinId');
       throw Exception('Skin directory not found for id: $skinId');
     }
 
     final skinJson = await readSkinJsonMap(skinId);
     if (skinJson == null) {
+      logger.warning('skin.json not found for id: $skinId');
       throw Exception('skin.json not found for id: $skinId');
     }
 
@@ -127,6 +134,7 @@ class SkinFileManager {
             imageData[key]['imagePath'] = imagePath
                 .split(Platform.pathSeparator)
                 .last;
+            logger.fine('Preparing image for export: $imagePath -> ${imageData[key]['imagePath']}');
           }
         }
       }
@@ -134,6 +142,8 @@ class SkinFileManager {
 
     final tempDir = await getTemporaryDirectory();
     final outFilePath = '${tempDir.path}${Platform.pathSeparator}$skinId.cmsk';
+
+    logger.info("Compressing skin to: $outFilePath");
 
     final ZipFileEncoder zipEncoder = ZipFileEncoder();
     zipEncoder.create(outFilePath);
@@ -153,6 +163,7 @@ class SkinFileManager {
             if (File(imagePath).existsSync()) {
               // zip.addFile(fileName, imagePath);
               await zipEncoder.addFile(File(imagePath));
+              logger.fine('Added image to archive: $imagePath');
             }
           }
         }

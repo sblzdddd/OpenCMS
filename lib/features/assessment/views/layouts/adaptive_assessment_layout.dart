@@ -78,7 +78,7 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Row(
               children: [
                 Icon(Symbols.school_rounded, size: 16),

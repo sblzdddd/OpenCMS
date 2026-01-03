@@ -5,13 +5,16 @@ import '../../../../shared/constants/period_constants.dart';
 import '../../models/course_timetable_models.dart';
 import '../../services/course_timetable_service.dart';
 import '../components/day_tabs.dart';
-import 'course_timetable_mobile_view.dart';
+import 'course_timetable_list_view.dart';
 import 'course_timetable_calendar_view.dart';
 import '../../../../attendance/services/course_stats_service.dart';
 import '../../../../shared/views/dialog/course_detail_dialog.dart';
 import '../../../../shared/views/views/refreshable_view.dart';
 import '../../../../theme/services/theme_services.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('CourseTimetableView');
 
 enum _TimetableViewMode { mobile, calendar }
 
@@ -77,8 +80,8 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
 
   void _scrollToToday() {
     if (!mounted) {
-      debugPrint(
-        'CourseTimetableView: Warning: _scrollToToday called but widget is not mounted',
+      logger.warning(
+        '_scrollToToday called but widget is not mounted',
       );
       return;
     }
@@ -138,8 +141,8 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
           _dayTabController.animateTo(newIndex);
         }
       }
-    } catch (e) {
-      debugPrint('CourseTimetableView: Error in scroll listener: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error in scroll listener: $e', e, stackTrace);
     }
   }
 
@@ -162,9 +165,11 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
         0.0,
       );
       return revealed.offset;
-    } catch (e) {
-      debugPrint(
-        'CourseTimetableView: Error getting header offset for index $index: $e',
+    } catch (e, stackTrace) {
+      logger.severe(
+        'Error getting header offset for index $index: $e',
+        e,
+        stackTrace,
       );
       return null;
     }
@@ -182,31 +187,16 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
     await Future.delayed(Duration.zero);
 
     // Check if day keys are ready
-    if (!_areDayKeysReady()) {
-      debugPrint(
-        'CourseTimetableView: Day keys are not ready yet, skipping scroll',
-      );
-      return;
-    }
+    if (!_areDayKeysReady()) return;
 
     _isAnimatingToTab = true;
     try {
       // Check if scroll controller has clients
-      if (!_scrollController.hasClients) {
-        debugPrint(
-          'CourseTimetableView: Scroll controller has no clients, skipping scroll',
-        );
-        return;
-      }
+      if (!_scrollController.hasClients) return;
 
       // Get header offset
       final headerOffset = _getHeaderOffset(index);
-      if (headerOffset == null) {
-        debugPrint(
-          'CourseTimetableView: Header offset is null for index $index, skipping scroll',
-        );
-        return;
-      }
+      if (headerOffset == null) return;
 
       // Perform the scroll
       if (jump) {
@@ -218,8 +208,8 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
           curve: Curves.easeInOut,
         );
       }
-    } catch (e) {
-      debugPrint('CourseTimetableView: Error scrolling to day $index: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error scrolling to day $index: $e', e, stackTrace);
     } finally {
       _isAnimatingToTab = false;
     }
@@ -309,7 +299,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
               ),
             Expanded(
               child: _viewMode == _TimetableViewMode.mobile
-                  ? TimetableMobileView(
+                  ? CourseTimetableListView(
                       scrollController: _scrollController,
                       dayDates: _dayDates,
                       todayIndex: _todayIndex,

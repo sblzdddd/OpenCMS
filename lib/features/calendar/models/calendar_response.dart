@@ -148,8 +148,6 @@ class CalendarResponse {
 
     for (final eventString in eventStrings) {
       if (eventString.trim().isEmpty) continue;
-      print(eventString);
-
       final parts = eventString.split('|');
       if (parts.length >= 6) {
         events.add(

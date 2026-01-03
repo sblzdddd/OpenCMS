@@ -4,9 +4,10 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../models/calendar_today_item.dart';
 import '../../services/calendar_service.dart';
 import '../../../home/views/widgets/base_dashboard_widget.dart';
+import 'package:logging/logging.dart';
 
-/// Dashboard widget that shows today's calendar items
-/// Tapping anywhere navigates to the calendar page (id=calendar)
+final logger = Logger('CalendarWidget');
+
 class CalendarWidget extends StatefulWidget {
   final Size? widgetSize;
   final VoidCallback? onRefresh;
@@ -24,82 +25,45 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class _CalendarWidgetState extends State<CalendarWidget>
-    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   final CalendarService _calendarService = CalendarService();
   List<CalendarTodayItem> _items = const [];
-
-  @override
-  void initState() {
-    super.initState();
-    initializeWidget();
-    startTimer();
-  }
-
-  @override
-  void didUpdateWidget(covariant CalendarWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != null &&
-        widget.refreshTick != oldWidget.refreshTick) {
-      debugPrint(
-        'CalendarWidget: refreshTick changed -> refreshing with refresh=true',
-      );
-      refresh();
-    }
-  }
-
-  @override
-  void dispose() {
-    disposeMixin();
-    super.dispose();
-  }
-
-  @override
-  Future<void> initializeWidget() async {
-    await _fetchToday();
-  }
-
-  @override
-  void startTimer() {
-    // Refresh every 30 minutes which is sufficient for calendar items
-    setCustomTimer(const Duration(hours: 2));
-  }
-
-  @override
-  Future<void> refreshData() async {
-    await _fetchToday(refresh: true);
-    widget.onRefresh?.call();
-  }
+  bool _isLoading = true;
+  bool _hasError = false;
 
   bool get isWideMode {
     final size = widget.widgetSize;
     return size != null && size.width == 4 && size.height == 1.6;
   }
 
-  Future<void> _fetchToday({bool refresh = false}) async {
+  Future<void> _fetchWidgetData({bool refresh = false}) async {
     try {
-      setLoading(true);
-      setError(false);
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _hasError = false;
+        });
+      }
 
       final data = await _calendarService.getTodayCalendar(refresh: refresh);
       if (!mounted) return;
       setState(() {
         _items = data;
+        _isLoading = false;
       });
-      setLoading(false);
     } catch (e) {
       if (mounted) {
-        setLoading(false);
-        setError(true);
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
       }
-      debugPrint('CalendarWidget: Error fetching today\'s calendar: $e');
+      logger.severe('Error fetching today\'s calendar: $e');
     }
   }
-
-  @override
-  String getWidgetTitle() => 'Calendar';
 
   String _formatRightSide() {
     if (_items.isEmpty) return '';
@@ -110,17 +74,12 @@ class _CalendarWidgetState extends State<CalendarWidget>
     return DateFormat('EEE, MMM d').format(now);
   }
 
-  @override
-  String? getRightSideText() => _formatRightSide();
-
-  @override
-  String getWidgetSubtitle() {
+  String _getWidgetSubtitle() {
     if (_items.isEmpty) return 'No events today';
     return _items.first.title;
   }
 
-  @override
-  Widget? getExtraContent(BuildContext context) {
+  Widget? _getExtraContent(BuildContext context) {
     if (_items.length <= 1) return null;
     final color = Theme.of(
       context,
@@ -166,26 +125,23 @@ class _CalendarWidgetState extends State<CalendarWidget>
   }
 
   @override
-  bool hasWidgetData() => _items.isNotEmpty;
-
-  @override
-  String getActionId() => 'calendar';
-
-  @override
-  IconData getWidgetIcon() => Symbols.calendar_month_rounded;
-
-  @override
-  String getLoadingText() => 'Loading today\'s calendar...';
-
-  @override
-  String getErrorText() => 'Failed to load today\'s calendar';
-
-  @override
-  String getNoDataText() => 'No events today';
-
-  @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    return buildCommonLayout();
+    return BaseDashboardWidget(
+      title: 'Calendar',
+      subtitle: _getWidgetSubtitle(),
+      icon: Symbols.calendar_month_rounded,
+      actionId: 'calendar',
+      isLoading: _isLoading,
+      hasError: _hasError,
+      hasData: _items.isNotEmpty,
+      loadingText: 'Loading today\'s calendar...',
+      errorText: 'Failed to load today\'s calendar',
+      noDataText: 'No events today',
+      rightSideText: _formatRightSide(),
+      extraContent: _getExtraContent(context),
+      onFetch: _fetchWidgetData,
+      refreshTick: widget.refreshTick,
+    );
   }
 }

@@ -48,8 +48,8 @@ CourseMark _$CourseMarkFromJson(Map<String, dynamic> json) => CourseMark(
   mark: json['mark'] as String,
   grade: json['grade'] as String,
   comment: json['comment'] as String,
-  commentCn: json['comment_cn'] as String,
-  teacherName: json['teacher_name'] as String,
+  commentCn: json['comment_cn'] as String?,
+  teacherName: json['teacher_name'] as String?,
   level: json['level'] as String,
 );
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-// import 'text_theme_util.dart';
+import 'text_theme_util.dart';
 import 'global_press_scale.dart';
 
 class OCMSColorThemes {
-  // late TextTheme textTheme;
+  late TextTheme textTheme;
 
   // constructor
   OCMSColorThemes(BuildContext context) {
-    // textTheme = createTextTheme(context, "Roboto", "EB Garamond");
+    textTheme = createTextTheme(context, "Roboto", "EB Garamond");
   }
 
   ThemeData buildLightTheme(Color seedColor) {
@@ -42,10 +42,10 @@ class OCMSColorThemes {
 
     return ThemeData(
       colorScheme: lightColorScheme,
-      // textTheme: textTheme.apply(
-      //   bodyColor: lightColorScheme.onSurface,
-      //   displayColor: lightColorScheme.onSurface,
-      // ),
+      textTheme: textTheme.apply(
+        bodyColor: lightColorScheme.onSurface,
+        displayColor: lightColorScheme.onSurface,
+      ),
       extensions: <ThemeExtension<dynamic>>[
         const AppInteractionTheme(scaleDownFactor: 0.9),
       ],
@@ -59,10 +59,10 @@ class OCMSColorThemes {
     );
     return ThemeData(
       colorScheme: darkColorScheme,
-      // textTheme: textTheme.apply(
-      //   bodyColor: darkColorScheme.onSurface,
-      //   displayColor: darkColorScheme.onSurface,
-      // ),
+      textTheme: textTheme.apply(
+        bodyColor: darkColorScheme.onSurface,
+        displayColor: darkColorScheme.onSurface,
+      ),
       extensions: <ThemeExtension<dynamic>>[
         const AppInteractionTheme(scaleDownFactor: 0.9),
       ],

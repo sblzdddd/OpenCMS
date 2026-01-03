@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../../shared/constants/period_constants.dart';
 import '../../models/assessment_models.dart';
@@ -7,8 +8,8 @@ import '../../services/assessment_service.dart';
 import 'dart:async';
 import '../../../home/views/widgets/base_dashboard_widget.dart';
 
-/// Widget that displays the latest assessment information
-/// Shows the most recent assessment with score and subject
+final logger = Logger('LatestAssessmentWidget');
+
 class LatestAssessmentWidget extends StatefulWidget {
   final VoidCallback? onRefresh;
   final int? refreshTick;
@@ -20,57 +21,23 @@ class LatestAssessmentWidget extends StatefulWidget {
 }
 
 class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
-    with AutomaticKeepAliveClientMixin, BaseDashboardWidgetMixin {
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
   AssessmentResponse? _assessmentData;
   final AssessmentService _assessmentService = AssessmentService();
+  bool _isLoading = true;
+  bool _hasError = false;
 
-  @override
-  void initState() {
-    super.initState();
-    initializeWidget();
-    startTimer();
-  }
-
-  @override
-  void didUpdateWidget(covariant LatestAssessmentWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.refreshTick != oldWidget.refreshTick) {
-      refresh();
-    }
-  }
-
-  @override
-  void dispose() {
-    disposeMixin();
-    super.dispose();
-  }
-
-  @override
-  Future<void> initializeWidget() async {
-    await _fetchAssessments();
-  }
-
-  @override
-  void startTimer() {
-    // Update every hour to refresh assessment data
-    setCustomTimer(const Duration(hours: 1));
-  }
-
-  @override
-  Future<void> refreshData() async {
-    debugPrint('LatestAssessmentWidget: Refreshing assessments');
-    await _fetchAssessments(refresh: true);
-    // Call the parent refresh callback if provided
-    widget.onRefresh?.call();
-  }
-
-  Future<void> _fetchAssessments({bool refresh = false}) async {
+  Future<void> _fetchWidgetData({bool refresh = false}) async {
     try {
-      setLoading(true);
-      setError(false);
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _hasError = false;
+        });
+      }
 
       final assessments = await _assessmentService.fetchAssessments(
         year: PeriodConstants.getAcademicYears().first.year,
@@ -80,15 +47,17 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
       if (mounted) {
         setState(() {
           _assessmentData = assessments;
+          _isLoading = false;
         });
-        setLoading(false);
       }
     } catch (e) {
       if (mounted) {
-        setLoading(false);
-        setError(true);
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
       }
-      debugPrint('LatestAssessmentWidget: Error fetching assessments: $e');
+      logger.severe('LatestAssessmentWidget: Error fetching assessments: $e');
     }
   }
 
@@ -138,51 +107,44 @@ class _LatestAssessmentWidgetState extends State<LatestAssessmentWidget>
     return 'Unknown Subject';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return buildCommonLayout();
-  }
-
-  @override
-  IconData getWidgetIcon() => Symbols.assessment_rounded;
-
-  @override
-  String getWidgetTitle() => 'Assessment';
-
-  @override
-  String getWidgetSubtitle() {
+  String _getWidgetSubtitle() {
     final latestAssessment = _getLatestAssessment();
     if (latestAssessment == null) return '';
     return latestAssessment.title;
   }
 
-  @override
-  String? getBottomRightText() {
+  String? _getBottomRightText() {
     final latestAssessment = _getLatestAssessment();
     if (latestAssessment == null) return null;
     return _getScoreText(latestAssessment);
   }
 
-  @override
-  String? getBottomText() {
+  String? _getBottomText() {
     final latestAssessment = _getLatestAssessment();
     if (latestAssessment == null) return null;
     return _getSubjectCode(latestAssessment);
   }
 
-  @override
-  String getLoadingText() => 'Loading assessments...';
+  bool _hasWidgetData() => _getLatestAssessment() != null;
 
   @override
-  String getErrorText() => 'Failed to load assessments';
-
-  @override
-  String getNoDataText() => 'No recent assessments';
-
-  @override
-  bool hasWidgetData() => _getLatestAssessment() != null;
-
-  @override
-  String getActionId() => 'assessment';
+  Widget build(BuildContext context) {
+    super.build(context);
+    return BaseDashboardWidget(
+      title: 'Assessment',
+      subtitle: _getWidgetSubtitle(),
+      icon: Symbols.assessment_rounded,
+      actionId: 'assessment',
+      isLoading: _isLoading,
+      hasError: _hasError,
+      hasData: _hasWidgetData(),
+      loadingText: 'Loading assessments...',
+      errorText: 'Failed to load assessments',
+      noDataText: 'No recent assessments',
+      bottomText: _getBottomText(),
+      bottomRightText: _getBottomRightText(),
+      onFetch: _fetchWidgetData,
+      refreshTick: widget.refreshTick,
+    );
+  }
 }

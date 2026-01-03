@@ -7,7 +7,9 @@ import '../../shared/constants/api_endpoints.dart';
 import '../models/referral.dart';
 import '../../API/networking/http_service.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('ReferralService');
 
 /// Service for handling referral comments API calls
 class ReferralService {
@@ -18,8 +20,8 @@ class ReferralService {
   /// Fetch referral comments for the current student
   Future<ReferralResponse> getReferralComments({bool refresh = false}) async {
     try {
-      debugPrint(
-        '[ReferralService] Fetching referral comments (refresh: $refresh)',
+      logger.info(
+        'Fetching referral comments (refresh: $refresh)',
       );
 
       final response = await di<HttpService>().get(
@@ -27,14 +29,14 @@ class ReferralService {
         refresh: refresh,
       );
 
-      debugPrint('[ReferralService] Response status: ${response.statusCode}');
+      logger.info('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200 || response.statusCode == 304) {
         final List<dynamic> data = response.data as List<dynamic>;
         final referralResponse = ReferralResponse.fromJson(data);
 
-        debugPrint(
-          '[ReferralService] Successfully fetched ${referralResponse.comments.length} referral comments',
+        logger.info(
+          'Successfully fetched ${referralResponse.comments.length} referral comments',
         );
         return referralResponse;
       } else {
@@ -46,10 +48,10 @@ class ReferralService {
         );
       }
     } on DioException catch (e) {
-      debugPrint('[ReferralService] DioException - ${e.message}');
+      logger.severe('DioException - ${e.message}', e, e.stackTrace);
       rethrow;
-    } catch (e) {
-      debugPrint('[ReferralService] Unexpected error - $e');
+    } catch (e, stackTrace) {
+      logger.severe('Unexpected error - $e', e, stackTrace);
       throw Exception('Failed to fetch referral comments: $e');
     }
   }

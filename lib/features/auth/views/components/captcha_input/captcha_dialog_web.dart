@@ -1,6 +1,8 @@
 import 'dart:js_interop';
-import 'package:flutter/foundation.dart';
 import 'package:web/web.dart' as web;
+import 'package:logging/logging.dart';
+
+final logger = Logger('CaptchaDialogWeb');
 
 /// Web-specific helper for captcha dialog
 class WebHelper {
@@ -16,7 +18,7 @@ class WebHelper {
         final data = (event as web.MessageEvent).data.dartify();
 
         if (data is Map && data['type'] == 'captchaResult') {
-          debugPrint(
+          logger.info(
             'CaptchaDialog: Received captcha result via postMessage: $data',
           );
 

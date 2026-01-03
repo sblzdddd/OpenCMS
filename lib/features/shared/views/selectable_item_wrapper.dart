@@ -52,11 +52,32 @@ class SelectableItemWrapper extends StatelessWidget {
       child: ScaledInkWell(
         margin:
             margin ??
-            const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-        background: (inkWell) => Material(
-          color: backgroundColor,
-          borderRadius: borderRadius,
-          child: inkWell,
+            const EdgeInsets.symmetric(vertical: 4.0, horizontal: 12.0),
+        background: (inkWell) => Container(
+          decoration: BoxDecoration(
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.01),
+                blurRadius: 8,
+                offset: const Offset(0, 5),
+              ),
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.01),
+                blurRadius: 18,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Material(
+            color: backgroundColor,
+            borderRadius: borderRadius,
+            child: inkWell,
+          ),
         ),
         onTap: onTap,
         borderRadius: borderRadius,

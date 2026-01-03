@@ -37,6 +37,10 @@ class TokenStorage {
     await storage.write('sid_scie', token);
   }
 
+  Future<void> clearAccessToken() async {
+    await storage.delete('access');
+  }
+
   Future<void> clearAll() async {
     await storage.delete('access');
     await storage.delete('refresh');

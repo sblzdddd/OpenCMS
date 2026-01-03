@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../components/dashboard_grid/add_widget_drawer.dart';
+import '../components/dashboard_grid/add_widget_drawer/add_widget_drawer.dart';
 import '../components/dashboard_grid/dashboard_grid.dart';
 import '../components/quick_actions/quick_actions.dart';
 import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';

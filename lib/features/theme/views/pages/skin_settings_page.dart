@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/di/locator.dart';
 import '../../models/skin.dart';
 import '../../services/skin_service.dart';
 import '../widgets/editor/skin_card.dart';
@@ -22,7 +23,6 @@ class SkinSettingsPage extends StatefulWidget {
 }
 
 class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
-  final SkinService _skinService = SkinService.instance;
   List<Skin> _skins = [];
   bool _isLoading = true;
   String? _error;
@@ -30,7 +30,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
   @override
   void initState() {
     super.initState();
-    _skinService.initialize();
+    di<SkinService>().initialize();
     _loadSkins();
   }
 
@@ -63,7 +63,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
     });
 
     try {
-      final response = await _skinService.getAllSkins();
+      final response = await di<SkinService>().getAllSkins();
       if (response.success) {
         setState(() {
           _skins = response.skins ?? [];
@@ -112,7 +112,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
     });
 
     try {
-      final response = await _skinService.setActiveSkin(skin.id);
+      final response = await di<SkinService>().setActiveSkin(skin.id);
       if (response.success) {
         await _loadSkins();
         if (mounted) {
@@ -145,7 +145,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
     });
 
     try {
-      final response = await _skinService.clearActiveSkin();
+      final response = await di<SkinService>().clearActiveSkin();
       if (response.success) {
         await _loadSkins();
         if (mounted) {
@@ -203,7 +203,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
       });
 
       try {
-        final response = await _skinService.deleteSkin(skin.id);
+        final response = await di<SkinService>().deleteSkin(skin.id);
         if (response.success) {
           await _loadSkins();
           if (mounted) {
@@ -255,7 +255,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
         if (file.path != null) {
-          final response = await _skinService.importSkinFromCmsk(file.path!);
+          final response = await di<SkinService>().importSkinFromCmsk(file.path!);
           if (response.success && mounted) {
             await _loadSkins();
             if (!mounted) return;
@@ -343,7 +343,7 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       // Create default skin with proper active state
-                      final defaultSkin = _skinService.createDefaultSkin();
+                      final defaultSkin = di<SkinService>().createDefaultSkin();
                       final activeDefaultSkin = defaultSkin.copyWith(
                         isActive: _isDefaultSkinActive(),
                       );

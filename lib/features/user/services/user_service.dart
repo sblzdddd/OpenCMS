@@ -1,10 +1,10 @@
-
-
-import 'package:flutter/material.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/networking/http_service.dart';
 import 'package:opencms/features/user/models/user_models.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('UserService');
 
 class UserService {
   /// fetch user account information (for auth validations)
@@ -26,8 +26,8 @@ class UserService {
       );
       final data = UserInfo.fromJson(response.data);
       return data;
-    } catch (e) {
-      debugPrint('[UserService] Exception fetching user profile info: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Exception fetching user profile info: $e', e, stackTrace);
       return null;
     }
   }

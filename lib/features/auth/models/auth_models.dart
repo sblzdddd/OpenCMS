@@ -3,7 +3,9 @@ part 'auth_models.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class TokenResponse {
+  @JsonKey(name: 'access')
   final String? accessToken;
+  @JsonKey(name: 'refresh')
   final String? refreshToken;
 
   TokenResponse({required this.accessToken, required this.refreshToken});

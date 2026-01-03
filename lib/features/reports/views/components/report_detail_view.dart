@@ -30,6 +30,11 @@ class _ReportDetailViewState extends RefreshablePage<ReportDetailView> {
   }
 
   @override
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
+    return buildPageContent(context, themeNotifier);
+  }
+
+  @override
   bool get isEmpty => false; // Content widget handles empty state
 
   @override

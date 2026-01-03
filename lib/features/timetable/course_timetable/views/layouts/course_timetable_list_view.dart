@@ -7,7 +7,7 @@ import '../../../../shared/views/timetable_card.dart';
 import '../components/day_header.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 
-class TimetableMobileView extends StatefulWidget {
+class CourseTimetableListView extends StatefulWidget {
   final ScrollController scrollController;
   final List<DateTime> dayDates;
   final int todayIndex;
@@ -16,7 +16,7 @@ class TimetableMobileView extends StatefulWidget {
   final TimetableResponse? timetableData;
   final Function(TimetableEvent) onEventTap;
 
-  const TimetableMobileView({
+  const CourseTimetableListView({
     super.key,
     required this.scrollController,
     required this.dayDates,
@@ -28,10 +28,10 @@ class TimetableMobileView extends StatefulWidget {
   });
 
   @override
-  State<TimetableMobileView> createState() => _TimetableMobileViewState();
+  State<CourseTimetableListView> createState() => _CourseTimetableListViewState();
 }
 
-class _TimetableMobileViewState extends State<TimetableMobileView>
+class _CourseTimetableListViewState extends State<CourseTimetableListView>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   @override
   void initState() {

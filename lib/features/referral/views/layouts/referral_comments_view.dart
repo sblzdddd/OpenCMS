@@ -5,6 +5,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/referral/services/referral_service.dart';
 import 'package:opencms/features/shared/views/views/refreshable_page.dart';
 import 'package:opencms/features/referral/views/components/referral_stats.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 
 class ReferralCommentsView extends StatefulWidget {
   const ReferralCommentsView({super.key});
@@ -147,22 +148,35 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
 
     final filteredComments = _getFilteredAndSortedComments();
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          ReferralStatsWidget(
-            themeNotifier: themeNotifier,
-            comments: _referralResponse!.comments,
-          ),
-          const SizedBox(height: 16),
-          ReferralCommentsList(
-            themeNotifier: themeNotifier,
-            comments: filteredComments,
-          ),
-        ],
+    final items = [
+      ReferralStatsWidget(
+        themeNotifier: themeNotifier,
+        comments: _referralResponse!.comments,
       ),
+      const SizedBox(height: 16),
+      ReferralCommentsList(
+        themeNotifier: themeNotifier,
+        comments: filteredComments,
+      ),
+    ];
+
+    return SilkyScroll(
+      scrollSpeed: 2,
+      builder: (context, controller, physics) {
+        return ListView.builder(
+          controller: controller,
+          physics: physics,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          itemCount: items.length,
+          itemBuilder: (context, index) => items[index],
+        );
+      },
     );
+  }
+
+  @override
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
+    return buildPageContent(context, themeNotifier);
   }
 
   @override

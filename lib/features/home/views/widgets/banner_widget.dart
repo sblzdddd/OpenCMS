@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/views/widgets/skin_background_widget.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/services/theme_services.dart';
 import 'dynamic_gradient_banner.dart';
@@ -24,12 +27,9 @@ class _BannerWidgetState extends State<BannerWidget>
   bool _hasError = false;
 
   // Cache the streams to prevent recreation
-  late final Stream<String> _timeStream;
   late final Stream<String> _greetingStream;
   Timer? _greetingTimer;
-  Timer? _timeTimer;
   StreamController<String>? _greetingController;
-  StreamController<String>? _timeController;
   @override
   bool get wantKeepAlive => true; // Keep the widget alive during drag operations
 
@@ -40,17 +40,6 @@ class _BannerWidgetState extends State<BannerWidget>
   }
 
   void _initializeStreams() {
-    _timeController = StreamController<String>();
-    _timeController!.add(
-      '${DateFormat("MMMM dd, HH:mm:ss").format(DateTime.now())} ${PeriodConstants.getPeriodInfoByTime(DateTime.now())?.name ?? ''}',
-    );
-    _timeTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (_) => _timeController!.add(
-        '${DateFormat("MMMM dd, HH:mm:ss").format(DateTime.now())} ${PeriodConstants.getPeriodInfoByTime(DateTime.now())?.name ?? ''}',
-      ),
-    );
-
     // Create a stream that starts with current value and then updates every minute
     _greetingController = StreamController<String>();
     _greetingController!.add(PeriodConstants.getGreeting(DateTime.now()));
@@ -62,7 +51,6 @@ class _BannerWidgetState extends State<BannerWidget>
     });
 
     _greetingStream = _greetingController!.stream;
-    _timeStream = _timeController!.stream;
     setState(() {
       _isLoading = false;
       _hasError = false;
@@ -71,8 +59,6 @@ class _BannerWidgetState extends State<BannerWidget>
 
   @override
   void dispose() {
-    _timeTimer?.cancel();
-    _timeController?.close();
     _greetingTimer?.cancel();
     _greetingController?.close();
     super.dispose();
@@ -80,9 +66,47 @@ class _BannerWidgetState extends State<BannerWidget>
 
   @override
   Widget build(BuildContext context) {
+    bool haveImageBg = false;
+    if (di<SkinService>().activeSkin != null) {
+      final skin = di<SkinService>().activeSkin!;
+      final imgData = skin.imageData['home.bannerBackground'];
+      if (imgData != null && imgData.hasImage && File(imgData.imagePath!).existsSync()) {
+        haveImageBg = true;
+      }
+    }
     super.build(context);
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return ScaledInkWell(
+      background: (inkWell) => Container(
+        decoration: BoxDecoration(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+              blurRadius: 8,
+              offset: const Offset(0, 5),
+            ),
+            BoxShadow(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+              blurRadius: 18,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Material(
+          color: themeNotifier.needTransparentBG
+              ? (!themeNotifier.isDarkMode
+                  ? Theme.of(
+                      context,
+                    ).colorScheme.surfaceBright.withValues(alpha: 0.6)
+                  : Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+              : Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          child: inkWell,
+        ),
+      ),
       onTap: () {
         Navigator.push(
           context,
@@ -100,7 +124,9 @@ class _BannerWidgetState extends State<BannerWidget>
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: Stack(
             children: [
-              const Positioned.fill(child: DynamicGradientBanner()),
+              Positioned.fill(child: haveImageBg ? 
+                SkinBackgroundWidget(category: 'home.bannerBackground', fallbackColor: Theme.of(context).colorScheme.surface, child: Container()) : 
+                const DynamicGradientBanner()),
               // Top left and right positioned elements
               Positioned(
                 top: 10,
@@ -139,32 +165,6 @@ class _BannerWidgetState extends State<BannerWidget>
                   fill: 1,
                   color: Colors.white,
                   size: 32,
-                ),
-              ),
-              Positioned(
-                bottom: 10,
-                right: 16,
-                child: Row(
-                  children: [
-                    Icon(
-                      Symbols.schedule_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 4),
-                    StreamBuilder<String>(
-                      stream: _timeStream,
-                      builder: (context, snapshot) {
-                        return Text(
-                          snapshot.data ?? 'Loading...',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
                 ),
               ),
               if (_isLoading)

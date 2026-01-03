@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:opencms/di/locator.dart';
 import '../../../theme/services/theme_services.dart';
 import '../../../theme/services/skin_service.dart';
 import '../../../theme/models/skin.dart';
@@ -225,8 +226,7 @@ class CustomScaffold extends StatelessWidget {
 
     // Check if we need to add foreground image
     if (enableForeground) {
-      final skinService = SkinService.instance;
-      final activeSkin = skinService.activeSkin;
+      final activeSkin = di<SkinService>().activeSkin;
 
       if (activeSkin != null) {
         final foregroundImage = _createForegroundImage(activeSkin);

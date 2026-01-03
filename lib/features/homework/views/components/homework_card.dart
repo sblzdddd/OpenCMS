@@ -8,6 +8,9 @@ import 'package:add_2_calendar/add_2_calendar.dart';
 import '../../models/homework_models.dart';
 import '../../services/completed_homework_service.dart';
 import '../../../shared/views/widgets/scaled_ink_well.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('HomeworkCard');
 
 class HomeworkCard extends StatefulWidget {
   final HomeworkItem homework;
@@ -112,8 +115,8 @@ class _HomeworkCardState extends State<HomeworkCard> {
 
       // Notify parent about completion status change
       widget.onCompletionStatusChanged?.call();
-    } catch (e) {
-      debugPrint('HomeworkCard: Error toggling homework completion: $e');
+    } catch (e, stackTrace) {
+      logger.severe('HomeworkCard: Error toggling homework completion', e, stackTrace);
       // Show error message to user if needed
     } finally {
       if (mounted) {
@@ -134,19 +137,40 @@ class _HomeworkCardState extends State<HomeworkCard> {
     return Opacity(
       opacity: _isCompleted ? 0.5 : 1,
       child: ScaledInkWell(
-        margin: const EdgeInsets.only(bottom: 8.0),
-        background: (inkWell) => Material(
-          color: themeNotifier.needTransparentBG
-              ? (!themeNotifier.isDarkMode
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                    : Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-              : Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-          child: inkWell,
+        margin: const EdgeInsets.only(bottom: 10.0),
+        background: (inkWell) => Container(
+          decoration: BoxDecoration(
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.01),
+                blurRadius: 8,
+                offset: const Offset(0, 5),
+              ),
+              BoxShadow(
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.01),
+                blurRadius: 18,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Material(
+            color: themeNotifier.needTransparentBG
+                ? (!themeNotifier.isDarkMode
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                      : Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                : Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+            child: inkWell,
+          ),
         ),
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),
         onTap: widget.onTap,

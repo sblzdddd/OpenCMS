@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
@@ -49,9 +50,15 @@ class ErrorPlaceholder extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Phoenix.rebirth(context);
+                    },
+                    child: const Text('Restart App'),
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       showLogoutDialog(context);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
 import '../../models/skin.dart';
 import '../../models/skin_image_type.dart';
 import '../../services/skin_service.dart';
@@ -25,7 +26,6 @@ class SkinEditorPage extends StatefulWidget {
 
 class _SkinEditorPageState extends State<SkinEditorPage>
     with SingleTickerProviderStateMixin {
-  final SkinService _skinService = SkinService.instance;
   late Skin _currentSkin;
   bool _isLoading = false;
   String? _error;
@@ -61,7 +61,7 @@ class _SkinEditorPageState extends State<SkinEditorPage>
     });
 
     try {
-      final response = await _skinService.updateSkin(updatedSkin);
+      final response = await di<SkinService>().updateSkin(updatedSkin);
       if (response.success) {
         setState(() {
           _currentSkin = updatedSkin;
@@ -92,7 +92,7 @@ class _SkinEditorPageState extends State<SkinEditorPage>
 
   Future<void> _loadLatestSkin() async {
     try {
-      final response = await _skinService.getSkinById(_currentSkin.id);
+      final response = await di<SkinService>().getSkinById(_currentSkin.id);
       if (response.success && response.skin != null && mounted) {
         setState(() {
           _currentSkin = response.skin!;
@@ -278,13 +278,6 @@ class _SkinEditorPageState extends State<SkinEditorPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            category,
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 16),
           Wrap(
             spacing: 16,
             runSpacing: 16,
@@ -316,8 +309,6 @@ class _SkinEditorPageState extends State<SkinEditorPage>
     switch (type) {
       case SkinImageType.background:
         return Symbols.photo_library_rounded;
-      case SkinImageType.foreground:
-        return Symbols.layers_rounded;
       case SkinImageType.icon:
         return Symbols.image_rounded;
     }

@@ -3,7 +3,9 @@ import 'package:opencms/di/locator.dart';
 import '../models/homework_models.dart';
 import '../../API/networking/http_service.dart';
 import '../../shared/constants/api_endpoints.dart';
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('HomeworkService');
 
 class HomeworkService {
   static final HomeworkService _instance = HomeworkService._internal();
@@ -16,7 +18,7 @@ class HomeworkService {
     bool refresh = false,
   }) async {
     try {
-      debugPrint('[HomeworkService] Fetching homework for year $academicYear');
+      logger.info('Fetching homework for year $academicYear');
 
       final response = await di<HttpService>().get(
         '${API.homeworkUrl}?year=$academicYear',
@@ -28,8 +30,8 @@ class HomeworkService {
       } else {
         throw Exception('Invalid response format: expected JSON array');
       }
-    } catch (e) {
-      debugPrint('[HomeworkService] Error fetching homework: $e');
+    } catch (e, stackTrace) {
+      logger.severe('Error fetching homework', e, stackTrace);
       rethrow;
     }
   }

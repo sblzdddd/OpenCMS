@@ -1,8 +1,11 @@
-import 'package:flutter/foundation.dart';
+import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
 import '../../API/networking/http_service.dart';
 import '../../shared/constants/api_endpoints.dart';
 import '../models/assessment_models.dart';
+
+
+final logger = Logger('AssessmentService');
 
 /// Service for fetching student assessments
 class AssessmentService {
@@ -16,7 +19,7 @@ class AssessmentService {
     bool refresh = false,
   }) async {
     try {
-      debugPrint('[AssessmentService] Fetching assessments for year $year');
+      logger.info('Fetching assessments for year $year');
 
       final response = await di<HttpService>().get(
         '${API.assessmentsUrl}?year=$year',
@@ -29,7 +32,7 @@ class AssessmentService {
         throw Exception('Invalid response format: null data');
       }
     } catch (e) {
-      debugPrint('[AssessmentService] Error fetching assessments: $e');
+      logger.severe('Error fetching assessments: $e');
       rethrow;
     }
   }
@@ -50,9 +53,7 @@ class AssessmentService {
 
       return subject.assessments;
     } catch (e) {
-      debugPrint(
-        '[AssessmentService] Error getting assessments by subject: $e',
-      );
+      logger.severe('Error getting assessments by subject: $e');
       rethrow;
     }
   }

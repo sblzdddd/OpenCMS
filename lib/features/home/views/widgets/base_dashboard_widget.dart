@@ -7,148 +7,134 @@ import 'dart:async';
 import '../../../shared/views/widgets/scaled_ink_well.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 
-/// Base mixin for dashboard widget states that provides common functionality
-/// including layout, refresh logic, error handling, and common UI patterns
-mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
-  bool _isLoading = true;
-  bool _hasError = false;
+/// Base widget for dashboard items
+class BaseDashboardWidget extends StatefulWidget {
+  final String title;
+  final String subtitle;
+  final String? rightSideText;
+  final String? bottomText;
+  final String? bottomRightText;
+  final Widget? extraContent;
+  final String actionId;
+  final IconData icon;
+  final bool isLoading;
+  final bool hasError;
+  final bool hasData;
+  final String? loadingText;
+  final String? errorText;
+  final String? noDataText;
+  final int? refreshTick;
+  final Future<void> Function({bool refresh})? onFetch;
+  final bool hasMultipleTapAreas;
+
+  const BaseDashboardWidget({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.actionId,
+    this.rightSideText,
+    this.bottomText,
+    this.bottomRightText,
+    this.extraContent,
+    this.icon = Symbols.dashboard_rounded,
+    this.isLoading = false,
+    this.hasError = false,
+    this.hasData = true,
+    this.loadingText = 'Loading...',
+    this.errorText = 'Failed to load data',
+    this.noDataText = 'No data available',
+    this.refreshTick,
+    this.onFetch,
+    this.hasMultipleTapAreas = false,
+  });
+
+  @override
+  State<BaseDashboardWidget> createState() => _BaseDashboardWidgetState();
+}
+
+class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
   Timer? _updateTimer;
 
-  /// Get the current loading state
-  bool get isLoading => _isLoading;
-
-  /// Get the current error state
-  bool get hasError => _hasError;
-
-  /// Initialize the widget - override this to set up initial data
-  Future<void> initializeWidget();
-
-  /// Start the update timer - override to customize update frequency
-  void startTimer() {
-    // Default: update every hour
-    _updateTimer = Timer.periodic(const Duration(hours: 1), (_) {
-      if (mounted) {
-        setState(() {
-          // Force rebuild to update data
-        });
-      }
-    });
-  }
-
-  /// Set custom timer duration - call this in initializeWidget if needed
-  void setCustomTimer(Duration duration) {
-    _updateTimer?.cancel();
-    _updateTimer = Timer.periodic(duration, (_) {
-      if (mounted) {
-        setState(() {
-          // Force rebuild to update data
-        });
-      }
-    });
-  }
-
-  /// Set loading state
-  void setLoading(bool loading) {
-    if (mounted) {
-      setState(() {
-        _isLoading = loading;
+  @override
+  void initState() {
+    super.initState();
+    // Initial fetch if provided
+    if (widget.onFetch != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Check mounted before calling callback as widget might be disposed
+        if (mounted) {
+          widget.onFetch!(refresh: false);
+        }
       });
     }
   }
 
-  /// Set error state
-  void setError(bool hasError) {
-    if (mounted) {
-      setState(() {
-        _hasError = hasError;
-      });
+  @override
+  void didUpdateWidget(covariant BaseDashboardWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.refreshTick != null &&
+        widget.refreshTick != oldWidget.refreshTick) {
+      if (widget.onFetch != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            widget.onFetch!(refresh: true);
+          }
+        });
+      }
     }
   }
 
-  /// Refresh the widget data
-  Future<void> refresh() async {
-    debugPrint('${widget.runtimeType}: Refreshing data');
-    await refreshData();
-  }
-
-  /// Refresh data - override this to implement data fetching
-  Future<void> refreshData();
-
-  /// Get the extra content for the widget
-  Widget? getExtraContent(BuildContext context) => null;
-
-  /// Get the title text for the widget
-  String getWidgetTitle() => '';
-
-  /// Get the subtitle text for the widget
-  String getWidgetSubtitle() => '';
-
-  /// Get the right side text (optional)
-  String? getRightSideText() => null;
-
-  /// Get the bottom text (optional)
-  String? getBottomText() => null;
-
-  /// Get the bottom text (optional)
-  String? getBottomRightText() => null;
-
-  /// Get the loading text
-  String getLoadingText() => 'Loading...';
-
-  /// Get the error text
-  String getErrorText() => 'Failed to load data';
-
-  /// Get the no data text
-  String getNoDataText() => 'No data available';
-
-  /// Get the refresh hint text
-  String getRefreshHintText() => 'Swipe down to refresh';
-
-  /// Check if widget has data to display
-  bool hasWidgetData();
-
-  /// Get the action ID for navigation
-  String getActionId();
-
-  /// Get the widget icon
-  IconData getWidgetIcon() => Symbols.dashboard_rounded;
-
-  /// Check if widget has multiple tap areas (overrides main tap behavior)
-  bool hasMultipleTapAreas() => false;
-
-  /// Clean up timer
-  void disposeMixin() {
+  @override
+  void dispose() {
     _updateTimer?.cancel();
+    super.dispose();
   }
 
-  /// Build the common widget layout
-  Widget buildCommonLayout() {
+  @override
+  Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return ScaledInkWell(
       borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-      splashFactory: hasMultipleTapAreas()
+      splashFactory: widget.hasMultipleTapAreas
           ? NoSplash.splashFactory
           : InkSplash.splashFactory,
       onTap: () async {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          final page = await buildActionPage({'id': getActionId()});
+          final page = await buildActionPage({'id': widget.actionId});
           if (mounted) {
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
           }
         });
       },
-      background: (inkWell) => Material(
-        color: themeNotifier.needTransparentBG
-            ? (!themeNotifier.isDarkMode
+      background: (inkWell) => Container(
+        decoration: BoxDecoration(
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+              blurRadius: 8,
+              offset: const Offset(0, 5),
+            ),
+            BoxShadow(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+              blurRadius: 18,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Material(
+          color: themeNotifier.needTransparentBG
+              ? (!themeNotifier.isDarkMode
                   ? Theme.of(
                       context,
                     ).colorScheme.surfaceBright.withValues(alpha: 0.6)
                   : Theme.of(
                       context,
                     ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-            : Theme.of(context).colorScheme.surfaceContainer,
-        borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-        child: inkWell,
+              : Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: themeNotifier.getBorderRadiusAll(1.5),
+          child: inkWell,
+        ),
       ),
       child: Stack(
         children: [
@@ -157,8 +143,8 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             right: 8,
             bottom: 8,
             child: SkinIcon(
-              imageKey: 'home.${getActionId()}WidgetIcon',
-              fallbackIcon: getWidgetIcon(),
+              imageKey: 'home.${widget.actionId}WidgetIcon',
+              fallbackIcon: widget.icon,
               fallbackIconColor: Theme.of(
                 context,
               ).colorScheme.onSurface.withValues(alpha: 0.1),
@@ -177,7 +163,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
   }
 
   Widget _buildContent() {
-    if (_isLoading || _hasError) {
+    if (widget.isLoading || widget.hasError) {
       return _buildInactiveState();
     }
 
@@ -193,13 +179,13 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
           SizedBox(
             width: 20,
             height: 20,
-            child: hasError
+            child: widget.hasError
                 ? Icon(Symbols.error_outline_rounded, size: 20)
                 : CircularProgressIndicator(strokeWidth: 2),
           ),
           const SizedBox(height: 12),
           Text(
-            hasError ? getErrorText() : getLoadingText(),
+            widget.hasError ? (widget.errorText ?? '') : (widget.loadingText ?? ''),
             style: const TextStyle(fontSize: 12),
           ),
         ],
@@ -209,11 +195,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
 
   Widget _buildDataState() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    final rightText = getRightSideText();
-    final bottomRightText = getBottomRightText();
-    final bottomText = getBottomText();
-    final extraContent = getExtraContent(context);
-
+    
     // Build main content (title and subtitle)
     Widget mainContent = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,7 +205,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
           children: [
             Expanded(
               child: Text(
-                getWidgetTitle(),
+                widget.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -232,13 +214,13 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
                 ),
               ),
             ),
-            if (rightText != null) ...[
+            if (widget.rightSideText != null) ...[
               Text(
-                rightText,
+                widget.rightSideText!,
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
               ),
             ],
-            if (rightText == null) ...[
+            if (widget.rightSideText == null) ...[
               const Padding(
                 padding: EdgeInsets.only(top: 2),
                 child: Icon(Symbols.chevron_right_rounded, size: 18),
@@ -248,7 +230,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
         ),
         const SizedBox(height: 2),
         Text(
-          hasWidgetData() ? getWidgetSubtitle() : getNoDataText(),
+          widget.hasData ? widget.subtitle : (widget.noDataText ?? ''),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontSize: 11),
@@ -257,12 +239,12 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
     );
 
     // Wrap main content in tappable area if there are multiple tap areas
-    if (hasMultipleTapAreas()) {
+    if (widget.hasMultipleTapAreas) {
       mainContent = ScaledInkWell(
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         onTap: () async {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            final page = await buildActionPage({'id': getActionId()});
+            final page = await buildActionPage({'id': widget.actionId});
             if (mounted) {
               Navigator.of(
                 context,
@@ -281,12 +263,12 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         mainContent,
-        if (bottomText != null || bottomRightText != null) ...[
+        if (widget.bottomText != null || widget.bottomRightText != null) ...[
           const Spacer(),
           Row(
             children: [
               Text(
-                bottomText ?? '',
+                widget.bottomText ?? '',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -298,7 +280,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
               ),
               const Spacer(),
               Text(
-                bottomRightText ?? '',
+                widget.bottomRightText ?? '',
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(context).colorScheme.primary,
@@ -308,7 +290,7 @@ mixin BaseDashboardWidgetMixin<T extends StatefulWidget> on State<T> {
             ],
           ),
         ],
-        if (extraContent != null) ...[const Spacer(), extraContent],
+        if (widget.extraContent != null) ...[const Spacer(), widget.extraContent!],
       ],
     );
   }

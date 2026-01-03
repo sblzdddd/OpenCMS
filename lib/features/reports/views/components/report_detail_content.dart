@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 import '../../services/reports_service.dart';
 import '../../models/reports.dart';
 import '../../../theme/services/theme_services.dart';
 import 'mark_components_view.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/shared/constants/subject_icons.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 
@@ -57,6 +57,10 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
       setState(() {
         _reportDetail = detail;
       });
+    } catch (e) {
+      setState(() {
+        _reportDetail = null;
+      });
     } finally {
       setState(() {
         _isLoading = false;
@@ -102,23 +106,28 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
       );
     }
 
-    final content = CustomChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(themeNotifier),
-          _buildCourseMarks(themeNotifier),
-          _buildPSatScores(themeNotifier),
-          MarkComponentsView(
-            markComponents: _reportDetail?.markComponent ?? [],
-          ),
-        ],
+    List<Widget> items = [
+      _buildHeader(themeNotifier),
+      _buildCourseMarks(themeNotifier),
+      _buildPSatScores(themeNotifier),
+      MarkComponentsView(
+        markComponents: _reportDetail?.markComponent ?? [],
       ),
-    );
+      const SizedBox(height: 32),
+    ];
 
-    // Only wrap with RefreshIndicator in mobile mode
-    // In wide screen mode, let the parent page handle refresh
+    final content = SilkyScroll(
+      scrollSpeed: 2,
+      builder: (context, controller, physics) {
+        return ListView.builder(
+          controller: controller,
+          physics: physics,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+          itemCount: items.length,
+          itemBuilder: (context, index) => items[index],
+        );
+      },
+    );
     if (widget.isWideScreen) {
       return content;
     } else {
@@ -133,7 +142,19 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
         color: Theme.of(
           context,
         ).colorScheme.primaryContainer.withValues(alpha: 0.5),
-        borderRadius: themeNotifier.getBorderRadiusAll(0.75),
+        borderRadius: themeNotifier.getBorderRadiusAll(1),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+            blurRadius: 8,
+            offset: const Offset(0, 5),
+          ),
+          BoxShadow(
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+            blurRadius: 18,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,11 +194,6 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
-        const Text(
-          'Course Marks',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
         ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -191,21 +207,32 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
             final altSubjectIcon = SubjectIconConstants.getIconForCategory(
               category: subjectIcon,
             );
-            return Card(
-              color: themeNotifier.needTransparentBG
-                  ? (!themeNotifier.isDarkMode
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                        : Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-                  : Theme.of(context).colorScheme.surfaceContainer,
-              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
+            return Container(
+              decoration: BoxDecoration(
                 borderRadius: themeNotifier.getBorderRadiusAll(1),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+                    blurRadius: 8,
+                    offset: const Offset(0, 5),
+                  ),
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+                    blurRadius: 18,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+                color: themeNotifier.needTransparentBG
+                    ? (!themeNotifier.isDarkMode
+                          ? Theme.of(
+                              context,
+                            ).colorScheme.surfaceBright.withValues(alpha: 0.5)
+                          : Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                    : Theme.of(context).colorScheme.surfaceContainer,
               ),
+              margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
               clipBehavior: Clip.antiAlias,
               child: Stack(
                 children: [
@@ -263,36 +290,37 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
                           const SizedBox(height: 8),
                           Text('Avg: ${course.average}'),
                         ],
-                        if (course.teacherName.isNotEmpty) ...[
+                        if (course.teacherName != null && course.teacherName!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Text('Teacher(s): ${course.teacherName}'),
                         ],
                         if (course.comment.isNotEmpty) ...[
                           const SizedBox(height: 12),
                           Container(
+                            width: double.infinity,
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer
-                                  .withValues(alpha: 0.5),
+                                .colorScheme
+                                .secondaryContainer
+                                .withValues(alpha: 0.5),
                               borderRadius: themeNotifier.getBorderRadiusAll(
-                                0.5,
+                              0.5,
                               ),
                             ),
                             child: Text(
                               course.comment,
                               style: TextStyle(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSecondaryContainer,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSecondaryContainer,
                               ),
                             ),
                           ),
                         ],
                         if (course.average.isEmpty &&
                             course.comment.isEmpty &&
-                            course.teacherName.isEmpty) ...[
+                            (course.teacherName == null || course.teacherName!.isEmpty)) ...[
                           const SizedBox(height: 32),
                         ],
                       ],

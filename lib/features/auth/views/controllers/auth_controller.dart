@@ -3,6 +3,9 @@ import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
 import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
 import '../../../shared/views/error/error_dialog.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('AuthController');
 
 class AuthController extends ChangeNotifier {
   bool _isLoading = false;
@@ -30,9 +33,9 @@ class AuthController extends ChangeNotifier {
       notifyListeners();
 
       if (loginResult.isSuccess) {
-        debugPrint('AuthController: Successfully logged in as $username');
+        logger.info('AuthController: Successfully logged in as $username');
         if (!context.mounted) {
-          debugPrint('AuthController: Context is not mounted');
+          logger.warning('AuthController: Context is not mounted');
           return false;
         }
 
@@ -49,7 +52,7 @@ class AuthController extends ChangeNotifier {
 
         return true;
       } else {
-        debugPrint('AuthController: Login failed: ${loginResult.message}');
+        logger.warning('AuthController: Login failed: ${loginResult.message}');
 
         // Error dialog with rich details and copy action
         if (!context.mounted) return false;
@@ -70,9 +73,9 @@ class AuthController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      debugPrint('AuthController: Login exception: $e');
+      logger.severe('AuthController: Login exception: $e');
       if (!context.mounted) {
-        debugPrint('AuthController: Context is not mounted');
+        logger.warning('AuthController: Context is not mounted');
         return false;
       }
       SnackbarUtils.showError(context, 'Login error: $e');

@@ -9,6 +9,9 @@ import '../../../../shared/views/views/refreshable_view.dart';
 import 'exam_timetable_list_view.dart';
 import 'exam_timetable_calendar_view.dart';
 import '../../../../theme/services/theme_services.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('ExamTimetableView');
 
 class ExamTimetableView extends StatefulWidget {
   final AcademicYear selectedYear;
@@ -165,7 +168,7 @@ class _ExamTimetableViewState extends RefreshableView<ExamTimetableView> {
       );
       Add2Calendar.addEvent2Cal(event);
     } else {
-      debugPrint('ExamTimetableView: Invalid exam date: ${exam.date}');
+      logger.warning('Invalid exam date: ${exam.date}');
     }
   }
 

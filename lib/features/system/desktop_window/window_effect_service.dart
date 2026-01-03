@@ -10,22 +10,12 @@ enum WindowEffectType { disabled, transparent, aero, acrylic, mica, tabbed }
 
 class WindowEffectService with ChangeNotifier {
   // Singleton
-  static WindowEffectService? _instance;
   static bool _isInitialized = false;
-
-  WindowEffectService._internal();
-
-  // Static getter to access the singleton instance
-  static WindowEffectService get instance {
-    _instance ??= WindowEffectService._internal();
-    return _instance!;
-  }
 
   // Initialize the singleton
   static Future<void> initialize() async {
     if (!_isInitialized) {
       await Window.initialize();
-      _instance ??= WindowEffectService._internal();
       _isInitialized = true;
     }
   }

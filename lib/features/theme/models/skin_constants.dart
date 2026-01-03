@@ -16,7 +16,6 @@ Future<Directory> getSkinsDirectory() async {
 const defaultImageData = {
   'global.app_icon': SkinImageData(type: SkinImageType.icon),
   'global.background': SkinImageData(type: SkinImageType.background),
-  'global.foreground': SkinImageData(type: SkinImageType.foreground),
   'global.empty_icon': SkinImageData(type: SkinImageType.icon),
   'global.error_icon': SkinImageData(type: SkinImageType.icon),
 
@@ -86,13 +85,8 @@ const defaultImageData = {
   'subjectIcons.mr': SkinImageData(type: SkinImageType.icon),
 
   'login.background': SkinImageData(type: SkinImageType.background),
-  'login.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'home.background': SkinImageData(type: SkinImageType.background),
-  'home.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'home.bannerBackground': SkinImageData(type: SkinImageType.background),
-  'home.bannerForeground': SkinImageData(type: SkinImageType.foreground),
 
   'home.homeworksWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
@@ -105,54 +99,21 @@ const defaultImageData = {
   'home.calendarWidgetIcon': SkinImageData(type: SkinImageType.icon),
 
   'web_cms.background': SkinImageData(type: SkinImageType.background),
-  'web_cms.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'timetable.background': SkinImageData(type: SkinImageType.background),
-  'timetable.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'exam.background': SkinImageData(type: SkinImageType.background),
-  'exam.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'attendance.background': SkinImageData(type: SkinImageType.background),
-  'attendance.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'course_stats.background': SkinImageData(type: SkinImageType.background),
-  'course_stats.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'reports.background': SkinImageData(type: SkinImageType.background),
-  'reports.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'assessment.background': SkinImageData(type: SkinImageType.background),
-  'assessment.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'comments.background': SkinImageData(type: SkinImageType.background),
-  'comments.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'calendar.background': SkinImageData(type: SkinImageType.background),
-  'calendar.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'notice.background': SkinImageData(type: SkinImageType.background),
-  'notice.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'homeworks.background': SkinImageData(type: SkinImageType.background),
-  'homeworks.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'available_classrooms.background': SkinImageData(
     type: SkinImageType.background,
   ),
-  'available_classrooms.foreground': SkinImageData(
-    type: SkinImageType.foreground,
-  ),
-
   'daily_bulletin.background': SkinImageData(type: SkinImageType.background),
-  'daily_bulletin.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'events.background': SkinImageData(type: SkinImageType.background),
-  'events.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'student_profile.background': SkinImageData(type: SkinImageType.background),
-  'student_profile.foreground': SkinImageData(type: SkinImageType.foreground),
-
   'settings.background': SkinImageData(type: SkinImageType.background),
-  'settings.foreground': SkinImageData(type: SkinImageType.foreground),
 };

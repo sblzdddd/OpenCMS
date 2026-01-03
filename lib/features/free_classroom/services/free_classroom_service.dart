@@ -1,9 +1,11 @@
-import 'package:flutter/foundation.dart';
 import 'package:opencms/di/locator.dart';
 import '../../shared/constants/api_endpoints.dart';
 import '../models/free_classroom_response.dart';
 import '../models/all_periods_classroom_response.dart';
 import '../../API/networking/http_service.dart';
+import 'package:logging/logging.dart';
+
+final logger = Logger('FreeClassroomService');
 
 /// Service for fetching free classroom information
 class FreeClassroomService {
@@ -19,7 +21,7 @@ class FreeClassroomService {
     bool refresh = false,
   }) async {
     try {
-      debugPrint('[FreeClassroomService] Fetching free classrooms');
+      logger.fine('Fetching free classrooms');
 
       final response = await di<HttpService>().post(
         API.freeClassroomsUrl,
@@ -47,7 +49,7 @@ class FreeClassroomService {
 
       return FreeClassroomResponse.fromJson(jsonData);
     } catch (e) {
-      debugPrint('[FreeClassroomService] Error fetching free classrooms: $e');
+      logger.severe('Error fetching free classrooms: $e');
       return FreeClassroomResponse.empty();
     }
   }
@@ -92,9 +94,7 @@ class FreeClassroomService {
 
       try {
         final response = await future;
-        debugPrint(
-          '[FreeClassroomService] Period $period completed successfully',
-        );
+        logger.fine('Period $period completed successfully');
         currentResponse = currentResponse.copyWith(
           periodData: Map.from(currentResponse.periodData)..[period] = response,
           loadingStates: Map.from(currentResponse.loadingStates)
@@ -103,9 +103,7 @@ class FreeClassroomService {
         );
         yield currentResponse;
       } catch (e) {
-        debugPrint(
-          '[FreeClassroomService] Period $period failed with error: $e',
-        );
+        logger.severe('Period $period failed with error: $e');
         currentResponse = currentResponse.copyWith(
           loadingStates: Map.from(currentResponse.loadingStates)
             ..[period] = false,

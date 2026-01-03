@@ -42,6 +42,12 @@ class _SubjectAssessmentsViewState
   }
 
   @override
+  Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
+    return buildPageContent(context, themeNotifier);
+  }
+
+
+  @override
   bool get isEmpty => widget.subject.assessments.isEmpty;
 
   @override

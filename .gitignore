@@ -47,5 +47,6 @@ app.*.map.json
 
 lib/chat/
 
-keystore.jks
+*.jks
 lib/features/auth/services/auto_captcha_service.dart
+key.properties
