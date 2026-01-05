@@ -2,6 +2,8 @@
 library;
 
 import 'package:intl/intl.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 
 
 class PeriodConstants {
@@ -302,8 +304,9 @@ class PeriodConstants {
     final List<AcademicYear> years = [];
     final now = DateTime.now();
     final startYear = now.month < 8 ? now.year - 1 : now.year;
+    final endYear = di<LoginState>().isMock ? 2024 : 2019;
 
-    for (int year = startYear; year >= 2019; year--) {
+    for (int year = startYear; year >= endYear; year--) {
       years.add(
         AcademicYear(
           year: year,

@@ -13,11 +13,11 @@ final logger = Logger('QuickActions');
 
 /// Controller to trigger actions on QuickActions from parent widgets
 class QuickActionsController extends ChangeNotifier {
-  void Function(Map<String, dynamic> action)? _addActionHandler;
+  void Function(QuickAction action)? _addActionHandler;
   void Function()? _resetHandler;
-  List<Map<String, dynamic>> Function()? _getAddableActionsHandler;
+  List<QuickAction> Function()? _getAddableActionsHandler;
 
-  void addAction(Map<String, dynamic> action) {
+  void addAction(QuickAction action) {
     _addActionHandler?.call(action);
   }
 
@@ -35,7 +35,7 @@ class QuickActionsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Map<String, dynamic>> getAddableActions() {
+  List<QuickAction> getAddableActions() {
     final handler = _getAddableActionsHandler;
     if (handler != null) {
       return handler();
@@ -60,7 +60,7 @@ class QuickActions extends StatefulWidget {
 class _QuickActionsState extends State<QuickActions> {
   bool _isEditMode = false;
   bool _isLoading = true;
-  List<Map<String, dynamic>> actions = [];
+  List<QuickAction> actions = [];
   final QuickActionsStorageService _storageService =
       QuickActionsStorageService();
 
@@ -109,7 +109,7 @@ class _QuickActionsState extends State<QuickActions> {
       }
       // Ensure persistent More... action exists
       final hasMore = actions.any(
-        (a) => a['id'] == QuickActionsConstants.moreAction['id'],
+        (a) => a.id == QuickActionsConstants.moreAction.id,
       );
       if (!hasMore) {
         actions.add(QuickActionsConstants.moreAction);
@@ -122,7 +122,7 @@ class _QuickActionsState extends State<QuickActions> {
       );
       // Ensure persistent More... action exists
       final hasMore = actions.any(
-        (a) => a['id'] == QuickActionsConstants.moreAction['id'],
+        (a) => a.id == QuickActionsConstants.moreAction.id,
       );
       if (!hasMore) {
         actions.add(QuickActionsConstants.moreAction);
@@ -160,7 +160,7 @@ class _QuickActionsState extends State<QuickActions> {
     setState(() {
       if (index >= 0 && index < actions.length) {
         final item = actions[index];
-        if (item['id'] != QuickActionsConstants.moreAction['id']) {
+        if (item.id != QuickActionsConstants.moreAction.id) {
           actions.removeAt(index);
         }
       }
@@ -248,27 +248,26 @@ class _QuickActionsState extends State<QuickActions> {
                             final List<Widget> displayChildren = actions
                                 .map<Widget>(
                                   (action) => ActionItem(
-                                    key: ValueKey('action_${action['id']}'),
+                                    key: ValueKey('action_${action.id}'),
                                     action: action,
-                                    isEditMode: _isEditMode,
+                                    isEditMode: !widget.isReadOnly,
                                     onTap:
-                                        action['id'] ==
+                                        action.id ==
                                             QuickActionsConstants
-                                                .moreAction['id']
+                                                .moreAction.id
                                         ? _onShowMoreActions
                                         : null,
                                     tileWidth: tileWidth,
                                     onDelete:
-                                        action['id'] ==
+                                        action.id ==
                                             QuickActionsConstants
-                                                .moreAction['id']
+                                                .moreAction.id
                                         ? null
                                         : () {
-                                            final String id =
-                                                action['id'] as String;
+                                            final String id = action.id;
                                             final int currentIndex = actions
                                                 .indexWhere(
-                                                  (a) => a['id'] == id,
+                                                  (a) => a.id == id,
                                                 );
                                             if (currentIndex != -1) {
                                               _onRemove(currentIndex);

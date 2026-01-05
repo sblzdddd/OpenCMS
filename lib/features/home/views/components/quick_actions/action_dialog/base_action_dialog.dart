@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:provider/provider.dart';
 import '../../../../../theme/services/theme_services.dart';
 import '../action_item/quick_action_tile.dart';
@@ -15,8 +16,8 @@ abstract class BaseActionDialog extends StatefulWidget {
 
 abstract class BaseActionDialogState<T extends BaseActionDialog>
     extends State<T> {
-  late List<Map<String, dynamic>> availableActions;
-  List<Map<String, dynamic>> filteredActions = [];
+  late List<QuickAction> availableActions;
+  List<QuickAction> filteredActions = [];
   String searchQuery = '';
 
   /// Override to provide dialog-specific title
@@ -32,10 +33,10 @@ abstract class BaseActionDialogState<T extends BaseActionDialog>
   String get actionsCountText => '${filteredActions.length} actions available';
 
   /// Override to handle action selection
-  void onActionTap(Map<String, dynamic> action);
+  void onActionTap(QuickAction action);
 
   /// Override to get available actions for this dialog
-  List<Map<String, dynamic>> getAvailableActions();
+  List<QuickAction> getAvailableActions();
 
   @override
   void initState() {
@@ -52,7 +53,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog>
       } else {
         filteredActions = availableActions
             .where(
-              (action) => action['title'].toString().toLowerCase().contains(
+              (action) => action.title.toLowerCase().contains(
                 query.toLowerCase(),
               ),
             )
@@ -199,9 +200,10 @@ abstract class BaseActionDialogState<T extends BaseActionDialog>
                             children: filteredActions.map((action) {
                               return QuickActionTile(
                                 width: tileWidth,
-                                icon: action['icon'] as IconData,
-                                title: action['title'] as String,
-                                skinImageKey: 'actionIcons.${action['id']}',
+                                icon: action.icon,
+                                title: action.title,
+                                showExternalIcon: action.isWebLink ?? false,
+                                skinImageKey: 'actionIcons.${action.id}',
                                 onTap: () {
                                   onActionTap(action);
                                   Navigator.of(context).pop();

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'quick_action_tile.dart';
 import '../../../../../shared/pages/actions.dart';
 
 class ActionItem extends StatefulWidget {
-  final Map<String, dynamic> action;
+  final QuickAction action;
   final bool isEditMode;
   final VoidCallback? onTap;
   final double? tileWidth;
@@ -40,14 +41,15 @@ class _ActionItemState extends State<ActionItem>
 
   Widget _buildDraggableActionItem(BuildContext context) {
     return KeyedSubtree(
-      key: ValueKey(widget.action['id']),
+      key: ValueKey(widget.action.id),
       child: QuickActionTile(
         width: widget.tileWidth ?? 100,
-        icon: widget.action['icon'] as IconData,
-        title: widget.action['title'] as String,
-        onTap: widget.onTap ?? () => _handleActionTap(context),
+        icon: widget.action.icon,
+        title: widget.action.title,
+        onTap: widget.isEditMode ? () => {} : widget.onTap ?? () => _handleActionTap(context),
         showDragIndicator: true,
-        skinImageKey: 'actionIcons.${widget.action['id']}',
+        showExternalIcon: widget.action.isWebLink ?? false,
+        skinImageKey: 'actionIcons.${widget.action.id}',
       ),
     );
   }
@@ -55,10 +57,11 @@ class _ActionItemState extends State<ActionItem>
   Widget _buildStaticActionItem(BuildContext context) {
     return QuickActionTile(
       width: widget.tileWidth ?? 100,
-      icon: widget.action['icon'] as IconData,
-      title: widget.action['title'] as String,
-      onTap: widget.onTap ?? () => _handleActionTap(context),
-      skinImageKey: 'actionIcons.${widget.action['id']}',
+      icon: widget.action.icon,
+      title: widget.action.title,
+        onTap: widget.isEditMode ? () => {} : widget.onTap ?? () => _handleActionTap(context),
+      showExternalIcon: widget.action.isWebLink ?? false,
+      skinImageKey: 'actionIcons.${widget.action.id}',
     );
   }
 

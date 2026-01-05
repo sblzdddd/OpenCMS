@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import '../../quick_actions/action_item/quick_action_tile.dart';
 
 class AddWidgetActionGrid extends StatelessWidget {
-  final List<Map<String, dynamic>> actions;
-  final Function(Map<String, dynamic>)? onAddAction;
+  final List<QuickAction> actions;
+  final Function(QuickAction)? onAddAction;
 
   const AddWidgetActionGrid({
     super.key,
@@ -30,8 +31,9 @@ class AddWidgetActionGrid extends StatelessWidget {
               actions.map((action) {
                 return QuickActionTile(
                   width: tileWidth,
-                  icon: action['icon'] as IconData,
-                  title: action['title'] as String,
+                  icon: action.icon,
+                  title: action.title,
+                  showExternalIcon: action.isWebLink ?? false,
                   onTap: () {
                     onAddAction?.call(action);
                   },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/services/theme_services.dart';
 import '../../../shared/pages/actions.dart';
@@ -100,7 +101,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
           : InkSplash.splashFactory,
       onTap: () async {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          final page = await buildActionPage({'id': widget.actionId});
+          final page = await buildActionPage(QuickAction(id: widget.actionId, title: '', icon: ''));
           if (mounted) {
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
           }
@@ -244,7 +245,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         onTap: () async {
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            final page = await buildActionPage({'id': widget.actionId});
+            final page = await buildActionPage(QuickAction(id: widget.actionId, title: '', icon: ''));
             if (mounted) {
               Navigator.of(
                 context,

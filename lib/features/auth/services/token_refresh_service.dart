@@ -23,6 +23,7 @@ class TokenRefreshService {
   static Future<bool>? _refreshLegacyCookiesInFlight;
 
   Future<bool> refreshNewToken({bool skipAuth = false}) async {
+    if (di<LoginState>().isMock) return true;
     // If a refresh is already in flight, await the same future.
     final inFlight = _refreshNewTokenInFlight;
     if (inFlight != null) return await inFlight;
@@ -73,6 +74,7 @@ class TokenRefreshService {
   }
 
   Future<bool> refreshLegacyCookies() async {
+    if (di<LoginState>().isMock) return true;
     // If a refresh is already in flight, await the same future.
     final inFlight = _refreshLegacyCookiesInFlight;
     if (inFlight != null) return await inFlight;

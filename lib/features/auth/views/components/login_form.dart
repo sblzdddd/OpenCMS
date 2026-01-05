@@ -119,10 +119,7 @@ class _LoginFormState extends State<LoginForm> {
                       const SizedBox(height: 4),
                       Center(
                         child: Text(
-                          'Login with your'
-                          ' SC'
-                          'IE'
-                          ' Account',
+                          'Login with your Account',
                           style: TextStyle(
                             fontSize: 16,
                             color: Theme.of(context).colorScheme.onSurface,

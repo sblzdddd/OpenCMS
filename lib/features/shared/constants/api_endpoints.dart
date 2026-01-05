@@ -126,6 +126,8 @@ class API {
   static const String proxyHost = 'cms-proxy.firefly-gallery.cn';
   static const int proxyPort = 443;
   static const String proxyBaseUrl = 'https://$proxyHost:$proxyPort';
+  static const String mockUrl = 'https://ocms-mock.sblzd.cn';
+  // static const String mockUrl = 'http://127.0.0.1:8787';
 
   /// Domain mapping for proxy endpoints
   static const Map<String, String> domainMapping = {

@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.6+4
+version: 1.0.6+6
 
 environment:
   sdk: ^3.8.1
@@ -88,9 +88,12 @@ dev_dependencies:
 
 msix_config:
   display_name: OpenCMS
-  publisher_display_name: sblzdddd
-  identity_name: com.sblzdddd.OpenCMS
-  publisher: CN=sblzdddd
+  publisher_display_name: hansdnv
+  identity_name: hansdnv.OpenCMS
+  publisher: CN=1B9E4830-7276-485F-922F-5404D3F0FDB4
+  msix_version: 0.0.0.0
+  logo_path: assets/icon/Full/OCMS_ICON_256.png
+  store: true
   # ... other configurations as needed
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

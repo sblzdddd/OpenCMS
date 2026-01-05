@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
+import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
@@ -130,8 +131,10 @@ abstract class WebCmsBaseState<T extends WebCmsBase> extends State<T> {
 
   void _loadCmsIfReady() {
     if (_cookiesPrepared && _webViewController != null) {
-      final String url =
-          _resolvedUrl ?? widget.initialUrl ?? API.cmsReferer;
+      String url = _resolvedUrl ?? widget.initialUrl ?? API.cmsReferer;
+      if (di<LoginState>().isMock) {
+        url = '${API.mockUrl}/index.html';
+      }
       logger.info('Loading CMS with URL: $url');
       _webViewController!.loadUrl(
         urlRequest: iaw.URLRequest(url: iaw.WebUri(url)),

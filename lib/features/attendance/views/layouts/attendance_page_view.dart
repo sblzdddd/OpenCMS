@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 import '../../../theme/services/theme_services.dart';
 import '../../models/attendance_models.dart';
 import '../../services/attendance_service.dart';
@@ -192,8 +194,8 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
             child: _showSettings
                 ? Column(
                     children: [
-                      _buildDatePickers(context),
-                      const SizedBox(height: 12),
+                      di<LoginState>().isMock ? const SizedBox.shrink() : _buildDatePickers(context),
+                      di<LoginState>().isMock ? const SizedBox.shrink() : const SizedBox(height: 12),
                       _buildCourseFilter(days),
                       const SizedBox(height: 12),
                     ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/services/theme_services.dart';
 import '../../../notices/models/notification_response.dart'
@@ -260,7 +261,7 @@ class _NoticeCardState extends State<NoticeCard>
       onTap: () async {
         final navigator = Navigator.of(context);
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          final page = await buildActionPage({'id': actionId});
+          final page = await buildActionPage(QuickAction(id: actionId, title: '', icon: ''));
           if (mounted) {
             navigator.push(MaterialPageRoute(builder: (_) => page));
           }

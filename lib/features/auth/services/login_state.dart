@@ -6,6 +6,7 @@ final logger = Logger("LoginState");
 class LoginState {
   bool _isAuthenticated = false;
   UserInfo? _userInfo;
+  bool isMock = false;
 
   bool get isAuthenticated => _isAuthenticated;
   UserInfo? get userInfo => _userInfo;

@@ -22,11 +22,11 @@ class AuthInterceptor extends Interceptor {
     final token = await storage.accessToken;
     final urlPath = options.path;
     
-    final isAccountUser = urlPath.startsWith(API.accountUserUrl);
+    final isAccountUser = urlPath.startsWith(API.accountUserUrl) || (di<LoginState>().isMock && urlPath.contains(API.accountUserUrl));
     final isLogout = urlPath.contains('logout');
-    final isLogin = urlPath.startsWith(API.loginUrl);
+    final isLogin = urlPath.startsWith(API.loginUrl) || (di<LoginState>().isMock && urlPath.contains(API.loginUrl));
     final isAuthenticated = loginState.isAuthenticated;
-    final isLegacyUrl = urlPath.startsWith(API.legacyBaseUrl);
+    final isLegacyUrl = urlPath.startsWith(API.legacyBaseUrl) || (di<LoginState>().isMock && urlPath.contains(API.legacyBaseUrl));
 
     if (!isAccountUser && !isLogout && (isLogin || !isAuthenticated || isLegacyUrl)) {
       log.fine("Skipping auth headers for: $urlPath");
@@ -43,27 +43,44 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    var options = err.requestOptions;
-    if (options.path.startsWith(API.loginUrl) || options.path.startsWith(API.legacyBaseUrl) || !loginState.isAuthenticated) {
-      return handler.next(err);
-    }
-    // check retry count
-    var retries = options.extra['retries'];
-    if (retries == null || retries is! int) retries = 0;
-    if (retries >= API.maxRetries) return handler.next(err);
-    // If unauthorized, try refreshing token
-    if (err.response?.statusCode == 401 || err.response?.statusCode == 400 || options.extra['noToken'] == true) {
-      final success = await tokenRefreshService.refreshNewToken();
-      if (!success) return handler.next(err);
-      final token = await storage.accessToken;
-      if (token != null && token.isNotEmpty) {
-        options.headers['authorization'] = token;
+    try {
+
+      err = err.copyWith(message: "${err.response!.statusCode} ${err.response!.statusMessage}");
+
+      var options = err.requestOptions;
+      final isLegacyUrl = options.path.startsWith(API.legacyBaseUrl) ||
+          (di<LoginState>().isMock && options.path.contains(API.legacyBaseUrl));
+
+      if (!isLegacyUrl || !loginState.isAuthenticated) {
+        return handler.next(err);
       }
+
+      // check retry count
+      var retries = options.extra['retries'];
+      if (retries == null || retries is! int) retries = 0;
+      if (retries >= API.maxRetries) return handler.next(err);
+      // If unauthorized, try refreshing token
+      if (err.response?.statusCode == 401 ||
+          err.response?.statusCode == 400 ||
+          options.extra['noToken'] == true) {
+        final success = await tokenRefreshService.refreshNewToken();
+        if (!success) return handler.next(err);
+        final token = await storage.accessToken;
+        if (token != null && token.isNotEmpty) {
+          options.headers['authorization'] = token;
+        }
+      }
+
+      final response = await _dio.fetch(options.copyWith(extra: {
+        'retries': retries + 1,
+      }));
+      return handler.resolve(response);
+    } catch (e) {
+      if (e is DioException) {
+        return handler.next(e);
+      }
+      return handler.next(
+          DioException(requestOptions: err.requestOptions, error: e));
     }
-    
-    final response = await _dio.fetch(options.copyWith(extra: {
-      'retries': retries + 1,
-    }));
-    return handler.resolve(response);
   }
 }

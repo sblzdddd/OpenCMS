@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:dio/io.dart';
 import 'package:opencms/di/locator.dart';
+// import 'package:opencms/features/API/networking/interceptors/file_log_interceptor.dart';
 import 'package:opencms/features/API/networking/interceptors/legacy_auth_interceptor.dart';
+import 'package:opencms/features/API/networking/interceptors/mock_interceptor.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/API/networking/interceptors/legacy_cache_interceptor.dart';
 import 'package:opencms/features/API/networking/interceptors/auth_interceptor.dart';
@@ -39,6 +41,7 @@ class HttpService {
     };
 
     // add authorization header
+    _dio.interceptors.add(MockInterceptor());
     _dio.interceptors.add(AuthInterceptor(_dio));
     _dio.interceptors.add(LegacyAuthInterceptor(_dio));
 
@@ -58,6 +61,7 @@ class HttpService {
         enabled: kDebugMode,
       ));
     }
+    // _dio.interceptors.add(FileLogInterceptor());
   }
 
   Future<Response<dynamic>> fetch(RequestOptions requestOptions) async {

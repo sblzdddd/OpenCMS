@@ -15,6 +15,7 @@ class QuickActionTile extends StatefulWidget {
   final TextStyle? titleStyle;
   final VoidCallback? onTap;
   final bool showDragIndicator;
+  final bool showExternalIcon;
   final String? skinImageKey;
 
   const QuickActionTile({
@@ -28,6 +29,7 @@ class QuickActionTile extends StatefulWidget {
     this.titleStyle,
     this.onTap,
     this.showDragIndicator = false,
+    this.showExternalIcon = false,
     this.skinImageKey,
   });
 
@@ -78,33 +80,64 @@ class _QuickActionTileState extends State<QuickActionTile>
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
         ),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: themeNotifier.getBorderRadiusAll(1.5),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SkinIcon(
-                imageKey: widget.skinImageKey ?? 'actionIcons.unknown',
-                fallbackIcon: widget.icon,
-                fallbackIconColor: resolvedIconColor,
-                fallbackIconBackgroundColor: resolvedIconBg,
-                size: 56,
-                iconSize: 35,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              decoration: BoxDecoration(
+                borderRadius: themeNotifier.getBorderRadiusAll(1.5),
               ),
-              const SizedBox(height: 6),
-              Text(
-                widget.title,
-                style: resolvedTitleStyle,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SkinIcon(
+                    imageKey: widget.skinImageKey ?? 'actionIcons.unknown',
+                    fallbackIcon: widget.icon,
+                    fallbackIconColor: resolvedIconColor,
+                    fallbackIconBackgroundColor: resolvedIconBg,
+                    size: 56,
+                    iconSize: 35,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    widget.title,
+                    style: resolvedTitleStyle,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            if (widget.showDragIndicator)
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Icon(
+                  Icons.drag_indicator,
+                  size: 16,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.5),
+                ),
+              ),
+            if (widget.showExternalIcon && !widget.showDragIndicator)
+              Positioned(
+                top: 6,
+                right: 6,
+                child: Icon(
+                  Icons.open_in_new,
+                  size: 14,
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.2),
+                ),
+              ),
+          ],
         ),
       ),
     );

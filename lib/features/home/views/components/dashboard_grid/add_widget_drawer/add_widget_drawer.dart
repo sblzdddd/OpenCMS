@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../theme/services/theme_services.dart';
@@ -13,8 +14,8 @@ import '../widget_size_manager.dart';
 class AddWidgetDrawer extends StatefulWidget {
   final List<String> addableWidgets;
   final Function(String, Size) onAddWidget;
-  final List<Map<String, dynamic>>? addableActions;
-  final Function(Map<String, dynamic>)? onAddAction;
+  final List<QuickAction>? addableActions;
+  final Function(QuickAction)? onAddAction;
   final VoidCallback? onReset;
 
   const AddWidgetDrawer({
@@ -42,13 +43,13 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
     }).toList();
   }
 
-  List<Map<String, dynamic>> get _filteredActions {
+  List<QuickAction> get _filteredActions {
     final actions = widget.addableActions ?? const [];
     if (searchQuery.isEmpty) return actions;
     final q = searchQuery.toLowerCase();
     return actions.where((action) {
-      final title = (action['title'] as String?)?.toLowerCase() ?? '';
-      final id = (action['id'] as String?)?.toLowerCase() ?? '';
+      final title = action.title.toLowerCase();
+      final id = action.id.toLowerCase();
       return title.contains(q) || id.contains(q);
     }).toList();
   }

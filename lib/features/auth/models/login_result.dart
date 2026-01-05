@@ -8,21 +8,16 @@ enum LoginResultType { success, error }
 class LoginResult {
   final bool isSuccess;
   final String message;
-  final LoginResultType resultType;
   final String? errorCode;
   final Map<String, dynamic>? data;
   final Object? exception;
-  final Map<String, dynamic>?
-  debugInfo; // optional rich debug details (request/response)
 
   LoginResult({
     required this.isSuccess,
     required this.message,
-    required this.resultType,
     this.errorCode,
     this.data,
     this.exception,
-    this.debugInfo,
   });
 
   /// Factory constructor for successful login
@@ -34,9 +29,7 @@ class LoginResult {
     return LoginResult(
       isSuccess: true,
       message: message,
-      resultType: LoginResultType.success,
       data: data,
-      debugInfo: debugInfo,
     );
   }
 
@@ -51,16 +44,14 @@ class LoginResult {
     return LoginResult(
       isSuccess: false,
       message: message,
-      resultType: LoginResultType.error,
       errorCode: errorCode,
       data: data,
       exception: exception,
-      debugInfo: debugInfo,
     );
   }
 
   @override
   String toString() {
-    return 'LoginResult(isSuccess: $isSuccess, resultType: $resultType, message: $message, errorCode: $errorCode)';
+    return 'LoginResult(isSuccess: $isSuccess, message: $message, errorCode: $errorCode)';
   }
 }

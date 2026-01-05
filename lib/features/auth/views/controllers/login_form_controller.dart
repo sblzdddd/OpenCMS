@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
 import 'credentials_manager.dart';
 import 'captcha_manager.dart';
@@ -81,6 +83,11 @@ class LoginFormController extends ChangeNotifier {
 
     final username = usernameController.text.trim();
     final password = passwordController.text;
+
+    di<LoginState>().isMock = false;
+    if (username == "Tester") {
+      di<LoginState>().isMock = true;
+    }
 
     // Try to auto-solve captcha first if not already verified
     if (!_captchaManager.isCaptchaVerified ||

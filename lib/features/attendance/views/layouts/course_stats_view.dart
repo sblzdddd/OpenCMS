@@ -34,9 +34,11 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
       year: _selectedYear.year,
       refresh: refresh,
     );
-    setState(() {
-      _courseStats = stats;
-    });
+    if (mounted) {
+      setState(() {
+        _courseStats = stats;
+      });
+    }
   }
 
   @override
@@ -79,9 +81,9 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
         children: [
           AcademicYearDropdown(
             selectedYear: _selectedYear,
-            onChanged: (year) => {
-              setState(() => _selectedYear = year!),
-              fetchData(refresh: true),
+            onChanged: (year) {
+              setState(() => _selectedYear = year!);
+              loadData(refresh: true);
             },
           ),
           const Spacer(),

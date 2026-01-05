@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:opencms/features/shared/pages/notices.dart';
 import '../../attendance/views/pages/attendance.dart';
 import '../../assessment/views/pages/assessment.dart';
@@ -19,8 +20,8 @@ import '../views/widgets/custom_app_bar.dart';
 
 /// Returns true if the action is handled by switching the bottom/rail navigation.
 /// timetable -> tab 1, homeworks -> tab 2, assessment -> tab 3
-bool handleActionNavigation(BuildContext context, Map<String, dynamic> action) {
-  final String id = action['id'] as String;
+bool handleActionNavigation(BuildContext context, QuickAction action) {
+  final String id = action.id;
   final Map<String, int> tabIndex = {
     'timetable': 1,
     'exam': 1,
@@ -55,9 +56,9 @@ class UnknownActionPage extends StatelessWidget {
   }
 }
 
-Future<Widget> buildActionPage(Map<String, dynamic> action) async {
+Future<Widget> buildActionPage(QuickAction action) async {
   final username = di<LoginState>().currentUsername;
-  final String id = action['id'] as String;
+  final String id = action.id;
   switch (id) {
     case 'webcms':
       return const WebCmsPage();
@@ -178,7 +179,7 @@ Future<Widget> buildActionPage(Map<String, dynamic> action) async {
     default:
       return UnknownActionPage(
         id: id,
-        title: (action['title'] as String?) ?? id,
+        title: action.title,
       );
   }
 }

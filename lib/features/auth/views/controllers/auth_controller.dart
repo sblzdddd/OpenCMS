@@ -60,11 +60,6 @@ class AuthController extends ChangeNotifier {
           context: context,
           title: 'Login Failed',
           message: loginResult.message,
-          additionalData: {
-            'resultType': loginResult.resultType.toString(),
-            'data': loginResult.data,
-            'debugInfo': loginResult.debugInfo ?? {},
-          },
         );
 
         return false;

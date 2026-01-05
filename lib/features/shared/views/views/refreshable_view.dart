@@ -6,6 +6,7 @@ import '../error/error_placeholder.dart';
 import '../error/empty_placeholder.dart';
 import '../custom_snackbar/snackbar_utils.dart';
 import 'package:logging/logging.dart';
+import 'package:dio/dio.dart';
 
 final logger = Logger('RefreshableView');
 
@@ -96,8 +97,12 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
     } catch (e, stackTrace) {
       logger.severe('Error loading data: $e', e, stackTrace);
       if (mounted) {
+        String errorMessage = e.toString();
+        if (e is DioException) {
+          errorMessage = e.message ?? e.toString();
+        }
         setState(() {
-          _error = e.toString();
+          _error = errorMessage;
           _isLoading = false;
         });
       }

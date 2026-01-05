@@ -7,14 +7,14 @@ part 'free_classroom_response.g.dart';
 
 @JsonSerializable(fieldRename: FieldRename.snake)
 class FreeClassroomResponse {
+  final String status;
+  final String info;
   final String rooms;
-  final String date;
-  final String period;
 
   const FreeClassroomResponse({
+    required this.status,
+    required this.info,
     required this.rooms,
-    required this.date,
-    required this.period,
   });
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,7 +25,7 @@ class FreeClassroomResponse {
       .toList();
 
   factory FreeClassroomResponse.empty() {
-    return FreeClassroomResponse(rooms: '', date: '', period: '');
+    return FreeClassroomResponse(rooms: '', status: '', info: '');
   }
 
   factory FreeClassroomResponse.fromJson(Map<String, dynamic> json) =>

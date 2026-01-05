@@ -66,8 +66,8 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
         Expanded(
           flex: 2,
           child: selectedItem != null
-            ? detailBuilder(selectedItem as T)
-            : _buildEmptySelectionView(context),
+              ? detailBuilder(selectedItem as T)
+              : _buildEmptySelectionView(context),
         ),
       ],
     );
@@ -83,18 +83,20 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
   }
 
   Widget _buildList(BuildContext context) {
-    return SilkyScroll(builder: (context, controller, physics) =>
-    ListView.builder(
-      physics: physics,
-      controller: controller,
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        final item = items[index];
-        final isSelected = selectedItem == item;
-        return itemBuilder(item, isSelected);
-      },
-    ));
+    return SilkyScroll(
+      scrollSpeed: 2,
+      builder: (context, controller, physics) => ListView.builder(
+        physics: physics,
+        controller: controller,
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          final isSelected = selectedItem == item;
+          return itemBuilder(item, isSelected);
+        },
+      ),
+    );
   }
 
   Widget _buildEmptySelectionView(BuildContext context) {

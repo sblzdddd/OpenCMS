@@ -59,13 +59,14 @@ class ErrorPlaceholder extends StatelessWidget {
                     },
                     child: const Text('Restart App'),
                   ),
+                  const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: () {
                       showLogoutDialog(context);
                     },
                     child: const Text('Logout'),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(height: 8),
                   ElevatedButton(
                     onPressed: _onRetry,
                     child: const Text('Retry'),

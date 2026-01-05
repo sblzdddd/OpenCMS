@@ -6,24 +6,22 @@
 
 ### **macOS and iOS Users**: Please note that the app may not work optimally on macOS and iOS platforms as I don't have a proper testing environment for these platforms. If you encounter any issues, please submit a bug report.
 
-### **Distribution Notice**: Due to related school regulations and open-source considerations, this app will **not** be published to **any app stores** **in any form**.
-
 ---
 
-An open-source, cross-platform campus management app designed for students at a specific school.
+An open-source, cross-platform campus management app.
 
 <details>
 <summary>Features</summary>
 
 
-![OpenCMS](posters/2.png)
-![OpenCMS](posters/3.png)
-![OpenCMS](posters/4.png)
-![OpenCMS](posters/5.png)
-![OpenCMS](posters/6.png)
-![OpenCMS](posters/7.png)
-![OpenCMS](posters/8.png)
-![OpenCMS](posters/9.png)
+![Dynamic Home Page - Sort anything on your home page by long press + drag, Add / Remove any icons, resize widgets as you want!](posters/2.png)
+![Flexible Schedule Displays - A variety of schedule, time, and appointment views for pages, providing a more intuitive way to manage your time and resources.](posters/3.png)
+![Gain Test Insights - Visualize assessment results through intuitive charts and data. Identify strengths, weaknesses, and progress instantly.](posters/4.png)
+![Customize Your Theme - Infinite amounts of color themes based on one custom seed color! Window effects (Mica, Acrylic, etc.) are also supported!](posters/5.png)
+![Styled Web CMS - OpenCMS eliminates color inconsistencies between Web CMS and APP. Automatically uses APP color theme with dark mode support.](posters/6.png)
+![Create Your Own Skin - Adding images as backgrounds and icons for different pages! Also support exporting the skins as files to share with others!](posters/7.png)
+![Your Data, Your Choice - OpenCMS encrypts and stores user data & credentials locally. No extra third-party server, no data collection & statistics, all your data is handled by yourself!](posters/8.png)
+![Open and Free, Forever - OpenCMS is Fully open-source and licensed for modification. You can report issues, sharing feedback, or suggest improvements!](posters/9.png)
 
 
 </details>

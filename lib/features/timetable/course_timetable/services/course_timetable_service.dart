@@ -1,4 +1,5 @@
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 
 import '../../../API/networking/http_service.dart';
 import '../../../shared/constants/api_endpoints.dart';
@@ -26,7 +27,7 @@ class CourseTimetableService {
         'Fetching timetable for year $year, date $date',
       );
 
-      final url = '${API.courseTimetableUrl}?year=$year&date=$date';
+      final url = '${API.courseTimetableUrl}?year=$year&date=${di<LoginState>().isMock ? '2026-01-05' : date}';
 
       final response = await di<HttpService>().get(url, refresh: refresh);
 

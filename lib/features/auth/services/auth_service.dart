@@ -1,5 +1,6 @@
 library;
 
+import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
@@ -70,6 +71,13 @@ class AuthService {
       );
     } catch (e) {
       log.severe('Login exception: $e');
+
+      if (e is DioException && e.response?.statusCode == 401) {
+        return LoginResult.error(
+          message: 'Login failed: Password Incorrect (401)',
+          exception: e,
+        );
+      }
 
       return LoginResult.error(
         message: 'Login request failed: $e',

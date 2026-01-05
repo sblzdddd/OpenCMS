@@ -1,4 +1,5 @@
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
 import '../../shared/constants/api_endpoints.dart';
 import '../models/free_classroom_response.dart';
 import '../models/all_periods_classroom_response.dart';
@@ -25,7 +26,7 @@ class FreeClassroomService {
 
       final response = await di<HttpService>().post(
         API.freeClassroomsUrl,
-        data: 'b=$date&w=$period&c=${API.classroomsList}',
+        data: di<LoginState>().isMock ? '' : 'b=$date&w=$period&c=${API.classroomsList}',
         refresh: refresh,
         legacy: true,
       );
