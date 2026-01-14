@@ -5,6 +5,7 @@ import 'package:opencms/features/auth/services/credentials_storage_service.dart'
 import 'package:provider/provider.dart';
 import '../../../auth/services/auth_service.dart';
 import '../../../theme/services/theme_services.dart';
+import '../../../assessment/services/weighted_average_service.dart';
 
 void showConfirmationDialog(
   BuildContext context,
@@ -54,6 +55,7 @@ void showLogoutDialog(BuildContext context) {
       Navigator.of(dialogContext).pop();
       // Disable auto-login on explicit logout
       await di<CredentialsStorageService>().setAutoLogin(false);
+      await di<WeightedAverageService>().clearAll();
       await di<AuthService>().logout();
       if (context.mounted) {
         Phoenix.rebirth(context);

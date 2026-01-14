@@ -50,3 +50,4 @@ lib/chat/
 *.jks
 lib/features/auth/services/auto_captcha_service.dart
 key.properties
+.directory

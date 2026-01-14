@@ -92,6 +92,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
             return AssessmentListItem(
               assessment: assessment,
               themeNotifier: themeNotifier,
+              subject: _currentSubject,
             );
           },
         ),

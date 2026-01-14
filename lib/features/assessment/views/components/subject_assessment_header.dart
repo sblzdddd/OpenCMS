@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
+import '../../services/weighted_average_service.dart';
 import '../../models/assessment_models.dart';
 import '../../../shared/constants/period_constants.dart';
 import '../../views/components/assessment_counts.dart';
@@ -81,6 +83,39 @@ class SubjectAssessmentHeader extends StatelessWidget {
             AssessmentCounts(
               assessments: subject.assessments,
               themeNotifier: themeNotifier,
+            ),
+            ListenableBuilder(
+              listenable: di<WeightedAverageService>(),
+              builder: (context, _) {
+                return FutureBuilder<double?>(
+                  future: di<WeightedAverageService>().calculateWeightedAverage(subject),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox.shrink();
+                    final wAvg = snapshot.data!;
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Symbols.balance_rounded,
+                            size: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Weighted Average: ${wAvg.toStringAsFixed(1)}%',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ],
         ),

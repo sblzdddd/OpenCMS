@@ -5,6 +5,8 @@ import '../../models/assessment_models.dart';
 import '../../../shared/views/selectable_item_wrapper.dart';
 import '../../../shared/views/views/adaptive_list_detail_layout.dart';
 import 'subject_assessments_content.dart';
+import 'package:opencms/di/locator.dart';
+import '../../services/weighted_average_service.dart';
 
 class AdaptiveAssessmentLayout extends StatelessWidget {
   final List<SubjectAssessment> subjects;
@@ -98,7 +100,7 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
                   Icon(Symbols.avg_pace_rounded, size: 16),
                   const SizedBox(width: 2),
                   Text(
-                    'Average: ',
+                    'Avg: ',
                     style: TextStyle(
                       fontSize: 12,
                       color: Theme.of(
@@ -113,6 +115,43 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                       color: _getScoreColor(averageScore),
                     ),
+                  ),
+                  const SizedBox(width: 8),
+                  ListenableBuilder(
+                    listenable: di<WeightedAverageService>(),
+                    builder: (context, _) {
+                      return FutureBuilder<double?>(
+                        future: di<WeightedAverageService>().calculateWeightedAverage(subject),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) return const SizedBox.shrink();
+                          final wAvg = snapshot.data!;
+                          return Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                               Icon(Symbols.balance_rounded, size: 16),
+                               const SizedBox(width: 2),
+                               Text(
+                                'W.Avg: ',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                                ),
+                              ),
+                              Text(
+                                '${wAvg.toStringAsFixed(1)}%',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: _getScoreColor(wAvg),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                      );
+                    }
                   ),
                 ],
               ],

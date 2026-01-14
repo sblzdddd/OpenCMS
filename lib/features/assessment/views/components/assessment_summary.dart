@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../models/assessment_models.dart';
 import '../../utils/assessment_utils.dart';
+import 'package:opencms/di/locator.dart';
+import '../../services/weighted_average_service.dart';
 import 'assessment_chart.dart';
 import '../../../theme/services/theme_services.dart';
 
@@ -60,46 +62,94 @@ class AssessmentSummary extends StatelessWidget {
                       ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
               : Theme.of(context).colorScheme.surfaceContainer,
         ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSummaryCard(
-                    context,
-                    'Average',
-                    '${averageScore.toStringAsFixed(1)}%',
-                    AssessmentUtils.getScoreColor(averageScore),
-                  ),
-                ),
-                Expanded(
-                  child: _buildSummaryCard(
-                    context,
-                    'Highest',
-                    '${highestScore.toStringAsFixed(1)}%',
-                    AssessmentUtils.getScoreColor(highestScore),
-                  ),
-                ),
-                Expanded(
-                  child: _buildSummaryCard(
-                    context,
-                    'Lowest',
-                    '${lowestScore.toStringAsFixed(1)}%',
-                    AssessmentUtils.getScoreColor(lowestScore),
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AssessmentChart(
-                  assessments: subject.assessments,
-                  subjectName: subject.subject,
-                ),
-              ],
-            ),
-          ],
+        child: ListenableBuilder(
+          listenable: di<WeightedAverageService>(),
+          builder: (context, _) {
+            return FutureBuilder<double?>(
+              future: di<WeightedAverageService>().calculateWeightedAverage(subject),
+              builder: (context, snapshot) {
+                final weightedAvg = snapshot.data;
+                
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildSummaryCard(
+                            context,
+                            'Average',
+                            '${averageScore.toStringAsFixed(1)}%',
+                            AssessmentUtils.getScoreColor(averageScore),
+                          ),
+                        ),
+                        if (weightedAvg != null)
+                          Expanded(
+                            child: _buildSummaryCard(
+                              context,
+                              'Weighted Avg',
+                              '${weightedAvg.toStringAsFixed(1)}%',
+                              AssessmentUtils.getScoreColor(weightedAvg),
+                            ),
+                          ),
+                      ],
+                    ),
+                    // Second row for Highest/Lowest if space permits or reorganize
+                    if (weightedAvg == null) // Show original layout if no weighted avg (loading or error, though unlikely to be null if initialized)
+                     Row(
+                      children: [
+                        Expanded(
+                          child: _buildSummaryCard(
+                            context,
+                            'Highest',
+                            '${highestScore.toStringAsFixed(1)}%',
+                            AssessmentUtils.getScoreColor(highestScore),
+                          ),
+                        ),
+                        Expanded(
+                          child: _buildSummaryCard(
+                            context,
+                            'Lowest',
+                            '${lowestScore.toStringAsFixed(1)}%',
+                            AssessmentUtils.getScoreColor(lowestScore),
+                          ),
+                        ),
+                      ],
+                    )
+                    else 
+                     Row(
+                      children: [
+                        Expanded(
+                          child: _buildSummaryCard(
+                            context,
+                            'Highest',
+                            '${highestScore.toStringAsFixed(1)}%',
+                            AssessmentUtils.getScoreColor(highestScore),
+                          ),
+                        ),
+                        Expanded(
+                          child: _buildSummaryCard(
+                            context,
+                            'Lowest',
+                            '${lowestScore.toStringAsFixed(1)}%',
+                            AssessmentUtils.getScoreColor(lowestScore),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AssessmentChart(
+                          assessments: subject.assessments,
+                          subjectName: subject.subject,
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
+            );
+          }
         ),
       ),
     );

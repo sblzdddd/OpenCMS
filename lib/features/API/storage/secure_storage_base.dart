@@ -50,4 +50,14 @@ class SecureStorageBase implements Storage {
       await _secureStorage.delete(key: _namespaced(key));
     }
   }
+
+  Future<void> clear() async {
+    await _ensureInitialized();
+    final all = await _secureStorage.readAll();
+    for (final key in all.keys) {
+      if (key.startsWith(_prefix)) {
+        await _secureStorage.delete(key: key);
+      }
+    }
+  }
 }

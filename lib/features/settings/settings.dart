@@ -3,6 +3,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/assessment/services/weighted_average_service.dart';
 import 'package:opencms/features/navigations/views/app_navigation_controller.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
@@ -37,6 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
       'Are you sure you want to clear all user data?\nThis action cannot be undone and will delete ALL your data and restart the application.',
       (dialogContext) async {
         Navigator.of(dialogContext).pop();
+        await di<WeightedAverageService>().clearAll();
         await di<AuthService>().logout();
         if (context.mounted) {
           // Ensure global navigation state is cleared and remove all routes

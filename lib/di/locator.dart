@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:opencms/features/assessment/services/weighted_average_service.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
 import 'package:opencms/features/auth/services/credentials_storage_service.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
@@ -24,4 +25,5 @@ void configureDependencies() {
   di.registerSingleton<AutoCaptchaService>(AutoCaptchaService());
   di.registerSingleton<SkinService>(SkinService());
   di.registerSingleton<WindowEffectService>(WindowEffectService());
+  di.registerSingleton<WeightedAverageService>(WeightedAverageService());
 }
