@@ -22,6 +22,22 @@ class AssessmentChartContent extends StatelessWidget {
     return SizedBox(
       height: 280,
       child: SfCartesianChart(
+        tooltipBehavior: TooltipBehavior(enable: false),
+        trackballBehavior: TrackballBehavior(
+          enable: true,
+          activationMode: ActivationMode.singleTap,
+          tooltipDisplayMode: TrackballDisplayMode.groupAllPoints,
+          tooltipSettings: InteractiveTooltip(
+            enable: true,
+            color: Theme.of(context).colorScheme.surface,
+            borderColor: Theme.of(context).colorScheme.primary.withAlpha(128),
+            borderWidth: 2,
+            connectorLineColor: Theme.of(context).colorScheme.primary,
+            textStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          )
+        ),
         zoomPanBehavior: zoomPanBehavior,
         axes: <ChartAxis>[
           NumericAxis(
@@ -33,7 +49,7 @@ class AssessmentChartContent extends StatelessWidget {
         ],
         primaryXAxis: CategoryAxis(
           labelStyle: TextStyle(
-            fontSize: 10,
+            fontSize: 0,
             color: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.8),
@@ -54,16 +70,6 @@ class AssessmentChartContent extends StatelessWidget {
             width: 1,
             color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           ),
-        ),
-        tooltipBehavior: TooltipBehavior(
-          enable: true,
-          header: '',
-          format: 'point.x\npoint.y%',
-          textStyle: TextStyle(
-            fontSize: 12,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
         ),
         series: _buildSeries(context, assessments),
         legend: Legend(
@@ -96,10 +102,10 @@ class AssessmentChartContent extends StatelessWidget {
       yValueMapper: (AssessmentData data, _) => data.weight,
       color: Theme.of(
         context,
-      ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-      width: 1.0,
+      ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+      width: isColumnChart? 0.0 : 1.0,
       spacing: 0,
-      animationDuration: 0,
+      animationDuration: 200,
     );
 
     if (isColumnChart) {
@@ -110,21 +116,31 @@ class AssessmentChartContent extends StatelessWidget {
           dataSource: chartData,
           xValueMapper: (AssessmentData data, _) => data.label,
           yValueMapper: (AssessmentData data, _) => data.percentage,
-          color: Theme.of(context).colorScheme.primary,
-          width: 0.8,
-          spacing: 0.2,
+          // color: Theme.of(context).colorScheme.primary,
+          width: 1,
+          spacing: 0.1,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(4),
             topRight: Radius.circular(4),
           ),
           dataLabelSettings: DataLabelSettings(
             isVisible: true,
-            labelAlignment: ChartDataLabelAlignment.top,
+            labelPosition: ChartDataLabelPosition.outside,
+            labelAlignment: ChartDataLabelAlignment.auto,
             textStyle: TextStyle(
-              fontSize: 10,
+              fontSize: 8,
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
+          borderColor: Theme.of(context).colorScheme.primary,
+          borderWidth: 1,
+          gradient: LinearGradient(
+            colors: <Color>[Theme.of(context).colorScheme.primary.withAlpha(200), Theme.of(context).colorScheme.primaryContainer.withAlpha(140)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: const <double>[0, 1],
+          ),
+          animationDuration: 500,
         ),
         if (hasClassAverage)
           ColumnSeries<AssessmentData, String>(
@@ -132,19 +148,37 @@ class AssessmentChartContent extends StatelessWidget {
             dataSource: classAverageData,
             xValueMapper: (AssessmentData data, _) => data.label,
             yValueMapper: (AssessmentData data, _) => data.percentage,
-            color: Theme.of(context).colorScheme.secondary,
-            width: 0.8,
-            spacing: 0.2,
+            width: 1,
+            spacing: 0.1  ,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(4),
               topRight: Radius.circular(4),
             ),
+            dataLabelSettings: DataLabelSettings(
+              isVisible: true,
+              labelPosition: ChartDataLabelPosition.outside,
+              labelAlignment: ChartDataLabelAlignment.auto,
+              textStyle: TextStyle(
+                fontSize: 8,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+            borderColor: Theme.of(context).colorScheme.secondary,
+            borderWidth: 1,
+            gradient: LinearGradient(
+              colors: <Color>[Theme.of(context).colorScheme.secondary.withAlpha(200), Theme.of(context).colorScheme.secondaryContainer.withAlpha(140)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const <double>[0, 1],
+            ),
+            animationDelay: 100,
+            animationDuration: 500,
           ),
       ];
     } else {
       return <CartesianSeries>[
         weightSeries,
-        SplineSeries<AssessmentData, String>(
+        SplineAreaSeries<AssessmentData, String>(
           name: 'Your Score',
           splineType: SplineType.cardinal,
           dataSource: chartData,
@@ -157,8 +191,13 @@ class AssessmentChartContent extends StatelessWidget {
             borderColor: Theme.of(context).colorScheme.primary,
             borderWidth: 2,
           ),
-          color: Theme.of(context).colorScheme.primary,
-          width: 3,
+          borderColor: Theme.of(context).colorScheme.primary,
+          gradient: LinearGradient(
+            colors: <Color>[Theme.of(context).colorScheme.primary.withAlpha(180), Theme.of(context).colorScheme.primaryContainer.withAlpha(0)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: const <double>[0, 1],
+          ),
           dataLabelSettings: DataLabelSettings(
             isVisible: true,
             labelAlignment: ChartDataLabelAlignment.top,
@@ -167,9 +206,10 @@ class AssessmentChartContent extends StatelessWidget {
               color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
+          animationDuration: 1000,
         ),
         if (hasClassAverage)
-          SplineSeries<AssessmentData, String>(
+          SplineAreaSeries<AssessmentData, String>(
             name: 'Class Average',
             splineType: SplineType.cardinal,
             dataSource: classAverageData,
@@ -182,9 +222,16 @@ class AssessmentChartContent extends StatelessWidget {
               borderColor: Theme.of(context).colorScheme.secondary,
               borderWidth: 2,
             ),
-            color: Theme.of(context).colorScheme.secondary,
-            width: 2,
-            dashArray: const [5, 5],
+            borderColor: Theme.of(context).colorScheme.secondary,
+            gradient: LinearGradient(
+              colors: <Color>[Theme.of(context).colorScheme.secondary.withAlpha(180), Theme.of(context).colorScheme.secondaryContainer.withAlpha(0)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const <double>[0, 1],
+            ),
+            dashArray: <double> [5, 5],
+            animationDelay: 100,
+            animationDuration: 1000,
           ),
       ];
     }
@@ -192,11 +239,10 @@ class AssessmentChartContent extends StatelessWidget {
 
   List<AssessmentData> _prepareChartData(List<Assessment> assessments) {
     return assessments.asMap().entries.map((entry) {
-      final index = entry.key;
       final assessment = entry.value;
       final key = '${assessment.date}_${assessment.title}';
       return AssessmentData(
-        label: 'A${index + 1}',
+        label: assessment.title,
         percentage: assessment.percentageScore!.toInt(),
         title: assessment.title,
         date: assessment.date,
@@ -207,10 +253,9 @@ class AssessmentChartContent extends StatelessWidget {
 
   List<AssessmentData> _prepareClassAverageData(List<Assessment> assessments) {
     return assessments.asMap().entries.map((entry) {
-      final index = entry.key;
       final assessment = entry.value;
       return AssessmentData(
-        label: 'A${index + 1}',
+        label: assessment.title,
         percentage:
             ((assessment.numericAverage ?? 0) / assessment.numericOutOf! * 100)
                 .toInt(),

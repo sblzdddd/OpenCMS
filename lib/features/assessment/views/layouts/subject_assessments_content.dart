@@ -139,6 +139,7 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
               // 1: Summary
               if (index == 1) {
                 return AssessmentSummary(
+                  key: ValueKey(_currentSubject.id),
                   subject: _currentSubject,
                   themeNotifier: themeNotifier,
                 );

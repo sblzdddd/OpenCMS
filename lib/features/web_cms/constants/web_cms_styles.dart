@@ -186,11 +186,23 @@ body {
 }
 
 .ant-popover-inner, .ant-dropdown-menu,
+:where(.css-iecf5o).ant-popover .ant-popover-container,
+.ant-modal-container,
 .ant-picker-panel-container,
 .ant-select-dropdown, .ant-select-outlined,
 .ant-select-selector, .ant-modal-content, .ant-modal-header,
+.ant-tag,
 .ant-table {
   background-color: $surfaceColorCss !important;
+}
+.ant-input {
+  color: $onSurfaceCss !important;
+}
+.ant-input-outlined:hover {
+  border-color: $primaryColorCss !important;
+}
+.ant-input-outlined:focus, :where(.css-iecf5o).ant-input-outlined:focus-within {
+  border-color: $primaryColorCss !important;
 }
 
 .ant-table-container {
@@ -568,6 +580,27 @@ var ensure2 = function() {
               el.style.backgroundColor = 'transparent';
               el.bgColor = 'transparent';
             });
+            node.querySelectorAll("div").forEach(el => {
+              if (el.getAttribute("style") && el.getAttribute("style").includes("background: rgb(255, 255, 255)")) {
+                el.style.background = "none";
+                el.style.backgroundColor = "transparent";
+              }
+            });
+            node.querySelectorAll("main").forEach(el => {
+              if (el.getAttribute("style") && el.getAttribute("style").includes("background: rgb(247, 249, 251)")) {
+                el.style.background = "none";
+                el.style.backgroundColor = "transparent";
+              }
+            });
+            node.querySelectorAll("a").forEach(el => {
+              if (el.getAttribute("style") && el.getAttribute("style").includes("color: rgb(149, 17, 5)")) {
+                el.style.color = "$primaryColorCss"
+              }
+            });
+          }
+          if (node.tagName === 'DIV' && node.getAttribute("style") && node.getAttribute("style").includes("background: rgb(255, 255, 255)")) {
+            node.style.background = "none";
+            node.style.backgroundColor = "transparent";
           }
         }
       });
@@ -615,6 +648,24 @@ var ensure2 = function() {
   document.querySelectorAll("td,th,tr").forEach(el => {
     el.style.backgroundColor = 'transparent';
     el.bgColor = 'transparent';
+  });
+
+  document.querySelectorAll("div").forEach(el => {
+    if (el.getAttribute("style") && el.getAttribute("style").includes("background: rgb(255, 255, 255)")) {
+      el.style.background = "none";
+      el.style.backgroundColor = "transparent";
+    }
+  });
+  document.querySelectorAll("main").forEach(el => {
+    if (el.getAttribute("style") && el.getAttribute("style").includes("background: rgb(247, 249, 251)")) {
+      el.style.background = "none";
+      el.style.backgroundColor = "transparent";
+    }
+  });
+  document.querySelectorAll("a").forEach(el => {
+    if (el.getAttribute("style") && el.getAttribute("style").includes("color: rgb(149, 17, 5)")) {
+      el.style.color = "$primaryColorCss"
+    }
   });
 
   // Start observing

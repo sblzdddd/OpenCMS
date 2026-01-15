@@ -28,6 +28,7 @@ class _AssessmentChartState extends State<AssessmentChart> {
   final WeightedAverageService _weightedAverageService =
       WeightedAverageService();
   Map<String, int> _weights = {};
+  bool _areWeightsLoaded = false;
 
   @override
   void initState() {
@@ -47,6 +48,9 @@ class _AssessmentChartState extends State<AssessmentChart> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.assessments != widget.assessments ||
         oldWidget.subjectId != widget.subjectId) {
+      if (oldWidget.subjectId != widget.subjectId) {
+        _areWeightsLoaded = false;
+      }
       _loadWeights();
     }
   }
@@ -72,6 +76,7 @@ class _AssessmentChartState extends State<AssessmentChart> {
     if (mounted) {
       setState(() {
         _weights = newWeights;
+        _areWeightsLoaded = true;
       });
     }
   }
@@ -111,12 +116,15 @@ class _AssessmentChartState extends State<AssessmentChart> {
           },
           isColumnChart: _isColumnChart,
         ),
-        AssessmentChartContent(
-          assessments: validAssessments,
-          zoomPanBehavior: _zoomPanBehavior,
-          isColumnChart: _isColumnChart,
-          weights: _weights,
-        ),
+        if (!_areWeightsLoaded)
+          const SizedBox(height: 280)
+        else
+          AssessmentChartContent(
+            assessments: validAssessments,
+            zoomPanBehavior: _zoomPanBehavior,
+            isColumnChart: _isColumnChart,
+            weights: _weights,
+          ),
       ],
     );
   }
