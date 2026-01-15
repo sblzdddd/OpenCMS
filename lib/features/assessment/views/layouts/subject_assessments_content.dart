@@ -4,6 +4,7 @@ import 'package:silky_scroll/silky_scroll.dart';
 import '../../../shared/constants/period_constants.dart';
 import '../../models/assessment_models.dart';
 import '../../services/assessment_service.dart';
+import '../../services/weighted_average_service.dart';
 import '../../../theme/services/theme_services.dart';
 
 import '../components/subject_assessment_header.dart';
@@ -32,6 +33,7 @@ class SubjectAssessmentsContent extends StatefulWidget {
 class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
   late SubjectAssessment _currentSubject;
   bool _isLoading = false;
+  bool _showWeights = false;
 
   @override
   void initState() {
@@ -77,51 +79,43 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
     }
   }
 
-  Widget _buildAssessmentsList(ThemeNotifier themeNotifier) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 8),
-        ListView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: _currentSubject.assessments.length,
-          itemBuilder: (context, index) {
-            final assessment =
-                _currentSubject.assessments.reversed.toList()[index];
-            return AssessmentListItem(
-              assessment: assessment,
-              themeNotifier: themeNotifier,
-              subject: _currentSubject,
-            );
-          },
+  Future<void> _showResetConfirmationDialog() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Reset Weights'),
+        content: const Text(
+          'Are you sure you want to reset all custom weights for this subject? This action cannot be undone.',
         ),
-      ],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
     );
-  }
 
-  List<Widget> _buildAssessmentsContents(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    final List<Widget> contents = [
-      SubjectAssessmentHeader(
-        subject: _currentSubject,
-        academicYear: widget.academicYear,
-        themeNotifier: themeNotifier,
-      ),
-      AssessmentSummary(
-        subject: _currentSubject,
-        themeNotifier: themeNotifier,
-      ),
-      _buildAssessmentsList(themeNotifier),
-      const SizedBox(height: 32),
-    ];
-
-    return contents;
+    if (confirmed == true) {
+      await WeightedAverageService().resetSubjectWeights(_currentSubject);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final items = _buildAssessmentsContents(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    // Use reversed list for assessments to show newest first
+    final reversedAssessments = _currentSubject.assessments.reversed.toList();
+    
+    final totalCount = 3 + reversedAssessments.length + 1;
+
     final content = SilkyScroll(
         scrollSpeed: 2,
         builder: (context, controller, physics) {
@@ -129,15 +123,88 @@ class _SubjectAssessmentsContentState extends State<SubjectAssessmentsContent> {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             controller: controller,
             physics: physics,
-            itemCount: items.length,
-            itemBuilder: (context, index) => items[index],
+            // Small cache extent to trigger build closer to viewport
+            cacheExtent: 100,
+            itemCount: totalCount,
+            itemBuilder: (context, index) {
+              // 0: Header
+              if (index == 0) {
+                return SubjectAssessmentHeader(
+                  subject: _currentSubject,
+                  academicYear: widget.academicYear,
+                  themeNotifier: themeNotifier,
+                );
+              }
+
+              // 1: Summary
+              if (index == 1) {
+                return AssessmentSummary(
+                  subject: _currentSubject,
+                  themeNotifier: themeNotifier,
+                );
+              }
+
+              // 2: Controls Row
+              if (index == 2) {
+                return Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0, bottom: 4.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Assessments",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const Spacer(),
+                      if (_showWeights) ...[
+                        TextButton.icon(
+                          onPressed: _showResetConfirmationDialog,
+                          icon: const Icon(Icons.restore_rounded, size: 18),
+                          label: const Text("Reset"),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      FilterChip(
+                        label: Text('Edit weights'),
+                        selected: _showWeights,
+                        onSelected: (val) {
+                          setState(() {
+                            _showWeights = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // N+1: Bottom Spacer
+              if (index == totalCount - 1) {
+                return const SizedBox(height: 32);
+              }
+
+              // Assessments
+              final assessmentIndex = index - 3;
+              if (assessmentIndex >= 0 && assessmentIndex < reversedAssessments.length) {
+                return AssessmentListItem(
+                  assessment: reversedAssessments[assessmentIndex],
+                  themeNotifier: themeNotifier,
+                  subject: _currentSubject,
+                  showWeights: _showWeights,
+                );
+              }
+              
+              return const SizedBox.shrink();
+            },
           );
         });
+
     if (widget.isWideScreen) {
       return content;
     } else {
       return RefreshIndicator(onRefresh: _refreshData, child: content);
     }
   }
-
 }

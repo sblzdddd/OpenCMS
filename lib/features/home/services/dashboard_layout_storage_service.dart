@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../API/storage/storage_client.dart';
 import 'package:logging/logging.dart';
 
@@ -15,7 +14,7 @@ class DashboardLayoutStorageService {
 
   static const String _layoutKey = 'dashboard_layout_preferences';
 
-  FlutterSecureStorage get _storage => StorageClient.instance;
+  StorageClient get _storage => StorageClient.instance;
 
   Future<bool> saveLayout(List<MapEntry<String, Size>> widgetOrder) async {
     try {

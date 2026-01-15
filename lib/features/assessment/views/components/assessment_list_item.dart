@@ -1,22 +1,22 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import '../../models/assessment_models.dart';
 import '../../utils/assessment_utils.dart';
 import '../../../theme/services/theme_services.dart';
-import 'package:opencms/di/locator.dart';
-import '../../services/weighted_average_service.dart';
+import 'assessment_weight_control.dart';
 
 class AssessmentListItem extends StatelessWidget {
   final Assessment assessment;
   final ThemeNotifier themeNotifier;
   final SubjectAssessment subject;
+  final bool showWeights;
 
   const AssessmentListItem({
     super.key,
     required this.assessment,
     required this.themeNotifier,
     required this.subject,
+    this.showWeights = false,
   });
 
   @override
@@ -189,14 +189,28 @@ class AssessmentListItem extends StatelessWidget {
                       SizedBox(
                         height: 80,
                         width: 80,
-                        child: CircularProgressIndicator(
-                          value: hasValidScore
-                              ? assessment.percentageScore! / 100
-                              : 0,
-                          strokeWidth: 8,
-                          backgroundColor: Colors.grey.withValues(alpha: 0.2),
-                          valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
-                          trackGap: 10,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween<double>(
+                            begin: 0,
+                            end: hasValidScore
+                                ? assessment.percentageScore! / 100
+                                : 0,
+                          ),
+                          duration: const Duration(milliseconds: 1000),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, _) {
+                            return CircularProgressIndicator(
+                              value: value,
+                              strokeWidth: 8,
+                              backgroundColor: Colors.grey.withValues(
+                                alpha: 0.2,
+                              ),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                scoreColor,
+                              ),
+                              trackGap: 10,
+                            );
+                          },
                         ),
                       ),
                       Column(
@@ -232,156 +246,19 @@ class AssessmentListItem extends StatelessWidget {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 6.0, bottom: 4.0),
-              child: Divider(
-                color: Theme.of(
-                  context,
-                ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            ListenableBuilder(
-              listenable: di<WeightedAverageService>(),
-              builder: (context, _) {
-                return FutureBuilder<int>(
-                  future: di<WeightedAverageService>().getWeight(
-                    subject.id,
-                    assessment,
-                  ),
-                  builder: (context, snapshot) {
-                    final weight = snapshot.data ?? 0;
-                    return InkWell(
-                      onTap: () => _showWeightPicker(context, weight),
-                      borderRadius: BorderRadius.circular(8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Symbols.scale_rounded,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              "Weight: $weight%",
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const Icon(
-                              Symbols.arrow_drop_down_rounded,
-                              size: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              child: showWeights
+                  ? AssessmentWeightControl(
+                      subject: subject,
+                      assessment: assessment,
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Future<void> _showWeightPicker(
-    BuildContext context,
-    int currentWeight,
-  ) async {
-    const allWeights = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100];
-
-    final totalUsed = await di<WeightedAverageService>().getTotalWeightUsed(
-      subject,
-    );
-    final otherWeights = totalUsed - currentWeight;
-
-    int maxAllowed = 100 - otherWeights;
-
-    if (maxAllowed < 0) maxAllowed = 0;
-
-    final weights = allWeights.where((w) => w <= maxAllowed).toList();
-    if (weights.isEmpty) {
-      if (maxAllowed < 0) {
-        weights.add(0);
-      }
-    }
-
-    if (!context.mounted) return;
-
-    int initialIndex = weights.indexOf(currentWeight);
-    if (initialIndex == -1) {
-      initialIndex = weights.length - 1;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) {
-        return Container(
-          height: 300,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  "Select Weight (Max: $maxAllowed%)",
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-              ),
-              Expanded(
-                child: ScrollConfiguration(
-                  behavior: ScrollConfiguration.of(context).copyWith(
-                    dragDevices: {
-                      PointerDeviceKind.touch,
-                      PointerDeviceKind.mouse,
-                      PointerDeviceKind.trackpad,
-                    },
-                  ),
-                  child: ListWheelScrollView.useDelegate(
-                    itemExtent: 50,
-                    perspective: 0.005,
-                    diameterRatio: 1.3,
-                    physics: const FixedExtentScrollPhysics(),
-                    controller: FixedExtentScrollController(
-                      initialItem: initialIndex,
-                    ),
-                    onSelectedItemChanged: (index) {
-                      di<WeightedAverageService>().setWeight(
-                        subject.id,
-                        assessment,
-                        weights[index],
-                      );
-                    },
-                    childDelegate: ListWheelChildBuilderDelegate(
-                      childCount: weights.length,
-                      builder: (context, index) {
-                        return Center(
-                          child: Text(
-                            "${weights[index]}%",
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../API/storage/storage_client.dart';
 import 'package:logging/logging.dart';
 
@@ -14,7 +13,7 @@ class QuickActionsStorageService {
 
   static const String _quickActionsKey = 'quick_actions_preferences';
 
-  FlutterSecureStorage get _storage => StorageClient.instance;
+  StorageClient get _storage => StorageClient.instance;
 
   /// Save quick actions preferences
   Future<bool> saveQuickActionsPreferences(List<String> actionIds) async {

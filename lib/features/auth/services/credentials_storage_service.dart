@@ -1,5 +1,5 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/API/storage/secure_storage_base.dart';
 import '../../API/storage/storage_client.dart';
 import '../models/saved_credentials.dart';
 
@@ -18,7 +18,7 @@ class CredentialsStorageService {
   static const String _rememberCredentialsKey = 'remember_credentials';
   static const String _autoLoginKey = 'auto_login';
 
-  FlutterSecureStorage get _storage => StorageClient.instance;
+  SecureStorageBase get _storage => SecureStorageBase(StorageClient.instance, '_cred');
 
   /// Save user credentials securely
   Future<bool> saveCredentials({
@@ -29,10 +29,10 @@ class CredentialsStorageService {
   }) async {
     try {
       if (remember) {
-        await _storage.write(key: _usernameKey, value: username);
-        await _storage.write(key: _passwordKey, value: password);
-        await _storage.write(key: _rememberCredentialsKey, value: 'true');
-        await _storage.write(key: _autoLoginKey, value: autoLogin.toString());
+        await _storage.write(_usernameKey, username);
+        await _storage.write(_passwordKey, password);
+        await _storage.write(_rememberCredentialsKey, 'true');
+        await _storage.write(_autoLoginKey, autoLogin.toString());
         logger.info('Credentials saved successfully');
       } else {
         await clearCredentials();
@@ -47,7 +47,7 @@ class CredentialsStorageService {
   /// Set auto-login state independently
   Future<bool> setAutoLogin(bool enabled) async {
     try {
-      await _storage.write(key: _autoLoginKey, value: enabled.toString());
+      await _storage.write(_autoLoginKey, enabled.toString());
       logger.info('Auto-login state set to $enabled');
       return true;
     } catch (e) {
@@ -59,10 +59,10 @@ class CredentialsStorageService {
   /// Load saved credentials
   Future<SavedCredentials> loadCredentials() async {
     try {
-      final username = await _storage.read(key: _usernameKey);
-      final password = await _storage.read(key: _passwordKey);
-      final rememberStr = await _storage.read(key: _rememberCredentialsKey);
-      final autoLoginStr = await _storage.read(key: _autoLoginKey);
+      final username = await _storage.read(_usernameKey);
+      final password = await _storage.read(_passwordKey);
+      final rememberStr = await _storage.read(_rememberCredentialsKey);
+      final autoLoginStr = await _storage.read(_autoLoginKey);
       
       final remember = rememberStr == 'true';
       final autoLogin = autoLoginStr == 'true';
@@ -88,10 +88,10 @@ class CredentialsStorageService {
   /// Clear all saved credentials
   Future<bool> clearCredentials() async {
     try {
-      await _storage.delete(key: _usernameKey);
-      await _storage.delete(key: _passwordKey);
-      await _storage.delete(key: _rememberCredentialsKey);
-      await _storage.delete(key: _autoLoginKey);
+      await _storage.delete(_usernameKey);
+      await _storage.delete(_passwordKey);
+      await _storage.delete(_rememberCredentialsKey);
+      await _storage.delete(_autoLoginKey);
       logger.info('Credentials cleared successfully');
       return true;
     } catch (e) {
@@ -103,7 +103,7 @@ class CredentialsStorageService {
   /// Check if credentials are saved
   Future<bool> hasCredentials() async {
     try {
-      final remember = await _storage.read(key: _rememberCredentialsKey);
+      final remember = await _storage.read(_rememberCredentialsKey);
       return remember == 'true';
     } catch (e) {
       logger.severe('Error checking credentials: $e');

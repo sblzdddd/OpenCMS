@@ -62,26 +62,20 @@ class AssessmentSummary extends StatelessWidget {
                       ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
               : Theme.of(context).colorScheme.surfaceContainer,
         ),
-        child: ListenableBuilder(
-          listenable: di<WeightedAverageService>(),
-          builder: (context, _) {
-            return FutureBuilder<double?>(
-              future: di<WeightedAverageService>().calculateWeightedAverage(subject),
-              builder: (context, snapshot) {
-                final weightedAvg = snapshot.data;
-                
-                return Column(
-                  children: [
-                    Row(
+        child: Column(
+          children: [
+            ListenableBuilder(
+              listenable: di<WeightedAverageService>(),
+              builder: (context, _) {
+                return FutureBuilder<double?>(
+                  future: di<WeightedAverageService>().calculateWeightedAverage(
+                    subject,
+                  ),
+                  builder: (context, snapshot) {
+                    final weightedAvg = snapshot.data;
+
+                    return Row(
                       children: [
-                        Expanded(
-                          child: _buildSummaryCard(
-                            context,
-                            'Average',
-                            '${averageScore.toStringAsFixed(1)}%',
-                            AssessmentUtils.getScoreColor(averageScore),
-                          ),
-                        ),
                         if (weightedAvg != null)
                           Expanded(
                             child: _buildSummaryCard(
@@ -89,14 +83,18 @@ class AssessmentSummary extends StatelessWidget {
                               'Weighted Avg',
                               '${weightedAvg.toStringAsFixed(1)}%',
                               AssessmentUtils.getScoreColor(weightedAvg),
+                              icon: Icons.scale_rounded,
+                            ),
+                          )
+                        else
+                          Expanded(
+                            child: _buildSummaryCard(
+                              context,
+                              'Average',
+                              '${averageScore.toStringAsFixed(1)}%',
+                              AssessmentUtils.getScoreColor(averageScore),
                             ),
                           ),
-                      ],
-                    ),
-                    // Second row for Highest/Lowest if space permits or reorganize
-                    if (weightedAvg == null) // Show original layout if no weighted avg (loading or error, though unlikely to be null if initialized)
-                     Row(
-                      children: [
                         Expanded(
                           child: _buildSummaryCard(
                             context,
@@ -114,42 +112,22 @@ class AssessmentSummary extends StatelessWidget {
                           ),
                         ),
                       ],
-                    )
-                    else 
-                     Row(
-                      children: [
-                        Expanded(
-                          child: _buildSummaryCard(
-                            context,
-                            'Highest',
-                            '${highestScore.toStringAsFixed(1)}%',
-                            AssessmentUtils.getScoreColor(highestScore),
-                          ),
-                        ),
-                        Expanded(
-                          child: _buildSummaryCard(
-                            context,
-                            'Lowest',
-                            '${lowestScore.toStringAsFixed(1)}%',
-                            AssessmentUtils.getScoreColor(lowestScore),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AssessmentChart(
-                          assessments: subject.assessments,
-                          subjectName: subject.subject,
-                        ),
-                      ],
-                    ),
-                  ],
+                    );
+                  },
                 );
-              }
-            );
-          }
+              },
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AssessmentChart(
+                  assessments: subject.assessments,
+                  subjectName: subject.subject,
+                  subjectId: subject.id,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -159,20 +137,35 @@ class AssessmentSummary extends StatelessWidget {
     BuildContext context,
     String label,
     String value,
-    Color color,
-  ) {
+    Color color, {
+    IconData? icon,
+  }) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null)
+                Icon(
+                  icon,
+                  size: 12,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+              if (icon != null) const SizedBox(width: 4),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 4),
           Text(

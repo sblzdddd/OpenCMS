@@ -12,7 +12,6 @@ import 'captcha_dialog_web.dart'
 import 'package:logging/logging.dart';
 import '../../../services/auto_captcha_service.dart';
 import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 final logger = Logger('CaptchaDialog');
 
@@ -88,9 +87,6 @@ class TencentCaptchaDialog {
                     Navigator.of(context).pop();
 
                     if (success) {
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.setBool('auto_captcha_requested', true);
-
                       if (context.mounted) {
                         SnackbarUtils.showSuccess(
                           context,
@@ -125,9 +121,6 @@ class TencentCaptchaDialog {
     required Function(dynamic) onFail,
   }) async {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    final prefs = await SharedPreferences.getInstance();
-    final bool autoSolveRequested =
-        prefs.getBool('auto_captcha_requested') ?? false;
 
     await showDialog(
       context: context,
@@ -235,8 +228,7 @@ class TencentCaptchaDialog {
                     ),
                   ),
                 ),
-                if (!autoSolveRequested &&
-                    config.username != null &&
+                if (config.username != null &&
                     config.username!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),

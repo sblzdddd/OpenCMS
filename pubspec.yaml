@@ -71,6 +71,7 @@ dependencies:
   device_info_plus: ^10.1.0
   flutter_phoenix: ^1.1.1
   silky_scroll: ^1.0.16
+  synchronized: ^3.4.0
 
 dev_dependencies:
   flutter_test:
