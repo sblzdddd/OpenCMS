@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
+
+import '../../../daily_bulletin/models/daily_bulletin_response.dart';
+import '../../../daily_bulletin/services/daily_bulletin_service.dart';
+import '../../../events/models/student_event.dart';
+import '../../../events/services/events_service.dart';
 import '../../../notices/models/notification_response.dart'
     as notification_model;
-import '../../../daily_bulletin/models/daily_bulletin_response.dart';
-import '../../../events/models/student_event.dart';
 import '../../../notices/services/notification_service.dart';
-import '../../../daily_bulletin/services/daily_bulletin_service.dart';
-import '../../../events/services/events_service.dart';
 import '../../../shared/pages/actions.dart';
-import 'base_dashboard_widget.dart';
 import '../../../shared/views/widgets/scaled_ink_well.dart';
+import '../../../theme/services/theme_services.dart';
+import 'base_dashboard_widget.dart';
 
 class NoticeCard extends StatefulWidget {
   final Size? widgetSize;
@@ -59,7 +60,7 @@ class _NoticeCardState extends State<NoticeCard>
       final notifications = await _notificationService.getSortedNotifications(
         refresh: refresh,
       );
-      
+
       // Fetch latest daily bulletin for today
       final today = DateTime.now();
       final todayString =
@@ -258,14 +259,11 @@ class _NoticeCardState extends State<NoticeCard>
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     return ScaledInkWell(
       borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-      onTap: () async {
-        final navigator = Navigator.of(context);
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          final page = await buildActionPage(QuickAction(id: actionId, title: '', icon: ''));
-          if (mounted) {
-            navigator.push(MaterialPageRoute(builder: (_) => page));
-          }
-        });
+      onTap: () {
+        navigateToAction(
+          context,
+          QuickAction(id: actionId, title: '', icon: ''),
+        );
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
@@ -281,7 +279,7 @@ class _NoticeCardState extends State<NoticeCard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+
     return BaseDashboardWidget(
       title: 'Notices',
       subtitle: _getWidgetSubtitle(),
@@ -291,8 +289,8 @@ class _NoticeCardState extends State<NoticeCard>
       hasError: _hasError,
       hasData: _hasWidgetData(),
       noDataText: 'No recent notices or bulletins',
-      rightSideText: isWideMode 
-          ? (_latestNotice.isNotEmpty ? _latestNotice.first.addDate : null) 
+      rightSideText: isWideMode
+          ? (_latestNotice.isNotEmpty ? _latestNotice.first.addDate : null)
           : null,
       extraContent: _getExtraContent(context),
       onFetch: _fetchWidgetData,

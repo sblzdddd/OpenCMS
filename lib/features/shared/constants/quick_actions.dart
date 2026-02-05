@@ -8,12 +8,14 @@ class QuickAction {
   final String title;
   final dynamic icon;
   final bool? isWebLink;
+  final String? shortTitle;
 
   QuickAction({
     required this.id,
     required this.title,
     required this.icon,
     this.isWebLink = false,
+    this.shortTitle,
   });
 }
 
@@ -26,10 +28,11 @@ class QuickActionsConstants {
     icon: Symbols.more_horiz_rounded,
     id: moreActionId,
   );
+
   /// All available quick actions
   static List<QuickAction> get availableActions => [
     QuickAction(
-      title: 'WebCMS',
+      title: 'Web CMS',
       icon: Symbols.language,
       id: 'webcms',
       isWebLink: true,
@@ -44,11 +47,7 @@ class QuickActionsConstants {
       icon: Symbols.calendar_clock_rounded,
       id: 'exam',
     ),
-    QuickAction(
-      title: 'Attendance',
-      icon: Symbols.schedule,
-      id: 'attendance',
-    ),
+    QuickAction(title: 'Attendance', icon: Symbols.schedule, id: 'attendance'),
     QuickAction(
       title: 'Reports',
       icon: Symbols.assignment_rounded,
@@ -78,6 +77,7 @@ class QuickActionsConstants {
       title: 'Daily Bulletin',
       icon: Symbols.format_list_bulleted_rounded,
       id: 'daily_bulletin',
+      shortTitle: 'Bulletin',
     ),
     QuickAction(
       title: 'Events',
@@ -99,6 +99,7 @@ class QuickActionsConstants {
       title: 'Available Classrooms',
       icon: Symbols.door_open_rounded,
       id: 'available_classrooms',
+      shortTitle: 'Classrooms',
     ),
     QuickAction(
       title: 'Maintenance',
@@ -114,11 +115,13 @@ class QuickActionsConstants {
     ),
     QuickAction(
       title: 'Student Profile',
+      shortTitle: 'Profile',
       icon: Symbols.person_rounded,
       id: 'student_profile',
     ),
     QuickAction(
       title: 'Course Stats',
+      shortTitle: 'Stats',
       icon: Symbols.school_rounded,
       id: 'course_stats',
     ),
@@ -136,6 +139,7 @@ class QuickActionsConstants {
     ),
     QuickAction(
       title: 'Global Citizenship',
+      shortTitle: 'GCA',
       icon: Symbols.diversity_2_rounded,
       id: 'global_citizenship',
       isWebLink: true,
@@ -172,6 +176,7 @@ class QuickActionsConstants {
     ),
     QuickAction(
       title: 'Special Consideration',
+      shortTitle: 'Special',
       icon: Symbols.bookmark_heart_rounded,
       id: 'special_consideration',
       isWebLink: true,
@@ -198,7 +203,7 @@ class QuickActionsConstants {
       title: 'Settings',
       icon: Symbols.settings_rounded,
       id: 'settings',
-    )
+    ),
   ];
 
   /// Default quick actions (shown when user hasn't customized)

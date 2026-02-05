@@ -1,18 +1,19 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/home/views/widgets/banners/waves_banner.dart';
 import 'package:opencms/features/theme/services/skin_service.dart';
 import 'package:opencms/features/theme/views/widgets/skin_background_widget.dart';
 import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import 'dynamic_gradient_banner.dart';
+
 import '../../../shared/constants/period_constants.dart';
-import 'dart:async';
-import '../../../user/views/pages/profile.dart';
 import '../../../shared/views/widgets/scaled_ink_well.dart';
+import '../../../theme/services/theme_services.dart';
+import '../../../user/views/pages/profile.dart';
 
 class BannerWidget extends StatefulWidget {
   const BannerWidget({super.key});
@@ -70,7 +71,9 @@ class _BannerWidgetState extends State<BannerWidget>
     if (di<SkinService>().activeSkin != null) {
       final skin = di<SkinService>().activeSkin!;
       final imgData = skin.imageData['home.bannerBackground'];
-      if (imgData != null && imgData.hasImage && File(imgData.imagePath!).existsSync()) {
+      if (imgData != null &&
+          imgData.hasImage &&
+          File(imgData.imagePath!).existsSync()) {
         haveImageBg = true;
       }
     }
@@ -82,12 +85,16 @@ class _BannerWidgetState extends State<BannerWidget>
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.01),
               blurRadius: 8,
               offset: const Offset(0, 5),
             ),
             BoxShadow(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.02),
               blurRadius: 18,
               offset: const Offset(0, 5),
             ),
@@ -96,12 +103,12 @@ class _BannerWidgetState extends State<BannerWidget>
         child: Material(
           color: themeNotifier.needTransparentBG
               ? (!themeNotifier.isDarkMode
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.surfaceBright.withValues(alpha: 0.6)
-                  : Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surfaceBright.withValues(alpha: 0.6)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
               : Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
@@ -124,9 +131,15 @@ class _BannerWidgetState extends State<BannerWidget>
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: Stack(
             children: [
-              Positioned.fill(child: haveImageBg ? 
-                SkinBackgroundWidget(category: 'home.bannerBackground', fallbackColor: Theme.of(context).colorScheme.surface, child: Container()) : 
-                const DynamicGradientBanner()),
+              Positioned.fill(
+                child: haveImageBg
+                    ? SkinBackgroundWidget(
+                        category: 'home.bannerBackground',
+                        fallbackColor: Theme.of(context).colorScheme.surface,
+                        child: Container(),
+                      )
+                    : const WavesBanner(),
+              ),
               // Top left and right positioned elements
               Positioned(
                 top: 10,

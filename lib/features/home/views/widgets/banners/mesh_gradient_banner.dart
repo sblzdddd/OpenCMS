@@ -4,81 +4,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-class RGB {
-  final int r;
-  final int g;
-  final int b;
+import 'color_utils.dart';
 
-  const RGB(this.r, this.g, this.b);
-}
-
-class ColorUtils {
-  static Color fromHex(String hex) {
-    var value = hex.replaceAll('#', '').trim();
-    if (value.length == 6) {
-      value = 'FF$value';
-    }
-    final int intValue = int.parse(value, radix: 16);
-    return Color(intValue);
-  }
-
-  static String toHex(
-    Color color, {
-    bool leadingHashSign = true,
-    bool includeAlpha = false,
-  }) {
-    final String a = ((color.a * 255.0).round() & 0xff)
-        .toRadixString(16)
-        .padLeft(2, '0');
-    final String r = ((color.r * 255.0).round() & 0xff)
-        .toRadixString(16)
-        .padLeft(2, '0');
-    final String g = ((color.g * 255.0).round() & 0xff)
-        .toRadixString(16)
-        .padLeft(2, '0');
-    final String b = ((color.b * 255.0).round() & 0xff)
-        .toRadixString(16)
-        .padLeft(2, '0');
-    final String body = includeAlpha ? '$a$r$g$b' : '$r$g$b';
-    return leadingHashSign ? '#$body' : body;
-  }
-
-  static RGB hexToRgb(String hex) {
-    final color = fromHex(hex);
-    return RGB(
-      ((color.r * 255.0).round() & 0xff),
-      ((color.g * 255.0).round() & 0xff),
-      ((color.b * 255.0).round() & 0xff),
-    );
-  }
-
-  static String rgbToHex(int r, int g, int b, {bool leadingHashSign = true}) {
-    final rr = r.clamp(0, 255).toInt().toRadixString(16).padLeft(2, '0');
-    final gg = g.clamp(0, 255).toInt().toRadixString(16).padLeft(2, '0');
-    final bb = b.clamp(0, 255).toInt().toRadixString(16).padLeft(2, '0');
-    final body = '$rr$gg$bb';
-    return leadingHashSign ? '#$body' : body;
-  }
-
-  static Color adjustHsl(
-    Color color, {
-    double hueDelta = 0.0, // degrees
-    double saturation = 1.0,
-    double lightness = 1.0,
-  }) {
-    final hsl = HSLColor.fromColor(color);
-    final double newHue = (hsl.hue + hueDelta) % 360.0;
-    final double newSaturation = (saturation).clamp(0.0, 1.0);
-    final double newLightness = (lightness).clamp(0.0, 1.0);
-    return hsl
-        .withHue(newHue)
-        .withSaturation(newSaturation)
-        .withLightness(newLightness)
-        .toColor();
-  }
-}
-
-class DynamicGradientBanner extends StatefulWidget {
+class MeshGradientBanner extends StatefulWidget {
   final Color color1;
   final Color color2;
   final Color color3;
@@ -86,7 +14,7 @@ class DynamicGradientBanner extends StatefulWidget {
   final Color? themeColor;
   final String? themeColorHex;
 
-  const DynamicGradientBanner({
+  const MeshGradientBanner({
     super.key,
     this.color1 = const ui.Color.fromARGB(255, 49, 182, 226),
     this.color2 = const ui.Color.fromARGB(255, 166, 248, 250),
@@ -97,10 +25,10 @@ class DynamicGradientBanner extends StatefulWidget {
   });
 
   @override
-  State<DynamicGradientBanner> createState() => _DynamicGradientBannerState();
+  State<MeshGradientBanner> createState() => _MeshGradientBannerState();
 }
 
-class _DynamicGradientBannerState extends State<DynamicGradientBanner>
+class _MeshGradientBannerState extends State<MeshGradientBanner>
     with SingleTickerProviderStateMixin {
   ui.FragmentProgram? _program;
   late final Ticker _ticker;
@@ -119,7 +47,7 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
 
   Future<void> _loadProgram() async {
     final program = await ui.FragmentProgram.fromAsset(
-      'assets/shaders/dynamic_banner.frag',
+      'assets/shaders/mesh_gradient.frag',
     );
     if (mounted) {
       setState(() {
@@ -148,12 +76,7 @@ class _DynamicGradientBannerState extends State<DynamicGradientBanner>
     final Color c3;
     final Color c4;
 
-    c1 = ColorUtils.adjustHsl(
-      b,
-      hueDelta: 4,
-      saturation: 0.6,
-      lightness: 0.54,
-    );
+    c1 = ColorUtils.adjustHsl(b, hueDelta: 4, saturation: 0.6, lightness: 0.54);
     c2 = ColorUtils.adjustHsl(b, hueDelta: 2, saturation: 0.5, lightness: 0.8);
     c3 = ColorUtils.adjustHsl(b, hueDelta: 1, saturation: 0.6, lightness: 0.6);
     c4 = ColorUtils.adjustHsl(b, hueDelta: 0, saturation: 0.7, lightness: 0.7);

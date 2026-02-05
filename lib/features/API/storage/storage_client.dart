@@ -9,7 +9,7 @@ class StorageClient {
   static final StorageClient instance = StorageClient._();
 
   final _lock = Lock();
-  
+
   /// Shared [FlutterSecureStorage] instance with platform-specific options
   final FlutterSecureStorage _storage = const FlutterSecureStorage(
     aOptions: AndroidOptions(

@@ -1,19 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import 'manage_widgets_page.dart';
-import '../components/quick_actions/quick_actions.dart';
-import '../components/dashboard_grid/dashboard_grid.dart';
-import '../../../navigations/views/bottom_navigation.dart';
-import '../../../navigations/views/app_navigation_rail.dart';
-import '../../../timetable/views/pages/timetable.dart';
-import '../../../homework/views/pages/homework.dart';
-import '../../../assessment/views/pages/assessment.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/app_router.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:provider/provider.dart';
+
+import '../../../navigations/controllers/bottom_actions_controller.dart';
+import '../../../navigations/views/app_navigation_rail.dart';
+import '../../../navigations/views/bottom_navigation.dart';
+import '../../../shared/views/widgets/custom_app_bar.dart';
+import '../components/dashboard_grid/dashboard_grid.dart';
+import '../components/quick_actions/quick_actions.dart';
+import 'manage_widgets_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,6 +30,9 @@ class _HomePageState extends State<HomePage> {
       DashboardGridController();
   final QuickActionsController _quickActionsController =
       QuickActionsController();
+  final BottomActionsController _bottomActionsController =
+      BottomActionsController();
+  late final PageController _pageController;
   int _layoutVersion = 0;
 
   int get _selectedIndex => _selectedIndexNotifier.value;
@@ -37,6 +40,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: 0);
     // Initialize the navigation controller
     // AppNavigationController.initialize(_selectedIndexNotifier);
     // Listen to changes in selected index
@@ -55,43 +59,53 @@ class _HomePageState extends State<HomePage> {
               ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
               : Theme.of(context).colorScheme.surface.withValues(alpha: 0.8))
         : Colors.transparent;
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final bool useRail = constraints.maxWidth >= 800;
-        return CustomScaffold(
-          skinKey: [
-            'home',
-            'timetable',
-            'homeworks',
-            'assessment',
-          ][_selectedIndex],
-          isHomePage: true,
-          body: SafeArea(
-            child: useRail
-                ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      AppNavigationRail(
-                        selectedIndex: _selectedIndex,
-                        onTapCallback: _onNavTap,
-                      ),
-                      const VerticalDivider(width: 1),
-                      Expanded(
-                        child: Container(
-                          color: bgColor,
-                          child: _buildPageContent(),
-                        ),
-                      ),
-                    ],
-                  )
-                : Container(color: bgColor, child: _buildPageContent()),
-          ),
-          bottomNavigationBar: useRail
-              ? null
-              : BottomNavigation(
-                  selectedIndex: _selectedIndex,
-                  onTapCallback: _onNavTap,
-                ),
+    return ListenableBuilder(
+      listenable: _bottomActionsController,
+      builder: (context, _) {
+        if (_bottomActionsController.isLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final items = _bottomActionsController.currentItems;
+        final safeIndex = _selectedIndex < items.length ? _selectedIndex : 0;
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final bool useRail = constraints.maxWidth >= 800;
+            return CustomScaffold(
+              skinKey: safeIndex < items.length ? items[safeIndex].id : 'home',
+              isHomePage: true,
+              body: SafeArea(
+                child: useRail
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          AppNavigationRail(
+                            selectedIndex: safeIndex,
+                            onTapCallback: _onNavTap,
+                            items: items,
+                          ),
+                          const VerticalDivider(width: 1),
+                          Expanded(
+                            child: Container(
+                              color: bgColor,
+                              child: _buildPageContent(),
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(color: bgColor, child: _buildPageContent()),
+              ),
+              bottomNavigationBar: useRail
+                  ? null
+                  : BottomNavigation(
+                      selectedIndex: safeIndex,
+                      onTapCallback: _onNavTap,
+                      items: items,
+                    ),
+            );
+          },
         );
       },
     );
@@ -102,23 +116,89 @@ class _HomePageState extends State<HomePage> {
     // Clear global navigation controller state BEFORE disposing the notifier to avoid
     // any pending callbacks using a disposed notifier
     // AppNavigationController.reset();
+    _pageController.dispose();
     _selectedIndexNotifier.dispose();
     super.dispose();
   }
 
   Widget _buildPageContent() {
-    switch (_selectedIndex) {
-      case 0:
-        return _buildScrollableHomeContent();
-      case 1:
-        return TimetablePage(initialTabIndex: 0, isTransparent: true);
-      case 2:
-        return const HomeworkPage(isTransparent: true);
-      case 3:
-        return const AssessmentPage(isTransparent: true);
-      default:
-        return _buildScrollableHomeContent();
-    }
+    final items = _bottomActionsController.currentItems;
+    if (items.isEmpty) return _buildScrollableHomeContent();
+
+    return AnimatedBuilder(
+      animation: _pageController,
+      builder: (context, child) {
+        return PageView.builder(
+          controller: _pageController,
+          itemCount: items.length,
+          onPageChanged: (index) {
+            _selectedIndexNotifier.value = index;
+          },
+          itemBuilder: (context, index) {
+            final id = items[index].id;
+            Widget page = (id == 'home')
+                ? _buildScrollableHomeContent()
+                : AppRouter.getWidget(id);
+
+            double pageOffset = 0.0;
+            try {
+              if (_pageController.hasClients && _pageController.page != null) {
+                pageOffset = _pageController.page! - index;
+              } else if (_selectedIndex == index) {
+                pageOffset = 0.0;
+              } else {
+                pageOffset = _selectedIndex - index.toDouble();
+              }
+            } catch (_) {}
+
+            // Clamp for safety
+            pageOffset = pageOffset.clamp(-1.0, 1.0);
+
+            // Steeper out curve
+            final curve = Curves.easeOutCubic;
+            final direction = pageOffset.sign;
+            final percent = pageOffset.abs().clamp(0.0, 1.0);
+            final t = curve.transform(percent);
+
+            // Old page: moves 10% in direction, alpha 1->0
+            // New page: comes from 10% in direction, alpha 0->1
+            double dx = 0.0;
+            double opacity = 1.0;
+            if (pageOffset > 0) {
+              // page is left of current (old page, swiping right)
+              dx = 0.1 * t; // 10% to right
+              opacity = 1.0 - t;
+            } else if (pageOffset < 0) {
+              // page is right of current (old page, swiping left)
+              dx = -0.1 * t; // 10% to left
+              opacity = 1.0 - t;
+            } else {
+              dx = 0.0;
+              opacity = 1.0;
+            }
+
+            // For the incoming page, reverse the transform
+            if (percent > 0.0 && percent < 1.0) {
+              if (pageOffset > 0) {
+                // This is the outgoing page
+                // Already handled above
+              } else if (pageOffset < 0) {
+                // This is the outgoing page
+                // Already handled above
+              }
+            }
+
+            return Opacity(
+              opacity: opacity,
+              child: Transform.translate(
+                offset: Offset(dx * MediaQuery.of(context).size.width, 0),
+                child: page,
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Widget _buildScrollableHomeContent() {
@@ -219,6 +299,10 @@ class _HomePageState extends State<HomePage> {
     await Navigator.of(
       context,
     ).push(MaterialPageRoute(builder: (context) => const ManageWidgetsPage()));
+
+    // Refresh bottom actions
+    await _bottomActionsController.refresh();
+
     if (mounted) {
       setState(() {
         _layoutVersion++;
@@ -230,6 +314,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _refreshHomePage() async {
     // Trigger dashboard grid refresh via controller to avoid callback recursion
     _dashboardController.refresh();
+    _bottomActionsController.refresh();
     // Optional: small delay to keep the indicator visible
     await Future.delayed(const Duration(milliseconds: 400));
   }
@@ -237,5 +322,10 @@ class _HomePageState extends State<HomePage> {
   void _onNavTap(int index) {
     if (_selectedIndex == index) return;
     _selectedIndexNotifier.value = index;
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 }

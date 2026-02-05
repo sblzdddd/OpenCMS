@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../../theme/services/theme_services.dart';
+
 import '../../../../../shared/views/widgets/scaled_ink_well.dart';
+import '../../../../../theme/services/theme_services.dart';
 import '../../../../../theme/views/widgets/skin_icon_widget.dart';
 
 /// A generic quick action tile used by various quick action components.
@@ -56,7 +57,7 @@ class _QuickActionTileState extends State<QuickActionTile>
         widget.titleStyle ??
         Theme.of(context).textTheme.bodyMedium!.copyWith(
           // fontSize: (context.locale == Locale('zh', 'CN') ? 12 : 10),
-          fontSize: 10,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
         );
 
@@ -84,7 +85,7 @@ class _QuickActionTileState extends State<QuickActionTile>
           fit: StackFit.expand,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 9),
               decoration: BoxDecoration(
                 borderRadius: themeNotifier.getBorderRadiusAll(1.5),
               ),
@@ -118,10 +119,9 @@ class _QuickActionTileState extends State<QuickActionTile>
                 child: Icon(
                   Icons.drag_indicator,
                   size: 16,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.5),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             if (widget.showExternalIcon && !widget.showDragIndicator)
@@ -131,10 +131,9 @@ class _QuickActionTileState extends State<QuickActionTile>
                 child: Icon(
                   Icons.open_in_new,
                   size: 14,
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.2),
                 ),
               ),
           ],

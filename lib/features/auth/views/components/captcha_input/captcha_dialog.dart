@@ -1,23 +1,24 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:provider/provider.dart';
-import '../../../../theme/services/theme_services.dart';
+import 'package:logging/logging.dart';
 import 'package:opencms/features/web_cms/services/webview_service.dart';
-import 'captcha_html_content.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
+import '../../../../theme/services/theme_services.dart';
+import '../../../services/auto_captcha_service.dart';
 import 'captcha_dialog_web.dart'
     if (dart.library.io) 'captcha_dialog_stub.dart'
     as web_helper;
-import 'package:logging/logging.dart';
-import '../../../services/auto_captcha_service.dart';
-import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
+import 'captcha_html_content.dart';
 
 final logger = Logger('CaptchaDialog');
 
 /// Tencent Captcha implementation
 class TencentCaptchaDialog {
-
   /// Perform captcha verification with popup webview
   static Future<void> verify({
     required BuildContext context,
@@ -52,64 +53,62 @@ class TencentCaptchaDialog {
   ) {
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: const Text("Auto-Solve Request"),
-            content: Text(
-              "Your username ($username) and Device Id might be collected for Captcha auto-verification service (to ensure such service is not abused), based on your agreement to this additional service. Apart from that, We do not collect, store, analyze, or transmit any personal data or usage analytics to our servers or any third parties.",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text("Cancel"),
-              ),
-              TextButton(
-                onPressed: () async {
-                  // Close confirmation dialog
-                  Navigator.of(dialogContext).pop();
-
-                  // Show loading indicator
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder:
-                        (loadingContext) =>
-                            const Center(child: CircularProgressIndicator()),
-                  );
-
-                  try {
-                    final service = AutoCaptchaService();
-                    final success = await service.sendRequest(username);
-
-                    if (!context.mounted) return;
-
-                    // Close loading indicator
-                    Navigator.of(context).pop();
-
-                    if (success) {
-                      if (context.mounted) {
-                        SnackbarUtils.showSuccess(
-                          context,
-                          "Auto-solve request sent successfully",
-                        );
-                      }
-                    } else {
-                      SnackbarUtils.showError(
-                        context,
-                        "Failed to send auto-solve request",
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      Navigator.of(context).pop(); // Close loading
-                      SnackbarUtils.showError(context, "Error: $e");
-                    }
-                  }
-                },
-                child: const Text("Accept"),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Auto-Solve Request"),
+        content: Text(
+          "Your username ($username) and Device Id might be collected for Captcha auto-verification service (to ensure such service is not abused), based on your agreement to this additional service. Apart from that, We do not collect, store, analyze, or transmit any personal data or usage analytics to our servers or any third parties.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text("Cancel"),
           ),
+          TextButton(
+            onPressed: () async {
+              // Close confirmation dialog
+              Navigator.of(dialogContext).pop();
+
+              // Show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (loadingContext) =>
+                    const Center(child: CircularProgressIndicator()),
+              );
+
+              try {
+                final service = AutoCaptchaService();
+                final success = await service.sendRequest(username);
+
+                if (!context.mounted) return;
+
+                // Close loading indicator
+                Navigator.of(context).pop();
+
+                if (success) {
+                  if (context.mounted) {
+                    SnackbarUtils.showSuccess(
+                      context,
+                      "Auto-solve request sent successfully",
+                    );
+                  }
+                } else {
+                  SnackbarUtils.showError(
+                    context,
+                    "Failed to send auto-solve request",
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.of(context).pop(); // Close loading
+                  SnackbarUtils.showError(context, "Error: $e");
+                }
+              }
+            },
+            child: const Text("Accept"),
+          ),
+        ],
+      ),
     );
   }
 
@@ -187,8 +186,10 @@ class TencentCaptchaDialog {
                           controller.addJavaScriptHandler(
                             handlerName: 'captchaComplete',
                             callback: (args) {
-                              logger.fine('Received captcha completion event: $args');
-                              
+                              logger.fine(
+                                'Received captcha completion event: $args',
+                              );
+
                               Navigator.of(dialogContext).pop();
                               if (args[0] == 'success') {
                                 onSuccess(args[1]);
@@ -218,18 +219,21 @@ class TencentCaptchaDialog {
                             WebResourceRequest request,
                             WebResourceError error,
                           ) {
-                            logger.warning('Captcha WebView error: ${error.description}');
+                            logger.warning(
+                              'Captcha WebView error: ${error.description}',
+                            );
 
                             // For any errors, just log them since we're already using local HTML
-                            logger.warning('CaptchaDialog: WebView error: ${error.description} for ${request.url}');
+                            logger.warning(
+                              'CaptchaDialog: WebView error: ${error.description} for ${request.url}',
+                            );
                           },
                       onProgressChanged:
                           (InAppWebViewController controller, int progress) {},
                     ),
                   ),
                 ),
-                if (config.username != null &&
-                    config.username!.isNotEmpty)
+                if (config.username != null && config.username!.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
@@ -239,11 +243,16 @@ class TencentCaptchaDialog {
                           "Don't want to slide this bs? ",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.7),
                           ),
                         ),
                         TextButton(
-                          onPressed: () => _showAutoSolveConfirmation(context, config.username!),
+                          onPressed: () => _showAutoSolveConfirmation(
+                            context,
+                            config.username!,
+                          ),
                           style: TextButton.styleFrom(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,

@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:opencms/di/locator.dart';
-import 'package:opencms/features/API/storage/token_storage.dart';
-import 'package:opencms/features/API/storage/storage_client.dart';
-import 'package:opencms/features/auth/services/auth_service.dart';
-
-import 'package:opencms/features/navigations/views/app_navigation_controller.dart';
-import 'package:opencms/features/shared/constants/api_endpoints.dart';
-import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
-import 'package:silky_scroll/silky_scroll.dart';
-import '../shared/views/dialog/confirm_dialog.dart';
-import 'theme_settings_page.dart';
-import '../theme/views/pages/skin_settings_page.dart';
-import '../theme/services/theme_services.dart';
-import 'package:provider/provider.dart';
-import '../shared/views/widgets/custom_app_bar.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../shared/views/widgets/custom_scaffold.dart';
-import 'package:opencms/features/shared/views/widgets/app_card.dart';
-import 'package:opencms/features/settings/privacy_policy.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/storage/storage_client.dart';
+import 'package:opencms/features/API/storage/token_storage.dart';
+import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/home/views/pages/manage_widgets_page.dart';
+import 'package:opencms/features/navigations/views/app_navigation_controller.dart';
+import 'package:opencms/features/settings/privacy_policy.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/shared/views/widgets/app_card.dart';
+import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
+import 'package:provider/provider.dart';
+import 'package:silky_scroll/silky_scroll.dart';
+
+import '../shared/views/dialog/confirm_dialog.dart';
+import '../shared/views/widgets/custom_app_bar.dart';
+import '../shared/views/widgets/custom_scaffold.dart';
+import '../theme/services/theme_services.dart';
+import '../theme/views/pages/skin_settings_page.dart';
+import 'theme_settings_page.dart';
 
 final logger = Logger('SettingsPage');
 
@@ -31,7 +32,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  
   void _clearUserData(BuildContext context) {
     showConfirmationDialog(
       context,
@@ -64,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
       (dialogContext) async {
         Navigator.of(dialogContext).pop();
         await di<TokenStorage>().clearAll();
-        
+
         if (context.mounted) {
           Phoenix.rebirth(context);
         }
@@ -130,109 +130,113 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   List<Widget> _buildSettingsItems(BuildContext context) {
-  return [
-    _buildSettingsTitle('Theme'),
-    Consumer<ThemeNotifier>(
-      builder: (context, themeNotifier, child) {
-        return Column(
-          children: [
-            // Dark Mode Toggle
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 6.0,
-                horizontal: 8.0,
+    return [
+      _buildSettingsTitle('Personalizations'),
+      Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, child) {
+          return Column(
+            children: [
+              // Dark Mode Toggle
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6.0,
+                  horizontal: 8.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          themeNotifier.isDarkMode
+                              ? Symbols.dark_mode_rounded
+                              : Symbols.light_mode_rounded,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Dark Mode',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: themeNotifier.isDarkMode,
+                      onChanged: (value) {
+                        themeNotifier.toggleTheme();
+                      },
+                      activeThumbColor: Theme.of(context).colorScheme.primary,
+                    ),
+                  ],
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        themeNotifier.isDarkMode
-                            ? Symbols.dark_mode_rounded
-                            : Symbols.light_mode_rounded,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Dark Mode',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                  Switch(
-                    value: themeNotifier.isDarkMode,
-                    onChanged: (value) {
-                      themeNotifier.toggleTheme();
-                    },
-                    activeThumbColor: Theme.of(
-                      context,
-                    ).colorScheme.primary,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    ),
-    
-    _buildSettingsItem(
-      'Theme Settings',
-      Symbols.palette_rounded,
-      const ThemeSettingsPage(),
-    ),
-    
-    _buildSettingsItem(
-      'Skins',
-      Symbols.brush_rounded,
-      const SkinSettingsPage(),
-    ),
-
-    // _buildSettingsTitle('Notifications'),
-    // _buildSettingsItem(
-    //   'Notification Settings',
-    //   Symbols.notifications_rounded,
-    //   const ThemeSettingsPage(),
-    // ),
-    // const Divider(height: 2),
-    _buildSettingsTitle('Account'),
-    _buildSettingsItem(
-      'Change Password',
-      Symbols.password_rounded,
-      const WebCmsPage(
-        initialUrl: '${API.cmsReferer}/auth/change_password',
-        windowTitle: 'Change Password',
+            ],
+          );
+        },
       ),
-    ),
-    _buildSettingsItem(
-      'Logout',
-      Symbols.logout_rounded,
-      null,
-      onTap: () => showLogoutDialog(context),
-    ),
-    _buildSettingsItem(
-      'Clear Tokens',
-      Symbols.delete_sweep_rounded,
-      null,
-      onTap: () => _clearTokens(),
-    ),
-    _buildSettingsItem(
-      'Clear All Data',
-      Symbols.delete_forever_rounded,
-      null,
-      onTap: () => _clearUserData(context),
-    ),
-    _buildSettingsTitle('About'),
-    const AppCard(),
-    _buildSettingsItem(
-      'Privacy & Legal',
-      Symbols.privacy_tip_rounded,
-      const PrivacyPolicyPage(),
-    ),
-    const SizedBox(height: 16),
-  ];
-}
+
+      _buildSettingsItem(
+        'Theme Settings',
+        Symbols.palette_rounded,
+        const ThemeSettingsPage(),
+      ),
+
+      _buildSettingsItem(
+        'Edit Home Layout',
+        Symbols.widget_medium_rounded,
+        const ManageWidgetsPage(),
+      ),
+
+      _buildSettingsItem(
+        'Skins',
+        Symbols.brush_rounded,
+        const SkinSettingsPage(),
+      ),
+
+      // _buildSettingsTitle('Notifications'),
+      // _buildSettingsItem(
+      //   'Notification Settings',
+      //   Symbols.notifications_rounded,
+      //   const ThemeSettingsPage(),
+      // ),
+      // const Divider(height: 2),
+      _buildSettingsTitle('Account'),
+      _buildSettingsItem(
+        'Change Password',
+        Symbols.password_rounded,
+        const WebCmsPage(
+          initialUrl: '${API.cmsReferer}/auth/change_password',
+          windowTitle: 'Change Password',
+        ),
+      ),
+      _buildSettingsItem(
+        'Logout',
+        Symbols.logout_rounded,
+        null,
+        onTap: () => showLogoutDialog(context),
+      ),
+      _buildSettingsItem(
+        'Clear Tokens',
+        Symbols.delete_sweep_rounded,
+        null,
+        onTap: () => _clearTokens(),
+      ),
+      _buildSettingsItem(
+        'Clear All Data',
+        Symbols.delete_forever_rounded,
+        null,
+        onTap: () => _clearUserData(context),
+      ),
+      _buildSettingsTitle('About'),
+      const AppCard(),
+      _buildSettingsItem(
+        'Privacy & Legal',
+        Symbols.privacy_tip_rounded,
+        const PrivacyPolicyPage(),
+      ),
+      const SizedBox(height: 16),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {

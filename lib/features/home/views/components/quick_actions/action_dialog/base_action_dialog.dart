@@ -1,11 +1,13 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../../theme/services/theme_services.dart';
 import '../action_item/quick_action_tile.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 
 /// Base dialog class for action selection dialogs
 abstract class BaseActionDialog extends StatefulWidget {
@@ -53,9 +55,8 @@ abstract class BaseActionDialogState<T extends BaseActionDialog>
       } else {
         filteredActions = availableActions
             .where(
-              (action) => action.title.toLowerCase().contains(
-                query.toLowerCase(),
-              ),
+              (action) =>
+                  action.title.toLowerCase().contains(query.toLowerCase()),
             )
             .toList();
       }
@@ -201,7 +202,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog>
                               return QuickActionTile(
                                 width: tileWidth,
                                 icon: action.icon,
-                                title: action.title,
+                                title: action.shortTitle ?? action.title,
                                 showExternalIcon: action.isWebLink ?? false,
                                 skinImageKey: 'actionIcons.${action.id}',
                                 onTap: () {

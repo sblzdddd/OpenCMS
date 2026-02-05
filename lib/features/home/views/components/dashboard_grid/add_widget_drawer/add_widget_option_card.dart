@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../theme/services/theme_services.dart';
-import '../../../widgets/dynamic_gradient_banner.dart';
+import '../../../widgets/banners/mesh_gradient_banner.dart';
 import '../widget_size_manager.dart';
 
 class AddWidgetOptionCard extends StatelessWidget {
@@ -30,7 +30,7 @@ class AddWidgetOptionCard extends StatelessWidget {
         child: Stack(
           children: [
             if (isBanner) ...[
-              const Positioned.fill(child: DynamicGradientBanner()),
+              const Positioned.fill(child: MeshGradientBanner()),
               Positioned.fill(
                 child: Container(color: Colors.black.withValues(alpha: 0.1)),
               ),
@@ -44,10 +44,9 @@ class AddWidgetOptionCard extends StatelessWidget {
                     children: [
                       Icon(
                         WidgetSizeManager.getWidgetIcon(widgetId),
-                        color:
-                            isBanner
-                                ? Colors.white
-                                : Theme.of(context).colorScheme.primary,
+                        color: isBanner
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.primary,
                         size: 24,
                       ),
                       const SizedBox(width: 12),
@@ -56,12 +55,9 @@ class AddWidgetOptionCard extends StatelessWidget {
                           WidgetSizeManager.getWidgetTitle(widgetId),
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(
-                                color:
-                                    isBanner
-                                        ? Colors.white
-                                        : Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
+                                color: isBanner
+                                    ? Colors.white
+                                    : Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w600,
                               ),
                         ),

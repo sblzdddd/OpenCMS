@@ -8,14 +8,17 @@ class BottomNavigation extends StatelessWidget {
     super.key,
     required this.selectedIndex,
     required this.onTapCallback,
+    this.items,
   });
 
   final int selectedIndex;
   final void Function(int) onTapCallback;
+  final List<AppNavItem>? items;
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final navItems = items ?? appNavItems;
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
       alpha: themeNotifier.needTransparentBG
           ? themeNotifier.isDarkMode
@@ -40,7 +43,7 @@ class BottomNavigation extends StatelessWidget {
         backgroundColor: bgColor,
         // indicatorColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
-        destinations: appNavItems
+        destinations: navItems
             .map(
               (item) => NavigationDestination(
                 icon: Icon(item.icon),

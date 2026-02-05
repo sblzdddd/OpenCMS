@@ -1,6 +1,15 @@
 {
-  "cSpell.words": [
-    "ocms"
-  ],
-  "cmake.sourceDirectory": "D:/DNV/Documents/Github/SCIE/OpenCMS/windows"
+    "cSpell.words": [
+        "ecaclass",
+        "econtract",
+        "idcard",
+        "Inspectable",
+        "ocms",
+        "opencms",
+        "repairment",
+        "studentleave",
+        "uniapp",
+        "webcms"
+    ],
+    "cmake.sourceDirectory": "/home/lc-022/Documents/Github/SCIE/OpenCMS/linux"
 }

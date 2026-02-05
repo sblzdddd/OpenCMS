@@ -1,15 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import '../../../../theme/services/theme_services.dart';
-import '../../../../shared/constants/period_constants.dart';
-import '../../models/course_timetable_models.dart';
-import '../../models/course_merged_event.dart';
-import '../../services/course_timetable_service.dart';
-import 'dart:async';
-import '../../../../home/views/widgets/base_dashboard_widget.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:provider/provider.dart';
+
+import '../../../../home/views/widgets/base_dashboard_widget.dart';
+import '../../../../shared/constants/period_constants.dart';
+import '../../../../theme/services/theme_services.dart';
+import '../../models/course_merged_event.dart';
+import '../../models/course_timetable_models.dart';
+import '../../services/course_timetable_service.dart';
 
 final logger = Logger('NextClassWidget');
 
@@ -68,7 +70,11 @@ class _NextClassWidgetState extends State<NextClassWidget>
           _hasError = true;
         });
       }
-      logger.severe('NextClassWidget: Error fetching timetable: $e', e, StackTrace.current);
+      logger.severe(
+        'NextClassWidget: Error fetching timetable: $e',
+        e,
+        StackTrace.current,
+      );
     }
   }
 
@@ -153,7 +159,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
 
     if (event == null) return 'Next Class';
 
-    return '${event.event.subject}-${event.event.code}';
+    return event.event.subject;
   }
 
   Widget? _getExtraContent(BuildContext context) {
@@ -186,7 +192,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
 
     if (event == null) return '';
 
-    return '${event.periodText} (${event.periodCount} periods)\n';
+    return 'teacher: ${event.event.teacher}\n${event.periodText} (${event.periodCount} periods)';
   }
 
   String _getBottomText() {
@@ -194,7 +200,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
     final event = hasCurrentClass ? _currentClass! : _nextClass;
 
     return event != null && _hasWidgetData()
-        ? event.event.teacher
+        ? event.event.code
         : 'Enjoy your free time!';
   }
 
@@ -219,7 +225,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
+
     // Update class status before building to ensure latest data
     _updateClassStatus();
 

@@ -1,12 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../shared/pages/actions.dart';
-import 'dart:async';
-import '../../../shared/views/widgets/scaled_ink_well.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
+import 'package:provider/provider.dart';
+
+import '../../../shared/pages/actions.dart';
+import '../../../shared/views/widgets/scaled_ink_well.dart';
+import '../../../theme/services/theme_services.dart';
 
 /// Base widget for dashboard items
 class BaseDashboardWidget extends StatefulWidget {
@@ -99,25 +101,27 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
       splashFactory: widget.hasMultipleTapAreas
           ? NoSplash.splashFactory
           : InkSplash.splashFactory,
-      onTap: () async {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          final page = await buildActionPage(QuickAction(id: widget.actionId, title: '', icon: ''));
-          if (mounted) {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
-          }
-        });
+      onTap: () {
+        navigateToAction(
+          context,
+          QuickAction(id: widget.actionId, title: '', icon: ''),
+        );
       },
       background: (inkWell) => Container(
         decoration: BoxDecoration(
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.01),
               blurRadius: 8,
               offset: const Offset(0, 5),
             ),
             BoxShadow(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.02),
               blurRadius: 18,
               offset: const Offset(0, 5),
             ),
@@ -126,12 +130,12 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
         child: Material(
           color: themeNotifier.needTransparentBG
               ? (!themeNotifier.isDarkMode
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.surfaceBright.withValues(alpha: 0.6)
-                  : Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.surfaceBright.withValues(alpha: 0.6)
+                    : Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
               : Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
@@ -186,7 +190,9 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
           ),
           const SizedBox(height: 12),
           Text(
-            widget.hasError ? (widget.errorText ?? '') : (widget.loadingText ?? ''),
+            widget.hasError
+                ? (widget.errorText ?? '')
+                : (widget.loadingText ?? ''),
             style: const TextStyle(fontSize: 12),
           ),
         ],
@@ -196,7 +202,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
 
   Widget _buildDataState() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    
+
     // Build main content (title and subtitle)
     Widget mainContent = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +216,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 15,
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
@@ -218,7 +224,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
             if (widget.rightSideText != null) ...[
               Text(
                 widget.rightSideText!,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
             ],
             if (widget.rightSideText == null) ...[
@@ -234,7 +240,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
           widget.hasData ? widget.subtitle : (widget.noDataText ?? ''),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 11),
+          style: const TextStyle(fontSize: 12),
         ),
       ],
     );
@@ -243,15 +249,11 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
     if (widget.hasMultipleTapAreas) {
       mainContent = ScaledInkWell(
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
-        onTap: () async {
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            final page = await buildActionPage(QuickAction(id: widget.actionId, title: '', icon: ''));
-            if (mounted) {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => page));
-            }
-          });
+        onTap: () {
+          navigateToAction(
+            context,
+            QuickAction(id: widget.actionId, title: '', icon: ''),
+          );
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 2),
@@ -291,7 +293,10 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
             ],
           ),
         ],
-        if (widget.extraContent != null) ...[const Spacer(), widget.extraContent!],
+        if (widget.extraContent != null) ...[
+          const Spacer(),
+          widget.extraContent!,
+        ],
       ],
     );
   }

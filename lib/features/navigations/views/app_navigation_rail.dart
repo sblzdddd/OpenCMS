@@ -15,11 +15,13 @@ class AppNavigationRail extends StatefulWidget {
     required this.selectedIndex,
     required this.onTapCallback,
     this.appIcon,
+    this.items,
   });
 
   final int selectedIndex;
   final void Function(int) onTapCallback;
   final Widget? appIcon;
+  final List<AppNavItem>? items;
 
   @override
   State<AppNavigationRail> createState() => _AppNavigationRailState();
@@ -96,7 +98,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
             // Center destinations vertically within the rail
             groupAlignment: 0.0,
             backgroundColor: bgColor,
-            destinations: appNavItems
+            destinations: (widget.items ?? appNavItems)
                 .map(
                   (item) => NavigationRailDestination(
                     icon: Icon(item.icon),

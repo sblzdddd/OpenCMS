@@ -1,10 +1,11 @@
+import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-import '../../shared/constants/api_endpoints.dart';
-import '../models/free_classroom_response.dart';
-import '../models/all_periods_classroom_response.dart';
+
 import '../../API/networking/http_service.dart';
-import 'package:logging/logging.dart';
+import '../../shared/constants/api_endpoints.dart';
+import '../models/all_periods_classroom_response.dart';
+import '../models/free_classroom_response.dart';
 
 final logger = Logger('FreeClassroomService');
 
@@ -22,11 +23,13 @@ class FreeClassroomService {
     bool refresh = false,
   }) async {
     try {
-      logger.fine('Fetching free classrooms');
+      logger.fine('Fetching free classrooms for period $period');
 
       final response = await di<HttpService>().post(
         API.freeClassroomsUrl,
-        data: di<LoginState>().isMock ? '' : 'b=$date&w=$period&c=${API.classroomsList}',
+        data: di<LoginState>().isMock
+            ? ''
+            : 'b=$date&w=$period&c=${API.classroomsList}',
         refresh: refresh,
         legacy: true,
       );
