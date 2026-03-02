@@ -1,7 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'dart:io';
 import 'package:logging/logging.dart';
 
 final logger = Logger('WindowEffectService');
@@ -90,13 +91,16 @@ class WindowEffectService with ChangeNotifier {
     required Color color,
     required bool isDarkMode,
   }) async {
+    if (kIsWeb) return; // Window effects not supported on web
     try {
       logger.info('Applying window effect: $windowEffect');
       if (windowEffect == WindowEffectType.disabled) {
         await Window.setEffect(effect: WindowEffect.disabled);
       } else {
         WindowEffect flutterEffect = _getFlutterWindowEffect(windowEffect);
-        logger.fine('flutterEffect: $flutterEffect, color: $color, isDarkMode: $isDarkMode');
+        logger.fine(
+          'flutterEffect: $flutterEffect, color: $color, isDarkMode: $isDarkMode',
+        );
 
         await Window.setEffect(
           effect: flutterEffect,

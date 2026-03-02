@@ -9,7 +9,6 @@ import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/system/desktop_window/window_effect_service.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/utils/device_info.dart';
-import 'package:provider/provider.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -189,8 +188,10 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
             backgroundColor: Colors.transparent,
             elevation: 0,
           ),
-          body: Consumer<ThemeNotifier>(
-            builder: (context, themeNotifier, child) {
+          body: ListenableBuilder(
+            listenable: ThemeNotifier.instance,
+            builder: (context, child) {
+              final themeNotifier = ThemeNotifier.instance;
               final systemColor = themeNotifier.isDarkMode
                   ? darkDynamic?.primary
                   : lightDynamic?.primary;

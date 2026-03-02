@@ -17,7 +17,6 @@ import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/pages/skin_settings_page.dart';
 import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
-import 'package:provider/provider.dart';
 import 'package:silky_scroll/silky_scroll.dart';
 
 import 'theme_settings_page.dart';
@@ -129,8 +128,10 @@ class _SettingsPageState extends State<SettingsPage> {
   List<Widget> _buildSettingsItems(BuildContext context) {
     return [
       _buildSettingsTitle('Personalizations'),
-      Consumer<ThemeNotifier>(
-        builder: (context, themeNotifier, child) {
+      ListenableBuilder(
+        listenable: ThemeNotifier.instance,
+        builder: (context, child) {
+          final themeNotifier = ThemeNotifier.instance;
           return Column(
             children: [
               // Dark Mode Toggle

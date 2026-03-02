@@ -73,7 +73,7 @@ const corsHeaders = {
     "Content-Type,Authorization,X-Requested-With,Accept,Origin,Referer,User-Agent,X-Original-Host,X-Proxy-Request,X-App-Version",
 };
 
-// Global CORS and OPTIONS handling
+// Global CORS and OPTIONS handlinggi
 fastify.addHook("onSend", async (request, reply, payload) => {
   reply.headers({ ...corsHeaders, "Access-Control-Allow-Origin": request.headers.origin || "*" });
   return payload;

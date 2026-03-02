@@ -7,7 +7,6 @@ import 'package:opencms/features/system/desktop_tray/tray_service.dart';
 import 'package:opencms/features/system/desktop_window/window_service.dart';
 import 'package:opencms/features/web_cms/services/webview_service.dart';
 import 'package:opencms/utils/color_themes.dart';
-import 'package:provider/provider.dart';
 
 import 'app_router.dart';
 import 'features/auth/views/pages/auth_wrapper.dart';
@@ -42,36 +41,35 @@ class OCMSApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: ThemeNotifier.instance)],
-      child: Consumer<ThemeNotifier>(
-        builder: (context, themeNotifier, child) {
-          Color seedColor = themeNotifier.currentColor;
-          OCMSColorThemes colorThemes = OCMSColorThemes(context);
+    return ListenableBuilder(
+      listenable: ThemeNotifier.instance,
+      builder: (context, child) {
+        final themeNotifier = ThemeNotifier.instance;
+        Color seedColor = themeNotifier.currentColor;
+        OCMSColorThemes colorThemes = OCMSColorThemes(context);
 
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: "OpenCMS",
-            theme: colorThemes.buildLightTheme(seedColor),
-            darkTheme: colorThemes.buildDarkTheme(seedColor),
-            themeMode: themeNotifier.isDarkMode
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            home: const AuthWrapper(),
-            onGenerateRoute: AppRouter.generateRoute,
-            navigatorObservers: [routeObserver],
-            // preserve text dpi scale
-            builder: (context, child) {
-              return MediaQuery(
-                data: MediaQuery.of(
-                  context,
-                ).copyWith(textScaler: TextScaler.linear(1.0)),
-                child: child!,
-              );
-            },
-          );
-        },
-      ),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "OpenCMS",
+          theme: colorThemes.buildLightTheme(seedColor),
+          darkTheme: colorThemes.buildDarkTheme(seedColor),
+          themeMode: themeNotifier.isDarkMode
+              ? ThemeMode.dark
+              : ThemeMode.light,
+          home: const AuthWrapper(),
+          onGenerateRoute: AppRouter.generateRoute,
+          navigatorObservers: [routeObserver],
+          // preserve text dpi scale
+          builder: (context, child) {
+            return MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(1.0)),
+              child: child!,
+            );
+          },
+        );
+      },
     );
   }
 }

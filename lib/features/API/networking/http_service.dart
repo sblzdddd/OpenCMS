@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/networking/interceptors/auth_interceptor.dart';
@@ -33,11 +36,11 @@ class HttpService {
     );
 
     // allow self-signed certificate
-    // (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-    //   final client = HttpClient();
-    //   client.badCertificateCallback = (cert, host, port) => true;
-    //   return client;
-    // };
+    (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.badCertificateCallback = (cert, host, port) => true;
+      return client;
+    };
 
     // add authorization header
     _dio.interceptors.add(MockInterceptor());

@@ -155,7 +155,7 @@ class AuthService {
       String path = (initialUrl.isNotEmpty
           ? initialUrl.replaceAll("${API.legacyCMSBaseUrl}/", '')
           : '');
-      path = path.isEmpty ? userInfo.name : path;
+      path = path.isEmpty ? userInfo.userName : path;
 
       // Construct the jump URL
       final jumpUrl =
