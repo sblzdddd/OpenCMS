@@ -1,17 +1,18 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/storage/secure_storage_base.dart';
 import 'package:opencms/features/API/storage/storage_client.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-import '../models/assessment_models.dart';
 
 final logger = Logger('WeightedAverageService');
 
 class WeightedAverageService extends ChangeNotifier {
-  static final WeightedAverageService _instance = WeightedAverageService._internal();
+  static final WeightedAverageService _instance =
+      WeightedAverageService._internal();
 
   factory WeightedAverageService() => _instance;
 
@@ -40,15 +41,18 @@ class WeightedAverageService extends ChangeNotifier {
     // although subject assessments' weights are the same, account separation should still be
     // done to provide a safer experience in multi-account scenarios
     final userName = di<LoginState>().currentUsername;
-    final key = '${userName}_${subjectId}_${assessment.date}_${assessment.title}';
+    final key =
+        '${userName}_${subjectId}_${assessment.date}_${assessment.title}';
     logger.fine('Generating key: $key');
     return key;
   }
 
   Future<int> getWeight(int subjectId, Assessment assessment) async {
     if (!_initialized) await init();
-    logger.info('Getting weight for subjectId: $subjectId, assessment: ${assessment.title}');
-    
+    logger.info(
+      'Getting weight for subjectId: $subjectId, assessment: ${assessment.title}',
+    );
+
     final key = _getKey(subjectId, assessment);
     if (_weights.containsKey(key)) {
       logger.fine('Weight found in cache for key: $key');
@@ -69,12 +73,18 @@ class WeightedAverageService extends ChangeNotifier {
     return 0;
   }
 
-  Future<void> setWeight(int subjectId, Assessment assessment, int weight) async {
+  Future<void> setWeight(
+    int subjectId,
+    Assessment assessment,
+    int weight,
+  ) async {
     if (!_initialized) await init();
-    logger.info('Setting weight for subjectId: $subjectId, assessment: ${assessment.title}, weight: $weight');
+    logger.info(
+      'Setting weight for subjectId: $subjectId, assessment: ${assessment.title}, weight: $weight',
+    );
 
     final key = _getKey(subjectId, assessment);
-    
+
     // Update memory cache and notify UI immediately
     _weights[key] = weight;
     notifyListeners();
@@ -83,7 +93,9 @@ class WeightedAverageService extends ChangeNotifier {
     _debounceTimers[key]?.cancel();
     _debounceTimers[key] = Timer(const Duration(milliseconds: 1000), () async {
       try {
-        logger.fine('Writing weight to storage after debounce for key: $key, weight: $weight');
+        logger.fine(
+          'Writing weight to storage after debounce for key: $key, weight: $weight',
+        );
         await _storage.write(key, weight.toString());
       } catch (e) {
         logger.warning('Failed to write weight to storage: $e');
@@ -104,7 +116,7 @@ class WeightedAverageService extends ChangeNotifier {
       // Treat as valid score even if null (parsed as 0)
       hasAnyScore = true;
       final weight = await getWeight(subject.id, assessment);
-      
+
       totalWeightedScore += percentage * weight;
       totalMaxWeight += weight;
     }
@@ -113,14 +125,14 @@ class WeightedAverageService extends ChangeNotifier {
 
     return totalWeightedScore / totalMaxWeight;
   }
-  
+
   /// Helper to check current used weight sum for a subject
   Future<int> getTotalWeightUsed(SubjectAssessment subject) async {
-     int total = 0;
-     for (final assessment in subject.assessments) {
-        total += await getWeight(subject.id, assessment);
-     }
-     return total;
+    int total = 0;
+    for (final assessment in subject.assessments) {
+      total += await getWeight(subject.id, assessment);
+    }
+    return total;
   }
 
   Future<void> resetSubjectWeights(SubjectAssessment subject) async {

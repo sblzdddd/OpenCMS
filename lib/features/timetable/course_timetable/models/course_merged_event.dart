@@ -1,6 +1,7 @@
-import 'course_timetable_models.dart';
-import '../../../shared/constants/period_constants.dart';
 import 'package:intl/intl.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+
+import 'course_timetable_models.dart';
 
 /// Represents a timetable event that may span multiple consecutive periods
 class CourseMergedEvent {

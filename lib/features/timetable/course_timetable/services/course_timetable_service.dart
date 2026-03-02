@@ -1,11 +1,10 @@
-import 'package:opencms/di/locator.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
-
-import '../../../API/networking/http_service.dart';
-import '../../../shared/constants/api_endpoints.dart';
-import '../models/course_timetable_models.dart';
-import '../models/course_merged_event.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_merged_event.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_timetable_models.dart';
 
 final logger = Logger('CourseTimetableService');
 
@@ -23,11 +22,10 @@ class CourseTimetableService {
     bool refresh = false,
   }) async {
     try {
-      logger.info(
-        'Fetching timetable for year $year, date $date',
-      );
+      logger.info('Fetching timetable for year $year, date $date');
 
-      final url = '${API.courseTimetableUrl}?year=$year&date=${di<LoginState>().isMock ? '2026-01-05' : date}';
+      final url =
+          '${API.courseTimetableUrl}?year=$year&date=${di<LoginState>().isMock ? '2026-01-05' : date}';
 
       final response = await di<HttpService>().get(url, refresh: refresh);
 

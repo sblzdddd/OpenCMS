@@ -3,17 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/auth/services/credentials_storage_service.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/auth/views/components/captcha_input/captcha_input.dart';
+import 'package:opencms/features/auth/views/controllers/captcha_manager.dart';
+import 'package:opencms/features/auth/views/controllers/credentials_manager.dart';
+import 'package:opencms/features/auth/views/pages/login.dart';
+import 'package:opencms/features/home/views/pages/home.dart';
 import 'package:opencms/features/shared/pages/splash.dart';
+import 'package:opencms/features/system/update/update_checker_service.dart';
 import 'package:window_manager/window_manager.dart';
-
-import '../../../home/views/pages/home.dart';
-import '../../../system/update/update_checker_service.dart';
-import '../../services/credentials_storage_service.dart';
-import '../components/captcha_input/captcha_input.dart';
-import '../controllers/captcha_manager.dart';
-import '../controllers/credentials_manager.dart';
-import '../pages/login.dart';
 
 class AuthWrapper extends StatefulWidget {
   const AuthWrapper({super.key});

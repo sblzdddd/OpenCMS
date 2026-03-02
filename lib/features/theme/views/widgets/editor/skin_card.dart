@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../services/theme_services.dart';
-import '../../../models/skin.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Card widget for displaying skin information
 class SkinCard extends StatelessWidget {
@@ -23,7 +22,7 @@ class SkinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return Card(
       elevation: 0,
       color: isSelected

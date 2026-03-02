@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../services/reports_service.dart';
-import '../../models/reports.dart';
-import '../../../shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/reports/models/reports.dart';
+import 'package:opencms/features/reports/services/reports_service.dart';
+import 'package:opencms/features/reports/views/layouts/adaptive_reports_layout.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'report_detail_view.dart';
-import '../layouts/adaptive_reports_layout.dart';
 
 class ReportsListView extends StatefulWidget {
   const ReportsListView({super.key});

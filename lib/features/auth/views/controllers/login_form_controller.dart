@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import 'credentials_manager.dart';
-import 'captcha_manager.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+
 import 'auth_controller.dart';
-import 'package:logging/logging.dart';
+import 'captcha_manager.dart';
+import 'credentials_manager.dart';
 
 final logger = Logger('LoginFormController');
 
@@ -97,7 +98,9 @@ class LoginFormController extends ChangeNotifier {
 
       if (!autoSolveSuccess) {
         // Fallback to manual captcha if auto-solve fails
-        logger.fine('Auto captcha solve failed, falling back to manual verification');
+        logger.fine(
+          'Auto captcha solve failed, falling back to manual verification',
+        );
         _captchaManager.triggerManualVerification(
           captchaKey,
           onSuccess: (data) {

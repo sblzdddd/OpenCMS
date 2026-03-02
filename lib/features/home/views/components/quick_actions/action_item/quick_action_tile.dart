@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../shared/views/widgets/scaled_ink_well.dart';
-import '../../../../../theme/services/theme_services.dart';
-import '../../../../../theme/views/widgets/skin_icon_widget.dart';
+import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 
 /// A generic quick action tile used by various quick action components.
 class QuickActionTile extends StatefulWidget {
@@ -45,7 +43,7 @@ class _QuickActionTileState extends State<QuickActionTile>
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     super.build(context); // Required for AutomaticKeepAliveClientMixin
 
     final Color resolvedIconBg =

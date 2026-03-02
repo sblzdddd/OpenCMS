@@ -1,11 +1,11 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:opencms/di/locator.dart';
-import '../../models/skin.dart';
-import '../../models/skin_image.dart';
-import '../../services/skin_service.dart';
-import 'package:provider/provider.dart';
-import '../../services/theme_services.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// A widget that displays skin images with fallback to default icons
 class SkinIcon extends StatefulWidget {
@@ -85,7 +85,7 @@ class _SkinIconState extends State<SkinIcon> {
   @override
   Widget build(BuildContext context) {
     final imageData = _getSkinImageData();
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     // If no skin image available, show fallback icon
     if (imageData == null ||

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/shared/constants/quick_actions.dart';
-import 'package:provider/provider.dart';
-
-import '../../../daily_bulletin/models/daily_bulletin_response.dart';
-import '../../../daily_bulletin/services/daily_bulletin_service.dart';
-import '../../../events/models/student_event.dart';
-import '../../../events/services/events_service.dart';
-import '../../../notices/models/notification_response.dart'
+import 'package:opencms/features/daily_bulletin/models/daily_bulletin_response.dart';
+import 'package:opencms/features/daily_bulletin/services/daily_bulletin_service.dart';
+import 'package:opencms/features/events/models/student_event.dart';
+import 'package:opencms/features/events/services/events_service.dart';
+import 'package:opencms/features/notices/models/notification_response.dart'
     as notification_model;
-import '../../../notices/services/notification_service.dart';
-import '../../../shared/pages/actions.dart';
-import '../../../shared/views/widgets/scaled_ink_well.dart';
-import '../../../theme/services/theme_services.dart';
+import 'package:opencms/features/notices/services/notification_service.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
+import 'package:opencms/features/shared/pages/actions.dart';
+import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'base_dashboard_widget.dart';
 
 class NoticeCard extends StatefulWidget {
@@ -256,7 +255,7 @@ class _NoticeCardState extends State<NoticeCard>
     required String actionId,
     required Widget child,
   }) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return ScaledInkWell(
       borderRadius: themeNotifier.getBorderRadiusAll(0.5),
       onTap: () {

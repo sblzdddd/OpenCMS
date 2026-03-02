@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../quick_actions/reorderable_wrap.dart';
-import '../quick_actions/action_item/trash_can_item.dart';
-import '../../../services/dashboard_layout_storage_service.dart';
+import 'package:logging/logging.dart';
+import 'package:opencms/features/home/services/dashboard_layout_storage_service.dart';
+import 'package:opencms/features/home/views/components/quick_actions/action_item/trash_can_item.dart';
+import 'package:opencms/features/home/views/components/quick_actions/reorderable_wrap.dart';
+
 import 'widget_size_manager.dart';
 import 'widget_tile_builder.dart';
-import 'package:logging/logging.dart';
 
 final logger = Logger('DashboardGrid');
 

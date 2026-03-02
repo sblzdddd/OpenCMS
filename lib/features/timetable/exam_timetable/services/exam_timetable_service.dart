@@ -1,8 +1,7 @@
-import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/di/locator.dart';
-
-import '../../../API/networking/http_service.dart';
-import '../models/exam_timetable_models.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/timetable/exam_timetable/models/exam_timetable_models.dart';
 
 /// Service to fetch and parse exam timetable HTML from legacy CMS
 class ExamTimetableService {

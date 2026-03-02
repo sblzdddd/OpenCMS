@@ -1,10 +1,9 @@
-import 'package:syncfusion_flutter_core/theme.dart';
-import '../features/theme/services/theme_services.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 
 SfCalendarThemeData themeData(BuildContext context) {
-  final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+  final themeNotifier = ThemeNotifier.instance;
   return SfCalendarThemeData(
     backgroundColor: themeNotifier.needTransparentBG
         ? Colors.transparent

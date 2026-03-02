@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'nav_items.dart';
-import '../../theme/services/theme_services.dart';
 
 class BottomNavigation extends StatelessWidget {
   const BottomNavigation({
@@ -17,7 +17,7 @@ class BottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final navItems = items ?? appNavItems;
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
       alpha: themeNotifier.needTransparentBG

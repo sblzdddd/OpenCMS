@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../home/views/widgets/base_dashboard_widget.dart';
-import '../../../../shared/constants/period_constants.dart';
-import '../../../../theme/services/theme_services.dart';
-import '../../models/course_merged_event.dart';
-import '../../models/course_timetable_models.dart';
-import '../../services/course_timetable_service.dart';
+import 'package:opencms/features/home/views/widgets/base_dashboard_widget.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_merged_event.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_timetable_models.dart';
+import 'package:opencms/features/timetable/course_timetable/services/course_timetable_service.dart';
 
 final logger = Logger('NextClassWidget');
 
@@ -163,7 +161,7 @@ class _NextClassWidgetState extends State<NextClassWidget>
   }
 
   Widget? _getExtraContent(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final bool hasCurrentClass = _currentClass != null;
     if (!hasCurrentClass) return null;
 

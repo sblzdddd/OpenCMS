@@ -1,8 +1,7 @@
 import 'package:opencms/di/locator.dart';
-
-import '../../shared/constants/api_endpoints.dart';
-import '../models/attendance_models.dart';
-import '../../API/networking/http_service.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/attendance/models/attendance_models.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 class AttendanceService {
   static final AttendanceService _instance = AttendanceService._internal();

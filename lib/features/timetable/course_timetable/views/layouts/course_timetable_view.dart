@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import '../../../../shared/constants/period_constants.dart';
-import '../../models/course_timetable_models.dart';
-import '../../services/course_timetable_service.dart';
-import '../components/day_tabs.dart';
-import 'course_timetable_list_view.dart';
-import 'course_timetable_calendar_view.dart';
-import '../../../../attendance/services/course_stats_service.dart';
-import '../../../../shared/views/dialog/course_detail_dialog.dart';
-import '../../../../shared/views/views/refreshable_view.dart';
-import '../../../../theme/services/theme_services.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/attendance/services/course_stats_service.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/dialog/course_detail_dialog.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_timetable_models.dart';
+import 'package:opencms/features/timetable/course_timetable/services/course_timetable_service.dart';
+import 'package:opencms/features/timetable/course_timetable/views/components/day_tabs.dart';
+
+import 'course_timetable_calendar_view.dart';
+import 'course_timetable_list_view.dart';
 
 final logger = Logger('CourseTimetableView');
 
@@ -80,9 +81,7 @@ class _CourseTimetableViewState extends RefreshableView<CourseTimetableView>
 
   void _scrollToToday() {
     if (!mounted) {
-      logger.warning(
-        '_scrollToToday called but widget is not mounted',
-      );
+      logger.warning('_scrollToToday called but widget is not mounted');
       return;
     }
     if (_todayIndex >= 0 && _todayIndex < _dayKeys.length) {

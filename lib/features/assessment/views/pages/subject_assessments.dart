@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/assessment_models.dart';
-import '../../../shared/views/views/refreshable_page.dart';
-import '../layouts/subject_assessments_content.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/views/layouts/subject_assessments_content.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/views/refreshable_page.dart';
 
 class SubjectAssessmentsView extends StatefulWidget {
   final SubjectAssessment subject;
@@ -45,7 +45,6 @@ class _SubjectAssessmentsViewState
   Widget buildContent(BuildContext context, ThemeNotifier themeNotifier) {
     return buildPageContent(context, themeNotifier);
   }
-
 
   @override
   bool get isEmpty => widget.subject.assessments.isEmpty;

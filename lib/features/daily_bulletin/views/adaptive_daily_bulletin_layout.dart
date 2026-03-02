@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../models/daily_bulletin_response.dart' as cms;
-import '../../theme/services/theme_services.dart';
-import '../services/daily_bulletin_service.dart';
-import '../../shared/views/selectable_item_wrapper.dart';
-import '../../shared/views/views/adaptive_list_detail_layout.dart';
-import '../../web_cms/views/components/web_cms_content.dart';
-import '../../web_cms/views/pages/web_cms.dart';
+import 'package:opencms/features/daily_bulletin/models/daily_bulletin_response.dart'
+    as cms;
+import 'package:opencms/features/daily_bulletin/services/daily_bulletin_service.dart';
+import 'package:opencms/features/shared/views/selectable_item_wrapper.dart';
+import 'package:opencms/features/shared/views/views/adaptive_list_detail_layout.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/web_cms/views/components/web_cms_content.dart';
+import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
 
 class AdaptiveDailyBulletinLayout extends StatelessWidget {
   final List<cms.DailyBulletin> dailyBulletins;
@@ -63,7 +63,7 @@ class AdaptiveDailyBulletinLayout extends StatelessWidget {
     bool isSelected,
     BuildContext context,
   ) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     return SelectableItemWrapper(
       isSelected: isSelected,

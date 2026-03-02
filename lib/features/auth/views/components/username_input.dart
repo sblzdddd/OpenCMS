@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Reusable username input field component with customizable label
 class UsernameInput extends StatefulWidget {
@@ -36,7 +35,7 @@ class UsernameInput extends StatefulWidget {
 class _UsernameInputState extends State<UsernameInput> {
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return TextFormField(
       controller: widget.controller,
       decoration: InputDecoration(

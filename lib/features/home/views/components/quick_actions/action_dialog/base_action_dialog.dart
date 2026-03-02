@@ -2,12 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/home/views/components/quick_actions/action_item/quick_action_tile.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../theme/services/theme_services.dart';
-import '../action_item/quick_action_tile.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Base dialog class for action selection dialogs
 abstract class BaseActionDialog extends StatefulWidget {
@@ -65,7 +63,7 @@ abstract class BaseActionDialogState<T extends BaseActionDialog>
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(2),

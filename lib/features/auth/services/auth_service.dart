@@ -2,16 +2,15 @@ library;
 
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
-import 'package:opencms/features/shared/constants/api_endpoints.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/features/auth/models/auth_models.dart';
-import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/networking/http_service.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
+import 'package:opencms/features/auth/models/auth_models.dart';
+import 'package:opencms/features/auth/models/login_result.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/features/user/services/user_service.dart';
-
-import '../models/login_result.dart';
 
 final log = Logger('AuthService');
 
@@ -57,7 +56,7 @@ class AuthService {
       try {
         final userInfo = await di<UserService>().fetchUserAccountInfo();
         di<LoginState>().setAuthenticated(userInfo);
-      } catch(e) {
+      } catch (e) {
         log.severe('Failed to fetch user info after login: $e');
         return LoginResult.error(
           message: 'Failed to fetch user info after login.',
@@ -102,7 +101,9 @@ class AuthService {
 
   Future<void> checkAuth() async {
     log.info("Checking Authentication Status...");
-    final status = await di<TokenRefreshService>().refreshNewToken(skipAuth: true);
+    final status = await di<TokenRefreshService>().refreshNewToken(
+      skipAuth: true,
+    );
 
     if (status) {
       try {
@@ -112,7 +113,7 @@ class AuthService {
         di<TokenRefreshService>().refreshLegacyCookies();
       } catch (e) {
         log.warning('Failed to fetch user info during auth check: $e');
-      await clearAuthentication();
+        await clearAuthentication();
       }
     } else {
       log.warning('Refresh token invalid or expired during auth check.');

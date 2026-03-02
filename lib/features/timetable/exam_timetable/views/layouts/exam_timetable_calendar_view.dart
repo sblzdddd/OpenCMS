@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/timetable/exam_timetable/models/exam_timetable_models.dart';
+import 'package:opencms/features/timetable/exam_timetable/services/exam_timetable_service.dart';
 import 'package:opencms/utils/sfcalendar_theme.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
-import '../../../../theme/services/theme_services.dart';
-import '../../models/exam_timetable_models.dart';
-import '../../services/exam_timetable_service.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 
 class ExamTimetableCalendarView extends StatefulWidget {
   final Function(ExamTimetableEntry) onExamTap;
@@ -114,7 +113,7 @@ class _ExamTimetableCalendarViewState extends State<ExamTimetableCalendarView> {
   }
 
   Widget _buildCalendarBody() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     if (_errorMessage != null) {
       return Center(
         child: Column(

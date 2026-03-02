@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'refreshable_view.dart';
-import '../../../theme/services/theme_services.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/custom_scaffold.dart';
-export '../../../theme/services/theme_services.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/shared/views/error/empty_placeholder.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
+import 'refreshable_view.dart';
+
+export '../../../theme/services/theme_services.dart';
 
 /// A refreshable page that provides a scaffold with a customizable app bar
 abstract class RefreshablePage<T extends StatefulWidget>

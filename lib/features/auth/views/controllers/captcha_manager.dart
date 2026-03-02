@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:opencms/di/locator.dart';
-import '../../services/auto_captcha_service.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/auto_captcha_service.dart';
 
 final logger = Logger('CaptchaManager');
 
@@ -47,9 +47,7 @@ class CaptchaManager extends ChangeNotifier {
       if (captchaResult != null) {
         _isCaptchaVerified = true;
         _captchaData = captchaResult;
-        logger.fine(
-          'Auto-solve successful, ticket: $captchaResult',
-        );
+        logger.fine('Auto-solve successful, ticket: $captchaResult');
         _isAutoSolving = false;
         notifyListeners();
         return true;

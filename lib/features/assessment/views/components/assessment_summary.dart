@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../models/assessment_models.dart';
-import '../../utils/assessment_utils.dart';
 import 'package:opencms/di/locator.dart';
-import '../../services/weighted_average_service.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/services/weighted_average_service.dart';
+import 'package:opencms/features/assessment/utils/assessment_utils.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'assessment_chart.dart';
-import '../../../theme/services/theme_services.dart';
 
 class AssessmentSummary extends StatelessWidget {
   final SubjectAssessment subject;

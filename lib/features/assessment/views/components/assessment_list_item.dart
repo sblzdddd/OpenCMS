@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../models/assessment_models.dart';
-import '../../utils/assessment_utils.dart';
-import '../../../theme/services/theme_services.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/utils/assessment_utils.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'assessment_weight_control.dart';
 
 class AssessmentListItem extends StatelessWidget {

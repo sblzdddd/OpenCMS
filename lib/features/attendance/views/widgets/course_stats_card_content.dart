@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../models/course_stats_models.dart';
+import 'package:opencms/features/attendance/models/course_stats_models.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'attendance_proportion_chart.dart';
 
 class CourseStatsCardContent extends StatelessWidget {
@@ -17,7 +17,7 @@ class CourseStatsCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final theme = Theme.of(context);
     final absentRate = _computeAbsentRatePercent(stats);
     return Column(

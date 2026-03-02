@@ -3,12 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
+import 'package:opencms/features/shared/pages/actions.dart';
+import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
-import 'package:provider/provider.dart';
-
-import '../../../shared/pages/actions.dart';
-import '../../../shared/views/widgets/scaled_ink_well.dart';
-import '../../../theme/services/theme_services.dart';
 
 /// Base widget for dashboard items
 class BaseDashboardWidget extends StatefulWidget {
@@ -95,7 +93,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return ScaledInkWell(
       borderRadius: themeNotifier.getBorderRadiusAll(1.5),
       splashFactory: widget.hasMultipleTapAreas
@@ -201,7 +199,7 @@ class _BaseDashboardWidgetState extends State<BaseDashboardWidget> {
   }
 
   Widget _buildDataState() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     // Build main content (title and subtitle)
     Widget mainContent = Column(

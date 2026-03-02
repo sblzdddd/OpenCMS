@@ -1,11 +1,10 @@
 import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-
-import '../../API/networking/http_service.dart';
-import '../../shared/constants/api_endpoints.dart';
-import '../models/all_periods_classroom_response.dart';
-import '../models/free_classroom_response.dart';
+import 'package:opencms/features/free_classroom/models/all_periods_classroom_response.dart';
+import 'package:opencms/features/free_classroom/models/free_classroom_response.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 final logger = Logger('FreeClassroomService');
 

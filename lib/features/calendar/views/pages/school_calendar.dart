@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../layouts/school_calendar_view.dart';
+import 'package:opencms/features/calendar/views/layouts/school_calendar_view.dart';
 
 class SchoolCalendarPage extends StatelessWidget {
   const SchoolCalendarPage({super.key});

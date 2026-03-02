@@ -1,18 +1,18 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
-import '../../models/skin.dart';
-import '../../models/skin_image_type.dart';
-import '../../services/skin_service.dart';
-import '../widgets/editor/base_image_customizer.dart';
-import '../../services/skin_categories_helper.dart';
-import '../widgets/editor/editor_skin_info_card.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import '../../../shared/views/widgets/custom_scaffold.dart';
-import '../../../shared/views/widgets/custom_scroll_view.dart';
-import '../../../shared/views/error/error_placeholder.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/error/error_placeholder.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/models/skin_image_type.dart';
+import 'package:opencms/features/theme/services/skin_categories_helper.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/views/widgets/editor/base_image_customizer.dart';
+import 'package:opencms/features/theme/views/widgets/editor/editor_skin_info_card.dart';
 
 /// Dedicated page for editing skin configurations
 class SkinEditorPage extends StatefulWidget {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+
 import 'keep_alive_wrapper.dart';
-import '../widgets/custom_app_bar.dart';
-import '../widgets/custom_scaffold.dart';
 
 /// Base widget for pages with tabs that provides common tab functionality
 class TabbedPageBase extends StatefulWidget {

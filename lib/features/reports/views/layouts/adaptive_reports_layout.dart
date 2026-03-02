@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../models/reports.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../shared/views/selectable_item_wrapper.dart';
-import '../../../shared/views/views/adaptive_list_detail_layout.dart';
-import '../components/report_detail_content.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/reports/models/reports.dart';
+import 'package:opencms/features/reports/views/components/report_detail_content.dart';
+import 'package:opencms/features/shared/views/selectable_item_wrapper.dart';
+import 'package:opencms/features/shared/views/views/adaptive_list_detail_layout.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class AdaptiveReportsLayout extends StatelessWidget {
   final List<Exam> exams;
@@ -39,7 +38,7 @@ class AdaptiveReportsLayout extends StatelessWidget {
   }
 
   Widget _buildReportItem(Exam exam, bool isSelected, BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     return SelectableItemWrapper(
       isSelected: isSelected,

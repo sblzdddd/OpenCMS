@@ -1,20 +1,18 @@
-import 'dart:io';
-import 'package:dio/io.dart';
-import 'package:opencms/di/locator.dart';
-// import 'package:opencms/features/API/networking/interceptors/file_log_interceptor.dart';
-import 'package:opencms/features/API/networking/interceptors/legacy_auth_interceptor.dart';
-import 'package:opencms/features/API/networking/interceptors/mock_interceptor.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/features/API/networking/interceptors/legacy_cache_interceptor.dart';
-import 'package:opencms/features/API/networking/interceptors/auth_interceptor.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import '../../shared/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/interceptors/auth_interceptor.dart';
+// import 'package:opencms/features/API/networking/interceptors/file_log_interceptor.dart';
+import 'package:opencms/features/API/networking/interceptors/legacy_auth_interceptor.dart';
+import 'package:opencms/features/API/networking/interceptors/legacy_cache_interceptor.dart';
+import 'package:opencms/features/API/networking/interceptors/mock_interceptor.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
 import 'adapter/http_adapter_web.dart'
     if (dart.library.io) 'adapter/http_adapter_stub.dart'
     as http_adapter;
-
 
 /// HTTP Service for handling all HTTP requests
 class HttpService {
@@ -25,7 +23,8 @@ class HttpService {
       BaseOptions(
         baseUrl: API.baseApiUrl,
         responseType: ResponseType.json,
-        validateStatus: (status) => status != null && status >= 200 && status < 400,
+        validateStatus: (status) =>
+            status != null && status >= 200 && status < 400,
         connectTimeout: API.connectTimeout,
         receiveTimeout: API.defaultTimeout,
         headers: API.defaultHeaders,
@@ -34,11 +33,11 @@ class HttpService {
     );
 
     // allow self-signed certificate
-    (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-      final client = HttpClient();
-      client.badCertificateCallback = (cert, host, port) => true;
-      return client;
-    };
+    // (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+    //   final client = HttpClient();
+    //   client.badCertificateCallback = (cert, host, port) => true;
+    //   return client;
+    // };
 
     // add authorization header
     _dio.interceptors.add(MockInterceptor());
@@ -50,16 +49,18 @@ class HttpService {
     }
     _dio.interceptors.add(CacheInterceptor());
     if (kDebugMode) {
-      _dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: false,
-        responseHeader: false,
-        error: true,
-        compact: true,
-        maxWidth: 90,
-        enabled: kDebugMode,
-      ));
+      _dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: false,
+          responseHeader: false,
+          error: true,
+          compact: true,
+          maxWidth: 90,
+          enabled: kDebugMode,
+        ),
+      );
     }
     // _dio.interceptors.add(FileLogInterceptor());
   }
@@ -76,7 +77,9 @@ class HttpService {
     bool ignoreLegacyUsername = false,
     Options? options,
   }) async {
-    final baseOptions = refresh ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions() : options ?? Options();
+    final baseOptions = refresh
+        ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions()
+        : options ?? Options();
     final opt = baseOptions.copyWith(
       headers: legacy
           ? {...?options?.headers, 'Referer': API.legacyCMSReferer}
@@ -88,7 +91,11 @@ class HttpService {
       if (username.isEmpty && !ignoreLegacyUsername) {
         throw Exception('Missing username. Please login again.');
       }
-      return _dio.get('${API.legacyCMSBaseUrl}${ ignoreLegacyUsername ? '' : "/$username"}$endpoint', queryParameters: data, options: opt);
+      return _dio.get(
+        '${API.legacyCMSBaseUrl}${ignoreLegacyUsername ? '' : "/$username"}$endpoint',
+        queryParameters: data,
+        options: opt,
+      );
     }
     return _dio.get(endpoint, queryParameters: data, options: opt);
   }
@@ -101,7 +108,9 @@ class HttpService {
     bool ignoreLegacyUsername = false,
     Options? options,
   }) async {
-    final baseOptions = refresh ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions() : options ?? Options();
+    final baseOptions = refresh
+        ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions()
+        : options ?? Options();
     final opt = baseOptions.copyWith(
       headers: legacy
           ? {...?options?.headers, 'Referer': API.legacyCMSReferer}
@@ -113,7 +122,11 @@ class HttpService {
       if (username.isEmpty) {
         throw Exception('Missing username. Please login again.');
       }
-      return _dio.post('${API.legacyCMSBaseUrl}${ ignoreLegacyUsername ? '' : "/$username"}$endpoint', data: data, options: opt);
+      return _dio.post(
+        '${API.legacyCMSBaseUrl}${ignoreLegacyUsername ? '' : "/$username"}$endpoint',
+        data: data,
+        options: opt,
+      );
     }
     return _dio.post(endpoint, data: data, options: opt);
   }

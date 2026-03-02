@@ -1,14 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
-import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
-import '../../../shared/constants/api_endpoints.dart';
-import '../../../auth/services/auth_service.dart';
-import '../../constants/web_cms_styles.dart';
-import 'package:logging/logging.dart';
+import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/web_cms/constants/web_cms_styles.dart';
 
 final logger = Logger('WebCmsBase');
 

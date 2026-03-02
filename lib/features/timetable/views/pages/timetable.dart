@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../../shared/views/academic_year_dropdown.dart';
-import '../../course_timetable/views/layouts/course_timetable_view.dart';
-import '../../exam_timetable/views/layouts/exam_timetable_view.dart';
-import '../../../shared/views/views/tabbed_page_base.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/academic_year_dropdown.dart';
+import 'package:opencms/features/shared/views/views/tabbed_page_base.dart';
+import 'package:opencms/features/timetable/course_timetable/views/layouts/course_timetable_view.dart';
+import 'package:opencms/features/timetable/exam_timetable/views/layouts/exam_timetable_view.dart';
 
 class TimetablePage extends StatefulWidget {
   final int initialTabIndex;

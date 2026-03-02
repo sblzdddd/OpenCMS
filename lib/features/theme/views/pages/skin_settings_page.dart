@@ -1,18 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:opencms/di/locator.dart';
-import '../../models/skin.dart';
-import '../../services/skin_service.dart';
-import '../widgets/editor/skin_card.dart';
-import '../dialogs/create_skin_dialog.dart';
-import 'skin_editor_page.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import '../../../shared/views/widgets/custom_scaffold.dart';
-import '../../../../main.dart';
-import '../../../shared/views/error/error_placeholder.dart';
-import 'package:flutter/gestures.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/error/error_placeholder.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/views/dialogs/create_skin_dialog.dart';
+import 'package:opencms/features/theme/views/widgets/editor/skin_card.dart';
+import 'package:opencms/main.dart';
+
+import 'skin_editor_page.dart';
 
 /// Settings page for managing app skins
 class SkinSettingsPage extends StatefulWidget {
@@ -255,7 +256,9 @@ class _SkinSettingsPageState extends State<SkinSettingsPage> with RouteAware {
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
         if (file.path != null) {
-          final response = await di<SkinService>().importSkinFromCmsk(file.path!);
+          final response = await di<SkinService>().importSkinFromCmsk(
+            file.path!,
+          );
           if (response.success && mounted) {
             await _loadSkins();
             if (!mounted) return;

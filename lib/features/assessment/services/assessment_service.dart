@@ -1,9 +1,8 @@
 import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
-import '../../API/networking/http_service.dart';
-import '../../shared/constants/api_endpoints.dart';
-import '../models/assessment_models.dart';
-
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 final logger = Logger('AssessmentService');
 
@@ -23,7 +22,7 @@ class AssessmentService {
 
       final response = await di<HttpService>().get(
         '${API.assessmentsUrl}?year=$year',
-        refresh: refresh
+        refresh: refresh,
       );
       final data = response.data;
       if (data != null) {
@@ -48,7 +47,8 @@ class AssessmentService {
 
       final subject = response.subjects.firstWhere(
         (subject) => subject.subject.toLowerCase() == subjectName.toLowerCase(),
-        orElse: () => SubjectAssessment(id: 0, name: '', subject: '', assessments: []),
+        orElse: () =>
+            SubjectAssessment(id: 0, name: '', subject: '', assessments: []),
       );
 
       return subject.assessments;

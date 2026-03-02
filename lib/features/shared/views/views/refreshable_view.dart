@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../error/error_placeholder.dart';
-import '../error/empty_placeholder.dart';
-import '../custom_snackbar/snackbar_utils.dart';
-import 'package:logging/logging.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/error/empty_placeholder.dart';
+import 'package:opencms/features/shared/views/error/error_placeholder.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 final logger = Logger('RefreshableView');
 
@@ -21,8 +20,7 @@ abstract class RefreshableView<T extends StatefulWidget> extends State<T> {
   RefreshableView({this.isTransparent = false});
 
   /// Get the theme notifier from Provider
-  ThemeNotifier get themeNotifier =>
-      Provider.of<ThemeNotifier>(context, listen: true);
+  ThemeNotifier get themeNotifier => ThemeNotifier.instance;
 
   /// Override this to provide the main data fetching logic
   Future<void> fetchData({bool refresh = false});

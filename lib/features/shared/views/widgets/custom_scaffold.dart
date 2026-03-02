@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/material.dart';
+
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:opencms/di/locator.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../theme/services/skin_service.dart';
-import '../../../theme/models/skin.dart';
-import '../../../theme/models/skin_image.dart';
-import '../../../theme/models/skin_image_type.dart';
-import '../../../theme/views/widgets/skin_background_widget.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:opencms/features/theme/models/skin_image_type.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/theme/views/widgets/skin_background_widget.dart';
 
 class CustomScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;

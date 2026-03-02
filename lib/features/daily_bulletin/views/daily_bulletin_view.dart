@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../theme/services/theme_services.dart';
-import '../models/daily_bulletin_response.dart' as cms;
-import '../services/daily_bulletin_service.dart';
-import '../../shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/daily_bulletin/models/daily_bulletin_response.dart'
+    as cms;
+import 'package:opencms/features/daily_bulletin/services/daily_bulletin_service.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'adaptive_daily_bulletin_layout.dart';
 
 class DailyBulletinView extends StatefulWidget {

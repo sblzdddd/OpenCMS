@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
-import '../dialog/confirm_dialog.dart';
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/shared/views/dialog/confirm_dialog.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 

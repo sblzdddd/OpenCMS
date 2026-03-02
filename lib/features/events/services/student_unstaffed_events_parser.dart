@@ -1,5 +1,5 @@
 import 'package:html/parser.dart' as html_parser;
-import '../models/student_event.dart';
+import 'package:opencms/features/events/models/student_event.dart';
 
 /// Parser for student-unstaffed events HTML from legacy CMS
 class StudentUnstaffedEventsParser {

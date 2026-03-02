@@ -1,10 +1,11 @@
-import 'dart:io';
 import 'dart:convert';
-import 'package:path_provider/path_provider.dart';
-import '../models/skin_constants.dart';
-import '../models/skin_image.dart';
+import 'dart:io';
+
 import 'package:archive/archive_io.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/theme/models/skin_constants.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:path_provider/path_provider.dart';
 
 final logger = Logger('SkinFileManager');
 
@@ -134,7 +135,9 @@ class SkinFileManager {
             imageData[key]['imagePath'] = imagePath
                 .split(Platform.pathSeparator)
                 .last;
-            logger.fine('Preparing image for export: $imagePath -> ${imageData[key]['imagePath']}');
+            logger.fine(
+              'Preparing image for export: $imagePath -> ${imageData[key]['imagePath']}',
+            );
           }
         }
       }

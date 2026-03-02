@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
-import 'package:opencms/features/shared/constants/api_endpoints.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/features/auth/services/token_refresh_service.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/storage/token_storage.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/auth/services/token_refresh_service.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 final log = Logger('AuthInterceptor');
 
@@ -18,17 +18,28 @@ class AuthInterceptor extends Interceptor {
   AuthInterceptor(this._dio);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     final token = await storage.accessToken;
     final urlPath = options.path;
-    
-    final isAccountUser = urlPath.startsWith(API.accountUserUrl) || (di<LoginState>().isMock && urlPath.contains(API.accountUserUrl));
-    final isLogout = urlPath.contains('logout');
-    final isLogin = urlPath.startsWith(API.loginUrl) || (di<LoginState>().isMock && urlPath.contains(API.loginUrl));
-    final isAuthenticated = loginState.isAuthenticated;
-    final isLegacyUrl = urlPath.startsWith(API.legacyBaseUrl) || (di<LoginState>().isMock && urlPath.contains(API.legacyBaseUrl));
 
-    if (!isAccountUser && !isLogout && (isLogin || !isAuthenticated || isLegacyUrl)) {
+    final isAccountUser =
+        urlPath.startsWith(API.accountUserUrl) ||
+        (di<LoginState>().isMock && urlPath.contains(API.accountUserUrl));
+    final isLogout = urlPath.contains('logout');
+    final isLogin =
+        urlPath.startsWith(API.loginUrl) ||
+        (di<LoginState>().isMock && urlPath.contains(API.loginUrl));
+    final isAuthenticated = loginState.isAuthenticated;
+    final isLegacyUrl =
+        urlPath.startsWith(API.legacyBaseUrl) ||
+        (di<LoginState>().isMock && urlPath.contains(API.legacyBaseUrl));
+
+    if (!isAccountUser &&
+        !isLogout &&
+        (isLogin || !isAuthenticated || isLegacyUrl)) {
       log.fine("Skipping auth headers for: $urlPath");
       return handler.next(options);
     }
@@ -38,17 +49,23 @@ class AuthInterceptor extends Interceptor {
       return handler.next(options);
     }
     options.extra['noToken'] = true;
-    return handler.reject(DioException(requestOptions: options, error: 'No access token available'));
+    return handler.reject(
+      DioException(requestOptions: options, error: 'No access token available'),
+    );
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     try {
-
-      err = err.copyWith(message: "${err.response!.statusCode} ${err.response!.statusMessage}");
+      if (err.response != null) {
+        err = err.copyWith(
+          message: "${err.response!.statusCode} ${err.response!.statusMessage}",
+        );
+      }
 
       var options = err.requestOptions;
-      final isLegacyUrl = options.path.startsWith(API.legacyBaseUrl) ||
+      final isLegacyUrl =
+          options.path.startsWith(API.legacyBaseUrl) ||
           (di<LoginState>().isMock && options.path.contains(API.legacyBaseUrl));
 
       if (!isLegacyUrl || !loginState.isAuthenticated) {
@@ -71,16 +88,17 @@ class AuthInterceptor extends Interceptor {
         }
       }
 
-      final response = await _dio.fetch(options.copyWith(extra: {
-        'retries': retries + 1,
-      }));
+      final response = await _dio.fetch(
+        options.copyWith(extra: {'retries': retries + 1}),
+      );
       return handler.resolve(response);
     } catch (e) {
       if (e is DioException) {
         return handler.next(e);
       }
       return handler.next(
-          DioException(requestOptions: err.requestOptions, error: e));
+        DioException(requestOptions: err.requestOptions, error: e),
+      );
     }
   }
 }

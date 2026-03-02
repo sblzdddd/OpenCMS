@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../views/views/tabbed_page_base.dart';
-import '../../notices/views/notifications_view.dart';
-import '../../daily_bulletin/views/daily_bulletin_view.dart';
-import '../../events/views/events_view.dart';
+import 'package:opencms/features/daily_bulletin/views/daily_bulletin_view.dart';
+import 'package:opencms/features/events/views/events_view.dart';
+import 'package:opencms/features/notices/views/notifications_view.dart';
+import 'package:opencms/features/shared/views/views/tabbed_page_base.dart';
 
 class NoticesPage extends StatelessWidget {
   const NoticesPage({super.key, this.initialTabIndex = 0});

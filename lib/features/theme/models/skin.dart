@@ -1,8 +1,9 @@
-import 'skin_image.dart';
-import 'skin_constants.dart';
-import '../services/skin_file_manager.dart';
-import 'skin_image_type.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/theme/services/skin_file_manager.dart';
+
+import 'skin_constants.dart';
+import 'skin_image.dart';
+import 'skin_image_type.dart';
 
 final logger = Logger('Skin');
 

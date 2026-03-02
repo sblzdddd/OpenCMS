@@ -1,10 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:convert';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Reusable error dialog component with text copy functionality
 class ErrorDialog extends StatelessWidget {
@@ -70,7 +70,7 @@ class ErrorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final details = _buildDetails();
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(1.5),

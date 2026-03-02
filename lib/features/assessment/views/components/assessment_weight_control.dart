@@ -1,9 +1,10 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../models/assessment_models.dart';
 import 'package:opencms/di/locator.dart';
-import '../../services/weighted_average_service.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/services/weighted_average_service.dart';
 
 class AssessmentWeightControl extends StatelessWidget {
   final SubjectAssessment subject;
@@ -58,10 +59,7 @@ class AssessmentWeightControl extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        const Icon(
-                          Symbols.arrow_drop_down_rounded,
-                          size: 20,
-                        ),
+                        const Icon(Symbols.arrow_drop_down_rounded, size: 20),
                       ],
                     ),
                   ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../services/credentials_storage_service.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/auth/services/credentials_storage_service.dart';
 
 final logger = Logger('CredentialsManager');
 
@@ -51,7 +51,9 @@ class CredentialsManager extends ChangeNotifier {
         passwordController.text = savedCredentials.password;
         _rememberMe = savedCredentials.remember;
         _autoLogin = savedCredentials.autoLogin;
-        logger.info('Loaded saved credentials for user: ${savedCredentials.username}');
+        logger.info(
+          'Loaded saved credentials for user: ${savedCredentials.username}',
+        );
       }
     } catch (e) {
       logger.severe('Error loading saved credentials: $e');
@@ -95,5 +97,4 @@ class CredentialsManager extends ChangeNotifier {
     _autoLogin = false;
     notifyListeners();
   }
-
 }

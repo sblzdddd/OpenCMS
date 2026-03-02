@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../theme/services/theme_services.dart';
-import '../constants/subject_icons.dart';
+import 'package:opencms/features/shared/constants/subject_icons.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
+
 import 'widgets/scaled_ink_well.dart';
 
 class TimetableCard extends StatelessWidget {
@@ -31,7 +31,7 @@ class TimetableCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final theme = Theme.of(context);
     final category = SubjectIconConstants.getCategoryForSubject(
       subjectName: subject,

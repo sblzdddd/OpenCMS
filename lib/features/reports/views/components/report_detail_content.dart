@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:silky_scroll/silky_scroll.dart';
-import '../../services/reports_service.dart';
-import '../../models/reports.dart';
-import '../../../theme/services/theme_services.dart';
-import 'mark_components_view.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/reports/models/reports.dart';
+import 'package:opencms/features/reports/services/reports_service.dart';
 import 'package:opencms/features/shared/constants/subject_icons.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
+import 'package:silky_scroll/silky_scroll.dart';
+
+import 'mark_components_view.dart';
 
 class ReportDetailContent extends StatefulWidget {
   final Exam exam;
@@ -70,7 +70,7 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -110,9 +110,7 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
       _buildHeader(themeNotifier),
       _buildCourseMarks(themeNotifier),
       _buildPSatScores(themeNotifier),
-      MarkComponentsView(
-        markComponents: _reportDetail?.markComponent ?? [],
-      ),
+      MarkComponentsView(markComponents: _reportDetail?.markComponent ?? []),
       const SizedBox(height: 32),
     ];
 
@@ -145,12 +143,16 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
         borderRadius: themeNotifier.getBorderRadiusAll(1),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.01),
             blurRadius: 8,
             offset: const Offset(0, 5),
           ),
           BoxShadow(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.02),
             blurRadius: 18,
             offset: const Offset(0, 5),
           ),
@@ -212,12 +214,16 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
                 borderRadius: themeNotifier.getBorderRadiusAll(1),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.01),
                     blurRadius: 8,
                     offset: const Offset(0, 5),
                   ),
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.02),
                     blurRadius: 18,
                     offset: const Offset(0, 5),
                   ),
@@ -227,9 +233,8 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
                           ? Theme.of(
                               context,
                             ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                          : Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
+                          : Theme.of(context).colorScheme.surfaceContainer
+                                .withValues(alpha: 0.8))
                     : Theme.of(context).colorScheme.surfaceContainer,
               ),
               margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 6),
@@ -290,7 +295,8 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
                           const SizedBox(height: 8),
                           Text('Avg: ${course.average}'),
                         ],
-                        if (course.teacherName != null && course.teacherName!.isNotEmpty) ...[
+                        if (course.teacherName != null &&
+                            course.teacherName!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Text('Teacher(s): ${course.teacherName}'),
                         ],
@@ -301,26 +307,27 @@ class _ReportDetailContentState extends State<ReportDetailContent> {
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer
-                                .withValues(alpha: 0.5),
+                                  .colorScheme
+                                  .secondaryContainer
+                                  .withValues(alpha: 0.5),
                               borderRadius: themeNotifier.getBorderRadiusAll(
-                              0.5,
+                                0.5,
                               ),
                             ),
                             child: Text(
                               course.comment,
                               style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSecondaryContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
                               ),
                             ),
                           ),
                         ],
                         if (course.average.isEmpty &&
                             course.comment.isEmpty &&
-                            (course.teacherName == null || course.teacherName!.isEmpty)) ...[
+                            (course.teacherName == null ||
+                                course.teacherName!.isEmpty)) ...[
                           const SizedBox(height: 32),
                         ],
                       ],

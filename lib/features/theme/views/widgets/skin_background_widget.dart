@@ -1,13 +1,13 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:opencms/di/locator.dart';
-import 'package:provider/provider.dart';
-import '../../services/theme_services.dart';
-import '../../models/skin.dart';
-import '../../models/skin_image.dart';
-import '../../models/skin_image_type.dart';
-import '../../services/skin_service.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:opencms/features/theme/models/skin_image_type.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 final logger = Logger('SkinBackgroundWidget');
 
@@ -68,9 +68,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
     try {
       final response = await di<SkinService>().getActiveSkin();
       if (!(response.success && response.skin != null)) {
-        logger.warning(
-          'Failed to load active skin: ${response.error}',
-        );
+        logger.warning('Failed to load active skin: ${response.error}');
       }
     } catch (e, stackTrace) {
       logger.severe('Error loading active skin: $e', e, stackTrace);
@@ -122,7 +120,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
 
   /// Get opacity from SkinImageData or use provided fallback
   double _getOpacity(SkinImageData imageData) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final isDarkMode = themeNotifier.isDarkMode;
     return widget.opacity ?? imageData.opacity * (isDarkMode ? 0.5 : 1.0);
   }

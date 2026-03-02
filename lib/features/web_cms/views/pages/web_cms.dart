@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart' as iaw;
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/auth_service.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/web_cms/views/components/web_cms_base.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../components/web_cms_base.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import '../../../shared/views/widgets/custom_scaffold.dart';
-import '../../../auth/services/auth_service.dart';
 
 class WebCmsPage extends WebCmsBase {
   final bool disableControls;

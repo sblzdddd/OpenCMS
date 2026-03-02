@@ -1,9 +1,8 @@
-import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
-
-import '../../shared/constants/api_endpoints.dart';
-import '../models/daily_bulletin_response.dart';
-import '../../API/networking/http_service.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/daily_bulletin/models/daily_bulletin_response.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 /// Service for handling daily bulletins from the CMS system
 class DailyBulletinService {

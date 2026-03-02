@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../../shared/constants/period_constants.dart';
-import '../../models/course_timetable_models.dart';
-import '../../models/course_merged_event.dart';
-import '../../../../shared/views/timetable_card.dart';
-import '../components/day_header.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/timetable_card.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_merged_event.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_timetable_models.dart';
+import 'package:opencms/features/timetable/course_timetable/views/components/day_header.dart';
 
 class CourseTimetableListView extends StatefulWidget {
   final ScrollController scrollController;
@@ -28,7 +28,8 @@ class CourseTimetableListView extends StatefulWidget {
   });
 
   @override
-  State<CourseTimetableListView> createState() => _CourseTimetableListViewState();
+  State<CourseTimetableListView> createState() =>
+      _CourseTimetableListViewState();
 }
 
 class _CourseTimetableListViewState extends State<CourseTimetableListView>

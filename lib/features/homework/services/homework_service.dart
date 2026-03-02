@@ -1,9 +1,8 @@
-import 'package:opencms/di/locator.dart';
-
-import '../models/homework_models.dart';
-import '../../API/networking/http_service.dart';
-import '../../shared/constants/api_endpoints.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/homework/models/homework_models.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 final logger = Logger('HomeworkService');
 
@@ -22,7 +21,7 @@ class HomeworkService {
 
       final response = await di<HttpService>().get(
         '${API.homeworkUrl}?year=$academicYear',
-        refresh: refresh
+        refresh: refresh,
       );
 
       if (response.data != null) {

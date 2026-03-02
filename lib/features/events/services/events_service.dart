@@ -1,10 +1,10 @@
-import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/events/models/student_event.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
-import '../../API/networking/http_service.dart';
 import 'student_led_events_parser.dart';
 import 'student_unstaffed_events_parser.dart';
-import '../models/student_event.dart';
 
 /// Service to fetch and parse events HTML from legacy CMS
 class EventsService {
@@ -19,7 +19,7 @@ class EventsService {
     final response = await di<HttpService>().get(
       API.studentLedEventsUrl,
       refresh: refresh,
-      legacy: true
+      legacy: true,
     );
     return StudentLedEventsParser.parseHtml(response.data);
   }
@@ -31,7 +31,7 @@ class EventsService {
     final response = await di<HttpService>().get(
       API.studentUnstaffedEventsUrl,
       refresh: refresh,
-      legacy: true
+      legacy: true,
     );
     return StudentUnstaffedEventsParser.parseHtml(response.data);
   }

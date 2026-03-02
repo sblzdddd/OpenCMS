@@ -1,15 +1,17 @@
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
+
 import 'package:add_2_calendar/add_2_calendar.dart';
-import '../../../../shared/constants/period_constants.dart';
-import '../../models/exam_timetable_models.dart';
-import '../../services/exam_timetable_service.dart';
-import '../../../../shared/views/views/refreshable_view.dart';
-import 'exam_timetable_list_view.dart';
-import 'exam_timetable_calendar_view.dart';
-import '../../../../theme/services/theme_services.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/timetable/exam_timetable/models/exam_timetable_models.dart';
+import 'package:opencms/features/timetable/exam_timetable/services/exam_timetable_service.dart';
+
+import 'exam_timetable_calendar_view.dart';
+import 'exam_timetable_list_view.dart';
 
 final logger = Logger('ExamTimetableView');
 

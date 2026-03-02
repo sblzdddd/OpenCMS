@@ -1,7 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import '../../API/storage/storage_client.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/API/storage/storage_client.dart';
 
 final logger = Logger('DashboardLayoutStorageService');
 

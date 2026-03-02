@@ -2,17 +2,16 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/app_router.dart';
+import 'package:opencms/features/home/views/components/dashboard_grid/dashboard_grid.dart';
+import 'package:opencms/features/home/views/components/quick_actions/quick_actions.dart';
+import 'package:opencms/features/navigations/controllers/bottom_actions_controller.dart';
+import 'package:opencms/features/navigations/views/app_navigation_rail.dart';
+import 'package:opencms/features/navigations/views/bottom_navigation.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
-import 'package:provider/provider.dart';
 
-import '../../../navigations/controllers/bottom_actions_controller.dart';
-import '../../../navigations/views/app_navigation_rail.dart';
-import '../../../navigations/views/bottom_navigation.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import '../components/dashboard_grid/dashboard_grid.dart';
-import '../components/quick_actions/quick_actions.dart';
 import 'manage_widgets_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -53,7 +52,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final bgColor = themeNotifier.hasTransparentWindowEffect
         ? (!themeNotifier.isDarkMode
               ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
@@ -156,7 +155,6 @@ class _HomePageState extends State<HomePage> {
 
             // Steeper out curve
             final curve = Curves.easeOutCubic;
-            final direction = pageOffset.sign;
             final percent = pageOffset.abs().clamp(0.0, 1.0);
             final t = curve.transform(percent);
 

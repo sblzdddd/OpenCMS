@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/attendance/models/attendance_constants.dart';
+import 'package:opencms/features/attendance/models/attendance_models.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/timetable_card.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:silky_scroll/silky_scroll.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/attendance_models.dart';
-import '../../../shared/views/timetable_card.dart';
-import '../../models/attendance_constants.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
 
 class AttendanceCardsView extends StatelessWidget {
   final List<RecordOfDay> days;
@@ -78,7 +77,7 @@ class AttendanceCardsView extends StatelessWidget {
     RecordOfDay day,
     Set<int> selectedCourseIds,
   ) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final periods = PeriodConstants.attendancePeriods;
     final atts = day.attendances;
     final int count = atts.length < periods.length

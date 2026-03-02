@@ -2,8 +2,9 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+
 import 'student_profile_view.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

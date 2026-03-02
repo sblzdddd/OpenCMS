@@ -1,11 +1,13 @@
 /// Data models for timetable API response
 library;
+
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
-import '../../../shared/constants/period_constants.dart';
-import 'course_merged_event.dart';
-import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+
+import 'course_merged_event.dart';
 
 part 'course_timetable_models.g.dart';
 
@@ -32,7 +34,7 @@ class TimetableResponse {
   });
 
   factory TimetableResponse.fromJson(Map<String, dynamic> json) =>
-   _$TimetableResponseFromJson(json);
+      _$TimetableResponseFromJson(json);
   Map<String, dynamic> toJson() => _$TimetableResponseToJson(this);
 
   /// Get current and next class for today
@@ -145,8 +147,7 @@ class Period {
 
   Period({required this.events});
 
-  factory Period.fromJson(Map<String, dynamic> json) =>
-      _$PeriodFromJson(json);
+  factory Period.fromJson(Map<String, dynamic> json) => _$PeriodFromJson(json);
   Map<String, dynamic> toJson() => _$PeriodToJson(this);
 }
 
@@ -210,7 +211,6 @@ class TimetableEvent {
   }
 }
 
-
 class CalendarCourse {
   final String subject;
   final String location;
@@ -261,4 +261,3 @@ class CourseDataSource extends CalendarDataSource {
   @override
   String? getNotes(int index) => appointments![index].note as String;
 }
-

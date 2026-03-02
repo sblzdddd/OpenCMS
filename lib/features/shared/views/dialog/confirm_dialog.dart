@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/auth_service.dart';
 import 'package:opencms/features/auth/services/credentials_storage_service.dart';
-import 'package:provider/provider.dart';
-import '../../../auth/services/auth_service.dart';
-import '../../../theme/services/theme_services.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 void showConfirmationDialog(
   BuildContext context,
@@ -12,7 +11,7 @@ void showConfirmationDialog(
   String message,
   Future<void> Function(BuildContext) onConfirm,
 ) {
-  final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+  final themeNotifier = ThemeNotifier.instance;
   showDialog(
     context: context,
     builder: (BuildContext dialogContext) {
@@ -57,14 +56,11 @@ void showLogoutDialog(BuildContext context) {
 
       // no longer needed due to the implementation of account separation
       // await di<WeightedAverageService>().clearAll();
-      
+
       await di<AuthService>().logout();
       if (context.mounted) {
         Phoenix.rebirth(context);
-      } else {
-        
-      }
+      } else {}
     },
   );
 }
-

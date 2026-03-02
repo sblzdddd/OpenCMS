@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Custom snackbar widget with slide down/up animation and right top positioning
 class CustomSnackbar extends StatefulWidget {
@@ -120,7 +119,7 @@ class CustomSnackbarState extends State<CustomSnackbar>
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,

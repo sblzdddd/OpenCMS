@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/assessment_models.dart';
-import '../../../shared/views/selectable_item_wrapper.dart';
-import '../../../shared/views/views/adaptive_list_detail_layout.dart';
-import 'subject_assessments_content.dart';
 import 'package:opencms/di/locator.dart';
-import '../../services/weighted_average_service.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/services/weighted_average_service.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/selectable_item_wrapper.dart';
+import 'package:opencms/features/shared/views/views/adaptive_list_detail_layout.dart';
+
+import 'subject_assessments_content.dart';
 
 class AdaptiveAssessmentLayout extends StatelessWidget {
   final List<SubjectAssessment> subjects;
@@ -61,7 +62,7 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
                   .reduce((a, b) => a + b) /
               validAssessments.length
         : 0.0;
-    
+
     final displaySubject = subject.subject;
     return SelectableItemWrapper(
       isSelected: isSelected,
@@ -121,22 +122,22 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
                     listenable: di<WeightedAverageService>(),
                     builder: (context, _) {
                       return FutureBuilder<double?>(
-                        future: di<WeightedAverageService>().calculateWeightedAverage(subject),
+                        future: di<WeightedAverageService>()
+                            .calculateWeightedAverage(subject),
                         builder: (context, snapshot) {
                           if (!snapshot.hasData) return const SizedBox.shrink();
                           final wAvg = snapshot.data!;
                           return Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                               Icon(Symbols.balance_rounded, size: 16),
-                               const SizedBox(width: 2),
-                               Text(
+                              Icon(Symbols.balance_rounded, size: 16),
+                              const SizedBox(width: 2),
+                              Text(
                                 'W.Avg: ',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.7),
                                 ),
                               ),
                               Text(
@@ -149,9 +150,9 @@ class AdaptiveAssessmentLayout extends StatelessWidget {
                               ),
                             ],
                           );
-                        }
+                        },
                       );
-                    }
+                    },
                   ),
                 ],
               ],

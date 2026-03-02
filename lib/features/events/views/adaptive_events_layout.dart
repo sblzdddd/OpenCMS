@@ -1,16 +1,15 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/di/locator.dart';
-import 'package:provider/provider.dart';
-import 'package:silky_scroll/silky_scroll.dart';
-import '../models/student_event.dart';
-import '../../theme/services/theme_services.dart';
-import '../../shared/views/selectable_item_wrapper.dart';
-import '../../web_cms/views/components/web_cms_content.dart';
-import '../../shared/views/views/list_section.dart';
-import '../../web_cms/views/pages/web_cms.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/events/models/student_event.dart';
+import 'package:opencms/features/shared/views/selectable_item_wrapper.dart';
+import 'package:opencms/features/shared/views/views/list_section.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/web_cms/views/components/web_cms_content.dart';
+import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 
 class AdaptiveEventsLayout extends StatelessWidget {
   final List<StudentEvent> studentLedEvents;
@@ -82,28 +81,28 @@ class AdaptiveEventsLayout extends StatelessWidget {
 
   Widget _buildEventsList(BuildContext context) {
     final items = [
-          // Student-Led Events section
-          if (studentLedEvents.isNotEmpty)
-            ListSection(
-              title: 'Student-Led Events',
-              icon: Symbols.person_rounded,
-              padding: const EdgeInsets.only(left: 16, bottom: 6),
-              children: studentLedEvents
-                  .map((event) => _buildEventItem(event, context))
-                  .toList(),
-            ),
+      // Student-Led Events section
+      if (studentLedEvents.isNotEmpty)
+        ListSection(
+          title: 'Student-Led Events',
+          icon: Symbols.person_rounded,
+          padding: const EdgeInsets.only(left: 16, bottom: 6),
+          children: studentLedEvents
+              .map((event) => _buildEventItem(event, context))
+              .toList(),
+        ),
 
-          // Student-Unstaffed Events section
-          if (studentUnstaffedEvents.isNotEmpty)
-            ListSection(
-              title: 'Student-Unstaffed Events',
-              icon: Symbols.person_rounded,
-              padding: const EdgeInsets.only(left: 16, bottom: 6, top: 12),
-              children: studentUnstaffedEvents
-                  .map((event) => _buildEventItem(event, context))
-                  .toList(),
-            ),
-        ];
+      // Student-Unstaffed Events section
+      if (studentUnstaffedEvents.isNotEmpty)
+        ListSection(
+          title: 'Student-Unstaffed Events',
+          icon: Symbols.person_rounded,
+          padding: const EdgeInsets.only(left: 16, bottom: 6, top: 12),
+          children: studentUnstaffedEvents
+              .map((event) => _buildEventItem(event, context))
+              .toList(),
+        ),
+    ];
     return SilkyScroll(
       scrollSpeed: 2,
       builder: (context, controller, physics) {
@@ -119,7 +118,7 @@ class AdaptiveEventsLayout extends StatelessWidget {
   }
 
   Widget _buildEventItem(StudentEvent event, BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final isSelected = selectedEvent == event;
 
     return SelectableItemWrapper(

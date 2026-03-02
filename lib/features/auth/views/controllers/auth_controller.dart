@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/auth_service.dart';
-import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import '../../../shared/views/error/error_dialog.dart';
-import 'package:logging/logging.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/error/error_dialog.dart';
 
 final logger = Logger('AuthController');
 

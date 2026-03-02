@@ -1,15 +1,15 @@
+import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/system/desktop_window/window_effect_service.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/utils/device_info.dart';
 import 'package:provider/provider.dart';
-import '../theme/services/theme_services.dart';
-import '../shared/views/widgets/custom_app_bar.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../system/desktop_window/window_effect_service.dart';
-import '../shared/views/widgets/custom_scaffold.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
-import 'package:dynamic_color/dynamic_color.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -170,10 +170,7 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         // Update system color in theme notifier
-        final themeNotifier = Provider.of<ThemeNotifier>(
-          context,
-          listen: false,
-        );
+        final themeNotifier = ThemeNotifier.instance;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final systemColor = themeNotifier.isDarkMode
               ? darkDynamic?.primary

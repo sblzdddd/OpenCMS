@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/home/views/components/quick_actions/action_item/quick_action_tile.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
-import '../../quick_actions/action_item/quick_action_tile.dart';
 
 class AddWidgetActionGrid extends StatelessWidget {
   final List<QuickAction> actions;
@@ -27,18 +27,17 @@ class AddWidgetActionGrid extends StatelessWidget {
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
-          children:
-              actions.map((action) {
-                return QuickActionTile(
-                  width: tileWidth,
-                  icon: action.icon,
-                  title: action.title,
-                  showExternalIcon: action.isWebLink ?? false,
-                  onTap: () {
-                    onAddAction?.call(action);
-                  },
-                );
-              }).toList(),
+          children: actions.map((action) {
+            return QuickActionTile(
+              width: tileWidth,
+              icon: action.icon,
+              title: action.title,
+              showExternalIcon: action.isWebLink ?? false,
+              onTap: () {
+                onAddAction?.call(action);
+              },
+            );
+          }).toList(),
         );
       },
     );

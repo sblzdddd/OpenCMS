@@ -10,16 +10,16 @@ import 'package:opencms/features/home/views/pages/manage_widgets_page.dart';
 import 'package:opencms/features/navigations/views/app_navigation_controller.dart';
 import 'package:opencms/features/settings/privacy_policy.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/shared/views/dialog/confirm_dialog.dart';
 import 'package:opencms/features/shared/views/widgets/app_card.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/theme/views/pages/skin_settings_page.dart';
 import 'package:opencms/features/web_cms/views/pages/web_cms.dart';
 import 'package:provider/provider.dart';
 import 'package:silky_scroll/silky_scroll.dart';
 
-import '../shared/views/dialog/confirm_dialog.dart';
-import '../shared/views/widgets/custom_app_bar.dart';
-import '../shared/views/widgets/custom_scaffold.dart';
-import '../theme/services/theme_services.dart';
-import '../theme/views/pages/skin_settings_page.dart';
 import 'theme_settings_page.dart';
 
 final logger = Logger('SettingsPage');
@@ -32,7 +32,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  void _clearUserData(BuildContext context) {
+  void _clearUserData() {
     showConfirmationDialog(
       context,
       'Clear Data',
@@ -41,17 +41,14 @@ class _SettingsPageState extends State<SettingsPage> {
         Navigator.of(dialogContext).pop();
         await di<AuthService>().logout();
         await StorageClient.instance.deleteAll();
-        if (context.mounted) {
-          // Ensure global navigation state is cleared and remove all routes
-          AppNavigationController.reset();
-
-          // Ensure window close prevention is maintained after logout
-          if (!context.mounted) {
-            logger.warning('Context is not mounted');
-            return;
-          }
-          Phoenix.rebirth(context);
+        if (!mounted) {
+          logger.warning('Context is not mounted');
+          return;
         }
+        // Ensure global navigation state is cleared and remove all routes
+        AppNavigationController.reset();
+        // Ensure window close prevention is maintained after logout
+        Phoenix.rebirth(context);
       },
     );
   }
@@ -65,7 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
         Navigator.of(dialogContext).pop();
         await di<TokenStorage>().clearAll();
 
-        if (context.mounted) {
+        if (mounted) {
           Phoenix.rebirth(context);
         }
       },
@@ -225,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
         'Clear All Data',
         Symbols.delete_forever_rounded,
         null,
-        onTap: () => _clearUserData(context),
+        onTap: () => _clearUserData(),
       ),
       _buildSettingsTitle('About'),
       const AppCard(),

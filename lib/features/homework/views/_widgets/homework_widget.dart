@@ -1,12 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/homework_models.dart';
-import '../../services/homework_service.dart';
-import 'dart:async';
-import '../../../home/views/widgets/base_dashboard_widget.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/home/views/widgets/base_dashboard_widget.dart';
+import 'package:opencms/features/homework/models/homework_models.dart';
+import 'package:opencms/features/homework/services/homework_service.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
 
 final logger = Logger('HomeworkCard');
 

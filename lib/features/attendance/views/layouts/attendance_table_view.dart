@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/attendance_models.dart';
-import '../../models/attendance_constants.dart';
+import 'package:opencms/features/attendance/models/attendance_constants.dart';
+import 'package:opencms/features/attendance/models/attendance_models.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class AttendanceTableView extends StatelessWidget {
   final List<RecordOfDay> days;
@@ -165,7 +164,7 @@ class AttendanceTableView extends StatelessWidget {
     DateTime date,
     int index,
   ) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final subjectName = entry.getSubjectNameWithIndex(index);
     final backgroundColor = subjectName == "/"
         ? Colors.transparent

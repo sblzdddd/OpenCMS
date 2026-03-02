@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:window_manager/window_manager.dart';
-import 'package:provider/provider.dart';
-import '../../theme/services/theme_services.dart';
-import 'nav_items.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../theme/views/widgets/skin_icon_widget.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
+import 'package:window_manager/window_manager.dart';
+
+import 'nav_items.dart';
 
 final logger = Logger('AppNavigationRail');
 
@@ -52,7 +52,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final bgColor = Theme.of(context).colorScheme.surface.withValues(
       alpha: themeNotifier.hasTransparentWindowEffect
           ? themeNotifier.isDarkMode
@@ -107,10 +107,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
                   ),
                 )
                 .toList(),
-            trailing: SizedBox(
-              height: 75,
-              width: 16,
-            ),
+            trailing: SizedBox(height: 75, width: 16),
           ),
         );
       },

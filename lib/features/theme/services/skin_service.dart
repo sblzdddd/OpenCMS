@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../models/skin.dart';
-import '../models/skin_image.dart';
-import '../models/skin_response.dart';
-import '../models/skin_constants.dart';
-import 'skin_file_manager.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/models/skin_constants.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:opencms/features/theme/models/skin_response.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'skin_file_manager.dart';
 
 final logger = Logger('SkinService');
 
@@ -350,7 +351,9 @@ class SkinService extends ChangeNotifier {
     required SkinImageData updatedImageData,
   }) async {
     try {
-      logger.info('Updating image data for skinId: $skinId, imageKey: $imageKey');
+      logger.info(
+        'Updating image data for skinId: $skinId, imageKey: $imageKey',
+      );
       final map = await SkinFileManager.readSkinJsonMap(skinId);
       if (map == null) return SkinResponse.error('Skin not found');
       final skin = Skin.fromJson(map);

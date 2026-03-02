@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/home/views/components/dashboard_grid/widget_size_manager.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
-import 'package:provider/provider.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
-import '../../../../../theme/services/theme_services.dart';
 import 'add_widget_action_grid.dart';
 import 'add_widget_drawer_header.dart';
 import 'add_widget_option_card.dart';
 import 'add_widget_search_field.dart';
-import '../widget_size_manager.dart';
 
 /// Drawer for adding new widgets to the dashboard
 class AddWidgetDrawer extends StatefulWidget {
@@ -56,7 +55,7 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final addableWidgets = _filteredWidgets;
     final addableActions = _filteredActions;
 
@@ -149,10 +148,12 @@ class _AddWidgetDrawerState extends State<AddWidgetDrawer> {
                     icon: const Icon(Symbols.refresh_rounded),
                     label: const Text('Reset to Default'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.errorContainer,
-                      foregroundColor:
-                          Theme.of(context).colorScheme.onErrorContainer,
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.errorContainer,
+                      foregroundColor: Theme.of(
+                        context,
+                      ).colorScheme.onErrorContainer,
                     ),
                   ),
                 ),

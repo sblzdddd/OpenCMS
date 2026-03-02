@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../models/reports.dart';
-import '../../../shared/views/views/refreshable_page.dart';
+import 'package:opencms/features/reports/models/reports.dart';
+import 'package:opencms/features/shared/views/views/refreshable_page.dart';
+
 import 'report_detail_content.dart';
 
 class ReportDetailView extends StatefulWidget {

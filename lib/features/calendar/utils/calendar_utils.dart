@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/calendar.dart';
+import 'package:opencms/features/calendar/models/calendar.dart';
 
 class CalendarUtils {
   static List<SchoolCalendarAppointment> buildCalendarEvents(

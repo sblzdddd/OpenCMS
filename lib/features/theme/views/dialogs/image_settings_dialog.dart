@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../models/skin_image.dart';
-import '../../models/skin_image_type.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:opencms/features/theme/models/skin_image_type.dart';
 
 /// Dialog for configuring image settings
 class ImageSettingsDialog extends StatefulWidget {

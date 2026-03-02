@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:opencms/di/locator.dart';
-import '../../models/skin.dart';
-import '../../services/skin_service.dart';
-import '../../../shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
 
 /// Dialog for creating a new skin
 class CreateSkinDialog extends StatefulWidget {

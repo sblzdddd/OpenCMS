@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../theme/services/theme_services.dart';
-import 'action_item/action_item.dart';
+import 'package:logging/logging.dart';
+import 'package:opencms/features/home/services/quick_actions_storage_service.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'action_dialog/more_actions_dialog.dart';
+import 'action_item/action_item.dart';
 import 'action_item/trash_can_item.dart';
 import 'reorderable_wrap.dart';
-import '../../../../shared/constants/quick_actions.dart';
-import '../../../services/quick_actions_storage_service.dart';
-import 'package:logging/logging.dart';
 
 final logger = Logger('QuickActions');
 
@@ -115,7 +115,9 @@ class _QuickActionsState extends State<QuickActions> {
         actions.add(QuickActionsConstants.moreAction);
       }
     } catch (e) {
-      logger.severe('QuickActions: Error loading quick actions preferences: $e');
+      logger.severe(
+        'QuickActions: Error loading quick actions preferences: $e',
+      );
       // Fallback to default actions
       actions = QuickActionsConstants.getActionsFromIds(
         QuickActionsConstants.defaultActionIds,
@@ -182,7 +184,7 @@ class _QuickActionsState extends State<QuickActions> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return Stack(
       children: [
         Column(
@@ -203,12 +205,16 @@ class _QuickActionsState extends State<QuickActions> {
                 borderRadius: themeNotifier.getBorderRadiusAll(1.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.01),
                     blurRadius: 8,
                     offset: const Offset(0, 5),
                   ),
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.02),
                     blurRadius: 18,
                     offset: const Offset(0, 5),
                   ),
@@ -253,22 +259,18 @@ class _QuickActionsState extends State<QuickActions> {
                                     isEditMode: !widget.isReadOnly,
                                     onTap:
                                         action.id ==
-                                            QuickActionsConstants
-                                                .moreAction.id
+                                            QuickActionsConstants.moreAction.id
                                         ? _onShowMoreActions
                                         : null,
                                     tileWidth: tileWidth,
                                     onDelete:
                                         action.id ==
-                                            QuickActionsConstants
-                                                .moreAction.id
+                                            QuickActionsConstants.moreAction.id
                                         ? null
                                         : () {
                                             final String id = action.id;
                                             final int currentIndex = actions
-                                                .indexWhere(
-                                                  (a) => a.id == id,
-                                                );
+                                                .indexWhere((a) => a.id == id);
                                             if (currentIndex != -1) {
                                               _onRemove(currentIndex);
                                             }

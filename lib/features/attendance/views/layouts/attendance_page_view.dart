@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/attendance/models/attendance_models.dart';
+import 'package:opencms/features/attendance/models/course_stats_models.dart';
+import 'package:opencms/features/attendance/services/attendance_service.dart';
+import 'package:opencms/features/attendance/services/course_stats_service.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../models/attendance_models.dart';
-import '../../services/attendance_service.dart';
-import '../../../shared/views/dialog/course_detail_dialog.dart';
-import '../../models/course_stats_models.dart';
-import '../../services/course_stats_service.dart';
+import 'package:opencms/features/shared/views/dialog/course_detail_dialog.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'attendance_cards_view.dart';
 import 'attendance_table_view.dart';
-import '../../../shared/views/views/refreshable_view.dart';
-import '../../../shared/views/widgets/custom_scaffold.dart';
 
 class AttendancePageView extends StatefulWidget {
   const AttendancePageView({super.key});
@@ -194,8 +195,12 @@ class _AttendancePageViewState extends RefreshableView<AttendancePageView> {
             child: _showSettings
                 ? Column(
                     children: [
-                      di<LoginState>().isMock ? const SizedBox.shrink() : _buildDatePickers(context),
-                      di<LoginState>().isMock ? const SizedBox.shrink() : const SizedBox(height: 12),
+                      di<LoginState>().isMock
+                          ? const SizedBox.shrink()
+                          : _buildDatePickers(context),
+                      di<LoginState>().isMock
+                          ? const SizedBox.shrink()
+                          : const SizedBox(height: 12),
                       _buildCourseFilter(days),
                       const SizedBox(height: 12),
                     ],

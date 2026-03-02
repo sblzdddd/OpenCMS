@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/calendar/models/calendar.dart';
+import 'package:opencms/features/calendar/services/calendar_service.dart';
+import 'package:opencms/features/calendar/utils/calendar_utils.dart';
+import 'package:opencms/features/calendar/views/components/event_detail_dialog.dart';
+import 'package:opencms/features/calendar/views/components/school_calendar_body.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import '../../services/calendar_service.dart';
-import '../../models/calendar.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import '../../../shared/views/widgets/custom_scaffold.dart';
-import '../components/school_calendar_body.dart';
-import '../components/event_detail_dialog.dart';
-import '../../utils/calendar_utils.dart';
 
 class SchoolCalendarView extends StatefulWidget {
   const SchoolCalendarView({super.key});

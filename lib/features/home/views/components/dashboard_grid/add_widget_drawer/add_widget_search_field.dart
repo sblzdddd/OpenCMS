@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../theme/services/theme_services.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class AddWidgetSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
@@ -11,7 +9,7 @@ class AddWidgetSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = ThemeNotifier.instance;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
@@ -22,15 +20,17 @@ class AddWidgetSearchField extends StatelessWidget {
           border: OutlineInputBorder(
             borderRadius: themeNotifier.getBorderRadiusAll(0.75),
             borderSide: BorderSide(
-              color:
-                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.3),
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: themeNotifier.getBorderRadiusAll(0.75),
             borderSide: BorderSide(
-              color:
-                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.outline.withValues(alpha: 0.3),
             ),
           ),
           focusedBorder: OutlineInputBorder(

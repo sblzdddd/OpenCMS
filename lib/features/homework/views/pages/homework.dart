@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/homework/models/homework_models.dart';
+import 'package:opencms/features/homework/services/completed_homework_service.dart';
+import 'package:opencms/features/homework/services/homework_service.dart';
+import 'package:opencms/features/homework/views/components/homework_card.dart';
 import 'package:opencms/features/shared/constants/period_constants.dart';
 import 'package:opencms/features/shared/views/academic_year_dropdown.dart';
 import 'package:opencms/features/shared/views/views/refreshable_page.dart';
 import 'package:silky_scroll/silky_scroll.dart';
-import '../../models/homework_models.dart';
-import '../../services/homework_service.dart';
-import '../../services/completed_homework_service.dart';
-import '../components/homework_card.dart';
 
 class HomeworkPage extends StatefulWidget {
   final bool isTransparent;
@@ -264,7 +264,7 @@ class _HomeworkPageState extends RefreshablePage<HomeworkPage> {
         physics: physics,
         controller: controller,
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        
+
         itemCount: _filteredHomeworkItems.length,
         itemBuilder: (context, index) {
           final homework = _filteredHomeworkItems[index];

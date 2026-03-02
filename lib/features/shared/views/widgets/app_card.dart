@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/utils/app_info.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../../utils/app_info.dart';
+
 import 'scaled_ink_well.dart';
 
 class AppCard extends StatelessWidget {

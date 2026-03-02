@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
+import 'package:opencms/features/shared/pages/actions.dart';
 
-import '../../../../../shared/pages/actions.dart';
 import 'quick_action_tile.dart';
 
 class ActionItem extends StatefulWidget {

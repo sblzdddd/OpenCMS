@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../../shared/constants/api_endpoints.dart';
-import 'captcha_dialog.dart';
-import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+
+import 'captcha_dialog.dart';
 
 final logger = Logger('CaptchaInput');
 

@@ -1,7 +1,7 @@
 import 'package:logging/logging.dart';
 import 'package:opencms/features/API/storage/secure_storage_base.dart';
-import '../../API/storage/storage_client.dart';
-import '../models/saved_credentials.dart';
+import 'package:opencms/features/API/storage/storage_client.dart';
+import 'package:opencms/features/auth/models/saved_credentials.dart';
 
 final logger = Logger('CredentialsStorage');
 
@@ -18,7 +18,8 @@ class CredentialsStorageService {
   static const String _rememberCredentialsKey = 'remember_credentials';
   static const String _autoLoginKey = 'auto_login';
 
-  SecureStorageBase get _storage => SecureStorageBase(StorageClient.instance, '_cred');
+  SecureStorageBase get _storage =>
+      SecureStorageBase(StorageClient.instance, '_cred');
 
   /// Save user credentials securely
   Future<bool> saveCredentials({
@@ -63,7 +64,7 @@ class CredentialsStorageService {
       final password = await _storage.read(_passwordKey);
       final rememberStr = await _storage.read(_rememberCredentialsKey);
       final autoLoginStr = await _storage.read(_autoLoginKey);
-      
+
       final remember = rememberStr == 'true';
       final autoLogin = autoLoginStr == 'true';
 

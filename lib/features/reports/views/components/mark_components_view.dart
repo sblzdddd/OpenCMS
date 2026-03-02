@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../models/reports.dart';
+import 'package:opencms/features/reports/models/reports.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class MarkComponentsView extends StatelessWidget {
   final List<MarkComponent> markComponents;
@@ -10,7 +9,7 @@ class MarkComponentsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     if (markComponents.isEmpty) {
       return const SizedBox.shrink();
     }

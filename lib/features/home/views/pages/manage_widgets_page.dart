@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/home/views/components/dashboard_grid/add_widget_drawer/add_widget_drawer.dart';
+import 'package:opencms/features/home/views/components/dashboard_grid/dashboard_grid.dart';
+import 'package:opencms/features/home/views/components/quick_actions/quick_actions.dart';
+import 'package:opencms/features/navigations/controllers/bottom_actions_controller.dart';
 import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
-
-import '../../../navigations/controllers/bottom_actions_controller.dart';
-import '../components/dashboard_grid/add_widget_drawer/add_widget_drawer.dart';
-import '../components/dashboard_grid/dashboard_grid.dart';
-import '../components/quick_actions/quick_actions.dart';
 
 class ManageWidgetsPage extends StatefulWidget {
   const ManageWidgetsPage({super.key});

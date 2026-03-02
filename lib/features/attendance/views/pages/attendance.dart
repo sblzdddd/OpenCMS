@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../layouts/attendance_page_view.dart';
-import '../layouts/course_stats_view.dart';
-import '../../../shared/views/views/tabbed_page_base.dart';
+import 'package:opencms/features/attendance/views/layouts/attendance_page_view.dart';
+import 'package:opencms/features/attendance/views/layouts/course_stats_view.dart';
+import 'package:opencms/features/shared/views/views/tabbed_page_base.dart';
 
 class AttendancePage extends StatelessWidget {
   const AttendancePage({super.key, required this.initialTabIndex});

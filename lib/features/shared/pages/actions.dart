@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/navigations/views/app_navigation_controller.dart';
 import 'package:opencms/features/shared/constants/quick_actions.dart';
-
-import '../../navigations/views/app_navigation_controller.dart';
 
 /// Returns true if the action is handled by switching the bottom/rail navigation.
 /// timetable -> tab 1, homeworks -> tab 2, assessment -> tab 3

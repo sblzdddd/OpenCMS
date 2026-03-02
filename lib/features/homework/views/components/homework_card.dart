@@ -1,14 +1,14 @@
 import 'dart:io';
+
+import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:add_2_calendar/add_2_calendar.dart';
-import '../../models/homework_models.dart';
-import '../../services/completed_homework_service.dart';
-import '../../../shared/views/widgets/scaled_ink_well.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/homework/models/homework_models.dart';
+import 'package:opencms/features/homework/services/completed_homework_service.dart';
+import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 final logger = Logger('HomeworkCard');
 
@@ -116,7 +116,11 @@ class _HomeworkCardState extends State<HomeworkCard> {
       // Notify parent about completion status change
       widget.onCompletionStatusChanged?.call();
     } catch (e, stackTrace) {
-      logger.severe('HomeworkCard: Error toggling homework completion', e, stackTrace);
+      logger.severe(
+        'HomeworkCard: Error toggling homework completion',
+        e,
+        stackTrace,
+      );
       // Show error message to user if needed
     } finally {
       if (mounted) {
@@ -129,7 +133,7 @@ class _HomeworkCardState extends State<HomeworkCard> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final isOverdue = widget.homework.isOverdue;
     final daysUntilDue = widget.homework.daysUntilDue;
     final displaySubject = widget.homework.courseName;

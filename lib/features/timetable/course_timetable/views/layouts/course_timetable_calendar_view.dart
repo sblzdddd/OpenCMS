@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../theme/services/theme_services.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_merged_event.dart';
+import 'package:opencms/features/timetable/course_timetable/models/course_timetable_models.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-
-import '../../../../shared/constants/period_constants.dart';
-import '../../models/course_timetable_models.dart';
-import '../../models/course_merged_event.dart';
 
 class TimetableCalendarView extends StatefulWidget {
   final List<DateTime> dayDates;
@@ -67,11 +65,9 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       specialRegions: _getTimeRegions(),
       appointmentBuilder:
           (BuildContext context, CalendarAppointmentDetails details) {
-            final CalendarCourse course = details.appointments.first as CalendarCourse;
-            final themeNotifier = Provider.of<ThemeNotifier>(
-              context,
-              listen: true,
-            );
+            final CalendarCourse course =
+                details.appointments.first as CalendarCourse;
+            final themeNotifier = ThemeNotifier.instance;
             return Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
@@ -122,7 +118,8 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
         if (details.targetElement == CalendarElement.appointment &&
             details.appointments != null &&
             details.appointments!.isNotEmpty) {
-          final CalendarCourse tapped = details.appointments!.first as CalendarCourse;
+          final CalendarCourse tapped =
+              details.appointments!.first as CalendarCourse;
           widget.onEventTap(tapped.sourceEvent);
         }
       },
@@ -131,11 +128,23 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
 
   List<TimeRegion> _getTimeRegions() {
     final List<TimeRegion> regions = <TimeRegion>[];
-    for(int i=-1;i<2;i++) {
+    for (int i = -1; i < 2; i++) {
       regions.add(
         TimeRegion(
-          startTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 8, 0),
-          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 8, 10),
+          startTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            8,
+            0,
+          ),
+          endTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            8,
+            10,
+          ),
           enablePointerInteraction: false,
           recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
           textStyle: TextStyle(
@@ -149,13 +158,19 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       regions.add(
         TimeRegion(
           startTime: DateTime(
-            DateTime.now().year-i,
+            DateTime.now().year - i,
             DateTime.now().month,
             1,
             9,
             30,
           ),
-          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 9, 40),
+          endTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            9,
+            40,
+          ),
           enablePointerInteraction: false,
           recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
           textStyle: TextStyle(
@@ -169,13 +184,19 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       regions.add(
         TimeRegion(
           startTime: DateTime(
-            DateTime.now().year-i,
+            DateTime.now().year - i,
             DateTime.now().month,
             1,
             11,
             0,
           ),
-          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 11, 20),
+          endTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            11,
+            20,
+          ),
           enablePointerInteraction: false,
           recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
           textStyle: TextStyle(
@@ -189,13 +210,19 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       regions.add(
         TimeRegion(
           startTime: DateTime(
-            DateTime.now().year-i,
+            DateTime.now().year - i,
             DateTime.now().month,
             1,
             12,
             40,
           ),
-          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 13, 10),
+          endTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            13,
+            10,
+          ),
           enablePointerInteraction: false,
           recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
           textStyle: TextStyle(
@@ -209,13 +236,19 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       regions.add(
         TimeRegion(
           startTime: DateTime(
-            DateTime.now().year-i,
+            DateTime.now().year - i,
             DateTime.now().month,
             1,
             13,
             10,
           ),
-          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 13, 40),
+          endTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            13,
+            40,
+          ),
           enablePointerInteraction: false,
           recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
           textStyle: TextStyle(
@@ -229,13 +262,19 @@ class _TimetableCalendarViewState extends State<TimetableCalendarView> {
       regions.add(
         TimeRegion(
           startTime: DateTime(
-            DateTime.now().year-i,
+            DateTime.now().year - i,
             DateTime.now().month,
             1,
             15,
             0,
           ),
-          endTime: DateTime(DateTime.now().year-i, DateTime.now().month, 1, 15, 10),
+          endTime: DateTime(
+            DateTime.now().year - i,
+            DateTime.now().month,
+            1,
+            15,
+            10,
+          ),
           enablePointerInteraction: false,
           recurrenceRule: 'FREQ=DAILY;INTERVAL=1',
           textStyle: TextStyle(

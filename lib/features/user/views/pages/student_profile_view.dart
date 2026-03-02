@@ -2,16 +2,15 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:opencms/features/user/models/user_models.dart';
-import 'package:provider/provider.dart';
-import 'package:silky_scroll/silky_scroll.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../services/profile_service.dart';
-import '../widgets/profile_info_card.dart';
-import '../widgets/profile_photo_widget.dart';
-import '../../../shared/views/views/list_section.dart';
-import '../../../shared/views/views/refreshable_view.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/views/views/list_section.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/user/models/user_models.dart';
+import 'package:opencms/features/user/services/profile_service.dart';
+import 'package:opencms/features/user/views/widgets/profile_info_card.dart';
+import 'package:opencms/features/user/views/widgets/profile_photo_widget.dart';
+import 'package:silky_scroll/silky_scroll.dart';
 
 class StudentProfileView extends StatefulWidget {
   const StudentProfileView({super.key});
@@ -67,9 +66,7 @@ class _StudentProfileViewState extends RefreshableView<StudentProfileView> {
               Expanded(
                 child: ProfileInfoCard(
                   title: 'Status',
-                  value: _profile!.generalInfo.isActive
-                      ? 'Active'
-                      : 'Inactive',
+                  value: _profile!.generalInfo.isActive ? 'Active' : 'Inactive',
                   icon: Symbols.check_circle_rounded,
                   valueColor: _profile!.generalInfo.isActive
                       ? Colors.green
@@ -201,10 +198,8 @@ class _StudentProfileViewState extends RefreshableView<StudentProfileView> {
                   value: _profile!.basicInfo.mobile,
                   icon: Symbols.phone_rounded,
                   isClickable: true,
-                  onTap: () => _showContactDialog(
-                    'Mobile',
-                    _profile!.basicInfo.mobile,
-                  ),
+                  onTap: () =>
+                      _showContactDialog('Mobile', _profile!.basicInfo.mobile),
                 ),
               ),
               const SizedBox(width: 8),
@@ -234,7 +229,7 @@ class _StudentProfileViewState extends RefreshableView<StudentProfileView> {
           ),
         ],
       ),
-      const SizedBox(height: 32)
+      const SizedBox(height: 32),
     ];
 
     return SilkyScroll(
@@ -258,7 +253,7 @@ class _StudentProfileViewState extends RefreshableView<StudentProfileView> {
   String get emptyTitle => 'No profile data available';
 
   void _showContactDialog(String type, String value) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeNotifier = ThemeNotifier.instance;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

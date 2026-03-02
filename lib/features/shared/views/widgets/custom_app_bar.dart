@@ -1,12 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'dart:io';
-import 'package:window_manager/window_manager.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:window_manager/window_manager.dart';
 
 final logger = Logger('CustomAppBar');
 
@@ -75,7 +75,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     // Check if we're on a desktop platform
     final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux);
 

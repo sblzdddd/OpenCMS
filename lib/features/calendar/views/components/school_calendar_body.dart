@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/calendar/models/calendar.dart';
+import 'package:opencms/features/shared/views/error/error_placeholder.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/utils/sfcalendar_theme.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
-import 'package:provider/provider.dart';
-import '../../../../utils/sfcalendar_theme.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../models/calendar.dart';
-import '../../../shared/views/error/error_placeholder.dart';
 
 class SchoolCalendarBody extends StatelessWidget {
   final CalendarController calendarController;
@@ -37,7 +36,7 @@ class SchoolCalendarBody extends StatelessWidget {
       );
     }
 
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     return Stack(
       children: [
@@ -75,32 +74,35 @@ class SchoolCalendarBody extends StatelessWidget {
             ),
             appointmentBuilder:
                 (BuildContext context, CalendarAppointmentDetails details) {
-              final SchoolCalendarAppointment event =
-                  details.appointments.first as SchoolCalendarAppointment;
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: event.color,
-                  borderRadius: themeNotifier.getBorderRadiusAll(0.25),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      event.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                  final SchoolCalendarAppointment event =
+                      details.appointments.first as SchoolCalendarAppointment;
+                  return Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 2,
                     ),
-                  ],
-                ),
-              );
-            },
+                    decoration: BoxDecoration(
+                      color: event.color,
+                      borderRadius: themeNotifier.getBorderRadiusAll(0.25),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          event.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  );
+                },
             onTap: (details) {
               if (details.targetElement == CalendarElement.appointment &&
                   details.appointments != null &&

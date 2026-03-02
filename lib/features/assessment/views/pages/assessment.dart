@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/assessment_models.dart';
-import '../../services/assessment_service.dart';
-import '../../../shared/views/views/refreshable_view.dart';
-import '../../../shared/views/academic_year_dropdown.dart';
-import '../../../theme/services/theme_services.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/services/assessment_service.dart';
+import 'package:opencms/features/assessment/views/layouts/adaptive_assessment_layout.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/academic_year_dropdown.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'subject_assessments.dart';
-import '../layouts/adaptive_assessment_layout.dart';
-import '../../../shared/views/widgets/custom_app_bar.dart';
-import '../../../shared/views/widgets/custom_scaffold.dart';
 
 class AssessmentPage extends StatefulWidget {
   final int initialTabIndex;

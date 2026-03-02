@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/views/error/empty_placeholder.dart';
+import 'package:opencms/features/shared/views/timetable_card.dart';
+import 'package:opencms/features/timetable/exam_timetable/models/exam_timetable_models.dart';
 import 'package:silky_scroll/silky_scroll.dart';
-import '../../models/exam_timetable_models.dart';
-import '../../../../shared/views/timetable_card.dart';
-import '../../../../shared/views/error/empty_placeholder.dart';
 
 class ExamTimetableListView extends StatelessWidget {
   final List<ExamTimetableEntry> exams;

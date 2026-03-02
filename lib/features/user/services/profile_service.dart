@@ -2,10 +2,9 @@
 library;
 
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 import 'package:opencms/features/user/models/user_models.dart';
-
-import '../../shared/constants/api_endpoints.dart';
-import '../../API/networking/http_service.dart';
 
 class ProfileService {
   static final ProfileService _instance = ProfileService._internal();

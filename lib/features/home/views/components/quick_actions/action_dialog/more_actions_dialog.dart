@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
+import 'package:opencms/features/shared/pages/actions.dart';
 
-import '../../../../../shared/constants/quick_actions.dart';
-import '../../../../../shared/pages/actions.dart';
 import 'base_action_dialog.dart';
 
 /// Dialog for choosing hidden actions to launch (not to add to quick access)

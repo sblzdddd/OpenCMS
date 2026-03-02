@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../components/login_form.dart';
-import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:flutter/services.dart';
+import 'package:opencms/features/auth/views/components/login_form.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
+import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/utils/app_info.dart';
 import 'package:opencms/utils/device_id.dart';
-import 'package:flutter/services.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -45,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return CustomScaffold(
       skinKey: 'login',
       body: Center(
@@ -106,7 +105,9 @@ class _LoginPageState extends State<LoginPage> {
                               onPressed: id == null
                                   ? null
                                   : () async {
-                                      await Clipboard.setData(ClipboardData(text: id));
+                                      await Clipboard.setData(
+                                        ClipboardData(text: id),
+                                      );
                                       if (ctx.mounted) Navigator.of(ctx).pop();
                                     },
                               child: const Text('Copy ID'),

@@ -1,13 +1,12 @@
 /// Referral comments service for fetching student referral data
 library;
 
-import 'package:opencms/di/locator.dart';
-
-import '../../shared/constants/api_endpoints.dart';
-import '../models/referral.dart';
-import '../../API/networking/http_service.dart';
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/referral/models/referral.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 final logger = Logger('ReferralService');
 
@@ -20,9 +19,7 @@ class ReferralService {
   /// Fetch referral comments for the current student
   Future<ReferralResponse> getReferralComments({bool refresh = false}) async {
     try {
-      logger.info(
-        'Fetching referral comments (refresh: $refresh)',
-      );
+      logger.info('Fetching referral comments (refresh: $refresh)');
 
       final response = await di<HttpService>().get(
         API.referralUrl,

@@ -1,13 +1,14 @@
 import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
-import '../../../models/skin.dart';
-import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../../services/skin_service.dart';
-import 'package:file_picker/file_picker.dart';
 
 /// A card widget for displaying and editing skin information
 class SkinInfoCard extends StatefulWidget {

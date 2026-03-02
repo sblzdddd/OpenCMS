@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../models/calendar.dart';
-import '../../services/calendar_service.dart';
+import 'package:opencms/features/calendar/models/calendar.dart';
+import 'package:opencms/features/calendar/services/calendar_service.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 final _logger = Logger('EventDetailDialog');
 
@@ -51,7 +50,9 @@ class _EventDetailDialogState extends State<EventDetailDialog> {
     final event = widget.appointment.sourceEvent;
 
     try {
-      _detail = await widget.calendarService.getCalendarDetail(eventId: event.id);
+      _detail = await widget.calendarService.getCalendarDetail(
+        eventId: event.id,
+      );
 
       // Try to get comment based on event kind
       String commentKind = '';
@@ -93,7 +94,7 @@ class _EventDetailDialogState extends State<EventDetailDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeNotifier = ThemeNotifier.instance;
     final event = widget.appointment.sourceEvent;
 
     return AlertDialog(

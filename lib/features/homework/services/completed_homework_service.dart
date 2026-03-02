@@ -1,7 +1,8 @@
 import 'dart:convert';
-import '../models/homework_models.dart';
-import '../../API/storage/storage_client.dart';
+
 import 'package:logging/logging.dart';
+import 'package:opencms/features/API/storage/storage_client.dart';
+import 'package:opencms/features/homework/models/homework_models.dart';
 
 final logger = Logger('CompletedHomeworkService');
 
@@ -99,4 +100,3 @@ class CompletedHomeworkService {
     }
   }
 }
-

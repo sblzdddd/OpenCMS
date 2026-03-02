@@ -1,5 +1,5 @@
-import '../models/skin_constants.dart';
-import '../models/skin_image_type.dart';
+import 'package:opencms/features/theme/models/skin_constants.dart';
+import 'package:opencms/features/theme/models/skin_image_type.dart';
 
 /// Helper class to extract categories from skin constants
 class SkinCategoriesHelper {

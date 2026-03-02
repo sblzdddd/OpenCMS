@@ -4,12 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:logging/logging.dart';
+import 'package:opencms/features/auth/services/auto_captcha_service.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/web_cms/services/webview_service.dart';
-import 'package:provider/provider.dart';
 
-import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import '../../../../theme/services/theme_services.dart';
-import '../../../services/auto_captcha_service.dart';
 import 'captcha_dialog_web.dart'
     if (dart.library.io) 'captcha_dialog_stub.dart'
     as web_helper;
@@ -119,7 +118,7 @@ class TencentCaptchaDialog {
     required Function(dynamic) onSuccess,
     required Function(dynamic) onFail,
   }) async {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeNotifier = ThemeNotifier.instance;
 
     await showDialog(
       context: context,
@@ -151,12 +150,6 @@ class TencentCaptchaDialog {
                     borderRadius: themeNotifier.getBorderRadiusAll(0.75),
                     child: InAppWebView(
                       webViewEnvironment: WebviewService.webViewEnvironment,
-                      initialData: InAppWebViewInitialData(
-                        data: captchaHtmlContent(
-                          Theme.of(context).brightness == Brightness.dark,
-                        ),
-                        baseUrl: WebUri('https://localhost/'),
-                      ),
                       initialSettings: InAppWebViewSettings(
                         isInspectable: true,
                         mediaPlaybackRequiresUserGesture: false,
@@ -178,7 +171,7 @@ class TencentCaptchaDialog {
                         useShouldInterceptFetchRequest: false,
                         applicationNameForUserAgent: "OpenCMS-Captcha-WebView",
                       ),
-                      onWebViewCreated: (InAppWebViewController controller) {
+                      onWebViewCreated: (InAppWebViewController controller) async {
                         logger.fine('Captcha WebView created');
 
                         // Add JavaScript handler to listen for captcha completion (non-web platforms)
@@ -199,6 +192,18 @@ class TencentCaptchaDialog {
                             },
                           );
                         }
+
+                        // Load HTML data after webview is fully created to avoid
+                        // black screen on Linux/WPE where initialData may render
+                        // before the texture pipeline is ready.
+                        final isDark =
+                            Theme.of(context).brightness == Brightness.dark;
+                        await controller.loadData(
+                          data: captchaHtmlContent(isDark),
+                          baseUrl: WebUri('https://localhost/'),
+                          mimeType: 'text/html',
+                          encoding: 'utf-8',
+                        );
                       },
                       onLoadStart:
                           (InAppWebViewController controller, WebUri? url) {
@@ -219,14 +224,17 @@ class TencentCaptchaDialog {
                             WebResourceRequest request,
                             WebResourceError error,
                           ) {
-                            logger.warning(
-                              'Captcha WebView error: ${error.description}',
-                            );
-
-                            // For any errors, just log them since we're already using local HTML
-                            logger.warning(
-                              'CaptchaDialog: WebView error: ${error.description} for ${request.url}',
-                            );
+                            try {
+                              logger.warning(
+                                'CaptchaDialog: WebView error: ${error.description} for ${request.url}',
+                              );
+                            } catch (e) {
+                              // Suppress errors from null fields in WebResourceError
+                              // on Linux/WPE (known flutter_inappwebview_linux bug)
+                              logger.warning(
+                                'CaptchaDialog: WebView error (details unavailable)',
+                              );
+                            }
                           },
                       onProgressChanged:
                           (InAppWebViewController controller, int progress) {},

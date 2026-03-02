@@ -56,7 +56,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
             ),
             child: Column(
               children: [
-                if (header != null) header!,
+                ?header,
                 Expanded(child: _buildList(context)),
               ],
             ),
@@ -76,7 +76,7 @@ class AdaptiveListDetailLayout<T> extends StatelessWidget {
   Widget _buildMobileLayout(BuildContext context) {
     return Column(
       children: [
-        if (header != null) header!,
+        ?header,
         Expanded(child: _buildList(context)),
       ],
     );

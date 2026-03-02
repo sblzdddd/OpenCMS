@@ -1,12 +1,11 @@
 library;
 
 import 'package:dio/dio.dart';
-import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/di/locator.dart';
-
-import '../../API/networking/http_service.dart';
-import '../../shared/constants/api_endpoints.dart';
-import '../models/calendar.dart';
+import 'package:opencms/features/API/networking/http_service.dart';
+import 'package:opencms/features/auth/services/login_state.dart';
+import 'package:opencms/features/calendar/models/calendar.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 /// Service for handling calendar operations
 class CalendarService {
@@ -28,11 +27,9 @@ class CalendarService {
     final response = await di<HttpService>().post(
       '${API.calendarUrl}?psid=$username&y=$year&p=$year&m=$month&kind=-1',
       data: 'psid=$username&y=$year&p=$year&m=$month&kind=-1',
-      options: (
-        Options(
-          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        )
-      ),
+      options: (Options(
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      )),
       refresh: refresh,
       legacy: true,
       ignoreLegacyUsername: true,

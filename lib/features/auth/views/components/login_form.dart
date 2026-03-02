@@ -1,14 +1,14 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../theme/views/widgets/skin_icon_widget.dart';
+import 'package:opencms/features/auth/views/controllers/login_form_controller.dart';
+import 'package:opencms/features/settings/privacy_policy.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
+
 import 'captcha_input/captcha_input.dart';
 import 'password_input.dart';
 import 'username_input.dart';
-import '../controllers/login_form_controller.dart';
-import '../../../settings/privacy_policy.dart';
-import 'package:flutter/gestures.dart';
 
 class LoginForm extends StatefulWidget {
   final TextEditingController usernameController;
@@ -73,7 +73,7 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
@@ -156,7 +156,7 @@ class _LoginFormState extends State<LoginForm> {
                         usernameController: widget.usernameController,
                       ),
                       const SizedBox(height: 8),
-                      
+
                       // Remember me checkbox
                       CheckboxListTile(
                         title: Text(

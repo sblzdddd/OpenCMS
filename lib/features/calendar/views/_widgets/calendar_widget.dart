@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../models/calendar_today_item.dart';
-import '../../services/calendar_service.dart';
-import '../../../home/views/widgets/base_dashboard_widget.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/calendar/models/calendar_today_item.dart';
+import 'package:opencms/features/calendar/services/calendar_service.dart';
+import 'package:opencms/features/home/views/widgets/base_dashboard_widget.dart';
 
 final logger = Logger('CalendarWidget');
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../../theme/services/theme_services.dart';
-import '../../../widgets/banners/mesh_gradient_banner.dart';
-import '../widget_size_manager.dart';
+import 'package:opencms/features/home/views/components/dashboard_grid/widget_size_manager.dart';
+import 'package:opencms/features/home/views/widgets/banners/mesh_gradient_banner.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class AddWidgetOptionCard extends StatelessWidget {
   final String widgetId;
@@ -17,7 +15,7 @@ class AddWidgetOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final isBanner = widgetId == 'banner';
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

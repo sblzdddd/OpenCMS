@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../theme/services/theme_services.dart';
-import '../models/notification_response.dart' as cms;
-import '../services/notification_service.dart';
-import '../../shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/notices/models/notification_response.dart'
+    as cms;
+import 'package:opencms/features/notices/services/notification_service.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+
 import 'adaptive_notifications_layout.dart';
 
 class NotificationsView extends StatefulWidget {

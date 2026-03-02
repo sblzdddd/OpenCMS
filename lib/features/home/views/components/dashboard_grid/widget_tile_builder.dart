@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../widgets/banner_widget.dart';
-import '../../../../homework/views/_widgets/homework_widget.dart';
-import '../../../../assessment/views/_widgets/latest_assessment_widget.dart';
-import '../../../../timetable/course_timetable/views/_widgets/next_class_widget.dart';
-import '../../widgets/notices_widget.dart';
-import '../../../../calendar/views/_widgets/calendar_widget.dart';
+import 'package:opencms/features/assessment/views/_widgets/latest_assessment_widget.dart';
+import 'package:opencms/features/calendar/views/_widgets/calendar_widget.dart';
+import 'package:opencms/features/home/views/widgets/banner_widget.dart';
+import 'package:opencms/features/home/views/widgets/notices_widget.dart';
+import 'package:opencms/features/homework/views/_widgets/homework_widget.dart';
+import 'package:opencms/features/timetable/course_timetable/views/_widgets/next_class_widget.dart';
 
 /// Builder for dashboard widget tiles
 class WidgetTileBuilder {

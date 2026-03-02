@@ -1,12 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/assessment_models.dart';
-import '../../services/assessment_service.dart';
-import 'dart:async';
-import '../../../home/views/widgets/base_dashboard_widget.dart';
+import 'package:opencms/features/assessment/models/assessment_models.dart';
+import 'package:opencms/features/assessment/services/assessment_service.dart';
+import 'package:opencms/features/home/views/widgets/base_dashboard_widget.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
 
 final logger = Logger('LatestAssessmentWidget');
 

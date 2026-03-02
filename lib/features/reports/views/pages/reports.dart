@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../components/reports_list_view.dart';
-import '../components/gpa_view.dart';
-import '../../../shared/views/views/tabbed_page_base.dart';
+import 'package:opencms/features/reports/views/components/gpa_view.dart';
+import 'package:opencms/features/reports/views/components/reports_list_view.dart';
+import 'package:opencms/features/shared/views/views/tabbed_page_base.dart';
 
 class ReportsPage extends StatelessWidget {
   const ReportsPage({super.key, this.initialTabIndex = 0});

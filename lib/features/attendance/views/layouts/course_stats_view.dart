@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:opencms/features/attendance/models/course_stats_models.dart';
+import 'package:opencms/features/attendance/services/course_stats_service.dart';
+import 'package:opencms/features/attendance/views/widgets/course_stats_card_content.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/academic_year_dropdown.dart';
+import 'package:opencms/features/shared/views/views/refreshable_view.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:silky_scroll/silky_scroll.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../shared/constants/period_constants.dart';
-import '../../models/course_stats_models.dart';
-import '../../services/course_stats_service.dart';
-import '../../../shared/views/views/refreshable_view.dart';
-import '../widgets/course_stats_card_content.dart';
-import '../../../shared/views/academic_year_dropdown.dart';
 
 class CourseStatsView extends StatefulWidget {
   const CourseStatsView({super.key});
@@ -46,18 +46,19 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
     return Column(
       children: [
         _buildYearSelector(),
-        Expanded(child: 
-        SilkyScroll(
-          scrollSpeed: 2,
-          builder: (context, controller, physics) => ListView.builder(
-            physics: physics,
-            controller: controller,
-            itemCount: _courseStats!.length,
-            itemBuilder: (context, index) {
-              return _buildCourseCard(_courseStats![index]);
-            },
+        Expanded(
+          child: SilkyScroll(
+            scrollSpeed: 2,
+            builder: (context, controller, physics) => ListView.builder(
+              physics: physics,
+              controller: controller,
+              itemCount: _courseStats!.length,
+              itemBuilder: (context, index) {
+                return _buildCourseCard(_courseStats![index]);
+              },
+            ),
           ),
-        )),
+        ),
         const SizedBox(height: 32),
       ],
     );
@@ -99,12 +100,16 @@ class _CourseStatsViewState extends RefreshableView<CourseStatsView> {
         borderRadius: themeNotifier.getBorderRadiusAll(1),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.01),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.01),
             blurRadius: 8,
             offset: const Offset(0, 5),
           ),
           BoxShadow(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.02),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.02),
             blurRadius: 18,
             offset: const Offset(0, 5),
           ),

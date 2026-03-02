@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/system/desktop_window/window_effect_service.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../system/desktop_window/window_effect_service.dart';
-import 'skin_service.dart';
 
 extension ColorExtension on Color {
   String toHex() {
@@ -58,8 +58,7 @@ class ThemeNotifier with ChangeNotifier {
   }
 
   bool get hasTransparentWindowEffect {
-    return di<WindowEffectService>().windowEffect !=
-        WindowEffectType.disabled;
+    return di<WindowEffectService>().windowEffect != WindowEffectType.disabled;
   }
 
   bool get hasActiveSkinBackgroundImage {

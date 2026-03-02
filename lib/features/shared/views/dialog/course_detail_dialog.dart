@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../attendance/models/course_stats_models.dart';
-import '../../constants/subject_icons.dart';
-import '../../../attendance/views/widgets/course_stats_card_content.dart';
-import '../error/error_placeholder.dart';
-import '../../../theme/views/widgets/skin_icon_widget.dart';
+import 'package:opencms/features/attendance/models/course_stats_models.dart';
+import 'package:opencms/features/attendance/views/widgets/course_stats_card_content.dart';
+import 'package:opencms/features/shared/constants/subject_icons.dart';
+import 'package:opencms/features/shared/views/error/error_placeholder.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
+import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 
 /// Dialog to display course details and attendance statistics
 class CourseDetailDialog extends StatelessWidget {
@@ -41,7 +40,7 @@ class CourseDetailDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final theme = Theme.of(context);
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
 
     // Extract course name and code from title for icon determination
     final courseName = title.contains('(')

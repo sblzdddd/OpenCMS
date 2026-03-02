@@ -2,10 +2,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../shared/views/widgets/scaled_ink_well.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class ProfileInfoCard extends StatelessWidget {
   final String title;
@@ -29,7 +28,7 @@ class ProfileInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return ScaledInkWell(
       onTap: isClickable ? onTap : null,
       borderRadius: themeNotifier.getBorderRadiusAll(0.75),

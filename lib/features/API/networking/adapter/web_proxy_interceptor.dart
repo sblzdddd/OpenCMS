@@ -1,6 +1,6 @@
-import '../../../shared/constants/api_endpoints.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:opencms/features/shared/constants/api_endpoints.dart';
 
 String convertToProxyUrl(String url) {
   if (!kIsWeb) return url;

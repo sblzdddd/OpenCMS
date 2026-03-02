@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../models/course_stats_models.dart';
-import '../../models/attendance_constants.dart';
+import 'package:opencms/features/attendance/models/attendance_constants.dart';
+import 'package:opencms/features/attendance/models/course_stats_models.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Widget to display attendance proportion chart
 class AttendanceProportionChart extends StatelessWidget {
@@ -12,7 +11,7 @@ class AttendanceProportionChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     final totalLessons = stats.lessons;
     if (totalLessons == 0) return const SizedBox.shrink();
 

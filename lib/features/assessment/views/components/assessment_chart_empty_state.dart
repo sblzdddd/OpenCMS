@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
 
@@ -8,7 +7,7 @@ class AssessmentChartEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return Card(
       elevation: 0,
       color: Theme.of(context).colorScheme.surface,

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-
-import '../../shared/constants/quick_actions.dart';
-import '../services/bottom_actions_storage_service.dart';
-import '../views/nav_items.dart';
+import 'package:opencms/features/navigations/services/bottom_actions_storage_service.dart';
+import 'package:opencms/features/navigations/views/nav_items.dart';
+import 'package:opencms/features/shared/constants/quick_actions.dart';
 
 class BottomActionsController extends ChangeNotifier {
   final BottomActionsStorageService _storage = BottomActionsStorageService();

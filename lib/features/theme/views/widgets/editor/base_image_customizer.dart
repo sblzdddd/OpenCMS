@@ -1,15 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:opencms/di/locator.dart';
-import 'dart:io';
-import '../../../models/skin.dart';
-import '../../../models/skin_image.dart';
-import '../../../models/skin_image_type.dart';
-import '../../../services/skin_service.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
-import '../../../../shared/views/custom_snackbar/snackbar_utils.dart';
-import '../../dialogs/image_settings_dialog.dart';
 import 'package:logging/logging.dart';
+import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/di/locator.dart';
+import 'package:opencms/features/shared/views/custom_snackbar/snackbar_utils.dart';
+import 'package:opencms/features/theme/models/skin.dart';
+import 'package:opencms/features/theme/models/skin_image.dart';
+import 'package:opencms/features/theme/models/skin_image_type.dart';
+import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/views/dialogs/image_settings_dialog.dart';
 
 final logger = Logger('BaseImageCustomizer');
 

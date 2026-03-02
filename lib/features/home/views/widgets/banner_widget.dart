@@ -6,14 +6,12 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/home/views/widgets/banners/waves_banner.dart';
+import 'package:opencms/features/shared/constants/period_constants.dart';
+import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
 import 'package:opencms/features/theme/services/skin_service.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_background_widget.dart';
-import 'package:provider/provider.dart';
-
-import '../../../shared/constants/period_constants.dart';
-import '../../../shared/views/widgets/scaled_ink_well.dart';
-import '../../../theme/services/theme_services.dart';
-import '../../../user/views/pages/profile.dart';
+import 'package:opencms/features/user/views/pages/profile.dart';
 
 class BannerWidget extends StatefulWidget {
   const BannerWidget({super.key});
@@ -78,7 +76,7 @@ class _BannerWidgetState extends State<BannerWidget>
       }
     }
     super.build(context);
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    final themeNotifier = ThemeNotifier.instance;
     return ScaledInkWell(
       background: (inkWell) => Container(
         decoration: BoxDecoration(
