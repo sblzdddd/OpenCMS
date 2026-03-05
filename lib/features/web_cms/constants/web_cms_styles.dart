@@ -63,6 +63,9 @@ html, .ant-layout,
 html {
     color-scheme: ${isDarkMode ? 'dark' : 'light'} !important;
 }
+main {
+  background: transparent !important;
+}
 html, body, input, textarea, select, button, dialog {
     background-color: transparent
 }
@@ -657,7 +660,7 @@ var ensure2 = function() {
     }
   });
   document.querySelectorAll("main").forEach(el => {
-    if (el.getAttribute("style") && el.getAttribute("style").includes("background: rgb(247, 249, 251)")) {
+    if (el.getAttribute("style") && el.getAttribute("style").includes("background: rgb(233, 238, 243)")) {
       el.style.background = "none";
       el.style.backgroundColor = "transparent";
     }

@@ -1,5 +1,7 @@
 import java.util.Properties
 import java.io.FileInputStream
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
@@ -23,10 +25,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     buildFeatures {
@@ -57,6 +55,26 @@ android {
         release {
             signingConfig = signingConfigs.getByName("release")
         }
+    }
+
+    applicationVariants.configureEach {
+        outputs.configureEach {
+            if (this is BaseVariantOutputImpl) {
+                val originalName = outputFileName
+                val architecture = Regex("-(.*?)-release\\.apk$")
+                    .find(originalName)
+                    ?.groupValues
+                    ?.getOrNull(1)
+                    ?: "universal"
+                outputFileName = "OpenCMS_${versionName}.$architecture.apk"
+            }
+        }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 

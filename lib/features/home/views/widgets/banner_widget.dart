@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
-import 'package:opencms/features/home/views/widgets/banners/waves_banner.dart';
+import 'package:opencms/features/home/views/widgets/banners/mesh_gradient_banner.dart';
 import 'package:opencms/features/shared/constants/period_constants.dart';
 import 'package:opencms/features/shared/views/widgets/scaled_ink_well.dart';
 import 'package:opencms/features/theme/services/skin_service.dart';
@@ -136,7 +136,7 @@ class _BannerWidgetState extends State<BannerWidget>
                         fallbackColor: Theme.of(context).colorScheme.surface,
                         child: Container(),
                       )
-                    : const WavesBanner(),
+                    : const MeshGradientBanner(),
               ),
               // Top left and right positioned elements
               Positioned(
