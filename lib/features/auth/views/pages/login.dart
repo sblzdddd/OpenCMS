@@ -52,15 +52,7 @@ class _LoginPageState extends State<LoginPage> {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
             child: Card(
-              color: themeNotifier.needTransparentBG
-                  ? (!themeNotifier.isDarkMode
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.surface.withValues(alpha: 0.6)
-                        : Theme.of(
-                            context,
-                          ).colorScheme.surface.withValues(alpha: 0.8))
-                  : Theme.of(context).colorScheme.surface,
+              color: Theme.of(context).colorScheme.surface,
               margin: const EdgeInsets.all(24),
               elevation: 20,
               shadowColor: Theme.of(

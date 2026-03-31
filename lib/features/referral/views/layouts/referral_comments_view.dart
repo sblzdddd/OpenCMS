@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:opencms/features/referral/models/referral_response.dart';
-import 'package:opencms/features/referral/views/components/referral_comments_list.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/referral/models/referral_response.dart';
 import 'package:opencms/features/referral/services/referral_service.dart';
-import 'package:opencms/features/shared/views/views/refreshable_page.dart';
+import 'package:opencms/features/referral/views/components/referral_comments_list.dart';
 import 'package:opencms/features/referral/views/components/referral_stats.dart';
+import 'package:opencms/features/shared/views/views/refreshable_page.dart';
 import 'package:silky_scroll/silky_scroll.dart';
 
 class ReferralCommentsView extends StatefulWidget {
@@ -51,15 +51,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
-            color: themeNotifier.needTransparentBG
-                ? (!themeNotifier.isDarkMode
-                      ? Theme.of(
-                          context,
-                        ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                      : Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-                : Theme.of(context).colorScheme.surfaceContainer,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(
@@ -104,15 +96,7 @@ class _ReferralCommentsViewState extends RefreshablePage<ReferralCommentsView> {
         child: Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: themeNotifier.needTransparentBG
-                ? (!themeNotifier.isDarkMode
-                      ? Theme.of(
-                          context,
-                        ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                      : Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-                : Theme.of(context).colorScheme.surfaceContainer,
+            color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: themeNotifier.getBorderRadiusAll(0.5),
             border: Border.all(
               color: Theme.of(

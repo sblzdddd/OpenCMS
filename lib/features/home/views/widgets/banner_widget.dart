@@ -99,15 +99,7 @@ class _BannerWidgetState extends State<BannerWidget>
           ],
         ),
         child: Material(
-          color: themeNotifier.needTransparentBG
-              ? (!themeNotifier.isDarkMode
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.surfaceBright.withValues(alpha: 0.6)
-                    : Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-              : Theme.of(context).colorScheme.surfaceContainer,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: themeNotifier.getBorderRadiusAll(1.5),
           child: inkWell,
         ),

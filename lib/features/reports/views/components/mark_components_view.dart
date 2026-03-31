@@ -74,10 +74,7 @@ class MarkComponentsView extends StatelessWidget {
                     bottom: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer
-                        .withValues(
-                          alpha: themeNotifier.needTransparentBG ? 0.5 : 1,
-                        ),
+                    color: Theme.of(context).colorScheme.primaryContainer,
                     borderRadius: themeNotifier.getBorderRadiusTop(0.75),
                   ),
                   child: Column(
@@ -173,12 +170,7 @@ class MarkComponentsView extends StatelessWidget {
                                   .withValues(alpha: 0.3),
                             ),
                           ),
-                          color: Theme.of(context).colorScheme.surfaceContainer
-                              .withValues(
-                                alpha: themeNotifier.needTransparentBG
-                                    ? 0.5
-                                    : 1,
-                              ),
+                          color: Theme.of(context).colorScheme.surfaceContainer,
                         ),
                         child: Row(
                           children: [
@@ -234,10 +226,7 @@ class MarkComponentsView extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondaryContainer
-                        .withValues(
-                          alpha: themeNotifier.needTransparentBG ? 0.5 : 1,
-                        ),
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: themeNotifier.getBorderRadiusBottom(0.75),
                   ),
                   child: Row(

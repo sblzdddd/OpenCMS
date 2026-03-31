@@ -47,15 +47,7 @@ class AssessmentListItem extends StatelessWidget {
             offset: const Offset(0, 5),
           ),
         ],
-        color: themeNotifier.needTransparentBG
-            ? (!themeNotifier.isDarkMode
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                  : Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-            : Theme.of(context).colorScheme.surfaceContainer,
+        color: Theme.of(context).colorScheme.surfaceContainer,
       ),
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       clipBehavior: Clip.antiAlias,

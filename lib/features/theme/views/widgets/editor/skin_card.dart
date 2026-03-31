@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/theme/models/skin.dart';
-import 'package:opencms/features/theme/services/theme_services.dart';
 
 /// Card widget for displaying skin information
 class SkinCard extends StatelessWidget {
@@ -22,19 +21,10 @@ class SkinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = ThemeNotifier.instance;
     return Card(
       elevation: 0,
       color: isSelected
           ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-          : themeNotifier.needTransparentBG
-          ? (!themeNotifier.isDarkMode
-                ? Theme.of(
-                    context,
-                  ).colorScheme.surfaceBright.withValues(alpha: 0.6)
-                : Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
           : Theme.of(context).colorScheme.surfaceContainer,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),

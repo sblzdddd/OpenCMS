@@ -29,14 +29,6 @@ class SelectableItemWrapper extends StatelessWidget {
       backgroundColor = Theme.of(
         context,
       ).colorScheme.primaryContainer.withValues(alpha: 0.3);
-    } else if (themeNotifier.needTransparentBG && !themeNotifier.isDarkMode) {
-      backgroundColor = Theme.of(
-        context,
-      ).colorScheme.surfaceBright.withValues(alpha: 0.5);
-    } else if (themeNotifier.needTransparentBG && themeNotifier.isDarkMode) {
-      backgroundColor = Theme.of(
-        context,
-      ).colorScheme.surfaceContainer.withValues(alpha: 0.8);
     } else {
       // Non-transparent base surface
       backgroundColor = Theme.of(context).colorScheme.surfaceContainer;

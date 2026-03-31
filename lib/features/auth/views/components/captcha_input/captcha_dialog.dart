@@ -159,7 +159,6 @@ class TencentCaptchaDialog {
                         javaScriptEnabled: true,
                         domStorageEnabled: true,
                         databaseEnabled: true,
-                        clearCache: false,
                         cacheEnabled: true,
                         mixedContentMode:
                             MixedContentMode.MIXED_CONTENT_COMPATIBILITY_MODE,

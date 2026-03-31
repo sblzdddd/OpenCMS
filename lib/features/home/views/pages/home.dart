@@ -53,11 +53,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = ThemeNotifier.instance;
-    final bgColor = themeNotifier.hasTransparentWindowEffect
-        ? (!themeNotifier.isDarkMode
-              ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
-              : Theme.of(context).colorScheme.surface.withValues(alpha: 0.8))
-        : Colors.transparent;
+    final bgColor = !themeNotifier.isDarkMode
+        ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
+        : Theme.of(context).colorScheme.surface.withValues(alpha: 0.8);
     return ListenableBuilder(
       listenable: _bottomActionsController,
       builder: (context, _) {
@@ -124,21 +122,22 @@ class _HomePageState extends State<HomePage> {
     final items = _bottomActionsController.currentItems;
     if (items.isEmpty) return _buildScrollableHomeContent();
 
-    return AnimatedBuilder(
-      animation: _pageController,
-      builder: (context, child) {
-        return PageView.builder(
-          controller: _pageController,
-          itemCount: items.length,
-          onPageChanged: (index) {
-            _selectedIndexNotifier.value = index;
-          },
-          itemBuilder: (context, index) {
-            final id = items[index].id;
-            Widget page = (id == 'home')
-                ? _buildScrollableHomeContent()
-                : AppRouter.getWidget(id);
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: items.length,
+      onPageChanged: (index) {
+        _selectedIndexNotifier.value = index;
+      },
+      itemBuilder: (context, index) {
+        final id = items[index].id;
+        Widget page = (id == 'home')
+            ? _buildScrollableHomeContent()
+            : AppRouter.getWidget(id);
 
+        return AnimatedBuilder(
+          animation: _pageController,
+          child: page,
+          builder: (context, child) {
             double pageOffset = 0.0;
             try {
               if (_pageController.hasClients && _pageController.page != null) {
@@ -154,7 +153,7 @@ class _HomePageState extends State<HomePage> {
             pageOffset = pageOffset.clamp(-1.0, 1.0);
 
             // Steeper out curve
-            final curve = Curves.easeOutCubic;
+            final curve = Curves.easeOutExpo;
             final percent = pageOffset.abs().clamp(0.0, 1.0);
             final t = curve.transform(percent);
 
@@ -190,7 +189,7 @@ class _HomePageState extends State<HomePage> {
               opacity: opacity,
               child: Transform.translate(
                 offset: Offset(dx * MediaQuery.of(context).size.width, 0),
-                child: page,
+                child: child,
               ),
             );
           },
@@ -319,11 +318,22 @@ class _HomePageState extends State<HomePage> {
 
   void _onNavTap(int index) {
     if (_selectedIndex == index) return;
+
+    final int previousIndex = _selectedIndex;
     _selectedIndexNotifier.value = index;
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+
+    if ((index - previousIndex).abs() > 1) {
+      _pageController.jumpToPage(index > previousIndex ? index - 1 : index + 1);
+    }
+
+    Future.microtask(() {
+      if (mounted) {
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 }

@@ -1,8 +1,6 @@
-import 'package:window_manager/window_manager.dart';
-import 'package:opencms/utils/device_info.dart';
 import 'package:flutter/material.dart';
-import 'window_effect_service.dart';
-import 'dart:io';
+import 'package:opencms/utils/device_info.dart';
+import 'package:window_manager/window_manager.dart';
 
 class OCMSWindowService {
   static Future<void> initWindowManager() async {
@@ -21,9 +19,5 @@ class OCMSWindowService {
     });
 
     await windowManager.setPreventClose(true);
-
-    if (Platform.isWindows || Platform.isMacOS) {
-      await WindowEffectService.initialize();
-    }
   }
 }

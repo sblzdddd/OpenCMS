@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -52,14 +51,7 @@ class _AppNavigationRailState extends State<AppNavigationRail> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = ThemeNotifier.instance;
-    final bgColor = Theme.of(context).colorScheme.surface.withValues(
-      alpha: themeNotifier.hasTransparentWindowEffect
-          ? themeNotifier.isDarkMode
-                ? 0.6
-                : 0
-          : 0,
-    );
+    final bgColor = Theme.of(context).colorScheme.surface.withValues(alpha: 0);
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(

@@ -169,8 +169,7 @@ class AttendanceTableView extends StatelessWidget {
     final backgroundColor = subjectName == "/"
         ? Colors.transparent
         : (AttendanceConstants.kindBackgroundColor[entry.kind] ??
-                  Colors.transparent)
-              .withValues(alpha: themeNotifier.needTransparentBG ? 0.5 : 1);
+              Colors.transparent);
     final textColor = subjectName == "/"
         ? Theme.of(context).colorScheme.onSurface
         : AttendanceConstants.kindTextColor[entry.kind] ??

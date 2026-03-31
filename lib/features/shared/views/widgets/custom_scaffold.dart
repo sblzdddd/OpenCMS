@@ -8,7 +8,6 @@ import 'package:opencms/features/theme/models/skin.dart';
 import 'package:opencms/features/theme/models/skin_image.dart';
 import 'package:opencms/features/theme/models/skin_image_type.dart';
 import 'package:opencms/features/theme/services/skin_service.dart';
-import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_background_widget.dart';
 
 class CustomScaffold extends StatelessWidget {
@@ -204,17 +203,6 @@ class CustomScaffold extends StatelessWidget {
     }
 
     Color fallbackColor = Theme.of(context).colorScheme.surface;
-
-    // Use ThemeNotifier singleton instead of Provider to avoid context issues
-    final themeNotifier = ThemeNotifier.instance;
-
-    if (isHomePage && themeNotifier.hasTransparentWindowEffect) {
-      fallbackColor = fallbackColor.withValues(alpha: 0);
-    } else if (themeNotifier.hasTransparentWindowEffect) {
-      fallbackColor = fallbackColor.withValues(
-        alpha: themeNotifier.isDarkMode ? 0.8 : 0.5,
-      );
-    }
 
     // If skinKey is provided, wrap with SkinBackgroundWidget
     final backgroundWidget = SkinBackgroundWidget(

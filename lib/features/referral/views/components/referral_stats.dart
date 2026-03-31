@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/referral/models/referral_response.dart';
+import 'package:opencms/features/theme/services/theme_services.dart';
 
 class ReferralStatsWidget extends StatelessWidget {
   final ThemeNotifier themeNotifier;
@@ -105,15 +105,7 @@ class ReferralStatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: themeNotifier.needTransparentBG
-            ? (!themeNotifier.isDarkMode
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                  : Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-            : Theme.of(context).colorScheme.surfaceContainer,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),

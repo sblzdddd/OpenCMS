@@ -3,7 +3,6 @@ import 'package:opencms/features/attendance/models/attendance_constants.dart';
 import 'package:opencms/features/attendance/models/attendance_models.dart';
 import 'package:opencms/features/shared/constants/period_constants.dart';
 import 'package:opencms/features/shared/views/timetable_card.dart';
-import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:silky_scroll/silky_scroll.dart';
 
 class AttendanceCardsView extends StatelessWidget {
@@ -77,7 +76,6 @@ class AttendanceCardsView extends StatelessWidget {
     RecordOfDay day,
     Set<int> selectedCourseIds,
   ) {
-    final themeNotifier = ThemeNotifier.instance;
     final periods = PeriodConstants.attendancePeriods;
     final atts = day.attendances;
     final int count = atts.length < periods.length
@@ -129,9 +127,7 @@ class AttendanceCardsView extends StatelessWidget {
           backgroundColor:
               (AttendanceConstants.kindBackgroundColor[startEntry.kind] ??
                       Colors.transparent)
-                  .withValues(
-                    alpha: themeNotifier.needTransparentBG ? 0.5 : 0.7,
-                  ),
+                  .withValues(alpha: 0.7),
           textColor: AttendanceConstants.kindTextColor[startEntry.kind],
           onTap: () {
             onEventTap(startEntry, day.date);

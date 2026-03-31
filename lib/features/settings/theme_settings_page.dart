@@ -2,13 +2,10 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/shared/views/widgets/custom_app_bar.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
-import 'package:opencms/features/system/desktop_window/window_effect_service.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
-import 'package:opencms/utils/device_info.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   const ThemeSettingsPage({super.key});
@@ -293,48 +290,6 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
                       onChanged: (value) =>
                           themeNotifier.setBorderRadius(value),
                     ),
-
-                    // Only show window effects on desktop platforms
-                    if (isDesktopEnvironment) ...[
-                      const SizedBox(height: 32),
-
-                      Text(
-                        'Window Effect',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Window Effect Dropdown
-                      DropdownButtonFormField<WindowEffectType>(
-                        initialValue: di<WindowEffectService>().windowEffect,
-                        decoration: InputDecoration(
-                          labelText: 'Window Effect',
-                          border: OutlineInputBorder(
-                            borderRadius: themeNotifier.getBorderRadiusAll(
-                              0.75,
-                            ),
-                          ),
-                          prefixIcon: const Icon(Symbols.window_rounded),
-                        ),
-                        items: ThemeNotifier.availableWindowEffects.map((
-                          effect,
-                        ) {
-                          return DropdownMenuItem(
-                            value: effect,
-                            child: Text(
-                              ThemeNotifier.getWindowEffectDisplayName(effect),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            themeNotifier.setWindowEffect(value);
-                          }
-                        },
-                      ),
-                    ],
                   ],
                 ),
               );

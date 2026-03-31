@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:opencms/features/referral/models/referral_response.dart';
+import 'package:opencms/features/shared/constants/subject_icons.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
-import 'package:opencms/features/shared/constants/subject_icons.dart';
-import 'package:opencms/features/referral/models/referral_response.dart';
 
 class ReferralCommentCard extends StatelessWidget {
   final ThemeNotifier themeNotifier;
@@ -19,15 +19,7 @@ class ReferralCommentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 4),
-      color: themeNotifier.needTransparentBG
-          ? (!themeNotifier.isDarkMode
-                ? Theme.of(
-                    context,
-                  ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                : Theme.of(
-                    context,
-                  ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-          : Theme.of(context).colorScheme.surfaceContainer,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: themeNotifier.getBorderRadiusAll(1),
@@ -202,14 +194,7 @@ class _CommentContent extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: themeNotifier.needTransparentBG
-                    ? (!themeNotifier.isDarkMode
-                          ? Theme.of(
-                              context,
-                            ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                          : Theme.of(context).colorScheme.surfaceContainer
-                                .withValues(alpha: 0.8))
-                    : Theme.of(context).colorScheme.surfaceContainer,
+                color: Theme.of(context).colorScheme.surfaceContainer,
                 borderRadius: themeNotifier.getBorderRadiusAll(0.375),
                 border: Border.all(
                   color: Theme.of(
@@ -265,15 +250,7 @@ class _ReplyCard extends StatelessWidget {
       margin: const EdgeInsets.only(top: 2),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: themeNotifier.needTransparentBG
-            ? (!themeNotifier.isDarkMode
-                  ? Theme.of(
-                      context,
-                    ).colorScheme.surfaceBright.withValues(alpha: 0.5)
-                  : Theme.of(
-                      context,
-                    ).colorScheme.surfaceContainer.withValues(alpha: 0.8))
-            : Theme.of(context).colorScheme.surfaceContainer,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: themeNotifier.getBorderRadiusAll(0.5),
         border: Border.all(
           color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
