@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:opencms/features/auth/views/components/login_form.dart';
+import 'package:opencms/features/settings/privacy_policy.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scaffold.dart';
 import 'package:opencms/features/shared/views/widgets/custom_scroll_view.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
@@ -51,25 +53,48 @@ class _LoginPageState extends State<LoginPage> {
         child: CustomChildScrollView(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: Card(
-              color: Theme.of(context).colorScheme.surface,
-              margin: const EdgeInsets.all(24),
-              elevation: 20,
-              shadowColor: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.2),
-              shape: RoundedRectangleBorder(
-                borderRadius: themeNotifier.getBorderRadiusAll(2),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: LoginForm(
-                  usernameController: _usernameController,
-                  passwordController: _passwordController,
-                  formKey: _formKey,
-                  captchaKey: _captchaKey,
+            child: Column(
+              children: [
+                Card(
+                  color: Theme.of(context).colorScheme.surface,
+                  margin: const EdgeInsets.symmetric(horizontal: 24.0),
+                  elevation: 20,
+                  shadowColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: themeNotifier.getBorderRadiusAll(2),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: LoginForm(
+                      usernameController: _usernameController,
+                      passwordController: _passwordController,
+                      formKey: _formKey,
+                      captchaKey: _captchaKey,
+                    ),
+                  ),
                 ),
-              ),
+                RichText(
+                  text: TextSpan(
+                    text: 'Privacy Policy & Legal Terms',
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withAlpha(100),
+                      decoration: TextDecoration.underline,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const PrivacyPolicyPage(),
+                          ),
+                        );
+                      },
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -90,8 +115,25 @@ class _LoginPageState extends State<LoginPage> {
                       context: context,
                       builder: (ctx) {
                         return AlertDialog(
-                          title: const Text('Device ID'),
-                          content: Text(id ?? 'Unavailable'),
+                          title: const Text('Device Info'),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Device ID: ${id ?? 'Unavailable'}'),
+                              Text(
+                                _footerText,
+                                textAlign: TextAlign.left,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
                           actions: [
                             TextButton(
                               onPressed: id == null
@@ -114,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   },
                   child: Text(
-                    _footerText,
+                    "",
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurfaceVariant,

@@ -1,8 +1,6 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:opencms/features/auth/views/controllers/login_form_controller.dart';
-import 'package:opencms/features/settings/privacy_policy.dart';
 import 'package:opencms/features/theme/services/theme_services.dart';
 import 'package:opencms/features/theme/views/widgets/skin_icon_widget.dart';
 
@@ -91,7 +89,7 @@ class _LoginFormState extends State<LoginForm> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 8),
                       Center(
                         child: SkinIcon(
                           imageKey: 'global.app_icon',
@@ -155,54 +153,65 @@ class _LoginFormState extends State<LoginForm> {
                         enabled: !isLoading,
                         usernameController: widget.usernameController,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
 
-                      // Remember me checkbox
-                      CheckboxListTile(
-                        title: Text(
-                          'Remember my credentials',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 14,
+                      // Keep me signed in checkbox
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: Checkbox(
+                              value:
+                                  _controller.credentialsManager.rememberMe ||
+                                  _controller.credentialsManager.autoLogin,
+                              onChanged: isLoading
+                                  ? null
+                                  : (value) {
+                                      final isChecked = value ?? false;
+                                      _controller
+                                              .credentialsManager
+                                              .rememberMe =
+                                          isChecked;
+                                      _controller.credentialsManager.autoLogin =
+                                          isChecked;
+                                    },
+                              activeColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                            ),
                           ),
-                        ),
-                        value: _controller.credentialsManager.rememberMe,
-                        onChanged: isLoading
-                            ? null
-                            : (value) {
-                                _controller.credentialsManager.rememberMe =
-                                    value ?? false;
-                              },
-                        activeColor: Theme.of(context).colorScheme.primary,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 0,
-                        ),
-                        dense: true,
-                        controlAffinity: ListTileControlAffinity.leading,
-                      ),
-                      CheckboxListTile(
-                        title: Text(
-                          'Auto-login next time',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 14,
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: isLoading
+                                ? null
+                                : () {
+                                    final newValue =
+                                        !(_controller
+                                                .credentialsManager
+                                                .rememberMe ||
+                                            _controller
+                                                .credentialsManager
+                                                .autoLogin);
+                                    _controller.credentialsManager.rememberMe =
+                                        newValue;
+                                    _controller.credentialsManager.autoLogin =
+                                        newValue;
+                                  },
+                            child: Text(
+                              'Keep me signed in',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
-                        ),
-                        value: _controller.credentialsManager.autoLogin,
-                        onChanged: isLoading
-                            ? null
-                            : (value) {
-                                _controller.credentialsManager.autoLogin =
-                                    value ?? false;
-                              },
-                        activeColor: Theme.of(context).colorScheme.primary,
-                        dense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 0,
-                        ),
-                        controlAffinity: ListTileControlAffinity.leading,
+                        ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
 
                       // Login button
                       Center(
@@ -231,32 +240,35 @@ class _LoginFormState extends State<LoginForm> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : Text('Login'),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Center(
-                        child: RichText(
-                          text: TextSpan(
-                            text: 'Privacy Policy & Legal Terms',
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary.withAlpha(100),
-                              decoration: TextDecoration.underline,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => const PrivacyPolicyPage(),
+                                : const Row(
+                                    children: [
+                                      SizedBox(width: 4),
+                                      Expanded(
+                                        child: SizedBox(),
+                                      ), // Balances left side for perfect centering
+                                      Text(
+                                        'Login',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Icon(
+                                            Symbols.chevron_right_rounded,
+                                            size: 20,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 4),
+                                    ],
                                   ),
-                                );
-                              },
                           ),
                         ),
                       ),
+                      const SizedBox(height: 4),
                     ],
                   ),
                   Positioned(

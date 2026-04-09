@@ -73,7 +73,7 @@ msix_config:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/default-login-bg.jpg
+    - assets/images/2-3.png
     - assets/icon/Full/OCMS_ICON_256.png
     - assets/icon/
     - assets/langs/

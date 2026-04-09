@@ -137,7 +137,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
           color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
           image: widget.category == 'login'
               ? const DecorationImage(
-                  image: AssetImage('assets/images/default-login-bg.jpg'),
+                  image: AssetImage('assets/images/2-3.png'),
                   fit: BoxFit.cover,
                   opacity: 0.2,
                 )
@@ -155,7 +155,7 @@ class _SkinBackgroundWidgetState extends State<SkinBackgroundWidget> {
           color: widget.fallbackColor ?? Theme.of(context).colorScheme.surface,
           image: widget.category == 'login'
               ? const DecorationImage(
-                  image: AssetImage('assets/images/default-login-bg.jpg'),
+                  image: AssetImage('assets/images/2-3.png'),
                   fit: BoxFit.cover,
                   opacity: 0.2,
                 )

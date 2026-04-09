@@ -124,76 +124,16 @@ class _HomePageState extends State<HomePage> {
 
     return PageView.builder(
       controller: _pageController,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
       onPageChanged: (index) {
         _selectedIndexNotifier.value = index;
       },
       itemBuilder: (context, index) {
         final id = items[index].id;
-        Widget page = (id == 'home')
+        return (id == 'home')
             ? _buildScrollableHomeContent()
             : AppRouter.getWidget(id);
-
-        return AnimatedBuilder(
-          animation: _pageController,
-          child: page,
-          builder: (context, child) {
-            double pageOffset = 0.0;
-            try {
-              if (_pageController.hasClients && _pageController.page != null) {
-                pageOffset = _pageController.page! - index;
-              } else if (_selectedIndex == index) {
-                pageOffset = 0.0;
-              } else {
-                pageOffset = _selectedIndex - index.toDouble();
-              }
-            } catch (_) {}
-
-            // Clamp for safety
-            pageOffset = pageOffset.clamp(-1.0, 1.0);
-
-            // Steeper out curve
-            final curve = Curves.easeOutExpo;
-            final percent = pageOffset.abs().clamp(0.0, 1.0);
-            final t = curve.transform(percent);
-
-            // Old page: moves 10% in direction, alpha 1->0
-            // New page: comes from 10% in direction, alpha 0->1
-            double dx = 0.0;
-            double opacity = 1.0;
-            if (pageOffset > 0) {
-              // page is left of current (old page, swiping right)
-              dx = 0.1 * t; // 10% to right
-              opacity = 1.0 - t;
-            } else if (pageOffset < 0) {
-              // page is right of current (old page, swiping left)
-              dx = -0.1 * t; // 10% to left
-              opacity = 1.0 - t;
-            } else {
-              dx = 0.0;
-              opacity = 1.0;
-            }
-
-            // For the incoming page, reverse the transform
-            if (percent > 0.0 && percent < 1.0) {
-              if (pageOffset > 0) {
-                // This is the outgoing page
-                // Already handled above
-              } else if (pageOffset < 0) {
-                // This is the outgoing page
-                // Already handled above
-              }
-            }
-
-            return Opacity(
-              opacity: opacity,
-              child: Transform.translate(
-                offset: Offset(dx * MediaQuery.of(context).size.width, 0),
-                child: child,
-              ),
-            );
-          },
-        );
       },
     );
   }
@@ -211,7 +151,6 @@ class _HomePageState extends State<HomePage> {
                 horizontal: isWideScreen ? 10 : 5,
                 vertical: 10,
               ),
-              title: Text('Home'),
               actions: [
                 IconButton(
                   onPressed: _onManageWidgets,
@@ -319,21 +258,7 @@ class _HomePageState extends State<HomePage> {
   void _onNavTap(int index) {
     if (_selectedIndex == index) return;
 
-    final int previousIndex = _selectedIndex;
     _selectedIndexNotifier.value = index;
-
-    if ((index - previousIndex).abs() > 1) {
-      _pageController.jumpToPage(index > previousIndex ? index - 1 : index + 1);
-    }
-
-    Future.microtask(() {
-      if (mounted) {
-        _pageController.animateToPage(
-          index,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
+    _pageController.jumpToPage(index);
   }
 }

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'text_theme_util.dart';
+
 import 'global_press_scale.dart';
+import 'text_theme_util.dart';
 
 class OCMSColorThemes {
   late TextTheme textTheme;
 
   // constructor
   OCMSColorThemes(BuildContext context) {
-    textTheme = createTextTheme(context, "Roboto", "EB Garamond");
+    textTheme = createTextTheme(context, "Roboto Flex", "Noto Sans");
   }
 
   ThemeData buildLightTheme(Color seedColor) {
