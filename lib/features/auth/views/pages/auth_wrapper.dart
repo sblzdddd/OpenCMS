@@ -9,7 +9,7 @@ import 'package:opencms/features/auth/views/components/captcha_input/captcha_inp
 import 'package:opencms/features/auth/views/controllers/captcha_manager.dart';
 import 'package:opencms/features/auth/views/controllers/credentials_manager.dart';
 import 'package:opencms/features/auth/views/pages/login.dart';
-import 'package:opencms/features/home/views/pages/home.dart';
+import 'package:opencms/features/home/views/pages/new_home.dart';
 import 'package:opencms/features/shared/pages/splash.dart';
 import 'package:opencms/features/system/update/update_checker_service.dart';
 import 'package:window_manager/window_manager.dart';
@@ -191,6 +191,6 @@ class AuthWrapperState extends State<AuthWrapper> with WindowListener {
         ],
       );
     }
-    return _isAuthenticated ? const HomePage() : const LoginPage();
+    return _isAuthenticated ? const NewHomePage() : const LoginPage();
   }
 }

@@ -6,7 +6,7 @@ import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/auth/views/pages/login.dart';
 import 'package:opencms/features/calendar/views/pages/school_calendar.dart';
 import 'package:opencms/features/free_classroom/views/pages/free_classrooms.dart';
-import 'package:opencms/features/home/views/pages/home.dart';
+import 'package:opencms/features/home/views/pages/new_home.dart';
 import 'package:opencms/features/homework/views/pages/homework.dart';
 import 'package:opencms/features/referral/views/pages/referral_comments.dart';
 import 'package:opencms/features/reports/views/pages/reports.dart';
@@ -83,8 +83,7 @@ class AppRouter {
       case login:
         return const LoginPage();
       case home:
-        return const HomePage();
-
+        return const NewHomePage();
       case webcms:
         return const WebCmsPage();
       case timetable:

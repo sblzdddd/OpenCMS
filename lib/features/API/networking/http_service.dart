@@ -5,9 +5,9 @@ import 'package:dio/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:opencms/di/locator.dart';
 import 'package:opencms/features/API/networking/interceptors/auth_interceptor.dart';
+import 'package:opencms/features/API/networking/interceptors/cache_interceptor.dart';
 // import 'package:opencms/features/API/networking/interceptors/file_log_interceptor.dart';
 import 'package:opencms/features/API/networking/interceptors/legacy_auth_interceptor.dart';
-import 'package:opencms/features/API/networking/interceptors/legacy_cache_interceptor.dart';
 import 'package:opencms/features/API/networking/interceptors/mock_interceptor.dart';
 import 'package:opencms/features/auth/services/login_state.dart';
 import 'package:opencms/features/shared/constants/api_endpoints.dart';
@@ -50,7 +50,7 @@ class HttpService {
     if (kIsWeb) {
       http_adapter.HttpAdapterHelper.configureAdapter(_dio);
     }
-    _dio.interceptors.add(CacheInterceptor());
+    _dio.interceptors.add(SecureCacheInterceptor());
     if (kDebugMode) {
       _dio.interceptors.add(
         PrettyDioLogger(
@@ -81,7 +81,7 @@ class HttpService {
     Options? options,
   }) async {
     final baseOptions = refresh
-        ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions()
+        ? Options(extra: {'cacheRefresh': true})
         : options ?? Options();
     final opt = baseOptions.copyWith(
       headers: legacy
@@ -112,7 +112,7 @@ class HttpService {
     Options? options,
   }) async {
     final baseOptions = refresh
-        ? cacheOptions.copyWith(policy: CachePolicy.refresh).toOptions()
+        ? Options(extra: {'cacheRefresh': true})
         : options ?? Options();
     final opt = baseOptions.copyWith(
       headers: legacy
