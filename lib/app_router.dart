@@ -84,7 +84,6 @@ class AppRouter {
         return const LoginPage();
       case home:
         return const HomePage();
-
       case webcms:
         return const WebCmsPage();
       case timetable:

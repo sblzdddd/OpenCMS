@@ -86,9 +86,10 @@ class API {
   // parameters: year (academic year)
   static const String assessmentsUrl = '/legacy/students/my/assessments/';
 
-  // Free classrooms endpoint (legacy)
-  // parameters: b (date in yyyy-mm-dd format), w (week period like W1)
-  static const String freeClassroomsUrl = '/classroom/get_freeroom_by_ajax/';
+  // Free classrooms (new CMS API, all periods in one response)
+  // parameters: date (yyyy-mm-dd)
+  static const String freeClassroomMyUrl =
+      '/legacy/students/my/classroom/free_classroom/';
 
   // Referer
   // used for accountUserUrl

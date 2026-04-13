@@ -1,7 +1,26 @@
 /// Model for storing free classroom data for all periods
 library;
 
+import 'package:opencms/features/shared/constants/period_constants.dart';
+
 import 'free_classroom_response.dart';
+
+const int kPastoralPeriodId = 26;
+
+/// Teaching periods 1–10 + Pastoral ([kPastoralPeriodId]).
+const List<int> kFreeClassroomPeriodOrder = [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  kPastoralPeriodId,
+  7,
+  8,
+  9,
+  10,
+];
 
 class AllPeriodsClassroomResponse {
   final Map<int, FreeClassroomResponse> periodData;
@@ -9,19 +28,21 @@ class AllPeriodsClassroomResponse {
   final Map<int, bool> loadingStates;
   final Map<int, String?> errorStates;
 
+  final Map<int, PeriodInfo> slotTimes;
+
   const AllPeriodsClassroomResponse({
     required this.periodData,
     required this.date,
     required this.loadingStates,
     required this.errorStates,
+    this.slotTimes = const {},
   });
 
   factory AllPeriodsClassroomResponse.empty(String date) {
     final Map<int, bool> loadingStates = {};
     final Map<int, String?> errorStates = {};
 
-    // Initialize loading states for periods 1-10
-    for (int i = 1; i <= 10; i++) {
+    for (final i in kFreeClassroomPeriodOrder) {
       loadingStates[i] = false;
       errorStates[i] = null;
     }
@@ -39,12 +60,14 @@ class AllPeriodsClassroomResponse {
     String? date,
     Map<int, bool>? loadingStates,
     Map<int, String?>? errorStates,
+    Map<int, PeriodInfo>? slotTimes,
   }) {
     return AllPeriodsClassroomResponse(
       periodData: periodData ?? this.periodData,
       date: date ?? this.date,
       loadingStates: loadingStates ?? this.loadingStates,
       errorStates: errorStates ?? this.errorStates,
+      slotTimes: slotTimes ?? this.slotTimes,
     );
   }
 
@@ -76,7 +99,7 @@ class AllPeriodsClassroomResponse {
   bool get isAnyLoading => loadingStates.values.any((loading) => loading);
 
   bool get isAllLoaded {
-    for (int i = 1; i <= 10; i++) {
+    for (final i in kFreeClassroomPeriodOrder) {
       if (!hasData(i) && !hasError(i) && !isLoading(i)) {
         return false;
       }

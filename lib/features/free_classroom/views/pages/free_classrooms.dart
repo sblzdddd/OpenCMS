@@ -95,9 +95,9 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   List<CalendarResource> _buildCalendarResources() {
     if (_allPeriodsData == null) return [];
 
-    // Get all unique classrooms across all periods
+    // Get all unique classrooms across all periods (including Pastoral)
     final Set<String> allClassrooms = {};
-    for (int period = 1; period <= 10; period++) {
+    for (final period in kFreeClassroomPeriodOrder) {
       if (_allPeriodsData!.hasData(period)) {
         allClassrooms.addAll(_allPeriodsData!.getClassroomsForPeriod(period));
       }
@@ -128,7 +128,10 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
       Colors.lime,
     ];
 
-    final hash = int.parse(classroom.replaceAll('(', '').substring(1, 2));
+    final digits = classroom.replaceAll(RegExp(r'[^\d]'), '');
+    final hash = digits.isEmpty
+        ? classroom.hashCode
+        : int.tryParse(digits) ?? classroom.hashCode;
     return colors[hash.abs() % colors.length].withValues(alpha: 0.7);
   }
 
@@ -137,20 +140,13 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
 
     if (_allPeriodsData == null) return appointments;
 
-    for (int period = 1; period <= 10; period++) {
+    for (final period in kFreeClassroomPeriodOrder) {
       if (!_allPeriodsData!.hasData(period)) continue;
 
       final classrooms = _allPeriodsData!.getClassroomsForPeriod(period);
       if (classrooms.isEmpty) continue;
 
-      final periodInfo = PeriodConstants.periods.firstWhere(
-        (p) => p.name == 'Period $period',
-        orElse: () => const PeriodInfo(
-          name: 'Period 1',
-          startTime: '08:10',
-          endTime: '08:50',
-        ),
-      );
+      final periodInfo = _periodInfoFor(period);
 
       final startTime = _parseTime(periodInfo.startTime);
       final endTime = _parseTime(periodInfo.endTime);
@@ -174,7 +170,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
       for (final classroom in classrooms) {
         appointments.add(
           ClassroomAppointment(
-            subject: 'Period $period',
+            subject: periodInfo.name,
             startTime: appointmentDate,
             endTime: endDate,
             resourceIds: [classroom],
@@ -192,6 +188,27 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
   DateTime _parseTime(String timeString) {
     final parts = timeString.split(':');
     return DateTime(2024, 1, 1, int.parse(parts[0]), int.parse(parts[1]));
+  }
+
+  /// API slot times when present; otherwise shared timetable defaults.
+  PeriodInfo _periodInfoFor(int period) {
+    final fromApi = _allPeriodsData!.slotTimes[period];
+    if (fromApi != null) return fromApi;
+    if (period == kPastoralPeriodId) {
+      return const PeriodInfo(
+        name: 'Pastoral',
+        startTime: '13:20',
+        endTime: '13:30',
+      );
+    }
+    return PeriodConstants.periods.firstWhere(
+      (p) => p.name == 'Period $period',
+      orElse: () => const PeriodInfo(
+        name: 'Period 1',
+        startTime: '08:10',
+        endTime: '08:50',
+      ),
+    );
   }
 
   Future<void> _onViewChanged(ViewChangedDetails details) async {
@@ -300,7 +317,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
                     timeSlotViewSettings: TimeSlotViewSettings(
                       timeIntervalHeight: 40,
                       timeIntervalWidth: -1,
-                      minimumAppointmentDuration: const Duration(minutes: 30),
+                      minimumAppointmentDuration: const Duration(minutes: 10),
                       startHour: 8,
                       endHour: 17,
                     ),
@@ -365,7 +382,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildDetailRow('Classroom', appointment.classroom),
-            _buildDetailRow('Period', 'Period ${appointment.period}'),
+            _buildDetailRow('Period', appointment.subject),
             _buildDetailRow(
               'Time',
               '${DateFormat('HH:mm').format(appointment.startTime)} - ${DateFormat('HH:mm').format(appointment.endTime)}',
@@ -413,7 +430,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     if (_allPeriodsData!.isAnyLoading) return false;
 
     // Don't show empty state if there are any errors
-    for (int period = 1; period <= 10; period++) {
+    for (final period in kFreeClassroomPeriodOrder) {
       if (_allPeriodsData!.hasError(period)) return false;
     }
 
@@ -421,7 +438,7 @@ class _FreeClassroomsPageState extends RefreshablePage<FreeClassroomsPage> {
     bool allPeriodsHaveData = true;
     bool allPeriodsEmpty = true;
 
-    for (int period = 1; period <= 10; period++) {
+    for (final period in kFreeClassroomPeriodOrder) {
       if (!_allPeriodsData!.hasData(period)) {
         allPeriodsHaveData = false;
         break;
